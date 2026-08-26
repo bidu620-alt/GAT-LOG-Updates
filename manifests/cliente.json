@@ -1,0 +1,10 @@
+{
+  "app": "GAT Telemetria Cliente",
+  "channel": "stable",
+  "version": "1.7",
+  "obrigatoria": false,
+  "notas": "Sistema de atualizacao pelo GitHub e minimizacao normal na barra de tarefas.",
+  "updater_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/updater/cliente_update.ps1",
+  "patch_url": "",
+  "patch_sha256": ""
+}
