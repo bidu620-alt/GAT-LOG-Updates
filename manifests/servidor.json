@@ -1,0 +1,10 @@
+{
+  "app": "GAT LOG BETA Servidor",
+  "channel": "stable",
+  "version": "1.9.3",
+  "obrigatoria": false,
+  "notas": "Sistema de atualizacao pelo GitHub, com backup antes de atualizar e preservacao das configuracoes.",
+  "updater_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/updater/servidor_update.ps1",
+  "patch_url": "",
+  "patch_sha256": ""
+}
