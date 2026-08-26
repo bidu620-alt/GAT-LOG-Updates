@@ -3,5 +3,5 @@
   "version": "1.7",
   "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/cliente.json",
   "obrigatoria": false,
-  "notas": "Sistema de atualizacao pelo GitHub configurado."
+  "notas": "Cliente 1.7 completo: atualizacao automatica pelo GitHub e reconhecimento automatico do motorista ao entrar."
 }
