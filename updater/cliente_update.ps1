@@ -6,12 +6,40 @@ function Msg([string]$Text,[string]$Title='GAT Telemetria Cliente | Atualizacao'
     [System.Windows.Forms.MessageBox]::Show($Text,$Title,[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information)|Out-Null
 }
 
+$backup=''
+$target=''
 try{
-    $m=Invoke-RestMethod -Uri ($ManifestUrl+'?t='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -Headers @{'Cache-Control'='no-cache'} -TimeoutSec 12
-    if(!$m.patch_url -or !$m.patch_sha256){throw 'A versao foi anunciada, mas o pacote de atualizacao ainda nao esta publicado.'}
-    $tmp=Join-Path $env:TEMP ('gatlog_patch_cliente_'+[Guid]::NewGuid().ToString('N')+'.ps1')
-    Invoke-WebRequest -UseBasicParsing -Uri ([string]$m.patch_url) -OutFile $tmp -TimeoutSec 20
+    $m=Invoke-RestMethod -Uri ($ManifestUrl+'?t='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -Headers @{'Cache-Control'='no-cache'} -TimeoutSec 10
+    $url=[string]$m.script_url
+    $expected=[string]$m.script_sha256
+    if([string]::IsNullOrWhiteSpace($url) -or [string]::IsNullOrWhiteSpace($expected)){
+        throw 'A nova versao ainda nao possui o arquivo de atualizacao publicado.'
+    }
+
+    $tmp=Join-Path $env:TEMP ('gat_cliente_'+[Guid]::NewGuid().ToString('N')+'.ps1')
+    Invoke-WebRequest -UseBasicParsing -Uri ($url+'?t='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -OutFile $tmp -TimeoutSec 20
     $hash=(Get-FileHash -Algorithm SHA256 -Path $tmp).Hash.ToLowerInvariant()
-    if($hash -ne ([string]$m.patch_sha256).ToLowerInvariant()){Remove-Item $tmp -Force -ErrorAction SilentlyContinue;throw 'Falha de integridade no pacote de atualizacao.'}
-    Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$tmp+'"')) -WindowStyle Hidden|Out-Null
-}catch{Msg ("Nao foi possivel iniciar a atualizacao.`r`n`r`n"+$_.Exception.Message) 'GAT Telemetria Cliente | Falha na atualizacao'}
+    if($hash -ne $expected.ToLowerInvariant()){
+        Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+        throw 'Falha de integridade: o arquivo baixado nao corresponde ao publicado no GitHub.'
+    }
+
+    $dir=Join-Path $env:LOCALAPPDATA 'GAT Telemetria Cliente'
+    New-Item -ItemType Directory -Path $dir -Force|Out-Null
+    $target=Join-Path $dir 'GAT_Telemetria_Cliente.ps1'
+    $backup=Join-Path $dir ('GAT_Telemetria_Cliente.backup_'+(Get-Date -Format 'yyyyMMdd_HHmmss')+'.ps1')
+
+    Start-Sleep -Milliseconds 900
+    if(Test-Path $target){Copy-Item $target $backup -Force}
+    Move-Item $tmp $target -Force
+
+    $launcher=Join-Path $dir 'GAT Telemetria Cliente.exe'
+    if(Test-Path $launcher){
+        Start-Process -FilePath $launcher -WorkingDirectory $dir|Out-Null
+    }else{
+        Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$target+'"')) -WorkingDirectory $dir|Out-Null
+    }
+}catch{
+    try{if($backup -and $target -and (Test-Path $backup)){Copy-Item $backup $target -Force}}catch{}
+    Msg ("Nao foi possivel concluir a atualizacao.`r`n`r`n"+$_.Exception.Message) 'GAT Telemetria Cliente | Falha na atualizacao'
+}
