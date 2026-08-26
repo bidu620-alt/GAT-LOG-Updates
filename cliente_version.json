@@ -1,6 +1,7 @@
 {
-  "version": "1.0.0",
-  "download": "",
+  "app": "GAT Telemetria Cliente",
+  "version": "1.7",
+  "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/cliente.json",
   "obrigatoria": false,
-  "notas": "Versão inicial do GAT LOG Cliente."
+  "notas": "Sistema de atualizacao pelo GitHub configurado."
 }
