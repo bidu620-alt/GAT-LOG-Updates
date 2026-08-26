@@ -1,6 +1,7 @@
 {
-  "version": "1.0.0",
-  "download": "",
+  "app": "GAT LOG BETA Servidor",
+  "version": "1.9.3",
+  "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/servidor.json",
   "obrigatoria": false,
-  "notas": "Versão inicial do GAT LOG Servidor."
+  "notas": "Sistema de atualizacao pelo GitHub configurado."
 }
