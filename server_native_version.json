@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server Native",
   "channel": "stable-native",
-  "version": "0.1.4",
-  "display_version": "0.1.4",
-  "notas": "GAT-LOG Server Native 0.1.4: corrige a telemetria na interface nativa, ativa o Tailscale Funnel 5055 em segundo plano, corrige contagem duplicada de jogadores e preserva configuracoes, mods, moderador e historico.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.4.exe",
-  "sha256": "deb1536e8da1a432a4b2b828058a50a58bce4ead32ee134f00f2f4ec49e1369b"
+  "version": "0.1.5",
+  "display_version": "0.1.5",
+  "notas": "GAT-LOG Server Native 0.1.5: corrige o travamento ao abrir o aplicativo. A janela agora abre sem esperar o agente; leitura de sessao e server.log roda em segundo plano; o status usa cache; chamadas locais possuem timeout menor; telemetria e Funnel nao bloqueiam a interface. Mantem as correcoes da 0.1.4 e preserva configuracoes, mods, moderador e historico.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.5.exe",
+  "sha256": "048dbf203c3996883a2466dbf46e326dc783be92b674559aaf7dabb16c5a1306"
 }
