@@ -1,0 +1,469 @@
+us: resp.StatusCode, JSON: obj, Text: string(b)}
+}
+func boolVal(m map[string]any, k string) bool {
+	v, ok := m[k]
+	if !ok {
+		return false
+	}
+	b, _ := v.(bool)
+	return b
+}
+func strVal(m map[string]any, k string) string {
+	if v, ok := m[k]; ok && v != nil {
+		return fmt.Sprint(v)
+	}
+	return ""
+}
+func intVal(m map[string]any, k string) int {
+	if v, ok := m[k]; ok {
+		switch x := v.(type) {
+		case float64:
+			return int(x)
+		case json.Number:
+			i, _ := x.Int64()
+			return int(i)
+		case int:
+			return x
+		case string:
+			i, _ := strconv.Atoi(x)
+			return i
+		}
+	}
+	return 0
+}
+
+func getServerInfo(ep string) ServerInfo {
+	ep = strings.TrimRight(ep, "/")
+	r := apiCall("GET", ep+"/api/client/server-info", nil, 5*time.Second)
+	if r.Status == 200 && r.JSON != nil && boolVal(r.JSON, "ok") {
+		return ServerInfo{Reachable: true, Supported: true, Online: boolVal(r.JSON, "online"), ServerName: strVal(r.JSON, "server_name"), SessionID: strVal(r.JSON, "session_id"), Players: intVal(r.JSON, "players"), MaxPlayers: intVal(r.JSON, "max_players")}
+	}
+	h := apiCall("GET", ep+"/health", nil, 4*time.Second)
+	if h.Status == 200 {
+		return ServerInfo{Reachable: true, Supported: false}
+	}
+	return ServerInfo{}
+}
+func getPlayers(ep string) []string {
+	r := apiCall("GET", strings.TrimRight(ep, "/")+"/api/client/players", nil, 5*time.Second)
+	if r.Status != 200 || r.JSON == nil || !boolVal(r.JSON, "ok") {
+		return nil
+	}
+	v, ok := r.JSON["players"].([]any)
+	if !ok {
+		return nil
+	}
+	out := []string{}
+	seen := map[string]bool{}
+	for _, x := range v {
+		s := strings.TrimSpace(fmt.Sprint(x))
+		if s != "" && !seen[s] {
+			seen[s] = true
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+func decodeServerCode(code string) (Server, bool) {
+	c := strings.TrimSpace(code)
+	if strings.HasPrefix(strings.ToLower(c), "https://") {
+		u := strings.TrimRight(c, "/")
+		host := strings.TrimPrefix(strings.TrimPrefix(u, "https://"), "http://")
+		name := strings.Split(host, ".")[0]
+		if name == "" {
+			name = "Servidor GAT"
+		}
+		return Server{Name: name, Endpoint: u}, true
+	}
+	if !strings.HasPrefix(c, "GAT1:") {
+		return Server{}, false
+	}
+	s := strings.TrimPrefix(c, "GAT1:")
+	s = strings.ReplaceAll(s, "-", "+")
+	s = strings.ReplaceAll(s, "_", "/")
+	for len(s)%4 != 0 {
+		s += "="
+	}
+	b, e := base64.StdEncoding.DecodeString(s)
+	if e != nil {
+		return Server{}, false
+	}
+	var x Server
+	if json.Unmarshal(b, &x) != nil || x.Endpoint == "" {
+		return Server{}, false
+	}
+	x.Endpoint = strings.TrimRight(x.Endpoint, "/")
+	if x.Name == "" {
+		x.Name = "Servidor GAT"
+	}
+	return x, true
+}
+
+func getTelemetry() (map[string]any, error) {
+	req, e := http.NewRequest("GET", truckURL, nil)
+	if e != nil {
+		return nil, e
+	}
+	cl := &http.Client{Timeout: 1200 * time.Millisecond}
+	resp, e := cl.Do(req)
+	if e != nil {
+		return nil, e
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("HTTP %d", resp.StatusCode)
+	}
+	dec := json.NewDecoder(resp.Body)
+	dec.UseNumber()
+	var m map[string]any
+	e = dec.Decode(&m)
+	return m, e
+}
+func pathValue(m map[string]any, path string) any {
+	var cur any = m
+	for _, p := range strings.Split(path, ".") {
+		mm, ok := cur.(map[string]any)
+		if !ok {
+			return nil
+		}
+		cur = mm[p]
+		if cur == nil {
+			return nil
+		}
+	}
+	return cur
+}
+func num(v any) (float64, bool) {
+	if v == nil {
+		return 0, false
+	}
+	switch x := v.(type) {
+	case json.Number:
+		f, e := x.Float64()
+		if e == nil && f != 0 {
+			if f < 0 {
+				f = -f
+			}
+			return f, true
+		}
+	case float64:
+		if x != 0 {
+			if x < 0 {
+				x = -x
+			}
+			return x, true
+		}
+	case string:
+		s := strings.ReplaceAll(strings.TrimSpace(x), ",", ".")
+		f, e := strconv.ParseFloat(s, 64)
+		if e == nil && f != 0 {
+			if f < 0 {
+				f = -f
+			}
+			return f, true
+		}
+	}
+	return 0, false
+}
+func telemetryMass(m map[string]any) (float64, bool) {
+	paths := []string{"job.cargoMass", "Job.CargoMass", "mass_kg", "cargoMass", "cargo_mass", "cargoMassKg", "cargo_mass_kg", "cargoWeight", "cargo_weight", "weight_kg", "job.mass", "job.mass_kg", "job.cargo_mass", "job.cargoMassKg", "job.cargo_mass_kg", "job.cargoWeight", "job.weight", "job.cargo.mass", "job.cargo.mass_kg", "job.cargo.massKg", "job.cargo.weight", "cargo.mass", "cargo.mass_kg", "cargo.massKg", "cargo.weight", "trailer.mass", "trailerMass", "trailer.cargoMass", "trailer.cargo_mass", "game.job.cargoMass", "game.job.mass"}
+	for _, p := range paths {
+		if n, ok := num(pathValue(m, p)); ok && n > 0 {
+			return n, true
+		}
+	}
+	return 0, false
+}
+func normalizeTelemetry(m map[string]any) map[string]any {
+	if n, ok := telemetryMass(m); ok {
+		m["mass_kg"] = n
+		m["cargoMass"] = n
+		m["cargo_mass"] = n
+	}
+	return m
+}
+func formatMass(n float64, ok bool) string {
+	if !ok {
+		return "-"
+	}
+	if n >= 1000 {
+		return strings.ReplaceAll(strconv.FormatFloat(n/1000, 'f', 2, 64), ".00", "") + " t"
+	}
+	return fmt.Sprintf("%.0f kg", n)
+}
+
+func recursivePlayerHint(v any, players []string, depth int) string {
+	if depth > 5 {
+		return ""
+	}
+	switch x := v.(type) {
+	case map[string]any:
+		for k, val := range x {
+			kl := strings.ToLower(k)
+			if kl == "playername" || kl == "profilename" || kl == "steamname" || kl == "username" || kl == "multiplayername" || kl == "player_name" || kl == "profile_name" {
+				s := strings.TrimSpace(fmt.Sprint(val))
+				if p := matchPlayer(s, players); p != "" {
+					return p
+				}
+			}
+			if p := recursivePlayerHint(val, players, depth+1); p != "" {
+				return p
+			}
+		}
+	case []any:
+		for _, val := range x {
+			if p := recursivePlayerHint(val, players, depth+1); p != "" {
+				return p
+			}
+		}
+	}
+	return ""
+}
+func normalizeName(s string) string { return strings.ToLower(strings.Join(strings.Fields(s), " ")) }
+func compactName(s string) string {
+	var b strings.Builder
+	for _, r := range normalizeName(s) {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r > 127 {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+func matchPlayer(h string, players []string) string {
+	if strings.TrimSpace(h) == "" {
+		return ""
+	}
+	n := normalizeName(h)
+	for _, p := range players {
+		if normalizeName(p) == n {
+			return p
+		}
+	}
+	c := compactName(h)
+	if len(c) >= 3 {
+		matches := []string{}
+		for _, p := range players {
+			if compactName(p) == c {
+				matches = append(matches, p)
+			}
+		}
+		if len(matches) == 1 {
+			return matches[0]
+		}
+	}
+	return ""
+}
+func steamPersona() string {
+	paths := []string{filepath.Join(os.Getenv("ProgramFiles(x86)"), "Steam", "config", "loginusers.vdf"), filepath.Join(os.Getenv("ProgramFiles"), "Steam", "config", "loginusers.vdf")}
+	if out, e := hiddenCommand("reg.exe", "query", `HKCU\Software\Valve\Steam`, "/v", "SteamPath").CombinedOutput(); e == nil {
+		for _, l := range strings.Split(string(out), "\n") {
+			if strings.Contains(strings.ToLower(l), "steampath") {
+				f := strings.Fields(l)
+				if len(f) > 0 {
+					paths = append([]string{filepath.Join(f[len(f)-1], "config", "loginusers.vdf")}, paths...)
+				}
+			}
+		}
+	}
+	reName := regexp.MustCompile(`(?i)"PersonaName"\s*"([^"]+)"`)
+	reRecent := regexp.MustCompile(`(?i)"MostRecent"\s*"1"`)
+	for _, p := range paths {
+		b, e := os.ReadFile(p)
+		if e != nil {
+			continue
+		}
+		text := string(b)
+		blocks := regexp.MustCompile(`(?s)"\d{15,20}"\s*\{(.*?)\}`).FindAllStringSubmatch(text, -1)
+		fallback := ""
+		for _, bl := range blocks {
+			m := reName.FindStringSubmatch(bl[1])
+			if len(m) < 2 {
+				continue
+			}
+			name := strings.TrimSpace(m[1])
+			if fallback == "" {
+				fallback = name
+			}
+			if reRecent.MatchString(bl[1]) {
+				return name
+			}
+		}
+		if fallback != "" {
+			return fallback
+		}
+	}
+	return ""
+}
+func gameLogHints() []string {
+	docs := filepath.Join(os.Getenv("USERPROFILE"), "Documents")
+	p := filepath.Join(docs, "Euro Truck Simulator 2", "game.log.txt")
+	b, e := os.ReadFile(p)
+	if e != nil {
+		return nil
+	}
+	text := string(b)
+	if len(text) > 800000 {
+		text = text[len(text)-800000:]
+	}
+	re := regexp.MustCompile(`(?im)(?:player|steam|persona|profile)[ _-]*(?:name)?\s*[:=]\s*["']?([^"',\r\n\[\]]{2,64})`)
+	out := []string{}
+	seen := map[string]bool{}
+	for _, m := range re.FindAllStringSubmatch(text, -1) {
+		s := strings.TrimSpace(m[1])
+		if s != "" && !seen[s] {
+			seen[s] = true
+			out = append(out, s)
+		}
+	}
+	return out
+}
+func resolveDriver(ep string, players []string) string {
+	for _, c := range credentialsForEndpoint(ep) {
+		if p := matchPlayer(c.Driver, players); p != "" {
+			return p
+		}
+	}
+	if tele, e := getTelemetry(); e == nil {
+		if p := recursivePlayerHint(tele, players, 0); p != "" {
+			return p
+		}
+	}
+	if p := matchPlayer(steamPersona(), players); p != "" {
+		return p
+	}
+	for _, h := range gameLogHints() {
+		if p := matchPlayer(h, players); p != "" {
+			return p
+		}
+	}
+	if len(players) == 1 {
+		return players[0]
+	}
+	return ""
+}
+
+func renewCredential() bool {
+	mu.Lock()
+	ep := endpoint
+	drv := driver
+	mu.Unlock()
+	if ep == "" || drv == "" {
+		return false
+	}
+	r := apiCall("POST", strings.TrimRight(ep, "/")+"/api/client/login", map[string]any{"driver": drv, "device_id": deviceID, "token": ""}, 8*time.Second)
+	if r.Status == 200 && r.JSON != nil && boolVal(r.JSON, "ok") {
+		canonical := drv
+		if s := strVal(r.JSON, "driver"); s != "" {
+			canonical = s
+		}
+		nt := strVal(r.JSON, "token")
+		if nt != "" {
+			mu.Lock()
+			driver = canonical
+			token = nt
+			mu.Unlock()
+			saveToken(ep, canonical, nt)
+			removeOtherTokens(ep, canonical)
+			setText(hSessionDriver, "Motorista: "+canonical+"  (detectado automaticamente)")
+			return true
+		}
+	}
+	return false
+}
+func sendTelemetry(tele map[string]any) APIResult {
+	tele = normalizeTelemetry(tele)
+	mu.Lock()
+	ep, drv, tok := endpoint, driver, token
+	mu.Unlock()
+	body := map[string]any{"driver": drv, "device_id": deviceID, "token": tok, "telemetry": tele}
+	r := apiCall("POST", ep+"/api/client/telemetry", body, 8*time.Second)
+	errCode := ""
+	if r.JSON != nil {
+		errCode = strVal(r.JSON, "error")
+	}
+	if r.Status == 401 || errCode == "token_required" {
+		if renewCredential() {
+			mu.Lock()
+			tok = token
+			mu.Unlock()
+			body["token"] = tok
+			r = apiCall("POST", ep+"/api/client/telemetry", body, 8*time.Second)
+		}
+	}
+	return r
+}
+func sendHeartbeat() APIResult {
+	mu.Lock()
+	ep, drv, tok := endpoint, driver, token
+	mu.Unlock()
+	body := map[string]any{"driver": drv, "device_id": deviceID, "token": tok}
+	r := apiCall("POST", ep+"/api/client/heartbeat", body, 6*time.Second)
+	errCode := ""
+	if r.JSON != nil {
+		errCode = strVal(r.JSON, "error")
+	}
+	if r.Status == 401 || errCode == "token_required" {
+		if renewCredential() {
+			mu.Lock()
+			tok = token
+			mu.Unlock()
+			body["token"] = tok
+			r = apiCall("POST", ep+"/api/client/heartbeat", body, 6*time.Second)
+		}
+	}
+	return r
+}
+
+func selectedServer() (Server, bool) {
+	idx := int(send(hServerCombo, CB_GETCURSEL, 0, 0))
+	if idx < 0 || idx >= len(servers) {
+		return Server{}, false
+	}
+	return servers[idx], true
+}
+func reloadCombo(selectEp string) {
+	send(hServerCombo, CB_RESETCONTENT, 0, 0)
+	idx := 0
+	for i, s := range servers {
+		send(hServerCombo, CB_ADDSTRING, 0, uintptr(unsafe.Pointer(utf16Ptr(s.Name))))
+		if selectEp != "" && strings.EqualFold(strings.TrimRight(s.Endpoint, "/"), strings.TrimRight(selectEp, "/")) {
+			idx = i
+		}
+	}
+	if len(servers) > 0 {
+		send(hServerCombo, CB_SETCURSEL, uintptr(idx), 0)
+	}
+}
+func refreshServerInfoAsync() {
+	if !atomic.CompareAndSwapInt32(&infoBusy, 0, 1) {
+		return
+	}
+	s, ok := selectedServer()
+	if !ok {
+		atomic.StoreInt32(&infoBusy, 0)
+		return
+	}
+	go func() {
+		info := getServerInfo(s.Endpoint)
+		mu.Lock()
+		selectedInfo = info
+		lastInfo = time.Now()
+		mu.Unlock()
+		atomic.StoreInt32(&infoBusy, 0)
+		procPostMessage.Call(uintptr(hwndMain), WM_APP_INFO_DONE, 0, 0)
+	}()
+}
+func applyServerInfo() {
+	mu.Lock()
+	info := selectedInfo
+	mu.Unlock()
+	if !info.Reachable {
+		setText(hServerStatus, "Status: GAT LOG INACESSIVEL")
+		setText(hPlayers, "Jogadores: -")
+		setText(hRoomID, "-")
+		enable(hCopy, false)
+		return
+	}
+	if !info.Supported {
+		setText(hServerStatus, "Status: GAT LOG ONLINE | SERVIDOR ANTIG
