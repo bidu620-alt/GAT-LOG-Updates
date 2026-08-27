@@ -26,16 +26,14 @@ jobs:
           python3 server-native-0.1/build015/fix_check_update.py
           cd /tmp/gat-src
           gofmt -w cmd/ui/main.go cmd/agent/main.go internal/core/core.go
-      - name: Show UI polling and window handlers
+      - name: Show critical UI code
         shell: bash
         run: |
           set +e
-          echo '=== pollAgent ==='
-          grep -n -A140 -B20 'func (.*pollAgent' /tmp/gat-src/cmd/ui/main.go
-          echo '=== callAgent / api ==='
-          grep -n -A120 -B20 -E 'func (.*callAgent|func callAgent|http.Client|PostMessage|SendMessage|InvalidateRect' /tmp/gat-src/cmd/ui/main.go | head -n 2500
-          echo '=== window proc ==='
-          grep -n -A360 -B20 -E 'func wndProc|WM_TIMER|WM_PAINT|WM_APP|WM_USER|WM_COMMAND' /tmp/gat-src/cmd/ui/main.go | head -n 4000
-          echo '=== goroutines ==='
-          grep -n -E '\bgo\s+' /tmp/gat-src/cmd/ui/main.go | head -n 500
+          echo '=== UI click/login ==='
+          sed -n '800,990p' /tmp/gat-src/cmd/ui/main.go
+          echo '=== API helpers ==='
+          sed -n '970,1065p' /tmp/gat-src/cmd/ui/main.go
+          echo '=== agent status/poll ==='
+          grep -n -A220 -B30 -E '^func \(a \*agent\) pollLoop|^func \(a \*agent\) refreshStatus|^func \(a \*agent\) uiStatus|^func \(a \*agent\) uiConfig' /tmp/gat-src/cmd/agent/main.go | head -n 3500
           exit 0
