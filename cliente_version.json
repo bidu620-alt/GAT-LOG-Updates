@@ -1,7 +1,7 @@
 {
   "app": "GAT Telemetria Cliente",
-  "version": "1.8.5",
+  "version": "1.8.4",
   "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/cliente.json",
   "obrigatoria": false,
-  "notas": "Remove a janela preta do PowerShell usando um launcher silencioso, sem alterar a telemetria da 1.8.4."
+  "notas": "Versao estavel restaurada com peso via job.cargoMass."
 }
