@@ -1,0 +1,70 @@
+name: Build GAT-LOG Server 0.1.5 test
+
+on:
+  push:
+    branches:
+      - fix/server-startup-freeze-015
+    paths:
+      - '.github/workflows/build-server-015-test.yml'
+      - 'server-native-0.1/build015/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover source
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          test -f /tmp/gat-src/go.mod
+          test -f /tmp/gat-src/internal/core/core.go
+          test -f /tmp/gat-src/cmd/agent/main.go
+          test -f /tmp/gat-src/cmd/ui/main.go
+      - name: Apply 0.1.5 fixes
+        shell: bash
+        run: |
+          python3 server-native-0.1/build015/apply_015.py
+          cd /tmp/gat-src
+          gofmt -w internal/core/core.go cmd/agent/main.go cmd/ui/main.go
+          echo '=== verify startup ==='
+          grep -n -A20 -B5 '^func main' cmd/ui/main.go | head -n 80
+          echo '=== verify status cache ==='
+          grep -n -A8 '^func (a \*agent) uiStatus' cmd/agent/main.go
+          echo '=== versions ==='
+          grep -R -n '0.1.5' internal/core/core.go cmd/ui/main.go | head -n 30
+      - name: Build Windows UI and agent
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/gat-src
+          mkdir -p /tmp/dist
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_SERVER.exe ./cmd/ui
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_AGENT.exe ./cmd/agent
+          ls -lh /tmp/dist/*.exe
+          sha256sum /tmp/dist/*.exe
+      - name: Build updater
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/updater/assets
+          cp server-native-0.1/build015/updater_main.go /tmp/updater/main.go
+          cp /tmp/dist/GAT_LOG_SERVER.exe /tmp/updater/assets/GAT_LOG_SERVER.exe
+          cp /tmp/dist/GAT_LOG_AGENT.exe /tmp/updater/assets/GAT_LOG_AGENT.exe
+          printf 'module gatlogupdater015\n\ngo 1.23\n' > /tmp/updater/go.mod
+          cd /tmp/updater
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_SERVER_UPDATE_0.1.5.exe .
+          ls -lh /tmp/dist/GAT_LOG_SERVER_UPDATE_0.1.5.exe
+          sha256sum /tmp/dist/GAT_LOG_SERVER_UPDATE_0.1.5.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gat-log-server-0.1.5-test
+          path: /tmp/dist/*.exe
+          retention-days: 7
