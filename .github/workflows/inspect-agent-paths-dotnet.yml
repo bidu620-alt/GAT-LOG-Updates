@@ -1,0 +1,28 @@
+name: Inspect agent paths for .NET server
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['server-dotnet-trigger.txt']
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover source and inspect paths
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          echo '=== paths ==='
+          grep -n -A6 -B4 -E 'func (DataDir|AgentSecretPath|AuthPath|ConfigPath|BindingsPath|TelemetryPath)|AgentBase' /tmp/gat-src/internal/core/core.go
+          echo '=== auth ==='
+          grep -n -A80 -B10 -E 'func VerifyAuth|func SaveAuth|type Auth' /tmp/gat-src/internal/core/core.go
+          exit 0
