@@ -1,0 +1,51 @@
+name: Inspect server startup freeze 0.1.5
+
+on:
+  push:
+    branches:
+      - fix/server-startup-freeze-015
+    paths:
+      - '.github/workflows/inspect-server-startup-015.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover source
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          echo gzip_rc=$?
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          echo tar_rc=$?
+          echo '=== recovered files ==='
+          find /tmp/gat-src -maxdepth 5 -type f -printf '%P %s bytes\n' | sort
+          exit 0
+      - name: Inspect server UI startup
+        shell: bash
+        run: |
+          set +e
+          F=/tmp/gat-src/cmd/server/main.go
+          echo '=== server file ==='
+          ls -lh "$F"
+          echo '=== functions ==='
+          grep -a -nE '^func (main|adminReq|ensureAgent|\(.*\) refreshAll|populatePage|wndProc|action|checkUpdate|.*Update|.*Timer)' "$F" | head -n 500
+          echo '=== blocking/startup candidates ==='
+          grep -a -nEi -C 25 'refreshAll|adminReq|ensureAgent|time\.Sleep|http\.|Client\{|Timeout|WM_TIMER|SetTimer|pSetTimer|go func|check.*update|update.*check|populatePage|ShowWindow|GetMessage|agent' "$F" | head -n 12000
+          exit 0
+      - name: Compile server UI
+        shell: bash
+        run: |
+          set +e
+          cd /tmp/gat-src
+          echo '=== go build server ==='
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/GAT_LOG_SERVER_test.exe ./cmd/server 2>&1
+          echo build_rc=$?
+          ls -lh /tmp/GAT_LOG_SERVER_test.exe 2>/dev/null || true
+          exit 0
