@@ -1,0 +1,29 @@
+name: Inspect native telemetry flow
+
+on:
+  push:
+    branches:
+      - release/server-0.1.3
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover and print telemetry flow
+        shell: bash
+        run: |
+          set +e
+          mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          echo '=== ROUTES / CLIENT HANDLERS ==='
+          grep -nEi -C 45 'api/client/(telemetry|heartbeat|register|bind|players|info)|clientTelemetry|clientHeartbeat|clientRegister|clientBind' /tmp/gat-src/cmd/agent/main.go | head -n 7000
+          echo '=== STATUS TELEMETRY ==='
+          grep -nEi -C 60 'func \(a \*agent\).*uiStatus|Telemetry:|a\.telemetry|saveTelemetry|loadTelemetry' /tmp/gat-src/cmd/agent/main.go | head -n 7000
+          echo '=== TYPES ==='
+          grep -nEi -C 30 'type (Status|Telemetry|Binding|Client)' /tmp/gat-src/internal/core/core.go | head -n 4000
+          exit 0
