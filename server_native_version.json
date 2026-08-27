@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server Native",
   "channel": "stable-native",
-  "version": "0.1.5",
-  "display_version": "0.1.5",
-  "notas": "GAT-LOG Server Native 0.1.5: corrige o travamento ao abrir o aplicativo. A janela agora abre sem esperar o agente; leitura de sessao e server.log roda em segundo plano; o status usa cache; chamadas locais possuem timeout menor; telemetria e Funnel nao bloqueiam a interface. Mantem as correcoes da 0.1.4 e preserva configuracoes, mods, moderador e historico.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.5.exe",
-  "sha256": "048dbf203c3996883a2466dbf46e326dc783be92b674559aaf7dabb16c5a1306"
+  "version": "0.1.6",
+  "display_version": "0.1.6",
+  "notas": "0.1.6 visual: cria a pasta assets e instala logo.png e banner.png reais. A interface carrega primeiro os arquivos externos e mantém as mesmas imagens embutidas como fallback. Nenhuma mudança funcional em telemetria, servidor, mods ou configurações.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.6.exe",
+  "sha256": "ceb7c402d98df5b9a6ebebe8e3b6a5b22b0327714bf416ad857a8f0c534fce84"
 }
