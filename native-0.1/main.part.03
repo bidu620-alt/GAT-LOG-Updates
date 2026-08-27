@@ -1,0 +1,444 @@
+O")
+		setText(hPlayers, "Jogadores: -")
+		setText(hRoomID, "ID indisponivel")
+		enable(hCopy, false)
+		return
+	}
+	if info.Online {
+		setText(hServerStatus, "Status: SERVIDOR ONLINE")
+		if info.MaxPlayers > 0 {
+			setText(hPlayers, fmt.Sprintf("Jogadores: %d / %d", info.Players, info.MaxPlayers))
+		} else {
+			setText(hPlayers, fmt.Sprintf("Jogadores: %d", info.Players))
+		}
+		if info.SessionID != "" {
+			setText(hRoomID, info.SessionID)
+			enable(hCopy, true)
+		} else {
+			setText(hRoomID, "Aguardando ID...")
+			enable(hCopy, false)
+		}
+	} else {
+		setText(hServerStatus, "Status: SERVIDOR OFFLINE")
+		setText(hPlayers, "Jogadores: 0")
+		setText(hRoomID, "-")
+		enable(hCopy, false)
+	}
+}
+
+func startDetectedSession(drv string, s Server) bool {
+	if strings.TrimSpace(drv) == "" {
+		return false
+	}
+	ep := strings.TrimRight(s.Endpoint, "/")
+	tok := getSavedToken(ep, drv)
+	r := apiCall("POST", ep+"/api/client/login", map[string]any{"driver": drv, "device_id": deviceID, "token": tok}, 10*time.Second)
+	if r.Status == 200 && r.JSON != nil && boolVal(r.JSON, "ok") {
+		canonical := drv
+		if x := strVal(r.JSON, "driver"); x != "" {
+			canonical = x
+		}
+		if x := strVal(r.JSON, "token"); x != "" {
+			tok = x
+			saveToken(ep, canonical, tok)
+		}
+		removeOtherTokens(ep, canonical)
+		mu.Lock()
+		endpoint = ep
+		driver = canonical
+		token = tok
+		inSession = true
+		waiting = false
+		lastHeartbeat = time.Time{}
+		mu.Unlock()
+		setText(hSessionServer, "Servidor: "+s.Name)
+		setText(hSessionDriver, "Motorista: "+canonical+"  (detectado automaticamente)")
+		showSession(true)
+		return true
+	}
+	code := ""
+	if r.JSON != nil {
+		code = strVal(r.JSON, "error")
+	}
+	switch code {
+	case "device_mismatch":
+		setText(hLoginMsg, "Seu nome ja esta vinculado a outro PC. Use DESVINCULAR PC no GAT LOG.")
+	case "token_required":
+		setText(hLoginMsg, "Credencial desatualizada. Tentando renovar automaticamente...")
+	case "blocked":
+		setText(hLoginMsg, "Motorista bloqueado pelo administrador.")
+	case "registration_closed":
+		setText(hLoginMsg, "Novos vinculos estao bloqueados neste servidor.")
+	case "not_in_server":
+		setText(hLoginMsg, "Entre primeiro na sala do ETS2 e tente novamente.")
+	case "disconnected_by_admin":
+		setText(hLoginMsg, "Desconectado pelo administrador. Aguarde e tente novamente.")
+	default:
+		if r.Status == 0 {
+			setText(hLoginMsg, "Servidor inacessivel. Verifique internet/Funnel.")
+		} else {
+			setText(hLoginMsg, fmt.Sprintf("Falha ao conectar (HTTP %d).", r.Status))
+		}
+	}
+	return false
+}
+func tryConnect() {
+	mu.Lock()
+	if inSession {
+		mu.Unlock()
+		return
+	}
+	waiting = true
+	mu.Unlock()
+	s, ok := selectedServer()
+	if !ok {
+		setText(hLoginMsg, "Escolha um servidor para iniciar o modo automatico.")
+		return
+	}
+	settings.LastServer = s.Endpoint
+	saveSettings()
+	if !isEts2Running() {
+		setText(hLoginMsg, "AGUARDANDO ETS2... Abra o jogo e entre na sessao.")
+		setText(hEnter, "AGUARDANDO ETS2...")
+		return
+	}
+	setText(hLoginMsg, "ETS2 aberto. Verificando sua sessao...")
+	setText(hEnter, "VERIFICANDO SESSAO...")
+	for _, c := range credentialsForEndpoint(s.Endpoint) {
+		if strings.TrimSpace(c.Driver) != "" && startDetectedSession(c.Driver, s) {
+			return
+		}
+	}
+	players := getPlayers(s.Endpoint)
+	if len(players) == 0 {
+		setText(hLoginMsg, "ETS2 aberto. Aguardando voce entrar na sessao selecionada...")
+		setText(hEnter, "AGUARDANDO ENTRAR NA SESSAO...")
+		return
+	}
+	drv := resolveDriver(s.Endpoint, players)
+	if drv != "" {
+		_ = startDetectedSession(drv, s)
+		return
+	}
+	setText(hLoginMsg, fmt.Sprintf("Sessao detectada com %d jogador(es). Aguardando reconhecer seu motorista...", len(players)))
+}
+func endSession(msg string) {
+	mu.Lock()
+	inSession = false
+	waiting = autoConnect
+	mu.Unlock()
+	showSession(false)
+	setText(hEnter, "ENTRAR / AGUARDAR SESSAO")
+	if msg != "" {
+		setText(hLoginMsg, msg)
+	} else {
+		setText(hLoginMsg, "Aguardando servidor/ETS2.")
+	}
+	refreshServerInfoAsync()
+}
+
+func tickAsync() {
+	if !atomic.CompareAndSwapInt32(&tickBusy, 0, 1) {
+		return
+	}
+	go func() {
+		defer atomic.StoreInt32(&tickBusy, 0)
+		mu.Lock()
+		session := inSession
+		wait := waiting
+		lastI := lastInfo
+		lastA := lastAuto
+		mu.Unlock()
+		if !session {
+			if time.Since(lastI) >= 3*time.Second {
+				refreshServerInfoAsync()
+			}
+			if wait && time.Since(lastA) >= 2500*time.Millisecond {
+				mu.Lock()
+				lastAuto = time.Now()
+				mu.Unlock()
+				tryConnect()
+			}
+			return
+		}
+		tele, e := getTelemetry()
+		if e == nil && tele != nil {
+			normalizeTelemetry(tele)
+			setText(hTruckStatus, "TruckSim GPS       ● CONECTADO")
+			setText(hTruck, "ABRIR TRUCKSIM GPS")
+			if _, ok := telemetryMass(tele); !ok {
+				if st, e := os.Stat(debugFile); e != nil || time.Since(st.ModTime()) > 5*time.Second {
+					if b, e := json.MarshalIndent(tele, "", "  "); e == nil {
+						_ = os.WriteFile(debugFile, b, 0644)
+					}
+				}
+			}
+			r := sendTelemetry(tele)
+			if r.Status == 200 && r.JSON != nil && boolVal(r.JSON, "ok") {
+				setText(hGatStatus, "GAT LOG            ● CONECTADO")
+				setText(hTelStatus, "Telemetria         ● ENVIANDO")
+				c := strVal(r.JSON, "cargo")
+				if c == "" {
+					c = "Sem carga"
+				}
+				km := "-"
+				if x, ok := num(r.JSON["distance_m"]); ok {
+					km = fmt.Sprintf("%.1f km", x/1000)
+				}
+				vel := "-"
+				if x, ok := num(r.JSON["speed_kmh"]); ok {
+					vel = fmt.Sprintf("%.0f km/h", x)
+				}
+				mass, mok := telemetryMass(tele)
+				if !mok {
+					if x, ok := num(r.JSON["mass_kg"]); ok {
+						mass = x
+						mok = true
+					} else if x, ok := num(r.JSON["cargo_mass"]); ok {
+						mass = x
+						mok = true
+					}
+				}
+				setText(hCargo, fmt.Sprintf("Carga: %s   |   Peso: %s\r\nKm restantes: %s\r\nVelocidade: %s", c, formatMass(mass, mok), km, vel))
+			} else {
+				code := ""
+				if r.JSON != nil {
+					code = strVal(r.JSON, "error")
+				}
+				if code == "blocked" {
+					endSession("Motorista bloqueado pelo administrador.")
+					return
+				}
+				if code == "device_mismatch" {
+					endSession("PC nao autorizado. Use DESVINCULAR PC no servidor.")
+					return
+				}
+				if code == "disconnected_by_admin" {
+					endSession("Voce foi desconectado pelo administrador.")
+					return
+				}
+				if r.Status == 0 {
+					setText(hGatStatus, "GAT LOG            ● SERVIDOR INACESSIVEL")
+				} else {
+					setText(hGatStatus, fmt.Sprintf("GAT LOG            ● ERRO HTTP %d", r.Status))
+				}
+				setText(hTelStatus, "Telemetria         ● NAO ENVIANDO")
+			}
+		} else {
+			if findTruckExe() != "" {
+				setText(hTruckStatus, "TruckSim GPS       ● INSTALADO / FECHADO")
+				setText(hTruck, "ABRIR TRUCKSIM GPS")
+			} else {
+				setText(hTruckStatus, "TruckSim GPS       ● NAO INSTALADO")
+				setText(hTruck, "TRUCKSIM GPS NAO INSTALADO")
+			}
+			setText(hTelStatus, "Telemetria         ● AGUARDANDO ETS2")
+			setText(hCargo, "Aguardando o ETS2/TruckSim GPS para iniciar a telemetria.")
+			mu.Lock()
+			due := time.Since(lastHeartbeat) >= 5*time.Second
+			if due {
+				lastHeartbeat = time.Now()
+			}
+			mu.Unlock()
+			if due {
+				r := sendHeartbeat()
+				if r.Status == 200 {
+					setText(hGatStatus, "GAT LOG            ● CONECTADO")
+				} else {
+					code := ""
+					if r.JSON != nil {
+						code = strVal(r.JSON, "error")
+					}
+					if code == "blocked" {
+						endSession("Motorista bloqueado pelo administrador.")
+						return
+					}
+					if code == "disconnected_by_admin" {
+						endSession("Voce foi desconectado pelo administrador.")
+						return
+					}
+					setText(hGatStatus, "GAT LOG            ● SEM CONEXAO")
+				}
+			}
+		}
+	}()
+}
+
+func compareVersion(a, b string) int { // a vs b
+	clean := func(s string) []int {
+		parts := strings.FieldsFunc(s, func(r rune) bool { return r == '.' || r == '-' || r == '+' })
+		out := []int{}
+		for _, p := range parts {
+			n, _ := strconv.Atoi(p)
+			out = append(out, n)
+			if n == 0 && p != "0" {
+				break
+			}
+		}
+		return out
+	}
+	x, y := clean(a), clean(b)
+	n := len(x)
+	if len(y) > n {
+		n = len(y)
+	}
+	for i := 0; i < n; i++ {
+		xi, yi := 0, 0
+		if i < len(x) {
+			xi = x[i]
+		}
+		if i < len(y) {
+			yi = y[i]
+		}
+		if xi < yi {
+			return -1
+		}
+		if xi > yi {
+			return 1
+		}
+	}
+	return 0
+}
+func checkUpdate(interactive bool) {
+	if !atomic.CompareAndSwapInt32(&updateBusy, 0, 1) {
+		return
+	}
+	go func() {
+		defer atomic.StoreInt32(&updateBusy, 0)
+		r := apiCall("GET", versionURL+"?t="+strconv.FormatInt(time.Now().Unix(), 10), nil, 6*time.Second)
+		if r.Status != 200 || r.Text == "" {
+			if interactive {
+				msgBox("Nao foi possivel consultar o GitHub agora.", "GAT Telemetria | Atualizacao", MB_OK|MB_ICONWARNING)
+			}
+			return
+		}
+		var v RemoteVersion
+		if json.Unmarshal([]byte(r.Text), &v) != nil {
+			return
+		}
+		if compareVersion(v.Version, appVersion) > 0 {
+			msg := "Nova versao disponivel: " + v.Version + "\r\nVersao instalada: " + appVersion
+			if v.Notes != "" {
+				msg += "\r\n\r\n" + v.Notes
+			}
+			if v.DownloadURL == "" {
+				msg += "\r\n\r\nO pacote ainda nao foi publicado."
+				msgBox(msg, "GAT Telemetria | Atualizacao", MB_OK|MB_ICONINFORMATION)
+				return
+			}
+			msg += "\r\n\r\nDeseja atualizar agora pelo GitHub?"
+			if msgBox(msg, "GAT Telemetria | Nova atualizacao", MB_YESNO|MB_ICONINFORMATION) == IDYES {
+				downloadAndInstall(v)
+			}
+		} else if interactive {
+			msgBox("Voce ja esta usando a versao mais recente ("+appVersion+").", "GAT Telemetria | Atualizacao", MB_OK|MB_ICONINFORMATION)
+		}
+	}()
+}
+func downloadAndInstall(v RemoteVersion) {
+	resp, e := http.Get(v.DownloadURL)
+	if e != nil {
+		msgBox("Falha ao baixar atualizacao: "+e.Error(), "GAT Telemetria", MB_OK|MB_ICONERROR)
+		return
+	}
+	defer resp.Body.Close()
+	b, e := io.ReadAll(resp.Body)
+	if e != nil || resp.StatusCode != 200 {
+		msgBox("Falha ao baixar o pacote de atualizacao.", "GAT Telemetria", MB_OK|MB_ICONERROR)
+		return
+	}
+	if v.SHA256 != "" {
+		h := sha256.Sum256(b)
+		if !strings.EqualFold(hex.EncodeToString(h[:]), strings.TrimSpace(v.SHA256)) {
+			msgBox("Falha de integridade SHA-256 no pacote.", "GAT Telemetria", MB_OK|MB_ICONERROR)
+			return
+		}
+	}
+	tmp := filepath.Join(os.TempDir(), fmt.Sprintf("gat_telemetria2_update_%d.exe", time.Now().UnixNano()))
+	if os.WriteFile(tmp, b, 0755) != nil {
+		return
+	}
+	cur, _ := os.Executable()
+	cmd := exec.Command(tmp, "--install-update", cur, "--parent", strconv.Itoa(os.Getpid()))
+	_ = cmd.Start()
+	procPostMessage.Call(uintptr(hwndMain), WM_CLOSE, 0, 0)
+}
+func runUpdateInstaller(args []string) {
+	target := ""
+	for i := 0; i < len(args); i++ {
+		if args[i] == "--install-update" && i+1 < len(args) {
+			target = args[i+1]
+			i++
+		}
+	}
+	if target == "" {
+		return
+	}
+	self, _ := os.Executable()
+	b, e := os.ReadFile(self)
+	if e != nil {
+		return
+	}
+	for i := 0; i < 30; i++ {
+		e = os.WriteFile(target, b, 0755)
+		if e == nil {
+			break
+		}
+		time.Sleep(time.Second)
+	}
+	if e == nil {
+		_ = exec.Command(target).Start()
+	}
+}
+
+func clipboardSet(s string) bool {
+	r, _, _ := procOpenClipboard.Call(0)
+	if r == 0 {
+		return false
+	}
+	defer procCloseClipboard.Call()
+	procEmptyClipboard.Call()
+	u := syscall.StringToUTF16(s)
+	size := uintptr(len(u) * 2)
+	h, _, _ := procGlobalAlloc.Call(GMEM_MOVEABLE, size)
+	if h == 0 {
+		return false
+	}
+	p, _, _ := procGlobalLock.Call(h)
+	if p == 0 {
+		procGlobalFree.Call(h)
+		return false
+	}
+	dst := unsafe.Slice((*uint16)(unsafe.Pointer(p)), len(u))
+	copy(dst, u)
+	procGlobalUnlock.Call(h)
+	r, _, _ = procSetClipboardData.Call(CF_UNICODETEXT, h)
+	if r == 0 {
+		procGlobalFree.Call(h)
+		return false
+	}
+	return true
+}
+func clipboardGet() string {
+	avail, _, _ := procIsClipboardFormatAvailable.Call(CF_UNICODETEXT)
+	if avail == 0 {
+		return ""
+	}
+	r, _, _ := procOpenClipboard.Call(0)
+	if r == 0 {
+		return ""
+	}
+	defer procCloseClipboard.Call()
+	h, _, _ := procGetClipboardData.Call(CF_UNICODETEXT)
+	if h == 0 {
+		return ""
+	}
+	p, _, _ := procGlobalLock.Call(h)
+	if p == 0 {
+		return ""
+	}
+	defer procGlobalUnlock.Call(h)
+	ptr := (*uint16)(unsafe.Pointer(p))
+	arr := make([]uint16, 0, 1024)
+	for i := 0; i < 65536; i++ {
+		v := *(*uint16)(unsa
