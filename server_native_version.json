@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server Native",
   "channel": "stable-native",
-  "version": "0.1.6",
-  "display_version": "0.1.6",
-  "notas": "0.1.6 visual: cria a pasta assets e instala logo.png e banner.png reais. A interface carrega primeiro os arquivos externos e mantém as mesmas imagens embutidas como fallback. Nenhuma mudança funcional em telemetria, servidor, mods ou configurações.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.6.exe",
-  "sha256": "ceb7c402d98df5b9a6ebebe8e3b6a5b22b0327714bf416ad857a8f0c534fce84"
+  "version": "0.1.7",
+  "display_version": "0.1.7",
+  "notas": "0.1.7 estabilidade: remove a repintura completa da janela a cada segundo, impede consultas sobrepostas, envia atualizações visuais pela thread da janela e impede varreduras simultâneas do server.log. Mantém telemetria, tema, logo, mods e configurações.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.7.exe",
+  "sha256": "9aebe0394d423bcbb7df683ba140bb64e91c7d4f86bebda4042f83e1ecd7804f"
 }
