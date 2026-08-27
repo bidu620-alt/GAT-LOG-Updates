@@ -3,10 +3,10 @@
   "channel": "stable",
   "version": "1.8.3",
   "obrigatoria": false,
-  "notas": "PowerShell auxiliar oculto e fallback de peso pelo perfil/save ativo do ETS2 quando a telemetria retorna zero.",
+  "notas": "PowerShell auxiliar oculto, conexao automatica cumulativa e fallback de peso pelo perfil/save ativo do ETS2 quando a telemetria retorna zero.",
   "updater_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/updater/cliente_update.ps1",
   "script_url": "",
   "script_sha256": "",
   "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.3.ps1",
-  "patch_sha256": "ee9c2d7127498cb83b2f734d97afb0c80fd1e28a0b10fc04d81802c8885edfe5"
+  "patch_sha256": "76e683ae86d9dfb9936b30bb6f47c9454ca2d10bafcf79f7a8227d44b0166c8a"
 }
