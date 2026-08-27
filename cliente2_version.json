@@ -1,0 +1,8 @@
+{
+  "app": "GAT Telemetria 2",
+  "channel": "beta",
+  "version": "2.0.0-beta1",
+  "notas": "Primeira versao nativa em EXE, sem PowerShell. Mantem compatibilidade com servidores, credenciais, auto-conexao, telemetria e peso via job.cargoMass.",
+  "download_url": "",
+  "sha256": ""
+}
