@@ -1,7 +1,7 @@
 {
   "app": "GAT Telemetria Cliente",
-  "version": "1.7",
+  "version": "1.8.2",
   "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/cliente.json",
   "obrigatoria": false,
-  "notas": "Cliente 1.7 completo: atualizacao automatica pelo GitHub e reconhecimento automatico do motorista ao entrar."
+  "notas": "Corrige a conexao automatica para reconhecer o motorista mesmo quando ele ja estava dentro da sessao antes de abrir o cliente."
 }
