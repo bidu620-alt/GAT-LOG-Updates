@@ -113,8 +113,32 @@ if 'func (a *agent) ensureFunnel() {' not in t:
 
 agent.write_text(t, encoding='utf-8')
 
-# ---------- UI: create/show window BEFORE waiting for agent ----------
+# ---------- UI: restore truncated last function, then remove startup blocking ----------
 u = ui.read_text(encoding='utf-8')
+
+# The archived source was cut in the very last function. Restore only that tail.
+fw = u.find('func firewallElevated() {')
+if fw < 0:
+    raise SystemExit('firewallElevated start not found')
+firewall_tail = r'''func firewallElevated() {
+	args := `/c netsh advfirewall firewall add rule name="GAT-LOG ETS2 27015 TCP" dir=in action=allow protocol=TCP localport=27015 & netsh advfirewall firewall add rule name="GAT-LOG ETS2 27016 UDP" dir=in action=allow protocol=UDP localport=27016 & netsh advfirewall firewall add rule name="GAT-LOG API 5055 TCP" dir=in action=allow protocol=TCP localport=5055`
+	r, _, _ := pShellExecute.Call(
+		uintptr(app.hwnd),
+		uintptr(unsafe.Pointer(u16("runas"))),
+		uintptr(unsafe.Pointer(u16("cmd.exe"))),
+		uintptr(unsafe.Pointer(u16(args))),
+		0,
+		SW_HIDE,
+	)
+	if r <= 32 {
+		msgbox("Não foi possível solicitar permissão de administrador para o Firewall.", "GAT-LOG | Firewall", MB_OK|MB_ICONERROR)
+		return
+	}
+	msgbox("Regras do Firewall solicitadas. Confirme a janela do Windows se ela aparecer.", "GAT-LOG | Firewall", MB_OK|MB_ICONINFORMATION)
+}
+'''
+u = u[:fw] + firewall_tail
+
 # Bump visible/internal UI version literals from the recovered base.
 u = u.replace('0.1.0', '0.1.5')
 u = u.replace('0.1.4', '0.1.5')
