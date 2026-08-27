@@ -28,6 +28,43 @@ try{
         "Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-WindowStyle','Hidden','-ExecutionPolicy','Bypass','-STA','-File',('\"'+$tmp+'\"')) -WindowStyle Hidden | Out-Null"
     )
 
+    # Mantem a correcao da 1.8.2 mesmo para quem estiver vindo direto da 1.8/1.8.1.
+    if($raw -notmatch 'Tenta primeiro os motoristas ja vinculados neste PC'){
+        $oldConnect=@'
+        $lblLogin.Text='ETS2 aberto. Aguardando voce entrar na sessao selecionada...'
+        $btnEnter.Text='AGUARDANDO ENTRAR NA SESSAO...'
+        $players=@(Get-ServerPlayers $ep)
+        if($players.Count-eq0){return}
+        $driver=Resolve-AutomaticDriver $ep $players
+'@
+        $newConnect=@'
+        $lblLogin.Text='ETS2 aberto. Verificando se voce ja esta na sessao selecionada...'
+        $btnEnter.Text='VERIFICANDO SESSAO...'
+
+        # Tenta primeiro os motoristas ja vinculados neste PC para este servidor.
+        # O proprio GAT LOG confirma se o motorista esta na sessao agora.
+        foreach($cred in @(Get-CredentialsForEndpoint $ep)){
+            $savedDriver=([string]$cred.driver).Trim()
+            if([string]::IsNullOrWhiteSpace($savedDriver)){continue}
+            if(Start-DetectedSession $savedDriver $sel){return}
+        }
+
+        $lblLogin.Text='ETS2 aberto. Aguardando voce entrar na sessao selecionada...'
+        $btnEnter.Text='AGUARDANDO ENTRAR NA SESSAO...'
+        $players=@(Get-ServerPlayers $ep)
+        if($players.Count-eq0){return}
+        $driver=Resolve-AutomaticDriver $ep $players
+'@
+        if($raw.Contains($oldConnect)){
+            $raw=$raw.Replace($oldConnect,$newConnect)
+        } else {
+            $connPattern="(?ms)^\s*\`$lblLogin\.Text='ETS2 aberto\. Aguardando voce entrar na sessao selecionada\.\.\.'\s*\r?\n\s*\`$btnEnter\.Text='AGUARDANDO ENTRAR NA SESSAO\.\.\.'\s*\r?\n\s*\`$players=@\(Get-ServerPlayers \`$ep\)\s*\r?\n\s*if\(\`$players\.Count-eq0\)\{return\}\s*\r?\n\s*\`$driver=Resolve-AutomaticDriver \`$ep \`$players"
+            if([regex]::IsMatch($raw,$connPattern)){
+                $raw=[regex]::Replace($raw,$connPattern,$newConnect.TrimEnd(),1)
+            }
+        }
+    }
+
     $massBlock=@'
 $script:Ets2SaveCachePath=''
 $script:Ets2SaveCacheChecked=[datetime]::MinValue
