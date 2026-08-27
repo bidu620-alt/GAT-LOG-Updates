@@ -1,0 +1,27 @@
+name: Inspect server UI source
+
+on:
+  push:
+    branches:
+      - fix/server-ui-freeze
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode server source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat server-native-0.1/source.part.* | base64 -d | gzip -d > /tmp/server_source.txt
+          echo "Decoded lines: $(wc -l < /tmp/server_source.txt)"
+      - name: Show UI blocking candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '=== relevant symbols ==='
+          grep -nEi -C 8 'moder|steam|tailscale|funnel|save|WM_COMMAND|CreateProcess|exec\.Command|CombinedOutput|Output\(|Run\(' /tmp/server_source.txt | head -n 1600 || true
