@@ -7,6 +7,6 @@
   "updater_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/updater/cliente_update.ps1",
   "script_url": "",
   "script_sha256": "",
-  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.2.ps1",
+  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.2b.ps1",
   "patch_sha256": "87f401dfaff8165258740d6136ec0182f99b771153cf9784cb076ba7f8fd915a"
 }
