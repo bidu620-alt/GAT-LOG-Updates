@@ -1,13 +1,13 @@
 {
   "app": "GAT Telemetria Cliente",
   "channel": "stable",
-  "version": "1.8.5",
+  "version": "1.8.4",
   "obrigatoria": false,
-  "notas": "Oculta a janela preta do PowerShell sem substituir o executavel do cliente. Mantem intactas a telemetria, conexao automatica e leitura de peso da 1.8.4.",
+  "notas": "Versao estavel restaurada: conexao automatica, telemetria e leitura de peso via job.cargoMass do TruckSim GPS.",
   "updater_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/updater/cliente_update.ps1",
   "script_url": "",
   "script_sha256": "",
-  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.5b.ps1",
+  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.4.ps1",
   "patch_sha256": "",
-  "patch_git_blob_sha1": "8fae65ec4258d54241cbd3b11526d0b62296329d"
+  "patch_git_blob_sha1": "9d23a91c12030accb9bd3de355e685f56f1f8dd6"
 }
