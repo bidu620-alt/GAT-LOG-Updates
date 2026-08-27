@@ -1,13 +1,13 @@
 {
   "app": "GAT Telemetria Cliente",
   "channel": "stable",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "obrigatoria": false,
-  "notas": "Corrige definitivamente a leitura do peso usando job.cargoMass do TruckSim GPS e ignora peso zero retornado pelo servidor.",
+  "notas": "Substitui o launcher por uma versao GUI silenciosa para eliminar a janela preta do PowerShell, preservando a telemetria e o peso corrigidos da 1.8.4.",
   "updater_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/updater/cliente_update.ps1",
   "script_url": "",
   "script_sha256": "",
-  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.4.ps1",
+  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.5.ps1",
   "patch_sha256": "",
-  "patch_git_blob_sha1": "9d23a91c12030accb9bd3de355e685f56f1f8dd6"
+  "patch_git_blob_sha1": "b37055472d7e36967e3cf5ed638b1e9178580975"
 }
