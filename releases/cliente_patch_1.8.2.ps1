@@ -15,9 +15,17 @@ try{
     Copy-Item $target $backup -Force
     $raw=Get-Content $target -Raw -Encoding UTF8
 
-    $raw2=[regex]::Replace($raw,"(?m)^\$AppVersion='1\.8(?:\.1)?'\s*$","`$AppVersion='1.8.2'",1)
-    if($raw2-eq$raw -and $raw -notmatch "(?m)^\$AppVersion='1\.8\.2'\s*$"){
-        throw 'Versao instalada nao corresponde a base esperada (1.8/1.8.1).'
+    # Aceita variacoes normais de formatacao da linha de versao.
+    $versionPattern='(?m)^\s*\$AppVersion\s*=\s*[''"]1\.8(?:\.0|\.1)?[''"]\s*$'
+    $alreadyPattern='(?m)^\s*\$AppVersion\s*=\s*[''"]1\.8\.2[''"]\s*$'
+    if($raw -match $alreadyPattern){
+        $raw2=$raw
+    } elseif($raw -match $versionPattern){
+        $raw2=[regex]::Replace($raw,$versionPattern,"`$AppVersion='1.8.2'",1)
+    } else {
+        $found=[regex]::Match($raw,'(?m)^\s*\$AppVersion\s*=\s*.+$')
+        $detail=if($found.Success){$found.Value.Trim()}else{'linha $AppVersion nao encontrada'}
+        throw ("Base do cliente nao reconhecida. Encontrado: "+$detail)
     }
     $raw=$raw2
 
@@ -52,7 +60,13 @@ try{
     if($raw.Contains($old)){
         $raw=$raw.Replace($old,$new)
     } elseif($raw -notmatch 'Tenta primeiro os motoristas ja vinculados neste PC') {
-        throw 'Trecho de conexao automatica esperado nao foi encontrado. O arquivo foi preservado.'
+        # Segunda tentativa tolerando espacos/indentacao diferentes.
+        $connPattern="(?ms)^\s*\`$lblLogin\.Text='ETS2 aberto\. Aguardando voce entrar na sessao selecionada\.\.\.'\s*\r?\n\s*\`$btnEnter\.Text='AGUARDANDO ENTRAR NA SESSAO\.\.\.'\s*\r?\n\s*\`$players=@\(Get-ServerPlayers \`$ep\)\s*\r?\n\s*if\(\`$players\.Count-eq0\)\{return\}\s*\r?\n\s*\`$driver=Resolve-AutomaticDriver \`$ep \`$players"
+        if([regex]::IsMatch($raw,$connPattern)){
+            $raw=[regex]::Replace($raw,$connPattern,$new.TrimEnd(),1)
+        } else {
+            throw 'Trecho de conexao automatica esperado nao foi encontrado. O arquivo foi preservado.'
+        }
     }
 
     $utf8=New-Object System.Text.UTF8Encoding($true)
@@ -61,7 +75,7 @@ try{
     Set-Content -Path $hashPath -Value $hash -Encoding ASCII -Force
 
     $check=Get-Content $target -Raw -Encoding UTF8
-    if($check -notmatch "(?m)^\$AppVersion='1\.8\.2'\s*$"){throw 'Falha ao validar a versao depois da atualizacao.'}
+    if($check -notmatch $alreadyPattern){throw 'Falha ao validar a versao depois da atualizacao.'}
 
     $launcher=Join-Path $dir 'GAT Telemetria Cliente.exe'
     if(Test-Path $launcher){Start-Process -FilePath $launcher -WorkingDirectory $dir|Out-Null}
