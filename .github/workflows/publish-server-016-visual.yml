@@ -36,41 +36,24 @@ jobs:
           cd /tmp/gat-src
           gofmt -w internal/core/core.go cmd/agent/main.go cmd/ui/main.go
 
-      - name: Extract original logo and banner
+      - name: Extract original GAT-LOG assets
         shell: bash
         run: |
+          set -euo pipefail
+          cat native-0.1/assets.part.* > /tmp/gat_assets_legacy.go
           python3 - <<'PY'
           from pathlib import Path
-          import struct
-          src=Path('releases/GAT_LOG_SERVER_UPDATE_0.1.4.exe').read_bytes()
-          sig=b'\x89PNG\r\n\x1a\n'
-          wanted={(120,120):'logo.png',(820,205):'banner.png'}
+          import re, base64
+          s=Path('/tmp/gat_assets_legacy.go').read_text(encoding='utf-8')
           out=Path('server-native-0.1/assets')
           out.mkdir(parents=True,exist_ok=True)
-          pos=0
-          found={}
-          while True:
-              i=src.find(sig,pos)
-              if i<0: break
-              pos=i+1
-              if i+24>len(src): continue
-              w,h=struct.unpack('>II',src[i+16:i+24])
-              if (w,h) not in wanted or (w,h) in found: continue
-              p=i+8
-              while p+12<=len(src):
-                  n=struct.unpack('>I',src[p:p+4])[0]
-                  typ=src[p+4:p+8]
-                  end=p+12+n
-                  if end>len(src): break
-                  p=end
-                  if typ==b'IEND':
-                      data=src[i:p]
-                      (out/wanted[(w,h)]).write_bytes(data)
-                      found[(w,h)]=len(data)
-                      break
-          if set(found)!=set(wanted):
-              raise SystemExit(f'assets missing: {found}')
-          print(found)
+          for var,name in [('logoBytes','logo.png'),('bannerBytes','banner.png')]:
+              m=re.search(r'var\s+'+var+r'\s*=\s*mustAsset\("([A-Za-z0-9+/=]+)"\)',s,re.S)
+              if not m:
+                  raise SystemExit('asset not found: '+var)
+              data=base64.b64decode(m.group(1))
+              (out/name).write_bytes(data)
+              print(name,len(data))
           PY
           mkdir -p /tmp/gat-src/cmd/ui/assets
           cp server-native-0.1/assets/logo.png /tmp/gat-src/cmd/ui/assets/logo.png
