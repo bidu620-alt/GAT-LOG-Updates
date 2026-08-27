@@ -43,7 +43,7 @@ func StartFunnel() error {
 
 func TailscalePublicURL() string {
 	out, e := RunHidden(tailscaleExe(), "status", "--json")
-	if e != nil || strings.TrimSpace(out) == "" {
+	if e != nil || strings.TrimSpace(string(out)) == "" {
 		return ""
 	}
 	var st struct {
@@ -51,7 +51,7 @@ func TailscalePublicURL() string {
 			DNSName string `json:"DNSName"`
 		} `json:"Self"`
 	}
-	if json.Unmarshal([]byte(out), &st) != nil {
+	if json.Unmarshal(out, &st) != nil {
 		return ""
 	}
 	dns := strings.TrimSpace(strings.TrimSuffix(st.Self.DNSName, "."))
