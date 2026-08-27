@@ -32,12 +32,15 @@ jobs:
         shell: bash
         run: |
           python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
           cd /tmp/gat-src
           gofmt -w internal/core/core.go cmd/agent/main.go cmd/ui/main.go
           echo '=== verify startup ==='
           grep -n -A20 -B5 '^func main' cmd/ui/main.go | head -n 80
           echo '=== verify status cache ==='
           grep -n -A8 '^func (a \*agent) uiStatus' cmd/agent/main.go
+          echo '=== verify updater signature ==='
+          grep -n -A8 '^func checkUpdate' cmd/ui/main.go | head -n 30
           echo '=== versions ==='
           grep -R -n '0.1.5' internal/core/core.go cmd/ui/main.go | head -n 30
       - name: Restore compile-time asset fallback
