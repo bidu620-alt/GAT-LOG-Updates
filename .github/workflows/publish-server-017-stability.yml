@@ -1,0 +1,102 @@
+name: Publish GAT-LOG Server Native 0.1.7 stability
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server-native-0.1/publish-0.1.7.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Recover native source
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          test -f /tmp/gat-src/go.mod
+          test -f /tmp/gat-src/internal/core/core.go
+          test -f /tmp/gat-src/cmd/agent/main.go
+          test -f /tmp/gat-src/cmd/ui/main.go
+
+      - name: Apply stable patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          mkdir -p /tmp/gat-src/cmd/ui/assets
+          cp server-native-0.1/assets/logo.png /tmp/gat-src/cmd/ui/assets/logo.png
+          cp server-native-0.1/assets/banner.png /tmp/gat-src/cmd/ui/assets/banner.png
+          cd /tmp/gat-src
+          gofmt -w internal/core/core.go cmd/agent/main.go cmd/ui/main.go
+          grep -n '0.1.7' internal/core/core.go cmd/ui/main.go | head -n 20
+          grep -n -A35 'func (a \*App) pollAgent' cmd/ui/main.go
+          grep -n -A20 'func (a \*agent) refreshStatus' cmd/agent/main.go
+          if grep -q 'pSetTimer.Call(hw, 1, 1000, 0)' cmd/ui/main.go; then
+            echo 'ERROR: one-second UI timer still present'
+            exit 1
+          fi
+
+      - name: Build Windows UI and agent
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/gat-src
+          mkdir -p /tmp/dist
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_SERVER.exe ./cmd/ui
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_AGENT.exe ./cmd/agent
+          test -s /tmp/dist/GAT_LOG_SERVER.exe
+          test -s /tmp/dist/GAT_LOG_AGENT.exe
+          sha256sum /tmp/dist/*.exe
+
+      - name: Build updater
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/updater017
+          mkdir -p /tmp/updater017/payload/assets
+          cp server-native-0.1/build017/updater_main.go /tmp/updater017/main.go
+          cp /tmp/dist/GAT_LOG_SERVER.exe /tmp/updater017/payload/GAT_LOG_SERVER.exe
+          cp /tmp/dist/GAT_LOG_AGENT.exe /tmp/updater017/payload/GAT_LOG_AGENT.exe
+          cp server-native-0.1/assets/logo.png /tmp/updater017/payload/assets/logo.png
+          cp server-native-0.1/assets/banner.png /tmp/updater017/payload/assets/banner.png
+          printf 'module gatlogupdater017\n\ngo 1.23\n' > /tmp/updater017/go.mod
+          cd /tmp/updater017
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/GAT_LOG_SERVER_UPDATE_0.1.7.exe .
+          test -s /tmp/GAT_LOG_SERVER_UPDATE_0.1.7.exe
+          sha256sum /tmp/GAT_LOG_SERVER_UPDATE_0.1.7.exe | tee /tmp/update017.sha
+
+      - name: Publish only after successful build
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/GAT_LOG_SERVER_UPDATE_0.1.7.exe releases/GAT_LOG_SERVER_UPDATE_0.1.7.exe
+          SHA=$(cut -d' ' -f1 /tmp/update017.sha)
+          cat > server_native_version.json <<EOF
+          {
+            "app": "GAT-LOG Server Native",
+            "channel": "stable-native",
+            "version": "0.1.7",
+            "display_version": "0.1.7",
+            "notas": "0.1.7 estabilidade: remove a repintura completa da janela a cada segundo, impede consultas sobrepostas, envia atualizações visuais pela thread da janela e impede varreduras simultâneas do server.log. Mantém telemetria, tema, logo, mods e configurações.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.7.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_LOG_SERVER_UPDATE_0.1.7.exe server_native_version.json
+          git commit -m 'Publica GAT-LOG Server Native 0.1.7 estabilidade'
+          git push
