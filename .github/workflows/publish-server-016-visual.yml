@@ -1,0 +1,127 @@
+name: Publish GAT-LOG Server Native 0.1.6 visual
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server-native-0.1/publish-0.1.6.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Recover 0.1.5 source
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 - <<'PY'
+          from pathlib import Path
+          for rel in ['internal/core/core.go','cmd/ui/main.go']:
+              p=Path('/tmp/gat-src')/rel
+              s=p.read_text(encoding='utf-8').replace('0.1.5','0.1.6')
+              p.write_text(s,encoding='utf-8')
+          PY
+          cd /tmp/gat-src
+          gofmt -w internal/core/core.go cmd/agent/main.go cmd/ui/main.go
+
+      - name: Extract original logo and banner
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import struct
+          src=Path('releases/GAT_LOG_SERVER_UPDATE_0.1.4.exe').read_bytes()
+          sig=b'\x89PNG\r\n\x1a\n'
+          wanted={(120,120):'logo.png',(820,205):'banner.png'}
+          out=Path('server-native-0.1/assets')
+          out.mkdir(parents=True,exist_ok=True)
+          pos=0
+          found={}
+          while True:
+              i=src.find(sig,pos)
+              if i<0: break
+              pos=i+1
+              if i+24>len(src): continue
+              w,h=struct.unpack('>II',src[i+16:i+24])
+              if (w,h) not in wanted or (w,h) in found: continue
+              p=i+8
+              while p+12<=len(src):
+                  n=struct.unpack('>I',src[p:p+4])[0]
+                  typ=src[p+4:p+8]
+                  end=p+12+n
+                  if end>len(src): break
+                  p=end
+                  if typ==b'IEND':
+                      data=src[i:p]
+                      (out/wanted[(w,h)]).write_bytes(data)
+                      found[(w,h)]=len(data)
+                      break
+          if set(found)!=set(wanted):
+              raise SystemExit(f'assets missing: {found}')
+          print(found)
+          PY
+          mkdir -p /tmp/gat-src/cmd/ui/assets
+          cp server-native-0.1/assets/logo.png /tmp/gat-src/cmd/ui/assets/logo.png
+          cp server-native-0.1/assets/banner.png /tmp/gat-src/cmd/ui/assets/banner.png
+          file server-native-0.1/assets/*.png
+
+      - name: Build 0.1.6 UI and agent
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/gat-src
+          mkdir -p /tmp/dist
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_SERVER.exe ./cmd/ui
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_AGENT.exe ./cmd/agent
+          sha256sum /tmp/dist/*.exe
+
+      - name: Build visual updater
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/updater016
+          mkdir -p /tmp/updater016/payload/assets
+          cp server-native-0.1/build016/updater_main.go /tmp/updater016/main.go
+          cp /tmp/dist/GAT_LOG_SERVER.exe /tmp/updater016/payload/GAT_LOG_SERVER.exe
+          cp /tmp/dist/GAT_LOG_AGENT.exe /tmp/updater016/payload/GAT_LOG_AGENT.exe
+          cp server-native-0.1/assets/logo.png /tmp/updater016/payload/assets/logo.png
+          cp server-native-0.1/assets/banner.png /tmp/updater016/payload/assets/banner.png
+          printf 'module gatlogupdater016\n\ngo 1.23\n' > /tmp/updater016/go.mod
+          cd /tmp/updater016
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/GAT_LOG_SERVER_UPDATE_0.1.6.exe .
+          sha256sum /tmp/GAT_LOG_SERVER_UPDATE_0.1.6.exe | tee /tmp/update016.sha
+
+      - name: Publish updater, assets and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/GAT_LOG_SERVER_UPDATE_0.1.6.exe releases/GAT_LOG_SERVER_UPDATE_0.1.6.exe
+          SHA=$(cut -d' ' -f1 /tmp/update016.sha)
+          cat > server_native_version.json <<EOF
+          {
+            "app": "GAT-LOG Server Native",
+            "channel": "stable-native",
+            "version": "0.1.6",
+            "display_version": "0.1.6",
+            "notas": "0.1.6 visual: cria a pasta assets e instala logo.png e banner.png reais. A interface carrega primeiro os arquivos externos e mantém as mesmas imagens embutidas como fallback. Nenhuma mudança funcional em telemetria, servidor, mods ou configurações.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.6.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add server-native-0.1/assets/logo.png server-native-0.1/assets/banner.png releases/GAT_LOG_SERVER_UPDATE_0.1.6.exe server_native_version.json
+          git commit -m 'Publica GAT-LOG Server Native 0.1.6 visual'
+          git push
