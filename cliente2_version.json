@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria",
   "channel": "stable-native",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "display_version": "0.1",
-  "notas": "GAT Telemetria 0.1: versao nativa sem PowerShell, com logo na janela, barra de tarefas e Alt+Tab. Mantem telemetria, auto-conexao e peso via job.cargoMass.",
+  "notas": "GAT Telemetria 0.1: topo simplificado e status inacessivel/offline destacado em vermelho.",
   "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_0.1.exe",
-  "sha256": "44ffa4221fc1d4b932f852d0be6afff53e8e2751eb4c0d8342a3285b6d52bc5f"
+  "sha256": "fd0a5202c9b4d7568afdf3d1af7805be42bf0311db12aeee9a976b42aeae5f34"
 }
