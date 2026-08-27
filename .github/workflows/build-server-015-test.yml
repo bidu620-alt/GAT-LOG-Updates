@@ -40,6 +40,16 @@ jobs:
           grep -n -A8 '^func (a \*agent) uiStatus' cmd/agent/main.go
           echo '=== versions ==='
           grep -R -n '0.1.5' internal/core/core.go cmd/ui/main.go | head -n 30
+      - name: Restore compile-time asset fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/gat-src/cmd/ui/assets
+          # 1x1 valid PNGs are only compile-time fallbacks. At runtime the UI first loads
+          # the real banner/logo from the existing installation's assets directory.
+          printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' | base64 -d > /tmp/gat-src/cmd/ui/assets/banner.png
+          cp /tmp/gat-src/cmd/ui/assets/banner.png /tmp/gat-src/cmd/ui/assets/logo.png
+          file /tmp/gat-src/cmd/ui/assets/banner.png
       - name: Build Windows UI and agent
         shell: bash
         run: |
