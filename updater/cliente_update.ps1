@@ -9,7 +9,7 @@ function Msg([string]$Text,[string]$Title='GAT Telemetria Cliente | Atualizacao'
 try{
     $m=Invoke-RestMethod -Uri ($ManifestUrl+'?t='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -Headers @{'Cache-Control'='no-cache'} -TimeoutSec 10
 
-    # Preferencia: patch pequeno e assinado. Evita baixar/regravar o cliente inteiro.
+    # Preferencia: patch pequeno e assinado. Roda oculto para nao piscar console PowerShell.
     $patchUrl=[string]$m.patch_url
     $patchExpected=([string]$m.patch_sha256).Trim().ToLowerInvariant()
     if(![string]::IsNullOrWhiteSpace($patchUrl) -and ![string]::IsNullOrWhiteSpace($patchExpected)){
@@ -17,7 +17,7 @@ try{
         Invoke-WebRequest -UseBasicParsing -Uri ($patchUrl+'?t='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -OutFile $tmp -TimeoutSec 20
         $hash=(Get-FileHash -Algorithm SHA256 -Path $tmp).Hash.ToLowerInvariant()
         if($hash -ne $patchExpected){Remove-Item $tmp -Force -ErrorAction SilentlyContinue;throw 'Falha de integridade no patch baixado do GitHub.'}
-        Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$tmp+'"')) -WindowStyle Normal|Out-Null
+        Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$tmp+'"')) -WindowStyle Hidden|Out-Null
         exit 0
     }
 
@@ -51,7 +51,7 @@ try{
 
     $launcher=Join-Path $dir 'GAT Telemetria Cliente.exe'
     if(Test-Path $launcher){Start-Process -FilePath $launcher -WorkingDirectory $dir|Out-Null}
-    else{Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$target+'"')) -WorkingDirectory $dir|Out-Null}
+    else{Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$target+'"')) -WorkingDirectory $dir -WindowStyle Hidden|Out-Null}
 }catch{
     Msg ("Nao foi possivel concluir a atualizacao.`r`n`r`n"+$_.Exception.Message) 'GAT Telemetria Cliente | Falha na atualizacao'
 }
