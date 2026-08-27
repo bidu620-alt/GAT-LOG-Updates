@@ -1,0 +1,26 @@
+name: Inspect moderator config
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - '.github/workflows/inspect-moderator-config.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover source and inspect moderator fields
+        shell: bash
+        run: |
+          set +e
+          mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          echo '=== moderator ==='
+          grep -RniE -C 12 'moderator|steam.*id|moderator_steam|server_config' /tmp/gat-src/internal /tmp/gat-src/cmd 2>/dev/null | head -n 2500
+          exit 0
