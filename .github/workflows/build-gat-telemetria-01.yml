@@ -25,18 +25,23 @@ jobs:
         run: |
           cat native-0.1/assets.part.* > native-0.1/assets.go
 
-      - name: Apply session-state updates
+      - name: Apply native updates
         shell: bash
         run: |
-          if ! grep -q 'appVersion     = "2.0.4"' native-0.1/main.go && ! grep -q 'appVersion     = "2.0.5"' native-0.1/main.go; then
+          if ! grep -q 'appVersion     = "2.0.4"' native-0.1/main.go && ! grep -q 'appVersion     = "2.0.5"' native-0.1/main.go && ! grep -q 'appVersion     = "2.0.6"' native-0.1/main.go; then
             python3 native-0.1/apply-2.0.4.py
           fi
-          if ! grep -q 'appVersion     = "2.0.5"' native-0.1/main.go; then
+          if ! grep -q 'appVersion     = "2.0.5"' native-0.1/main.go && ! grep -q 'appVersion     = "2.0.6"' native-0.1/main.go; then
             python3 native-0.1/apply-2.0.5.py
+          fi
+          if ! grep -q 'appVersion     = "2.0.6"' native-0.1/main.go; then
+            python3 native-0.1/apply-2.0.6.py
           fi
           grep -q 'func getPlayersChecked' native-0.1/main.go
           grep -q 'func markAwaitingSession' native-0.1/main.go
-          grep -q 'appVersion     = "2.0.5"' native-0.1/main.go
+          grep -q 'm\["distance_m"\]' native-0.1/main.go
+          grep -q 'm\["speed_kmh"\]' native-0.1/main.go
+          grep -q 'appVersion     = "2.0.6"' native-0.1/main.go
           gofmt -w native-0.1/main.go
 
       - name: Build Windows EXE
@@ -55,9 +60,9 @@ jobs:
           {
             "app": "GAT Telemetria",
             "channel": "stable-native",
-            "version": "2.0.5",
+            "version": "2.0.6",
             "display_version": "0.1",
-            "notas": "GAT Telemetria 0.1: ao sair da sala fica em AGUARDANDO SESSAO/NAO ENVIANDO sem criar fila; servidor offline e fila offline ficam separados; reconexao continua automatica.",
+            "notas": "GAT Telemetria 0.1: corrige km restantes e velocidade com TruckSim GPS, envia aliases compativeis com servidor antigo e Server Native e aceita distance_m/remaining_km.",
             "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_0.1.exe",
             "sha256": "$SHA"
           }
@@ -65,5 +70,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add releases/GAT_TELEMETRIA_0.1.exe cliente2_version.json native-0.1/main.go
-          git commit -m "Atualiza GAT Telemetria 0.1 - estado de sessao 2.0.5" || exit 0
+          git commit -m "Atualiza GAT Telemetria 0.1 - km e velocidade 2.0.6" || exit 0
           git push
