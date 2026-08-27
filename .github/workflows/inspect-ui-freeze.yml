@@ -24,14 +24,15 @@ jobs:
           set -e
           python3 server-native-0.1/build015/apply_015.py
           python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
           cd /tmp/gat-src
           gofmt -w cmd/ui/main.go cmd/agent/main.go internal/core/core.go
-      - name: Show log parsing code
+      - name: Show install/data path code
         shell: bash
         run: |
           set +e
-          echo '=== ParseSession ==='
-          grep -n -A260 -B30 -E '^func ParseSession|^func ServerLogPath|^func PackagesStatus|^func ContainsPlayer' /tmp/gat-src/internal/core/core.go | head -n 5000
-          echo '=== file reads in core ==='
-          grep -n -E 'ReadFile|Open\(|ReadAll|Scanner|server.log|Seek\(' /tmp/gat-src/internal/core/core.go | head -n 1000
+          echo '=== InstallDir/DataDir ==='
+          grep -n -A100 -B30 -E '^func InstallDir|^func DataDir|^func ConfigPath|^func EnsureDataDirs' /tmp/gat-src/internal/core/core.go | head -n 2500
+          echo '=== install dir usages ==='
+          grep -R -n 'InstallDir()\|Programs.*GAT-LOG Server\|LOCALAPPDATA' /tmp/gat-src | head -n 2000
           exit 0
