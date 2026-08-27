@@ -23,8 +23,36 @@ jobs:
       - name: Rebuild source files
         shell: bash
         run: |
-          cat native-0.1/main.part.* > native-0.1/main.go
+          if [ ! -f native-0.1/main.go ]; then
+            cat native-0.1/main.part.* > native-0.1/main.go
+          fi
           cat native-0.1/assets.part.* > native-0.1/assets.go
+
+      - name: Apply GAT Telemetria 0.1 visual revision
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('native-0.1/main.go')
+          s = p.read_text()
+
+          s = s.replace('appVersion     = "2.0.1"', 'appVersion     = "2.0.2"', 1)
+          s = s.replace('Cliente nativo ETS2  |  sem PowerShell  |  GAT-LOG', 'Cliente nativo ETS2  |  GAT-LOG', 1)
+
+          old = '''\t\tif child == hServerStatus {\n\t\t\tcol = rgb(73, 232, 132)\n\t\t}\n'''
+          new = '''\t\tif child == hServerStatus {\n\t\t\tstatusText := strings.ToUpper(getText(hServerStatus))\n\t\t\tswitch {\n\t\t\tcase strings.Contains(statusText, "INACESSIVEL"), strings.Contains(statusText, "OFFLINE"):\n\t\t\t\tcol = rgb(255, 82, 82)\n\t\t\tcase strings.Contains(statusText, "ONLINE"):\n\t\t\t\tcol = rgb(73, 232, 132)\n\t\t\tdefault:\n\t\t\t\tcol = rgb(255, 194, 59)\n\t\t\t}\n\t\t}\n'''
+          if old in s:
+              s = s.replace(old, new, 1)
+          elif new not in s:
+              raise SystemExit('Bloco de cor do status nao encontrado')
+
+          if 'appVersion     = "2.0.2"' not in s:
+              raise SystemExit('Versao interna 2.0.2 nao aplicada')
+          if 'Cliente nativo ETS2  |  sem PowerShell  |  GAT-LOG' in s:
+              raise SystemExit('Texto antigo do topo ainda presente')
+
+          p.write_text(s)
+          PY
 
       - name: Build Windows EXE
         shell: bash
@@ -42,15 +70,15 @@ jobs:
           {
             "app": "GAT Telemetria",
             "channel": "stable-native",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "display_version": "0.1",
-            "notas": "GAT Telemetria 0.1: versao nativa sem PowerShell, com logo na janela, barra de tarefas e Alt+Tab. Mantem telemetria, auto-conexao e peso via job.cargoMass.",
+            "notas": "GAT Telemetria 0.1: topo simplificado e status inacessivel/offline destacado em vermelho.",
             "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_0.1.exe",
             "sha256": "$SHA"
           }
           EOF
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add releases/GAT_TELEMETRIA_0.1.exe cliente2_version.json
-          git commit -m "Publica GAT Telemetria 0.1" || exit 0
+          git add releases/GAT_TELEMETRIA_0.1.exe cliente2_version.json native-0.1/main.go
+          git commit -m "Atualiza GAT Telemetria 0.1 - ajuste visual" || exit 0
           git push
