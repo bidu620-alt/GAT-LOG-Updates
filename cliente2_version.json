@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria",
   "channel": "stable-native",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "display_version": "0.1",
-  "notas": "GAT Telemetria 0.1: fila offline com reenvio automatico, reconexao reforcada do servidor/TruckSim GPS e bloqueio de duas instancias.",
+  "notas": "GAT Telemetria 0.1: detecta quando o motorista sai da sessao sem criar fila offline; mostra AGUARDANDO SESSAO/NAO ENVIANDO e diferencia servidor offline.",
   "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_0.1.exe",
-  "sha256": "e4b21161e29505a142818b9000b9f4f61348c9433a9fd1f3d9e4b287f63430f8"
+  "sha256": "8a30a534615b02a053bd86e539d2d8bf43c110918cceb1c4b3082b41dc3f7950"
 }

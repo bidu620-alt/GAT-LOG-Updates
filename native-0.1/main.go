@@ -29,7 +29,7 @@ import (
 
 const (
 	appName        = "GAT Telemetria"
-	appVersion     = "2.0.3"
+	appVersion     = "2.0.4"
 	displayVersion = "0.1"
 	truckURL       = "http://127.0.0.1:31377/api/ets2/telemetry"
 	truckRoot      = "http://127.0.0.1:31377/"
@@ -356,6 +356,7 @@ var (
 	lastOfflineEnqueue      time.Time
 	lastTruckRestart        time.Time
 	lastServerProbe         time.Time
+	lastPresenceCheck       time.Time
 	tickBusy                int32
 	infoBusy                int32
 	updateBusy              int32
@@ -840,25 +841,30 @@ func getServerInfo(ep string) ServerInfo {
 	}
 	return ServerInfo{}
 }
-func getPlayers(ep string) []string {
+func getPlayersChecked(ep string) ([]string, bool) {
 	r := apiCall("GET", strings.TrimRight(ep, "/")+"/api/client/players", nil, 5*time.Second)
 	if r.Status != 200 || r.JSON == nil || !boolVal(r.JSON, "ok") {
-		return nil
+		return nil, false
 	}
 	v, ok := r.JSON["players"].([]any)
 	if !ok {
-		return nil
+		return []string{}, true
 	}
 	out := []string{}
 	seen := map[string]bool{}
 	for _, x := range v {
-		s := strings.TrimSpace(fmt.Sprint(x))
-		if s != "" && !seen[s] {
-			seen[s] = true
-			out = append(out, s)
+		name := strings.TrimSpace(fmt.Sprint(x))
+		if name != "" && !seen[name] {
+			seen[name] = true
+			out = append(out, name)
 		}
 	}
-	return out
+	return out, true
+}
+
+func getPlayers(ep string) []string {
+	players, _ := getPlayersChecked(ep)
+	return players
 }
 
 func decodeServerCode(code string) (Server, bool) {
@@ -1500,6 +1506,7 @@ func startDetectedSession(drv string, s Server) bool {
 		inSession = true
 		waiting = false
 		lastHeartbeat = time.Time{}
+		lastPresenceCheck = time.Time{}
 		mu.Unlock()
 		setText(hSessionServer, "Servidor: "+s.Name)
 		setText(hSessionDriver, "Motorista: "+canonical+"  (detectado automaticamente)")
@@ -1547,6 +1554,21 @@ func tryConnect() {
 	}
 	settings.LastServer = s.Endpoint
 	saveSettings()
+	stateInfo := getServerInfo(s.Endpoint)
+	if !stateInfo.Reachable {
+		setText(hGatStatus, "GAT LOG            ● SERVIDOR OFFLINE")
+		setText(hTelStatus, "Telemetria         ● NAO ENVIANDO")
+		return
+	}
+	if stateInfo.Supported && !stateInfo.Online {
+		setText(hGatStatus, "GAT LOG            ● SERVIDOR OFFLINE")
+		setText(hTelStatus, "Telemetria         ● NAO ENVIANDO")
+		return
+	}
+	if stateInfo.Supported && stateInfo.Online {
+		setText(hGatStatus, "GAT LOG            ● AGUARDANDO SESSAO")
+		setText(hTelStatus, "Telemetria         ● NAO ENVIANDO")
+	}
 	if !isEts2Running() {
 		setText(hLoginMsg, "AGUARDANDO ETS2... Abra o jogo e entre na sessao.")
 		setText(hEnter, "AGUARDANDO ETS2...")
@@ -1587,6 +1609,22 @@ func endSession(msg string) {
 	refreshServerInfoAsync()
 }
 
+func markAwaitingSession(gatText string) {
+	mu.Lock()
+	inSession = false
+	waiting = true
+	lastAuto = time.Time{}
+	lastHeartbeat = time.Time{}
+	mu.Unlock()
+	showSession(true)
+	if strings.TrimSpace(gatText) == "" {
+		gatText = "GAT LOG            ● AGUARDANDO SESSAO"
+	}
+	setText(hGatStatus, gatText)
+	setText(hTelStatus, "Telemetria         ● NAO ENVIANDO")
+	setText(hCargo, "Aguardando voce entrar novamente na sessao do ETS2.")
+}
+
 func tickAsync() {
 	if !atomic.CompareAndSwapInt32(&tickBusy, 0, 1) {
 		return
@@ -1611,6 +1649,28 @@ func tickAsync() {
 			}
 			return
 		}
+		mu.Lock()
+		epCheck, drvCheck := endpoint, driver
+		presenceDue := time.Since(lastPresenceCheck) >= 3*time.Second
+		if presenceDue {
+			lastPresenceCheck = time.Now()
+		}
+		mu.Unlock()
+		if presenceDue && epCheck != "" && drvCheck != "" {
+			infoCheck := getServerInfo(epCheck)
+			if infoCheck.Reachable && infoCheck.Supported {
+				if !infoCheck.Online {
+					markAwaitingSession("GAT LOG            ● SERVIDOR OFFLINE")
+					return
+				}
+				playersCheck, okPlayers := getPlayersChecked(epCheck)
+				if okPlayers && matchPlayer(drvCheck, playersCheck) == "" {
+					markAwaitingSession("GAT LOG            ● AGUARDANDO SESSAO")
+					return
+				}
+			}
+		}
+
 		tele, e := getTelemetry()
 		if e == nil && tele != nil {
 			normalizeTelemetry(tele)
@@ -1633,7 +1693,11 @@ func tickAsync() {
 				if attemptedQ && !(lastQ.Status == 200 && lastQ.JSON != nil && boolVal(lastQ.JSON, "ok")) {
 					if isQueueableFailure(lastQ) {
 						q := queueOfflineTelemetry(tele)
-						setText(hGatStatus, "GAT LOG            ● RECONECTANDO")
+						if lastQ.Status == 0 {
+							setText(hGatStatus, "GAT LOG            ● SERVIDOR OFFLINE")
+						} else {
+							setText(hGatStatus, "GAT LOG            ● RECONECTANDO")
+						}
 						setText(hTelStatus, fmt.Sprintf("Telemetria         ● FILA OFFLINE (%d)", q))
 						return
 					}
@@ -1711,7 +1775,11 @@ func tickAsync() {
 				}
 				if isQueueableFailure(r) {
 					q := queueOfflineTelemetry(tele)
-					setText(hGatStatus, "GAT LOG            ● RECONECTANDO")
+					if r.Status == 0 {
+						setText(hGatStatus, "GAT LOG            ● SERVIDOR OFFLINE")
+					} else {
+						setText(hGatStatus, "GAT LOG            ● RECONECTANDO")
+					}
 					setText(hTelStatus, fmt.Sprintf("Telemetria         ● FILA OFFLINE (%d)", q))
 					mu.Lock()
 					probeDue := time.Since(lastServerProbe) >= 3*time.Second
@@ -2085,8 +2153,19 @@ func wndProc(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
 		if child == hLoginMsg {
 			col = rgb(255, 194, 59)
 		}
-		if child == hTruckStatus || child == hGatStatus || child == hTelStatus {
+		if child == hTruckStatus || child == hTelStatus {
 			col = rgb(116, 211, 255)
+		}
+		if child == hGatStatus {
+			gatText := strings.ToUpper(getText(hGatStatus))
+			switch {
+			case strings.Contains(gatText, "OFFLINE"), strings.Contains(gatText, "INACESSIVEL"), strings.Contains(gatText, "SEM CONEXAO"):
+				col = rgb(255, 82, 82)
+			case strings.Contains(gatText, "AGUARDANDO"), strings.Contains(gatText, "RECONECTANDO"):
+				col = rgb(255, 194, 59)
+			case strings.Contains(gatText, "CONECTADO"):
+				col = rgb(73, 232, 132)
+			}
 		}
 		procSetTextColor.Call(uintptr(hdc), col)
 		return uintptr(brushCard)
