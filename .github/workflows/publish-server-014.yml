@@ -1,0 +1,79 @@
+name: Publish GAT-LOG Server Native 0.1.4
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server-native-0.1/publish-0.1.4.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Recover native source
+        shell: bash
+        run: |
+          set +e
+          mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          test -f /tmp/gat-src/go.mod
+          test -f /tmp/gat-src/internal/core/core.go
+          test -f /tmp/gat-src/cmd/agent/main.go
+
+      - name: Apply 0.1.4 fixes
+        shell: bash
+        run: |
+          python3 server-native-0.1/build014/apply_014.py
+          cd /tmp/gat-src
+          gofmt -w internal/core/core.go cmd/agent/main.go
+
+      - name: Build Windows agent
+        shell: bash
+        run: |
+          cd /tmp/gat-src
+          mkdir -p /tmp/dist
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_AGENT.exe ./cmd/agent
+
+      - name: Build Windows updater
+        shell: bash
+        run: |
+          mkdir -p /tmp/updater/assets
+          cp server-native-0.1/build014/updater_main.go /tmp/updater/main.go
+          cp /tmp/dist/GAT_LOG_AGENT.exe /tmp/updater/assets/GAT_LOG_AGENT.exe
+          printf 'module gatlogupdater014\n\ngo 1.23\n' > /tmp/updater/go.mod
+          cd /tmp/updater
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/dist/GAT_LOG_SERVER_UPDATE_0.1.4.exe .
+
+      - name: Publish binary and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p releases
+          cp /tmp/dist/GAT_LOG_SERVER_UPDATE_0.1.4.exe releases/GAT_LOG_SERVER_UPDATE_0.1.4.exe
+          SHA=$(sha256sum releases/GAT_LOG_SERVER_UPDATE_0.1.4.exe | awk '{print $1}')
+          cat > server_native_version.json <<EOF
+          {
+            "app": "GAT-LOG Server Native",
+            "channel": "stable-native",
+            "version": "0.1.4",
+            "display_version": "0.1.4",
+            "notas": "GAT-LOG Server Native 0.1.4: corrige a telemetria na interface nativa, ativa o Tailscale Funnel 5055 em segundo plano, corrige contagem duplicada de jogadores e preserva configuracoes, mods, moderador e historico.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.4.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          sha256sum releases/GAT_LOG_SERVER_UPDATE_0.1.4.exe
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/GAT_LOG_SERVER_UPDATE_0.1.4.exe server_native_version.json
+          git commit -m "Publica GAT-LOG Server Native 0.1.4"
+          git push
