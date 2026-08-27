@@ -1,0 +1,32 @@
+name: Inspect telemetry delay
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/inspect-telemetry-delay.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover source and inspect telemetry cadence
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          echo '=== agent telemetry/status cadence ==='
+          grep -RniE -C 18 'telemetry|refreshStatus|NewTicker|uiStatus|speed_kmh|SpeedKmh' /tmp/gat-src/cmd/agent /tmp/gat-src/internal/core 2>/dev/null | head -n 3500
+          echo '=== CSharp cadence ==='
+          grep -RniE -C 8 'Interval|RefreshStatusAsync|Telemetry|GetStatusAsync' server-dotnet/GatLogServer | head -n 1500
