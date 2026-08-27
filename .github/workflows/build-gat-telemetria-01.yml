@@ -20,6 +20,12 @@ jobs:
         with:
           go-version: '1.23.x'
 
+      - name: Rebuild source files
+        shell: bash
+        run: |
+          cat native-0.1/main.part.* > native-0.1/main.go
+          cat native-0.1/assets.part.* > native-0.1/assets.go
+
       - name: Build Windows EXE
         shell: bash
         run: |
