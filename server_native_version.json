@@ -1,0 +1,9 @@
+{
+  "app": "GAT-LOG Server Native",
+  "channel": "stable-native",
+  "version": "0.1",
+  "display_version": "0.1",
+  "notas": "GAT-LOG Server Native 0.1: versao instalada com interface e agente separados. Canal de atualizacao ativado pelo GitHub.",
+  "setup_url": "",
+  "sha256": ""
+}
