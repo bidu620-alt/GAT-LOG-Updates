@@ -1,0 +1,69 @@
+name: Build GAT-LOG Server DotNet Installer Test
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/**'
+      - '.github/workflows/build-server-dotnet-installer-test.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+
+      - name: Build current Go agent
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python server-native-0.1/build015/apply_015.py
+          python server-native-0.1/build015/fix_check_update.py
+          python server-native-0.1/build017/apply_017.py
+          cd /tmp/gat-src
+          gofmt -w cmd/agent/main.go internal/core/core.go
+          mkdir -p "$GITHUB_WORKSPACE/server-dotnet/GatLogInstaller/payload"
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/server-dotnet/GatLogInstaller/payload/GAT_LOG_AGENT.exe" ./cmd/agent
+
+      - name: Build CSharp server
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogServer/GatLogServer.csproj
+          dotnet build server-dotnet/GatLogServer/GatLogServer.csproj -c Release --no-restore
+
+      - name: Prepare installer payload
+        shell: pwsh
+        run: |
+          $out = 'server-dotnet/GatLogServer/bin/Release/net48'
+          $pay = 'server-dotnet/GatLogInstaller/payload'
+          New-Item -ItemType Directory -Force "$pay/assets" | Out-Null
+          Copy-Item "$out/GAT_LOG_SERVER.exe" "$pay/GAT_LOG_SERVER.exe" -Force
+          Copy-Item "$out/GAT_LOG_SERVER.exe.config" "$pay/GAT_LOG_SERVER.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          Copy-Item 'server-native-0.1/assets/logo.png' "$pay/assets/logo.png" -Force
+          Copy-Item 'server-native-0.1/assets/banner.png' "$pay/assets/banner.png" -Force
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogInstaller/GatLogInstaller.csproj
+          dotnet build server-dotnet/GatLogInstaller/GatLogInstaller.csproj -c Release --no-restore
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-LOG-SERVER-CSHARP-1.0.0-TESTE
+          path: server-dotnet/GatLogInstaller/bin/Release/net48/GAT_LOG_SERVER_DOTNET_SETUP_1.0.0_TESTE.exe
+          retention-days: 14
