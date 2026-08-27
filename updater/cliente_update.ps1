@@ -6,18 +6,38 @@ function Msg([string]$Text,[string]$Title='GAT Telemetria Cliente | Atualizacao'
     [System.Windows.Forms.MessageBox]::Show($Text,$Title,[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information)|Out-Null
 }
 
+function Get-GitBlobSha1([string]$Path){
+    $bytes=[System.IO.File]::ReadAllBytes($Path)
+    $header=[System.Text.Encoding]::ASCII.GetBytes(('blob '+$bytes.Length+[char]0))
+    [byte[]]$all=$header+$bytes
+    $sha=[System.Security.Cryptography.SHA1]::Create()
+    try{return ([BitConverter]::ToString($sha.ComputeHash($all))).Replace('-','').ToLowerInvariant()}finally{$sha.Dispose()}
+}
+
 try{
     $m=Invoke-RestMethod -Uri ($ManifestUrl+'?t='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -Headers @{'Cache-Control'='no-cache'} -TimeoutSec 10
 
-    # Preferencia: patch pequeno e assinado. Roda oculto para nao piscar console PowerShell.
+    # Patch pequeno. Valida por SHA-256 quando disponivel; como alternativa,
+    # valida pelo SHA-1 do blob Git exato publicado no repositorio.
     $patchUrl=[string]$m.patch_url
     $patchExpected=([string]$m.patch_sha256).Trim().ToLowerInvariant()
-    if(![string]::IsNullOrWhiteSpace($patchUrl) -and ![string]::IsNullOrWhiteSpace($patchExpected)){
+    $patchBlobExpected=([string]$m.patch_git_blob_sha1).Trim().ToLowerInvariant()
+    if(![string]::IsNullOrWhiteSpace($patchUrl)){
         $tmp=Join-Path $env:TEMP ('gat_cliente_patch_'+[Guid]::NewGuid().ToString('N')+'.ps1')
         Invoke-WebRequest -UseBasicParsing -Uri ($patchUrl+'?t='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -OutFile $tmp -TimeoutSec 20
-        $hash=(Get-FileHash -Algorithm SHA256 -Path $tmp).Hash.ToLowerInvariant()
-        if($hash -ne $patchExpected){Remove-Item $tmp -Force -ErrorAction SilentlyContinue;throw 'Falha de integridade no patch baixado do GitHub.'}
-        Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$tmp+'"')) -WindowStyle Hidden|Out-Null
+
+        if(![string]::IsNullOrWhiteSpace($patchExpected)){
+            $hash=(Get-FileHash -Algorithm SHA256 -Path $tmp).Hash.ToLowerInvariant()
+            if($hash -ne $patchExpected){Remove-Item $tmp -Force -ErrorAction SilentlyContinue;throw 'Falha de integridade SHA-256 no patch baixado do GitHub.'}
+        } elseif(![string]::IsNullOrWhiteSpace($patchBlobExpected)){
+            $blobHash=Get-GitBlobSha1 $tmp
+            if($blobHash -ne $patchBlobExpected){Remove-Item $tmp -Force -ErrorAction SilentlyContinue;throw 'Falha de integridade no blob do patch baixado do GitHub.'}
+        } else {
+            Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+            throw 'Patch publicado sem assinatura de integridade.'
+        }
+
+        Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-WindowStyle','Hidden','-ExecutionPolicy','Bypass','-STA','-File',('"'+$tmp+'"')) -WindowStyle Hidden|Out-Null
         exit 0
     }
 
@@ -51,7 +71,7 @@ try{
 
     $launcher=Join-Path $dir 'GAT Telemetria Cliente.exe'
     if(Test-Path $launcher){Start-Process -FilePath $launcher -WorkingDirectory $dir|Out-Null}
-    else{Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$target+'"')) -WorkingDirectory $dir -WindowStyle Hidden|Out-Null}
+    else{Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-WindowStyle','Hidden','-ExecutionPolicy','Bypass','-STA','-File',('"'+$target+'"')) -WorkingDirectory $dir -WindowStyle Hidden|Out-Null}
 }catch{
     Msg ("Nao foi possivel concluir a atualizacao.`r`n`r`n"+$_.Exception.Message) 'GAT Telemetria Cliente | Falha na atualizacao'
 }
