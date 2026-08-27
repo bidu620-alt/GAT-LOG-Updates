@@ -24,5 +24,5 @@ jobs:
           echo '=== paths ==='
           grep -n -A6 -B4 -E 'func (DataDir|AgentSecretPath|AuthPath|ConfigPath|BindingsPath|TelemetryPath)|AgentBase' /tmp/gat-src/internal/core/core.go
           echo '=== auth ==='
-          grep -n -A80 -B10 -E 'func VerifyAuth|func SaveAuth|type Auth' /tmp/gat-src/internal/core/core.go
+          grep -n -A100 -B20 -E 'func VerifyAuth|func ChangeAuth|func PasswordHash|func EnsureAuth|type Auth' /tmp/gat-src/internal/core/core.go
           exit 0
