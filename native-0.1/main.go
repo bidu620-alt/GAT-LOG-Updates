@@ -29,7 +29,7 @@ import (
 
 const (
 	appName        = "GAT Telemetria"
-	appVersion     = "2.0.2"
+	appVersion     = "2.0.3"
 	displayVersion = "0.1"
 	truckURL       = "http://127.0.0.1:31377/api/ets2/telemetry"
 	truckRoot      = "http://127.0.0.1:31377/"
@@ -37,85 +37,86 @@ const (
 )
 
 const (
-	WS_OVERLAPPED      = 0x00000000
-	WS_CAPTION         = 0x00C00000
-	WS_SYSMENU         = 0x00080000
-	WS_MINIMIZEBOX     = 0x00020000
-	WS_VISIBLE         = 0x10000000
-	WS_CHILD           = 0x40000000
-	WS_BORDER          = 0x00800000
-	WS_TABSTOP         = 0x00010000
-	WS_VSCROLL         = 0x00200000
-	BS_PUSHBUTTON      = 0x00000000
-	BS_AUTOCHECKBOX    = 0x00000003
-	BS_OWNERDRAW       = 0x0000000B
-	ES_AUTOHSCROLL     = 0x0080
-	ES_READONLY        = 0x0800
-	CBS_DROPDOWNLIST   = 0x0003
-	CBS_HASSTRINGS     = 0x0200
-	SS_LEFT            = 0x00000000
-	SW_SHOW            = 5
-	SW_HIDE            = 0
-	CW_USEDEFAULT      = 0x80000000
-	WM_DESTROY         = 0x0002
-	WM_CLOSE           = 0x0010
-	WM_COMMAND         = 0x0111
-	WM_PAINT           = 0x000F
-	WM_ERASEBKGND      = 0x0014
-	WM_DRAWITEM        = 0x002B
-	WM_CTLCOLORSTATIC  = 0x0138
-	WM_CTLCOLOREDIT    = 0x0133
-	WM_CTLCOLORBTN     = 0x0135
-	WM_CTLCOLORLISTBOX = 0x0134
-	WM_TIMER           = 0x0113
-	WM_SETFONT         = 0x0030
-	WM_SETTEXT         = 0x000C
-	WM_GETTEXT         = 0x000D
-	WM_GETTEXTLENGTH   = 0x000E
-	WM_APP             = 0x8000
-	WM_APP_TICK_DONE   = WM_APP + 1
-	WM_APP_INFO_DONE   = WM_APP + 2
-	WM_APP_UPDATE_DONE = WM_APP + 3
-	CB_ADDSTRING       = 0x0143
-	CB_RESETCONTENT    = 0x014B
-	CB_GETCURSEL       = 0x0147
-	CB_SETCURSEL       = 0x014E
-	BM_GETCHECK        = 0x00F0
-	BM_SETCHECK        = 0x00F1
-	BST_CHECKED        = 1
-	BST_UNCHECKED      = 0
-	EM_SETREADONLY     = 0x00CF
-	BN_CLICKED         = 0
-	CBN_SELCHANGE      = 1
-	MB_OK              = 0x00000000
-	MB_OKCANCEL        = 0x00000001
-	MB_YESNO           = 0x00000004
-	MB_ICONINFORMATION = 0x00000040
-	MB_ICONWARNING     = 0x00000030
-	MB_ICONERROR       = 0x00000010
-	IDOK               = 1
-	IDCANCEL           = 2
-	IDYES              = 6
-	COLOR_WINDOW       = 5
-	DEFAULT_GUI_FONT   = 17
-	CF_UNICODETEXT     = 13
-	GMEM_MOVEABLE      = 0x0002
-	CREATE_NO_WINDOW   = 0x08000000
-	TRANSPARENT        = 1
-	DT_CENTER          = 0x00000001
-	DT_VCENTER         = 0x00000004
-	DT_SINGLELINE      = 0x00000020
-	ODS_SELECTED       = 0x0001
-	DIB_RGB_COLORS     = 0
-	SRCCOPY            = 0x00CC0020
-	BI_RGB             = 0
-	NULL_BRUSH         = 5
-	IMAGE_ICON         = 1
-	LR_LOADFROMFILE    = 0x0010
-	LR_DEFAULTSIZE     = 0x0040
-	WM_SETICON         = 0x0080
-	ICON_SMALL         = 0
-	ICON_BIG           = 1
+	WS_OVERLAPPED        = 0x00000000
+	WS_CAPTION           = 0x00C00000
+	WS_SYSMENU           = 0x00080000
+	WS_MINIMIZEBOX       = 0x00020000
+	WS_VISIBLE           = 0x10000000
+	WS_CHILD             = 0x40000000
+	WS_BORDER            = 0x00800000
+	WS_TABSTOP           = 0x00010000
+	WS_VSCROLL           = 0x00200000
+	BS_PUSHBUTTON        = 0x00000000
+	BS_AUTOCHECKBOX      = 0x00000003
+	BS_OWNERDRAW         = 0x0000000B
+	ES_AUTOHSCROLL       = 0x0080
+	ES_READONLY          = 0x0800
+	CBS_DROPDOWNLIST     = 0x0003
+	CBS_HASSTRINGS       = 0x0200
+	SS_LEFT              = 0x00000000
+	SW_SHOW              = 5
+	SW_HIDE              = 0
+	CW_USEDEFAULT        = 0x80000000
+	WM_DESTROY           = 0x0002
+	WM_CLOSE             = 0x0010
+	WM_COMMAND           = 0x0111
+	WM_PAINT             = 0x000F
+	WM_ERASEBKGND        = 0x0014
+	WM_DRAWITEM          = 0x002B
+	WM_CTLCOLORSTATIC    = 0x0138
+	WM_CTLCOLOREDIT      = 0x0133
+	WM_CTLCOLORBTN       = 0x0135
+	WM_CTLCOLORLISTBOX   = 0x0134
+	WM_TIMER             = 0x0113
+	WM_SETFONT           = 0x0030
+	WM_SETTEXT           = 0x000C
+	WM_GETTEXT           = 0x000D
+	WM_GETTEXTLENGTH     = 0x000E
+	WM_APP               = 0x8000
+	WM_APP_TICK_DONE     = WM_APP + 1
+	WM_APP_INFO_DONE     = WM_APP + 2
+	WM_APP_UPDATE_DONE   = WM_APP + 3
+	CB_ADDSTRING         = 0x0143
+	CB_RESETCONTENT      = 0x014B
+	CB_GETCURSEL         = 0x0147
+	CB_SETCURSEL         = 0x014E
+	BM_GETCHECK          = 0x00F0
+	BM_SETCHECK          = 0x00F1
+	BST_CHECKED          = 1
+	BST_UNCHECKED        = 0
+	EM_SETREADONLY       = 0x00CF
+	BN_CLICKED           = 0
+	CBN_SELCHANGE        = 1
+	MB_OK                = 0x00000000
+	MB_OKCANCEL          = 0x00000001
+	MB_YESNO             = 0x00000004
+	MB_ICONINFORMATION   = 0x00000040
+	MB_ICONWARNING       = 0x00000030
+	MB_ICONERROR         = 0x00000010
+	IDOK                 = 1
+	IDCANCEL             = 2
+	IDYES                = 6
+	COLOR_WINDOW         = 5
+	DEFAULT_GUI_FONT     = 17
+	CF_UNICODETEXT       = 13
+	GMEM_MOVEABLE        = 0x0002
+	CREATE_NO_WINDOW     = 0x08000000
+	TRANSPARENT          = 1
+	DT_CENTER            = 0x00000001
+	DT_VCENTER           = 0x00000004
+	DT_SINGLELINE        = 0x00000020
+	ODS_SELECTED         = 0x0001
+	DIB_RGB_COLORS       = 0
+	SRCCOPY              = 0x00CC0020
+	BI_RGB               = 0
+	NULL_BRUSH           = 5
+	IMAGE_ICON           = 1
+	LR_LOADFROMFILE      = 0x0010
+	LR_DEFAULTSIZE       = 0x0040
+	WM_SETICON           = 0x0080
+	ICON_SMALL           = 0
+	ICON_BIG             = 1
+	ERROR_ALREADY_EXISTS = 183
 )
 
 const (
@@ -235,6 +236,12 @@ type RemoteVersion struct {
 	DownloadURL string `json:"download_url"`
 	SHA256      string `json:"sha256"`
 }
+type OfflineTelemetry struct {
+	Endpoint  string         `json:"endpoint"`
+	Driver    string         `json:"driver"`
+	QueuedAt  string         `json:"queued_at"`
+	Telemetry map[string]any `json:"telemetry"`
+}
 
 var bannerImage image.Image
 var logoImage image.Image
@@ -311,6 +318,8 @@ var (
 	procGlobalUnlock               = modKernel32.NewProc("GlobalUnlock")
 	procGlobalFree                 = modKernel32.NewProc("GlobalFree")
 	procLocalFree                  = modKernel32.NewProc("LocalFree")
+	procCreateMutex                = modKernel32.NewProc("CreateMutexW")
+	procCloseHandle                = modKernel32.NewProc("CloseHandle")
 
 	procCryptProtectData   = modCrypt32.NewProc("CryptProtectData")
 	procCryptUnprotectData = modCrypt32.NewProc("CryptUnprotectData")
@@ -341,6 +350,12 @@ var (
 	settingsFile            string
 	debugFile               string
 	logFile                 string
+	offlineQueueFile        string
+	offlineQueue            []OfflineTelemetry
+	queueMu                 sync.Mutex
+	lastOfflineEnqueue      time.Time
+	lastTruckRestart        time.Time
+	lastServerProbe         time.Time
 	tickBusy                int32
 	infoBusy                int32
 	updateBusy              int32
@@ -559,6 +574,7 @@ func initPaths() {
 	settingsFile = filepath.Join(appDataDir, "client_settings.json")
 	debugFile = filepath.Join(appDataDir, "telemetry_mass_debug.json")
 	logFile = filepath.Join(appDataDir, "gat2_startup.log")
+	offlineQueueFile = filepath.Join(appDataDir, "offline_queue.json")
 }
 
 func logLine(s string) {
@@ -880,6 +896,192 @@ func decodeServerCode(code string) (Server, bool) {
 	return x, true
 }
 
+func acquireSingleInstance() (syscall.Handle, bool) {
+	name := `Local\GAT_Telemetria_Native_01`
+	h, _, callErr := procCreateMutex.Call(0, 1, uintptr(unsafe.Pointer(utf16Ptr(name))))
+	if h == 0 {
+		return 0, false
+	}
+	if errno, ok := callErr.(syscall.Errno); ok && errno == syscall.Errno(ERROR_ALREADY_EXISTS) {
+		return syscall.Handle(h), true
+	}
+	return syscall.Handle(h), false
+}
+
+func cloneTelemetry(m map[string]any) map[string]any {
+	b, err := json.Marshal(m)
+	if err != nil {
+		return m
+	}
+	var cp map[string]any
+	dec := json.NewDecoder(bytes.NewReader(b))
+	dec.UseNumber()
+	if dec.Decode(&cp) != nil || cp == nil {
+		return m
+	}
+	return cp
+}
+
+func loadOfflineQueue() {
+	queueMu.Lock()
+	defer queueMu.Unlock()
+	b, err := os.ReadFile(offlineQueueFile)
+	if err != nil {
+		offlineQueue = nil
+		return
+	}
+	var q []OfflineTelemetry
+	if json.Unmarshal(b, &q) != nil {
+		bad := offlineQueueFile + ".corrompida"
+		_ = os.Rename(offlineQueueFile, bad)
+		offlineQueue = nil
+		logLine("fila offline corrompida; movida para " + bad)
+		return
+	}
+	if len(q) > 720 {
+		q = q[len(q)-720:]
+	}
+	offlineQueue = q
+	logLine(fmt.Sprintf("fila offline carregada: %d item(ns)", len(offlineQueue)))
+}
+
+func saveOfflineQueueLocked() {
+	if len(offlineQueue) == 0 {
+		_ = os.Remove(offlineQueueFile)
+		return
+	}
+	b, err := json.Marshal(offlineQueue)
+	if err != nil {
+		return
+	}
+	tmp := offlineQueueFile + ".tmp"
+	if os.WriteFile(tmp, b, 0600) == nil {
+		_ = os.Remove(offlineQueueFile)
+		_ = os.Rename(tmp, offlineQueueFile)
+	}
+}
+
+func offlineQueueCountFor(ep, drv string) int {
+	queueMu.Lock()
+	defer queueMu.Unlock()
+	n := 0
+	for _, q := range offlineQueue {
+		if strings.EqualFold(strings.TrimRight(q.Endpoint, "/"), strings.TrimRight(ep, "/")) && strings.EqualFold(q.Driver, drv) {
+			n++
+		}
+	}
+	return n
+}
+
+func queueOfflineTelemetry(tele map[string]any) int {
+	mu.Lock()
+	ep, drv := endpoint, driver
+	mu.Unlock()
+	if ep == "" || drv == "" || tele == nil {
+		return 0
+	}
+	queueMu.Lock()
+	defer queueMu.Unlock()
+	// Guarda uma amostra a cada 5 s: preserva a viagem sem criar um arquivo enorme.
+	if !lastOfflineEnqueue.IsZero() && time.Since(lastOfflineEnqueue) < 5*time.Second {
+		n := 0
+		for _, q := range offlineQueue {
+			if strings.EqualFold(strings.TrimRight(q.Endpoint, "/"), strings.TrimRight(ep, "/")) && strings.EqualFold(q.Driver, drv) {
+				n++
+			}
+		}
+		return n
+	}
+	lastOfflineEnqueue = time.Now()
+	offlineQueue = append(offlineQueue, OfflineTelemetry{
+		Endpoint:  strings.TrimRight(ep, "/"),
+		Driver:    drv,
+		QueuedAt:  time.Now().UTC().Format(time.RFC3339Nano),
+		Telemetry: cloneTelemetry(tele),
+	})
+	if len(offlineQueue) > 720 {
+		offlineQueue = offlineQueue[len(offlineQueue)-720:]
+	}
+	saveOfflineQueueLocked()
+	n := 0
+	for _, q := range offlineQueue {
+		if strings.EqualFold(strings.TrimRight(q.Endpoint, "/"), strings.TrimRight(ep, "/")) && strings.EqualFold(q.Driver, drv) {
+			n++
+		}
+	}
+	return n
+}
+
+func nextOfflineTelemetry(ep, drv string) (OfflineTelemetry, int, bool) {
+	queueMu.Lock()
+	defer queueMu.Unlock()
+	for i, q := range offlineQueue {
+		if strings.EqualFold(strings.TrimRight(q.Endpoint, "/"), strings.TrimRight(ep, "/")) && strings.EqualFold(q.Driver, drv) {
+			return q, i, true
+		}
+	}
+	return OfflineTelemetry{}, -1, false
+}
+
+func removeOfflineTelemetryAt(idx int) {
+	queueMu.Lock()
+	defer queueMu.Unlock()
+	if idx < 0 || idx >= len(offlineQueue) {
+		return
+	}
+	offlineQueue = append(offlineQueue[:idx], offlineQueue[idx+1:]...)
+	saveOfflineQueueLocked()
+}
+
+func isQueueableFailure(r APIResult) bool {
+	return r.Status == 0 || r.Status == 408 || r.Status == 429 || r.Status >= 500
+}
+
+func flushOfflineQueueBatch(maxItems int) (sent, pending int, last APIResult, attempted bool) {
+	mu.Lock()
+	ep, drv := endpoint, driver
+	mu.Unlock()
+	if ep == "" || drv == "" {
+		return 0, 0, APIResult{}, false
+	}
+	for sent < maxItems {
+		q, idx, ok := nextOfflineTelemetry(ep, drv)
+		if !ok {
+			return sent, 0, last, attempted
+		}
+		attempted = true
+		last = sendTelemetry(q.Telemetry)
+		if last.Status == 200 && last.JSON != nil && boolVal(last.JSON, "ok") {
+			removeOfflineTelemetryAt(idx)
+			sent++
+			continue
+		}
+		return sent, offlineQueueCountFor(ep, drv), last, true
+	}
+	return sent, offlineQueueCountFor(ep, drv), last, attempted
+}
+
+func isProcessRunning(imageName string) bool {
+	out, _ := hiddenCommand("tasklist.exe", "/FI", "IMAGENAME eq "+imageName, "/NH").CombinedOutput()
+	return strings.Contains(strings.ToLower(string(out)), strings.ToLower(imageName))
+}
+
+func ensureTruckRunningSilently() bool {
+	if isProcessRunning("TruckSimGPS_Server.exe") {
+		return false
+	}
+	exe := findTruckExe()
+	if exe == "" {
+		return false
+	}
+	cmd := exec.Command(exe)
+	if cmd.Start() == nil {
+		logLine("TruckSim GPS reiniciado automaticamente")
+		return true
+	}
+	return false
+}
+
 func getTelemetry() (map[string]any, error) {
 	req, e := http.NewRequest("GET", truckURL, nil)
 	if e != nil {
@@ -1157,7 +1359,7 @@ func sendTelemetry(tele map[string]any) APIResult {
 	ep, drv, tok := endpoint, driver, token
 	mu.Unlock()
 	body := map[string]any{"driver": drv, "device_id": deviceID, "token": tok, "telemetry": tele}
-	r := apiCall("POST", ep+"/api/client/telemetry", body, 8*time.Second)
+	r := apiCall("POST", ep+"/api/client/telemetry", body, 4*time.Second)
 	errCode := ""
 	if r.JSON != nil {
 		errCode = strVal(r.JSON, "error")
@@ -1168,7 +1370,7 @@ func sendTelemetry(tele map[string]any) APIResult {
 			tok = token
 			mu.Unlock()
 			body["token"] = tok
-			r = apiCall("POST", ep+"/api/client/telemetry", body, 8*time.Second)
+			r = apiCall("POST", ep+"/api/client/telemetry", body, 4*time.Second)
 		}
 	}
 	return r
@@ -1178,7 +1380,7 @@ func sendHeartbeat() APIResult {
 	ep, drv, tok := endpoint, driver, token
 	mu.Unlock()
 	body := map[string]any{"driver": drv, "device_id": deviceID, "token": tok}
-	r := apiCall("POST", ep+"/api/client/heartbeat", body, 6*time.Second)
+	r := apiCall("POST", ep+"/api/client/heartbeat", body, 3*time.Second)
 	errCode := ""
 	if r.JSON != nil {
 		errCode = strVal(r.JSON, "error")
@@ -1189,7 +1391,7 @@ func sendHeartbeat() APIResult {
 			tok = token
 			mu.Unlock()
 			body["token"] = tok
-			r = apiCall("POST", ep+"/api/client/heartbeat", body, 6*time.Second)
+			r = apiCall("POST", ep+"/api/client/heartbeat", body, 3*time.Second)
 		}
 	}
 	return r
@@ -1421,6 +1623,60 @@ func tickAsync() {
 					}
 				}
 			}
+			// Se havia dados guardados durante uma queda, eles vao primeiro para manter a ordem da viagem.
+			mu.Lock()
+			epNow, drvNow := endpoint, driver
+			mu.Unlock()
+			queuedBefore := offlineQueueCountFor(epNow, drvNow)
+			if queuedBefore > 0 {
+				sentQ, pendingQ, lastQ, attemptedQ := flushOfflineQueueBatch(5)
+				if attemptedQ && !(lastQ.Status == 200 && lastQ.JSON != nil && boolVal(lastQ.JSON, "ok")) {
+					if isQueueableFailure(lastQ) {
+						q := queueOfflineTelemetry(tele)
+						setText(hGatStatus, "GAT LOG            ● RECONECTANDO")
+						setText(hTelStatus, fmt.Sprintf("Telemetria         ● FILA OFFLINE (%d)", q))
+						return
+					}
+					codeQ := ""
+					if lastQ.JSON != nil {
+						codeQ = strVal(lastQ.JSON, "error")
+					}
+					switch codeQ {
+					case "blocked":
+						endSession("Motorista bloqueado pelo administrador.")
+					case "device_mismatch":
+						endSession("PC nao autorizado. Use DESVINCULAR PC no servidor.")
+					case "disconnected_by_admin":
+						endSession("Voce foi desconectado pelo administrador.")
+					case "not_in_server", "invalid_session", "session_expired":
+						mu.Lock()
+						inSession = false
+						waiting = true
+						lastAuto = time.Time{}
+						mu.Unlock()
+						showSession(false)
+						setText(hLoginMsg, "Sessao perdida. Reconectando automaticamente...")
+						setText(hEnter, "RECONECTANDO...")
+					default:
+						setText(hGatStatus, fmt.Sprintf("GAT LOG            ● ERRO HTTP %d", lastQ.Status))
+						setText(hTelStatus, fmt.Sprintf("Telemetria         ● FILA PENDENTE (%d)", pendingQ))
+					}
+					return
+				}
+				if pendingQ > 0 {
+					q := queueOfflineTelemetry(tele)
+					setText(hGatStatus, "GAT LOG            ● RECONECTADO")
+					setText(hTelStatus, fmt.Sprintf("Telemetria         ● REENVIANDO FILA (%d)", q))
+					if sentQ > 0 {
+						logLine(fmt.Sprintf("fila offline: reenviados %d item(ns), restam %d", sentQ, q))
+					}
+					return
+				}
+				if sentQ > 0 {
+					logLine(fmt.Sprintf("fila offline reenviada: %d item(ns)", sentQ))
+				}
+			}
+
 			r := sendTelemetry(tele)
 			if r.Status == 200 && r.JSON != nil && boolVal(r.JSON, "ok") {
 				setText(hGatStatus, "GAT LOG            ● CONECTADO")
@@ -1453,6 +1709,32 @@ func tickAsync() {
 				if r.JSON != nil {
 					code = strVal(r.JSON, "error")
 				}
+				if isQueueableFailure(r) {
+					q := queueOfflineTelemetry(tele)
+					setText(hGatStatus, "GAT LOG            ● RECONECTANDO")
+					setText(hTelStatus, fmt.Sprintf("Telemetria         ● FILA OFFLINE (%d)", q))
+					mu.Lock()
+					probeDue := time.Since(lastServerProbe) >= 3*time.Second
+					if probeDue {
+						lastServerProbe = time.Now()
+					}
+					mu.Unlock()
+					if probeDue {
+						refreshServerInfoAsync()
+					}
+					return
+				}
+				if code == "not_in_server" || code == "invalid_session" || code == "session_expired" {
+					mu.Lock()
+					inSession = false
+					waiting = true
+					lastAuto = time.Time{}
+					mu.Unlock()
+					showSession(false)
+					setText(hLoginMsg, "Sessao perdida. Reconectando automaticamente...")
+					setText(hEnter, "RECONECTANDO...")
+					return
+				}
 				if code == "blocked" {
 					endSession("Motorista bloqueado pelo administrador.")
 					return
@@ -1473,8 +1755,25 @@ func tickAsync() {
 				setText(hTelStatus, "Telemetria         ● NAO ENVIANDO")
 			}
 		} else {
-			if findTruckExe() != "" {
-				setText(hTruckStatus, "TruckSim GPS       ● INSTALADO / FECHADO")
+			truckExe := findTruckExe()
+			if truckExe != "" {
+				restarted := false
+				if isEts2Running() {
+					mu.Lock()
+					dueRestart := time.Since(lastTruckRestart) >= 10*time.Second
+					if dueRestart {
+						lastTruckRestart = time.Now()
+					}
+					mu.Unlock()
+					if dueRestart {
+						restarted = ensureTruckRunningSilently()
+					}
+				}
+				if restarted {
+					setText(hTruckStatus, "TruckSim GPS       ● REINICIANDO AUTOMATICAMENTE")
+				} else {
+					setText(hTruckStatus, "TruckSim GPS       ● RECONECTANDO")
+				}
 				setText(hTruck, "ABRIR TRUCKSIM GPS")
 			} else {
 				setText(hTruckStatus, "TruckSim GPS       ● NAO INSTALADO")
@@ -1483,7 +1782,7 @@ func tickAsync() {
 			setText(hTelStatus, "Telemetria         ● AGUARDANDO ETS2")
 			setText(hCargo, "Aguardando o ETS2/TruckSim GPS para iniciar a telemetria.")
 			mu.Lock()
-			due := time.Since(lastHeartbeat) >= 5*time.Second
+			due := time.Since(lastHeartbeat) >= 3*time.Second
 			if due {
 				lastHeartbeat = time.Now()
 			}
@@ -1995,6 +2294,17 @@ func main() {
 		runUpdateInstaller(os.Args[1:])
 		return
 	}
+	instanceHandle, alreadyOpen := acquireSingleInstance()
+	if alreadyOpen {
+		if instanceHandle != 0 {
+			procCloseHandle.Call(uintptr(instanceHandle))
+		}
+		msgBox("O GAT Telemetria ja esta aberto.\r\n\r\nNao e necessario abrir uma segunda instancia.", "GAT Telemetria", MB_OK|MB_ICONINFORMATION)
+		return
+	}
+	if instanceHandle != 0 {
+		defer procCloseHandle.Call(uintptr(instanceHandle))
+	}
 	runtime.LockOSThread()
 	initTheme()
 	initPaths()
@@ -2008,6 +2318,7 @@ func main() {
 	loadServers()
 	logLine(fmt.Sprintf("servidores carregados: %d", len(servers)))
 	loadSettings()
+	loadOfflineQueue()
 	deviceID = getDeviceID()
 	logLine("device id ok")
 	createUI()

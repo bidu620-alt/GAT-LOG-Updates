@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria",
   "channel": "stable-native",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "display_version": "0.1",
-  "notas": "GAT Telemetria 0.1: topo simplificado e status inacessivel/offline destacado em vermelho.",
+  "notas": "GAT Telemetria 0.1: fila offline com reenvio automatico, reconexao reforcada do servidor/TruckSim GPS e bloqueio de duas instancias.",
   "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_0.1.exe",
-  "sha256": "fd0a5202c9b4d7568afdf3d1af7805be42bf0311db12aeee9a976b42aeae5f34"
+  "sha256": "e4b21161e29505a142818b9000b9f4f61348c9433a9fd1f3d9e4b287f63430f8"
 }
