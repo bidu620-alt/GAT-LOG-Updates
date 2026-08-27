@@ -75,21 +75,19 @@ if old_start not in t:
     raise SystemExit('agent startup block not found')
 t = t.replace(old_start, new_start, 1)
 
-# /api/ui/status returns the cached snapshot; expensive log parsing is done only by pollLoop.
 old_status = '''func (a *agent) uiStatus(w http.ResponseWriter, r *http.Request) {\n\ta.refreshStatus()\n\ta.mu.RLock()\n\ts := a.status\n\ta.mu.RUnlock()\n\tjsonOut(w, 200, s)\n}'''
 new_status = '''func (a *agent) uiStatus(w http.ResponseWriter, r *http.Request) {\n\ta.mu.RLock()\n\ts := a.status\n\ta.mu.RUnlock()\n\tjsonOut(w, 200, s)\n}'''
 if old_status not in t:
     raise SystemExit('uiStatus block not found')
 t = t.replace(old_status, new_status, 1)
 
-# Persist telemetry without delaying the HTTP acknowledgement to the client.
+# Persist telemetry without delaying the client's HTTP 200.
 t = t.replace('\tif persist {\n\t\ta.saveTelemetry()\n\t}\n\ta.detectEvents(prev, rec)', '\tif persist {\n\t\tgo a.saveTelemetry()\n\t}\n\ta.detectEvents(prev, rec)', 1)
 
-# Config/action responses should not wait for another expensive session scan.
+# Config/action responses should not wait for another session/log scan.
 t = t.replace('\ta.refreshStatus()\n\tjsonOut(w, 200, map[string]any{"ok": true})', '\tgo a.refreshStatus()\n\tjsonOut(w, 200, map[string]any{"ok": true})', 1)
 t = t.replace('\ta.refreshStatus()\n\tjsonOut(w, 200, map[string]any{"ok": true, "message": msg})', '\tgo a.refreshStatus()\n\tjsonOut(w, 200, map[string]any{"ok": true, "message": msg})', 1)
 
-# Auto-Funnel implementation (background only).
 method = r'''func (a *agent) ensureFunnel() {
 	if err := core.StartFunnel(); err != nil {
 		core.AppendLog("Funnel 5055 nao ativado: %v", err)
@@ -113,14 +111,13 @@ if 'func (a *agent) ensureFunnel() {' not in t:
 
 agent.write_text(t, encoding='utf-8')
 
-# ---------- UI: restore truncated last function, then remove startup blocking ----------
+# ---------- UI: restore truncated tail and remove startup blocking ----------
 u = ui.read_text(encoding='utf-8')
-
-# The archived source was cut in the very last function. Restore only that tail.
 fw = u.find('func firewallElevated() {')
 if fw < 0:
     raise SystemExit('firewallElevated start not found')
-firewall_tail = r'''func firewallElevated() {
+
+ui_tail = r'''func firewallElevated() {
 	args := `/c netsh advfirewall firewall add rule name="GAT-LOG ETS2 27015 TCP" dir=in action=allow protocol=TCP localport=27015 & netsh advfirewall firewall add rule name="GAT-LOG ETS2 27016 UDP" dir=in action=allow protocol=UDP localport=27016 & netsh advfirewall firewall add rule name="GAT-LOG API 5055 TCP" dir=in action=allow protocol=TCP localport=5055`
 	r, _, _ := pShellExecute.Call(
 		uintptr(app.hwnd),
@@ -136,10 +133,88 @@ firewall_tail = r'''func firewallElevated() {
 	}
 	msgbox("Regras do Firewall solicitadas. Confirme a janela do Windows se ela aparecer.", "GAT-LOG | Firewall", MB_OK|MB_ICONINFORMATION)
 }
-'''
-u = u[:fw] + firewall_tail
 
-# Bump visible/internal UI version literals from the recovered base.
+func checkUpdate() {
+	const manifestURL = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/server_native_version.json"
+	type remoteVersion struct {
+		Version  string `json:"version"`
+		Notes    string `json:"notas"`
+		SetupURL string `json:"setup_url"`
+		SHA256   string `json:"sha256"`
+	}
+
+	cl := &http.Client{Timeout: 15 * time.Second}
+	resp, err := cl.Get(manifestURL)
+	if err != nil {
+		msgbox("Não foi possível consultar atualizações no GitHub.", "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		msgbox(fmt.Sprintf("GitHub respondeu HTTP %d ao verificar a atualização.", resp.StatusCode), "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+	var rv remoteVersion
+	if json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(&rv) != nil || strings.TrimSpace(rv.Version) == "" {
+		msgbox("O manifesto de atualização é inválido.", "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+	if strings.TrimSpace(rv.Version) == core.InternalVersion {
+		msgbox("Você já está usando a versão "+core.InternalVersion+".", "GAT-LOG | Atualização", MB_OK|MB_ICONINFORMATION)
+		return
+	}
+	if strings.TrimSpace(rv.SetupURL) == "" {
+		msgbox("A atualização encontrada não possui instalador publicado.", "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+	question := fmt.Sprintf("Nova versão disponível: %s\r\n\r\n%s\r\n\r\nDeseja atualizar agora?", rv.Version, rv.Notes)
+	if msgbox(question, "GAT-LOG | Atualização", MB_YESNO|MB_ICONINFORMATION) != IDYES {
+		return
+	}
+
+	dl, err := cl.Get(rv.SetupURL)
+	if err != nil {
+		msgbox("Falha ao baixar a atualização.", "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+	defer dl.Body.Close()
+	if dl.StatusCode != http.StatusOK {
+		msgbox(fmt.Sprintf("Falha no download: HTTP %d.", dl.StatusCode), "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+	b, err := io.ReadAll(io.LimitReader(dl.Body, 96<<20))
+	if err != nil || len(b) == 0 {
+		msgbox("Falha ao receber o arquivo da atualização.", "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+	if expected := strings.ToLower(strings.TrimSpace(rv.SHA256)); expected != "" {
+		got := fmt.Sprintf("%x", sha256.Sum256(b))
+		if got != expected {
+			msgbox("O SHA-256 da atualização não confere. Instalação cancelada.", "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+			return
+		}
+	}
+	tmp := filepath.Join(os.TempDir(), "GAT_LOG_SERVER_UPDATE_"+strings.ReplaceAll(rv.Version, "/", "_")+".exe")
+	if err := os.WriteFile(tmp, b, 0755); err != nil {
+		msgbox("Não foi possível salvar o atualizador temporário.", "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+	cmd := exec.Command(tmp)
+	cmd.Dir = filepath.Dir(tmp)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true, CreationFlags: 0x08000000}
+	if err := cmd.Start(); err != nil {
+		msgbox("Não foi possível iniciar o atualizador.", "GAT-LOG | Atualização", MB_OK|MB_ICONERROR)
+		return
+	}
+}
+'''
+u = u[:fw] + ui_tail
+
+# sha256 is required by the rebuilt self-update function.
+if '"crypto/sha256"' not in u:
+    u = u.replace('\t"bytes"\n', '\t"bytes"\n\t"crypto/sha256"\n', 1)
+
+u = u.replace('GAT-LOG SERVER NATIVE 0.1 |', 'GAT-LOG SERVER NATIVE 0.1.5 |')
 u = u.replace('0.1.0', '0.1.5')
 u = u.replace('0.1.4', '0.1.5')
 
@@ -149,7 +224,6 @@ if old_main not in u:
     raise SystemExit('UI synchronous ensureAgent startup not found')
 u = u.replace(old_main, new_main, 1)
 
-# Local API is localhost: do not allow one request to hang the app for 8 seconds.
 u = u.replace('&http.Client{Timeout: 8 * time.Second}', '&http.Client{Timeout: 2 * time.Second}')
 u = u.replace('&http.Client{Timeout: 600 * time.Millisecond}', '&http.Client{Timeout: 400 * time.Millisecond}')
 
