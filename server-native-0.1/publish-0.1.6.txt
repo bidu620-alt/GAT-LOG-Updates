@@ -1,1 +1,1 @@
-publish 0.1.6 visual assets fix
+publish 0.1.6 visual assets fix retry 2
