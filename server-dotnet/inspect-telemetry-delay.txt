@@ -1,0 +1,1 @@
+Inspecionar frequência de atualização da velocidade e telemetria.
