@@ -1,0 +1,23 @@
+name: Build GAT-LOG Server DotNet Test
+on:
+  push:
+    branches: [server-dotnet-winforms]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore server-dotnet/GatLogServer/GatLogServer.csproj
+      - name: Build
+        run: dotnet build server-dotnet/GatLogServer/GatLogServer.csproj -c Release --no-restore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-LOG-Server-DotNet-1.0.0-test
+          path: server-dotnet/GatLogServer/bin/Release/net48/
+          retention-days: 14
