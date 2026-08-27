@@ -1,0 +1,1 @@
+inspect ui freeze 2026-08-27
