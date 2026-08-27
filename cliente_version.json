@@ -1,7 +1,7 @@
 {
   "app": "GAT Telemetria Cliente",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/cliente.json",
   "obrigatoria": false,
-  "notas": "Corrige a conexao automatica para reconhecer o motorista mesmo quando ele ja estava dentro da sessao antes de abrir o cliente."
+  "notas": "PowerShell auxiliar oculto e leitura de peso com fallback automatico pelo perfil/save ativo do ETS2."
 }
