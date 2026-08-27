@@ -1,0 +1,50 @@
+name: Build GAT Telemetria 0.1
+
+on:
+  push:
+    paths:
+      - 'native-0.1/trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+
+      - name: Build Windows EXE
+        shell: bash
+        run: |
+          cd native-0.1
+          GO111MODULE=off GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags='-H=windowsgui -s -w' -o ../GAT_TELEMETRIA_0.1.exe main.go assets.go
+
+      - name: Publish binary and manifest
+        shell: bash
+        run: |
+          mkdir -p releases
+          mv GAT_TELEMETRIA_0.1.exe releases/GAT_TELEMETRIA_0.1.exe
+          SHA=$(sha256sum releases/GAT_TELEMETRIA_0.1.exe | awk '{print $1}')
+          cat > cliente2_version.json <<EOF
+          {
+            "app": "GAT Telemetria",
+            "channel": "stable-native",
+            "version": "2.0.1",
+            "display_version": "0.1",
+            "notas": "GAT Telemetria 0.1: versao nativa sem PowerShell, com logo na janela, barra de tarefas e Alt+Tab. Mantem telemetria, auto-conexao e peso via job.cargoMass.",
+            "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_0.1.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/GAT_TELEMETRIA_0.1.exe cliente2_version.json
+          git commit -m "Publica GAT Telemetria 0.1" || exit 0
+          git push
