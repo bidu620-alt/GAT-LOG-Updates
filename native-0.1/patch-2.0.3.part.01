@@ -1,0 +1,220 @@
+@@ -880,6 +896,192 @@
+ 	return x, true
+ }
+ 
++func acquireSingleInstance() (syscall.Handle, bool) {
++	name := `Local\GAT_Telemetria_Native_01`
++	h, _, callErr := procCreateMutex.Call(0, 1, uintptr(unsafe.Pointer(utf16Ptr(name))))
++	if h == 0 {
++		return 0, false
++	}
++	if errno, ok := callErr.(syscall.Errno); ok && errno == syscall.Errno(ERROR_ALREADY_EXISTS) {
++		return syscall.Handle(h), true
++	}
++	return syscall.Handle(h), false
++}
++
++func cloneTelemetry(m map[string]any) map[string]any {
++	b, err := json.Marshal(m)
++	if err != nil {
++		return m
++	}
++	var cp map[string]any
++	dec := json.NewDecoder(bytes.NewReader(b))
++	dec.UseNumber()
++	if dec.Decode(&cp) != nil || cp == nil {
++		return m
++	}
++	return cp
++}
++
++func loadOfflineQueue() {
++	queueMu.Lock()
++	defer queueMu.Unlock()
++	b, err := os.ReadFile(offlineQueueFile)
++	if err != nil {
++		offlineQueue = nil
++		return
++	}
++	var q []OfflineTelemetry
++	if json.Unmarshal(b, &q) != nil {
++		bad := offlineQueueFile + ".corrompida"
++		_ = os.Rename(offlineQueueFile, bad)
++		offlineQueue = nil
++		logLine("fila offline corrompida; movida para " + bad)
++		return
++	}
++	if len(q) > 720 {
++		q = q[len(q)-720:]
++	}
++	offlineQueue = q
++	logLine(fmt.Sprintf("fila offline carregada: %d item(ns)", len(offlineQueue)))
++}
++
++func saveOfflineQueueLocked() {
++	if len(offlineQueue) == 0 {
++		_ = os.Remove(offlineQueueFile)
++		return
++	}
++	b, err := json.Marshal(offlineQueue)
++	if err != nil {
++		return
++	}
++	tmp := offlineQueueFile + ".tmp"
++	if os.WriteFile(tmp, b, 0600) == nil {
++		_ = os.Remove(offlineQueueFile)
++		_ = os.Rename(tmp, offlineQueueFile)
++	}
++}
++
++func offlineQueueCountFor(ep, drv string) int {
++	queueMu.Lock()
++	defer queueMu.Unlock()
++	n := 0
++	for _, q := range offlineQueue {
++		if strings.EqualFold(strings.TrimRight(q.Endpoint, "/"), strings.TrimRight(ep, "/")) && strings.EqualFold(q.Driver, drv) {
++			n++
++		}
++	}
++	return n
++}
++
++func queueOfflineTelemetry(tele map[string]any) int {
++	mu.Lock()
++	ep, drv := endpoint, driver
++	mu.Unlock()
++	if ep == "" || drv == "" || tele == nil {
++		return 0
++	}
++	queueMu.Lock()
++	defer queueMu.Unlock()
++	// Guarda uma amostra a cada 5 s: preserva a viagem sem criar um arquivo enorme.
++	if !lastOfflineEnqueue.IsZero() && time.Since(lastOfflineEnqueue) < 5*time.Second {
++		n := 0
++		for _, q := range offlineQueue {
++			if strings.EqualFold(strings.TrimRight(q.Endpoint, "/"), strings.TrimRight(ep, "/")) && strings.EqualFold(q.Driver, drv) {
++				n++
++			}
++		}
++		return n
++	}
++	lastOfflineEnqueue = time.Now()
++	offlineQueue = append(offlineQueue, OfflineTelemetry{
++		Endpoint:  strings.TrimRight(ep, "/"),
++		Driver:    drv,
++		QueuedAt:  time.Now().UTC().Format(time.RFC3339Nano),
++		Telemetry: cloneTelemetry(tele),
++	})
++	if len(offlineQueue) > 720 {
++		offlineQueue = offlineQueue[len(offlineQueue)-720:]
++	}
++	saveOfflineQueueLocked()
++	n := 0
++	for _, q := range offlineQueue {
++		if strings.EqualFold(strings.TrimRight(q.Endpoint, "/"), strings.TrimRight(ep, "/")) && strings.EqualFold(q.Driver, drv) {
++			n++
++		}
++	}
++	return n
++}
++
++func nextOfflineTelemetry(ep, drv string) (OfflineTelemetry, int, bool) {
++	queueMu.Lock()
++	defer queueMu.Unlock()
++	for i, q := range offlineQueue {
++		if strings.EqualFold(strings.TrimRight(q.Endpoint, "/"), strings.TrimRight(ep, "/")) && strings.EqualFold(q.Driver, drv) {
++			return q, i, true
++		}
++	}
++	return OfflineTelemetry{}, -1, false
++}
++
++func removeOfflineTelemetryAt(idx int) {
++	queueMu.Lock()
++	defer queueMu.Unlock()
++	if idx < 0 || idx >= len(offlineQueue) {
++		return
++	}
++	offlineQueue = append(offlineQueue[:idx], offlineQueue[idx+1:]...)
++	saveOfflineQueueLocked()
++}
++
++func isQueueableFailure(r APIResult) bool {
++	return r.Status == 0 || r.Status == 408 || r.Status == 429 || r.Status >= 500
++}
++
++func flushOfflineQueueBatch(maxItems int) (sent, pending int, last APIResult, attempted bool) {
++	mu.Lock()
++	ep, drv := endpoint, driver
++	mu.Unlock()
++	if ep == "" || drv == "" {
++		return 0, 0, APIResult{}, false
++	}
++	for sent < maxItems {
++		q, idx, ok := nextOfflineTelemetry(ep, drv)
++		if !ok {
++			return sent, 0, last, attempted
++		}
++		attempted = true
++		last = sendTelemetry(q.Telemetry)
++		if last.Status == 200 && last.JSON != nil && boolVal(last.JSON, "ok") {
++			removeOfflineTelemetryAt(idx)
++			sent++
++			continue
++		}
++		return sent, offlineQueueCountFor(ep, drv), last, true
++	}
++	return sent, offlineQueueCountFor(ep, drv), last, attempted
++}
++
++func isProcessRunning(imageName string) bool {
++	out, _ := hiddenCommand("tasklist.exe", "/FI", "IMAGENAME eq "+imageName, "/NH").CombinedOutput()
++	return strings.Contains(strings.ToLower(string(out)), strings.ToLower(imageName))
++}
++
++func ensureTruckRunningSilently() bool {
++	if isProcessRunning("TruckSimGPS_Server.exe") {
++		return false
++	}
++	exe := findTruckExe()
++	if exe == "" {
++		return false
++	}
++	cmd := exec.Command(exe)
++	if cmd.Start() == nil {
++		logLine("TruckSim GPS reiniciado automaticamente")
++		return true
++	}
++	return false
++}
++
+ func getTelemetry() (map[string]any, error) {
+ 	req, e := http.NewRequest("GET", truckURL, nil)
+ 	if e != nil {
+@@ -1157,7 +1359,7 @@
+ 	ep, drv, tok := endpoint, driver, token
+ 	mu.Unlock()
+ 	body := map[string]any{"driver": drv, "device_id": deviceID, "token": tok, "telemetry": tele}
+-	r := apiCall("POST", ep+"/api/client/telemetry", body, 8*time.Second)
++	r := apiCall("POST", ep+"/api/client/telemetry", body, 4*time.Second)
+ 	errCode := ""
+ 	if r.JSON != nil {
+ 		errCode = strVal(r.JSON, "error")
+@@ -1168,7 +1370,7 @@
+ 			tok = token
+ 			mu.Unlock()
+ 			body["token"] = tok
+-			r = apiCall("POST", ep+"/api/client/telemetry", body, 8*time.Second)
++			r = apiCall("POST", ep+"/api/client/telemetry", body, 4*time.Second)
+ 		}
+ 	}
+ 	return r
+@@ -1178,7 +1380,7 @@
+ 	ep, drv, tok := endpoint, driver, token
+ 	mu.Unlock()
+ 	body := map[string]any{"driver": drv, "device_id": deviceID, "token": tok}
+-	r := apiCall("POST", ep+"/api/client/heartbeat", body, 6*time.Second)
++	r := apiCall("POST", ep+"/api/client/heartbeat", body, 3*time.Second)
+ 	errCode := ""
+ 	if r.JSON != nil {
+ 		errCode = strVal(r.JSON, "error")
