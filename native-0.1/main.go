@@ -29,7 +29,7 @@ import (
 
 const (
 	appName        = "GAT Telemetria"
-	appVersion     = "2.0.4"
+	appVersion     = "2.0.5"
 	displayVersion = "0.1"
 	truckURL       = "http://127.0.0.1:31377/api/ets2/telemetry"
 	truckRoot      = "http://127.0.0.1:31377/"
@@ -1713,14 +1713,7 @@ func tickAsync() {
 					case "disconnected_by_admin":
 						endSession("Voce foi desconectado pelo administrador.")
 					case "not_in_server", "invalid_session", "session_expired":
-						mu.Lock()
-						inSession = false
-						waiting = true
-						lastAuto = time.Time{}
-						mu.Unlock()
-						showSession(false)
-						setText(hLoginMsg, "Sessao perdida. Reconectando automaticamente...")
-						setText(hEnter, "RECONECTANDO...")
+						markAwaitingSession("GAT LOG            ● AGUARDANDO SESSAO")
 					default:
 						setText(hGatStatus, fmt.Sprintf("GAT LOG            ● ERRO HTTP %d", lastQ.Status))
 						setText(hTelStatus, fmt.Sprintf("Telemetria         ● FILA PENDENTE (%d)", pendingQ))
@@ -1793,14 +1786,7 @@ func tickAsync() {
 					return
 				}
 				if code == "not_in_server" || code == "invalid_session" || code == "session_expired" {
-					mu.Lock()
-					inSession = false
-					waiting = true
-					lastAuto = time.Time{}
-					mu.Unlock()
-					showSession(false)
-					setText(hLoginMsg, "Sessao perdida. Reconectando automaticamente...")
-					setText(hEnter, "RECONECTANDO...")
+					markAwaitingSession("GAT LOG            ● AGUARDANDO SESSAO")
 					return
 				}
 				if code == "blocked" {

@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria",
   "channel": "stable-native",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "display_version": "0.1",
-  "notas": "GAT Telemetria 0.1: detecta quando o motorista sai da sessao sem criar fila offline; mostra AGUARDANDO SESSAO/NAO ENVIANDO e diferencia servidor offline.",
+  "notas": "GAT Telemetria 0.1: ao sair da sala fica em AGUARDANDO SESSAO/NAO ENVIANDO sem criar fila; servidor offline e fila offline ficam separados; reconexao continua automatica.",
   "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_0.1.exe",
-  "sha256": "8a30a534615b02a053bd86e539d2d8bf43c110918cceb1c4b3082b41dc3f7950"
+  "sha256": "79b6d02af0dcd564e214e477ea995b5adf78c1999cffac1d0d20fdbe0b221e89"
 }
