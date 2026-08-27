@@ -1,0 +1,9 @@
+{
+  "app": "GAT-LOG Server CSharp",
+  "channel": "test-dotnet",
+  "version": "1.0.2",
+  "display_version": "1.0.2 TESTE",
+  "notas": "Etapa 2A: ativa e valida o sistema de atualização automática pelo botão ATUALIZAR APP. Mantém a correção do moderador da 1.0.1. Não altera telemetria nem sua frequência.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe",
+  "sha256": "dbedb2c01c0230c6f4ba2f4ddf0e53f3067aa64f47fbdf0cce8cb09c0c2de988"
+}
