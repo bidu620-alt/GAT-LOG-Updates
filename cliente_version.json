@@ -1,7 +1,7 @@
 {
   "app": "GAT Telemetria Cliente",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/cliente.json",
   "obrigatoria": false,
-  "notas": "Corrige o peso usando diretamente job.cargoMass do TruckSim GPS."
+  "notas": "Remove a janela preta do PowerShell usando um launcher silencioso, sem alterar a telemetria da 1.8.4."
 }
