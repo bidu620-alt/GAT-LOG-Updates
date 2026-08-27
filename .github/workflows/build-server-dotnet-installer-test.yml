@@ -20,7 +20,7 @@ jobs:
           go-version: '1.23.x'
           cache: false
 
-      - name: Recover and build current Go agent
+      - name: Recover and build Go agent 1.0.1
         shell: bash
         run: |
           set +e
@@ -31,8 +31,10 @@ jobs:
           python3 server-native-0.1/build015/apply_015.py
           python3 server-native-0.1/build015/fix_check_update.py
           python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
           cd /tmp/gat-src
           gofmt -w cmd/agent/main.go internal/core/core.go
+          grep -n -A10 -B4 'moderator_list' internal/core/core.go | head -n 80
           mkdir -p "$GITHUB_WORKSPACE/agent-out"
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe" ./cmd/agent
           test -s "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe"
@@ -58,6 +60,28 @@ jobs:
           name: dotnet-agent-payload
           path: server-dotnet/GatLogInstaller/payload
 
+      - name: Mark UI and installer as 1.0.1
+        shell: pwsh
+        run: |
+          $ui = 'server-dotnet/GatLogServer/MainForm.cs'
+          $s = Get-Content $ui -Raw
+          $s = $s.Replace('CurrentVersion = "1.0.0"', 'CurrentVersion = "1.0.1"')
+          $s = $s.Replace('GAT-LOG SERVER 1.0 | ETS2 + Telemetria', 'GAT-LOG SERVER 1.0.1 | ETS2 + Telemetria')
+          $s = $s.Replace('C# WinForms 1.0.0', 'C# WinForms 1.0.1')
+          Set-Content $ui $s -Encoding UTF8
+
+          $proj = 'server-dotnet/GatLogServer/GatLogServer.csproj'
+          $p = Get-Content $proj -Raw
+          $p = $p.Replace('<Version>1.0.0.0</Version>', '<Version>1.0.1.0</Version>')
+          $p = $p.Replace('<FileVersion>1.0.0.0</FileVersion>', '<FileVersion>1.0.1.0</FileVersion>')
+          $p = $p.Replace('<AssemblyVersion>1.0.0.0</AssemblyVersion>', '<AssemblyVersion>1.0.1.0</AssemblyVersion>')
+          Set-Content $proj $p -Encoding UTF8
+
+          $iproj = 'server-dotnet/GatLogInstaller/GatLogInstaller.csproj'
+          $i = Get-Content $iproj -Raw
+          $i = $i.Replace('GAT_LOG_SERVER_DOTNET_SETUP_1.0.0_TESTE', 'GAT_LOG_SERVER_DOTNET_SETUP_1.0.1_TESTE')
+          Set-Content $iproj $i -Encoding UTF8
+
       - name: Build CSharp server
         shell: pwsh
         run: |
@@ -76,7 +100,6 @@ jobs:
           Copy-Item 'server-native-0.1/assets/logo.png' "$pay/assets/logo.png" -Force
           Copy-Item 'server-native-0.1/assets/banner.png' "$pay/assets/banner.png" -Force
           if (-not (Test-Path "$pay/GAT_LOG_AGENT.exe")) { throw 'GAT_LOG_AGENT.exe não foi baixado do job Linux.' }
-          Get-ChildItem -Recurse $pay | Select-Object FullName, Length
 
       - name: Build installer
         shell: pwsh
@@ -86,6 +109,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GAT-LOG-SERVER-CSHARP-1.0.0-TESTE
-          path: server-dotnet/GatLogInstaller/bin/Release/net48/GAT_LOG_SERVER_DOTNET_SETUP_1.0.0_TESTE.exe
+          name: GAT-LOG-SERVER-CSHARP-1.0.1-TESTE-MODERADOR
+          path: server-dotnet/GatLogInstaller/bin/Release/net48/GAT_LOG_SERVER_DOTNET_SETUP_1.0.1_TESTE.exe
           retention-days: 14
