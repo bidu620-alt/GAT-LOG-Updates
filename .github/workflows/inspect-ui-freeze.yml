@@ -26,14 +26,12 @@ jobs:
           python3 server-native-0.1/build015/fix_check_update.py
           cd /tmp/gat-src
           gofmt -w cmd/ui/main.go cmd/agent/main.go internal/core/core.go
-      - name: Show critical UI code
+      - name: Show log parsing code
         shell: bash
         run: |
           set +e
-          echo '=== UI click/login ==='
-          sed -n '800,990p' /tmp/gat-src/cmd/ui/main.go
-          echo '=== API helpers ==='
-          sed -n '970,1065p' /tmp/gat-src/cmd/ui/main.go
-          echo '=== agent status/poll ==='
-          grep -n -A220 -B30 -E '^func \(a \*agent\) pollLoop|^func \(a \*agent\) refreshStatus|^func \(a \*agent\) uiStatus|^func \(a \*agent\) uiConfig' /tmp/gat-src/cmd/agent/main.go | head -n 3500
+          echo '=== ParseSession ==='
+          grep -n -A260 -B30 -E '^func ParseSession|^func ServerLogPath|^func PackagesStatus|^func ContainsPlayer' /tmp/gat-src/internal/core/core.go | head -n 5000
+          echo '=== file reads in core ==='
+          grep -n -E 'ReadFile|Open\(|ReadAll|Scanner|server.log|Seek\(' /tmp/gat-src/internal/core/core.go | head -n 1000
           exit 0
