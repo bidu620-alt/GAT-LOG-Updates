@@ -21,36 +21,32 @@ jobs:
           set +e
           rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
           cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
-          echo gzip_rc=$?
           tar -xf /tmp/gat-source.tar -C /tmp/gat-src
-          echo tar_rc=$?
-          find /tmp/gat-src -maxdepth 5 -type f -printf '%P %s bytes\n' | sort
           exit 0
-      - name: Inspect UI startup and requests
+      - name: Inspect UI startup
         shell: bash
         run: |
           set +e
           F=/tmp/gat-src/cmd/ui/main.go
-          echo '=== functions ==='
-          grep -a -nE '^func (main|adminReq|ensureAgent|populatePage|wndProc|action|.*refreshAll|.*RefreshAll|.*Update|.*Timer)' "$F" | head -n 1000
-          echo '=== refreshAll ==='
-          grep -a -n -C 70 'func (.*refreshAll\|func .*refreshAll' "$F" | head -n 1500
-          echo '=== adminReq ==='
-          grep -a -n -C 70 '^func adminReq' "$F" | head -n 1500
-          echo '=== ensureAgent ==='
-          grep -a -n -C 80 '^func ensureAgent' "$F" | head -n 1800
-          echo '=== main ==='
-          grep -a -n -C 160 '^func main' "$F" | head -n 3000
-          echo '=== timer/window proc ==='
-          grep -a -nEi -C 45 'WM_TIMER|pSetTimer|SetTimer|refreshAll\(|populatePage\(|ShowWindow|GetMessage|time\.Sleep|http\.Client|Timeout' "$F" | head -n 9000
+          grep -a -n -C 90 '^func main' "$F"
+          grep -a -n -C 80 '^func ensureAgent' "$F"
+          grep -a -n -C 80 '^func (a \*App) pollAgent' "$F"
+          grep -a -n -C 80 '^func (a \*App) refreshAll' "$F"
           exit 0
-      - name: Compile UI
+      - name: Inspect agent startup
         shell: bash
         run: |
           set +e
-          cd /tmp/gat-src
-          echo '=== go build UI ==='
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/GAT_LOG_SERVER_test.exe ./cmd/ui 2>&1
-          echo build_rc=$?
-          ls -lh /tmp/GAT_LOG_SERVER_test.exe 2>/dev/null || true
+          F=/tmp/gat-src/cmd/agent/main.go
+          echo '=== agent functions ==='
+          grep -a -nE '^func (main|newAgent|.*serve|.*run|.*pollLoop|.*refreshStatus|.*ensureFunnel|.*loadTelemetry)' "$F" | head -n 1000
+          echo '=== agent main/startup ==='
+          grep -a -nEi -C 90 '^func main|ListenAndServe|refreshStatus\(|pollLoop\(|StartFunnel|ensureFunnel|http\.Server|ServeMux|HandleFunc' "$F" | head -n 8000
+          exit 0
+      - name: Inspect core refresh costs
+        shell: bash
+        run: |
+          set +e
+          F=/tmp/gat-src/internal/core/core.go
+          grep -a -nEi -C 70 '^func (BuildStatus|ParseSession|Read.*Log|Find.*Log|Detect|StartFunnel|TailscalePublicURL)|server\.log|ReadFile|ReadDir|Walk|RunHidden|exec\.Command' "$F" | head -n 10000
           exit 0
