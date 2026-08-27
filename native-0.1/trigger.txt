@@ -1,1 +1,1 @@
-build 0.1 reliability 2.0.3 retry-1 2026-08-27
+build 0.1 session-state 2.0.4 2026-08-27
