@@ -8,5 +8,6 @@
   "script_url": "",
   "script_sha256": "",
   "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.3.ps1",
-  "patch_sha256": "76e683ae86d9dfb9936b30bb6f47c9454ca2d10bafcf79f7a8227d44b0166c8a"
+  "patch_sha256": "",
+  "patch_git_blob_sha1": "d7ed8b7157f7287e2ae4643dc424789e1fe815cb"
 }
