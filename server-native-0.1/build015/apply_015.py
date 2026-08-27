@@ -227,8 +227,4 @@ u = u.replace(old_main, new_main, 1)
 u = u.replace('&http.Client{Timeout: 8 * time.Second}', '&http.Client{Timeout: 2 * time.Second}')
 u = u.replace('&http.Client{Timeout: 600 * time.Millisecond}', '&http.Client{Timeout: 400 * time.Millisecond}')
 
-# The panel had kept the original telemetry path from the truncated source. Point it to the compatibility handler.
-u = u.replace('"/api/ui/telemetry"', '"/api/ui/status"')
-u = u.replace('"/api/ui/telemetry/"', '"/api/ui/status/"')
-
 ui.write_text(u, encoding='utf-8')
