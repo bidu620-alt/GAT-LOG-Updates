@@ -121,6 +121,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main
+          git reset --hard HEAD
+          git clean -fdx
           git checkout -B main origin/main
           mkdir -p releases
           cp "$RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe" releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe
