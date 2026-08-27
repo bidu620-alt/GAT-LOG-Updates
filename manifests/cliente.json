@@ -1,12 +1,12 @@
 {
   "app": "GAT Telemetria Cliente",
   "channel": "stable",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "obrigatoria": false,
-  "notas": "Corrige a conexao automatica quando o motorista ja estava dentro da sessao antes de abrir o cliente.",
+  "notas": "PowerShell auxiliar oculto e fallback de peso pelo perfil/save ativo do ETS2 quando a telemetria retorna zero.",
   "updater_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/updater/cliente_update.ps1",
   "script_url": "",
   "script_sha256": "",
-  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.2b.ps1",
-  "patch_sha256": "87f401dfaff8165258740d6136ec0182f99b771153cf9784cb076ba7f8fd915a"
+  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.3.ps1",
+  "patch_sha256": "ee9c2d7127498cb83b2f734d97afb0c80fd1e28a0b10fc04d81802c8885edfe5"
 }
