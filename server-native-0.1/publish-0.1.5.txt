@@ -1,0 +1,1 @@
+publish 0.1.5 - startup freeze fix, cached status, async agent and telemetry - validated
