@@ -32,8 +32,8 @@ jobs:
             echo 'Fonte 2.0.3 ja aplicado.'
           else
             cat native-0.1/patch-2.0.3.part.* > /tmp/gat-2.0.3.patch
-            git apply --check /tmp/gat-2.0.3.patch
-            git apply /tmp/gat-2.0.3.patch
+            git apply -p0 --check /tmp/gat-2.0.3.patch
+            git apply -p0 /tmp/gat-2.0.3.patch
           fi
           grep -q 'func acquireSingleInstance' native-0.1/main.go
           grep -q 'func loadOfflineQueue' native-0.1/main.go
