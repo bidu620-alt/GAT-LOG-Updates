@@ -24,28 +24,33 @@ jobs:
           echo gzip_rc=$?
           tar -xf /tmp/gat-source.tar -C /tmp/gat-src
           echo tar_rc=$?
-          echo '=== recovered files ==='
           find /tmp/gat-src -maxdepth 5 -type f -printf '%P %s bytes\n' | sort
           exit 0
-      - name: Inspect server UI startup
+      - name: Inspect UI startup and requests
         shell: bash
         run: |
           set +e
-          F=/tmp/gat-src/cmd/server/main.go
-          echo '=== server file ==='
-          ls -lh "$F"
+          F=/tmp/gat-src/cmd/ui/main.go
           echo '=== functions ==='
-          grep -a -nE '^func (main|adminReq|ensureAgent|\(.*\) refreshAll|populatePage|wndProc|action|checkUpdate|.*Update|.*Timer)' "$F" | head -n 500
-          echo '=== blocking/startup candidates ==='
-          grep -a -nEi -C 25 'refreshAll|adminReq|ensureAgent|time\.Sleep|http\.|Client\{|Timeout|WM_TIMER|SetTimer|pSetTimer|go func|check.*update|update.*check|populatePage|ShowWindow|GetMessage|agent' "$F" | head -n 12000
+          grep -a -nE '^func (main|adminReq|ensureAgent|populatePage|wndProc|action|.*refreshAll|.*RefreshAll|.*Update|.*Timer)' "$F" | head -n 1000
+          echo '=== refreshAll ==='
+          grep -a -n -C 70 'func (.*refreshAll\|func .*refreshAll' "$F" | head -n 1500
+          echo '=== adminReq ==='
+          grep -a -n -C 70 '^func adminReq' "$F" | head -n 1500
+          echo '=== ensureAgent ==='
+          grep -a -n -C 80 '^func ensureAgent' "$F" | head -n 1800
+          echo '=== main ==='
+          grep -a -n -C 160 '^func main' "$F" | head -n 3000
+          echo '=== timer/window proc ==='
+          grep -a -nEi -C 45 'WM_TIMER|pSetTimer|SetTimer|refreshAll\(|populatePage\(|ShowWindow|GetMessage|time\.Sleep|http\.Client|Timeout' "$F" | head -n 9000
           exit 0
-      - name: Compile server UI
+      - name: Compile UI
         shell: bash
         run: |
           set +e
           cd /tmp/gat-src
-          echo '=== go build server ==='
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/GAT_LOG_SERVER_test.exe ./cmd/server 2>&1
+          echo '=== go build UI ==='
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/GAT_LOG_SERVER_test.exe ./cmd/ui 2>&1
           echo build_rc=$?
           ls -lh /tmp/GAT_LOG_SERVER_test.exe 2>/dev/null || true
           exit 0
