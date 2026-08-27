@@ -1,0 +1,142 @@
+name: Publish GAT-LOG Server DotNet 1.0.2 Test
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/publish-1.0.2-test.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+          cache: false
+      - name: Build Go agent with moderator fix
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          cd /tmp/gat-src
+          gofmt -w cmd/agent/main.go internal/core/core.go
+          mkdir -p "$GITHUB_WORKSPACE/agent-out"
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe" ./cmd/agent
+          test -s "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-agent-102
+          path: agent-out/GAT_LOG_AGENT.exe
+          retention-days: 2
+
+  publish:
+    needs: agent
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/download-artifact@v4
+        with:
+          name: dotnet-agent-102
+          path: server-dotnet/GatLogInstaller/payload
+
+      - name: Mark UI and installer as 1.0.2
+        shell: pwsh
+        run: |
+          $ui = 'server-dotnet/GatLogServer/MainForm.cs'
+          $s = Get-Content $ui -Raw
+          $s = $s.Replace('CurrentVersion = "1.0.0"', 'CurrentVersion = "1.0.2"')
+          $s = $s.Replace('GAT-LOG SERVER 1.0 | ETS2 + Telemetria', 'GAT-LOG SERVER 1.0.2 | ETS2 + Telemetria')
+          $s = $s.Replace('C# WinForms 1.0.0', 'C# WinForms 1.0.2')
+          Set-Content $ui $s -Encoding UTF8
+
+          $proj = 'server-dotnet/GatLogServer/GatLogServer.csproj'
+          $p = Get-Content $proj -Raw
+          $p = $p.Replace('<Version>1.0.0.0</Version>', '<Version>1.0.2.0</Version>')
+          $p = $p.Replace('<FileVersion>1.0.0.0</FileVersion>', '<FileVersion>1.0.2.0</FileVersion>')
+          $p = $p.Replace('<AssemblyVersion>1.0.0.0</AssemblyVersion>', '<AssemblyVersion>1.0.2.0</AssemblyVersion>')
+          Set-Content $proj $p -Encoding UTF8
+
+          $ip = 'server-dotnet/GatLogInstaller/Program.cs'
+          $is = Get-Content $ip -Raw
+          $is = $is.Replace('1.0.0 TESTE', '1.0.2 TESTE')
+          Set-Content $ip $is -Encoding UTF8
+
+          $iproj = 'server-dotnet/GatLogInstaller/GatLogInstaller.csproj'
+          $i = Get-Content $iproj -Raw
+          $i = $i.Replace('GAT_LOG_SERVER_DOTNET_SETUP_1.0.0_TESTE', 'GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE')
+          Set-Content $iproj $i -Encoding UTF8
+
+      - name: Build CSharp server
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogServer/GatLogServer.csproj
+          dotnet build server-dotnet/GatLogServer/GatLogServer.csproj -c Release --no-restore
+
+      - name: Prepare installer payload
+        shell: pwsh
+        run: |
+          $out = 'server-dotnet/GatLogServer/bin/Release/net48'
+          $pay = 'server-dotnet/GatLogInstaller/payload'
+          New-Item -ItemType Directory -Force "$pay/assets" | Out-Null
+          Copy-Item "$out/GAT_LOG_SERVER.exe" "$pay/GAT_LOG_SERVER.exe" -Force
+          Copy-Item "$out/GAT_LOG_SERVER.exe.config" "$pay/GAT_LOG_SERVER.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          Copy-Item 'server-native-0.1/assets/logo.png' "$pay/assets/logo.png" -Force
+          Copy-Item 'server-native-0.1/assets/banner.png' "$pay/assets/banner.png" -Force
+          if (-not (Test-Path "$pay/GAT_LOG_AGENT.exe")) { throw 'Agente ausente.' }
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogInstaller/GatLogInstaller.csproj
+          dotnet build server-dotnet/GatLogInstaller/GatLogInstaller.csproj -c Release --no-restore
+          $setup = 'server-dotnet/GatLogInstaller/bin/Release/net48/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe'
+          if (-not (Test-Path $setup)) { throw 'Instalador 1.0.2 não foi gerado.' }
+          Copy-Item $setup "$env:RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe" -Force
+
+      - name: Publish setup and updater manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout -B main origin/main
+          mkdir -p releases
+          cp "$RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe" releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe
+          SHA=$(sha256sum releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe | awk '{print $1}')
+          cat > server_dotnet_version.json <<EOF
+          {
+            "app": "GAT-LOG Server CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.2",
+            "display_version": "1.0.2 TESTE",
+            "notas": "Etapa 2A: ativa e valida o sistema de atualização automática pelo botão ATUALIZAR APP. Mantém a correção do moderador da 1.0.1. Não altera telemetria nem sua frequência.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe server_dotnet_version.json
+          git commit -m "Publica GAT-LOG Server CSharp 1.0.2 TESTE"
+          git push origin main
+          sha256sum releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe
