@@ -1,0 +1,326 @@
+fe.Pointer(uintptr(unsafe.Pointer(ptr)) + uintptr(i*2)))
+		if v == 0 {
+			break
+		}
+		arr = append(arr, v)
+	}
+	return syscall.UTF16ToString(arr)
+}
+
+func addServerFromClipboard() {
+	clip := strings.TrimSpace(clipboardGet())
+	if clip == "" {
+		msgBox("Copie primeiro o CODIGO DO SERVIDOR (GAT1:...) ou o endereco https://... e clique ADICIONAR.", "GAT Telemetria", MB_OK|MB_ICONINFORMATION)
+		return
+	}
+	s, ok := decodeServerCode(clip)
+	if !ok {
+		msgBox("O conteudo da area de transferencia nao e um codigo/endereco GAT valido.", "GAT Telemetria", MB_OK|MB_ICONWARNING)
+		return
+	}
+	found := false
+	for i, x := range servers {
+		if strings.EqualFold(strings.TrimRight(x.Endpoint, "/"), s.Endpoint) {
+			servers[i] = s
+			found = true
+			break
+		}
+	}
+	if !found {
+		servers = append(servers, s)
+	}
+	saveServers()
+	reloadCombo(s.Endpoint)
+	settings.LastServer = s.Endpoint
+	saveSettings()
+	refreshServerInfoAsync()
+}
+func removeSelectedServer() {
+	s, ok := selectedServer()
+	if !ok {
+		return
+	}
+	if msgBox("Remover o servidor "+s.Name+" desta lista?", "GAT Telemetria", MB_YESNO|MB_ICONWARNING) != IDYES {
+		return
+	}
+	idx := int(send(hServerCombo, CB_GETCURSEL, 0, 0))
+	servers = append(servers[:idx], servers[idx+1:]...)
+	saveServers()
+	reloadCombo("")
+	refreshServerInfoAsync()
+}
+
+func showSession(session bool) {
+	loginControls := []syscall.Handle{hServerCombo, hServerStatus, hPlayers, hRoomID, hCopy, hAdd, hRemove, hRefresh, hAuto, hEnter, hLoginMsg}
+	sessionControls := []syscall.Handle{hSessionServer, hSessionDriver, hTruckStatus, hGatStatus, hTelStatus, hCargo, hTruck, hSwitch, hExit}
+	for _, h := range loginControls {
+		show(h, !session)
+	}
+	for _, h := range sessionControls {
+		show(h, session)
+	}
+}
+
+func wndProc(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
+	switch msg {
+	case WM_PAINT:
+		paintMain(hwnd)
+		return 0
+	case WM_ERASEBKGND:
+		return 1
+	case WM_DRAWITEM:
+		dis := (*DRAWITEMSTRUCT)(unsafe.Pointer(lParam))
+		drawOwnerButton(dis)
+		return 1
+	case WM_CTLCOLORSTATIC:
+		hdc := syscall.Handle(wParam)
+		child := syscall.Handle(lParam)
+
+		// Os STATICs ficam sobre os cards. Fundo opaco evita que o texto
+		// anterior permaneça visível quando Status/Telemetria são atualizados.
+		procSetBkMode.Call(uintptr(hdc), 2) // OPAQUE
+		procSetBkColor.Call(uintptr(hdc), rgb(13, 39, 58))
+		col := rgb(235, 245, 255)
+		if child == hServerStatus {
+			col = rgb(73, 232, 132)
+		}
+		if child == hLoginMsg {
+			col = rgb(255, 194, 59)
+		}
+		if child == hTruckStatus || child == hGatStatus || child == hTelStatus {
+			col = rgb(116, 211, 255)
+		}
+		procSetTextColor.Call(uintptr(hdc), col)
+		return uintptr(brushCard)
+	case WM_CTLCOLOREDIT:
+		hdc := syscall.Handle(wParam)
+		procSetTextColor.Call(uintptr(hdc), rgb(245, 250, 255))
+		procSetBkColor.Call(uintptr(hdc), rgb(18, 49, 72))
+		return uintptr(brushEdit)
+	case WM_CTLCOLORLISTBOX:
+		hdc := syscall.Handle(wParam)
+		procSetTextColor.Call(uintptr(hdc), rgb(245, 250, 255))
+		procSetBkColor.Call(uintptr(hdc), rgb(18, 49, 72))
+		return uintptr(brushEdit)
+	case WM_CTLCOLORBTN:
+		hdc := syscall.Handle(wParam)
+		procSetBkMode.Call(uintptr(hdc), TRANSPARENT)
+		procSetTextColor.Call(uintptr(hdc), rgb(235, 245, 255))
+		return uintptr(brushCard)
+	case WM_COMMAND:
+		id := int(loword(wParam))
+		notify := hiword(wParam)
+		if notify == BN_CLICKED {
+			switch id {
+			case idAdd:
+				addServerFromClipboard()
+			case idRemove:
+				removeSelectedServer()
+			case idRefresh:
+				refreshServerInfoAsync()
+			case idCopy:
+				if clipboardSet(getText(hRoomID)) {
+					setText(hLoginMsg, "ID da sala copiado. Agora abra o ETS2 e entre no comboio.")
+				}
+			case idAuto:
+				autoConnect = send(hAuto, BM_GETCHECK, 0, 0) == BST_CHECKED
+				if s, ok := selectedServer(); ok {
+					settings.LastServer = s.Endpoint
+				}
+				saveSettings()
+				mu.Lock()
+				waiting = autoConnect
+				lastAuto = time.Time{}
+				mu.Unlock()
+				if autoConnect {
+					setText(hLoginMsg, "Modo automatico ativo: aguardando ETS2/sessao...")
+				} else {
+					setText(hLoginMsg, "Modo automatico desativado. Clique ENTRAR quando quiser.")
+				}
+			case idEnter:
+				mu.Lock()
+				waiting = true
+				lastAuto = time.Time{}
+				mu.Unlock()
+				go tryConnect()
+			case idUpdate:
+				checkUpdate(true)
+			case idTruck:
+				startTruck()
+			case idSwitch:
+				mu.Lock()
+				inSession = false
+				waiting = false
+				mu.Unlock()
+				showSession(false)
+				send(hServerCombo, CB_SETCURSEL, ^uintptr(0), 0)
+				setText(hLoginMsg, "Escolha outro servidor. Ao selecionar, ele vira o servidor padrao.")
+			case idExit:
+				procPostMessage.Call(uintptr(hwndMain), WM_CLOSE, 0, 0)
+			}
+		}
+		if id == idServerCombo && notify == CBN_SELCHANGE {
+			if s, ok := selectedServer(); ok {
+				settings.LastServer = s.Endpoint
+				saveSettings()
+				mu.Lock()
+				waiting = autoConnect
+				lastAuto = time.Time{}
+				mu.Unlock()
+				if autoConnect {
+					setText(hLoginMsg, "Servidor selecionado. Modo automatico ativo: aguardando ETS2/sessao...")
+				} else {
+					setText(hLoginMsg, "Servidor selecionado. Clique ENTRAR para aguardar a sessao.")
+				}
+				refreshServerInfoAsync()
+			}
+		}
+		return 0
+	case WM_TIMER:
+		tickAsync()
+		return 0
+	case WM_APP_INFO_DONE:
+		applyServerInfo()
+		return 0
+	case WM_CLOSE:
+		procKillTimer.Call(uintptr(hwnd), 1)
+		procDestroyWindow := modUser32.NewProc("DestroyWindow")
+		procDestroyWindow.Call(uintptr(hwnd))
+		return 0
+	case WM_DESTROY:
+		procPostQuitMessage.Call(0)
+		return 0
+	}
+	r, _, _ := procDefWindowProc.Call(uintptr(hwnd), uintptr(msg), wParam, lParam)
+	return r
+}
+
+func loadAppIcon() syscall.Handle {
+	if appIcon != 0 {
+		return appIcon
+	}
+	path := filepath.Join(os.TempDir(), "gat_telemetria_01.ico")
+	_ = os.WriteFile(path, appIconBytes, 0644)
+	h, _, _ := procLoadImage.Call(0, uintptr(unsafe.Pointer(utf16Ptr(path))), IMAGE_ICON, 0, 0, LR_LOADFROMFILE|LR_DEFAULTSIZE)
+	appIcon = syscall.Handle(h)
+	return appIcon
+}
+
+func registerMainClass() string {
+	cls := "GATTelemetry2Main"
+	inst, _, _ := modKernel32.NewProc("GetModuleHandleW").Call(0)
+	cursor, _, _ := procLoadCursor.Call(0, 32512)
+	icon := loadAppIcon()
+	wc := WNDCLASSEX{CbSize: uint32(unsafe.Sizeof(WNDCLASSEX{})), LpfnWndProc: syscall.NewCallback(wndProc), HInstance: syscall.Handle(inst), HIcon: icon, HCursor: syscall.Handle(cursor), HbrBackground: brushBg, LpszClassName: utf16Ptr(cls), HIconSm: icon}
+	procRegisterClassEx.Call(uintptr(unsafe.Pointer(&wc)))
+	return cls
+}
+
+func createUI() {
+	cls := registerMainClass()
+	inst, _, _ := modKernel32.NewProc("GetModuleHandleW").Call(0)
+	hwnd, _, _ := procCreateWindowEx.Call(
+		0,
+		uintptr(unsafe.Pointer(utf16Ptr(cls))),
+		uintptr(unsafe.Pointer(utf16Ptr("GAT TELEMETRIA 0.1 | Cliente Nativo ETS2"))),
+		WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_VISIBLE,
+		uintptr(CW_USEDEFAULT), uintptr(CW_USEDEFAULT), 840, 650, 0, 0, inst, 0,
+	)
+	hwndMain = syscall.Handle(hwnd)
+	if appIcon != 0 {
+		procSendMessage.Call(uintptr(hwndMain), WM_SETICON, ICON_BIG, uintptr(appIcon))
+		procSendMessage.Call(uintptr(hwndMain), WM_SETICON, ICON_SMALL, uintptr(appIcon))
+	}
+
+	// Titulo, subtitulo e versao sao desenhados em WM_PAINT sobre o banner.
+	hTitle, hSubtitle, hVersion = 0, 0, 0
+
+	// Tela de seleção / login — layout compacto e proporcional.
+	createControl("STATIC", "SERVIDOR", WS_CHILD|WS_VISIBLE, 33, 174, 110, 20, hwndMain, 0)
+	hServerCombo = createControl("COMBOBOX", "", WS_CHILD|WS_VISIBLE|WS_TABSTOP|CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_VSCROLL, 33, 196, 758, 240, hwndMain, idServerCombo)
+	hServerStatus = createControl("STATIC", "Status: CONSULTANDO...", WS_CHILD|WS_VISIBLE, 33, 232, 485, 22, hwndMain, 0)
+	send(hServerStatus, WM_SETFONT, uintptr(fontBold), 1)
+	hPlayers = createControl("STATIC", "Jogadores: -", WS_CHILD|WS_VISIBLE, 592, 232, 199, 22, hwndMain, 0)
+
+	createControl("STATIC", "ID DA SALA", WS_CHILD|WS_VISIBLE, 33, 263, 120, 20, hwndMain, 0)
+	hRoomID = createControl("EDIT", "Aguardando...", WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL|ES_READONLY, 33, 284, 515, 28, hwndMain, 0)
+	hCopy = createControl("BUTTON", "COPIAR ID", WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_OWNERDRAW, 562, 282, 229, 32, hwndMain, idCopy)
+	enable(hCopy, false)
+
+	hAdd = createControl("BUTTON", "ADICIONAR SERVIDOR", WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_OWNERDRAW, 33, 332, 230, 34, hwndMain, idAdd)
+	hRemove = createControl("BUTTON", "REMOVER", WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_OWNERDRAW, 273, 332, 155, 34, hwndMain, idRemove)
+	hRefresh = createControl("BUTTON", "ATUALIZAR STATUS", WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_OWNERDRAW, 438, 332, 353, 34, hwndMain, idRefresh)
+
+	hAuto = createControl("BUTTON", "Entrar automaticamente ao abrir o cliente", WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_AUTOCHECKBOX, 33, 382, 500, 24, hwndMain, idAuto)
+	if autoConnect {
+		send(hAuto, BM_SETCHECK, BST_CHECKED, 0)
+	}
+	hEnter = createControl("BUTTON", "ENTRAR / AGUARDAR SESSAO", WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_OWNERDRAW, 33, 416, 758, 44, hwndMain, idEnter)
+	hLoginMsg = createControl("STATIC", "Selecione o servidor. O cliente pode aguardar mesmo com o ETS2 fechado.", WS_CHILD|WS_VISIBLE, 33, 474, 758, 26, hwndMain, 0)
+	send(hLoginMsg, WM_SETFONT, uintptr(fontSmall), 1)
+
+	// Tela da sessão/telemetria — mesma densidade visual do login.
+	hSessionServer = createControl("STATIC", "Servidor: -", WS_CHILD, 33, 178, 758, 26, hwndMain, 0)
+	send(hSessionServer, WM_SETFONT, uintptr(fontBold), 1)
+	hSessionDriver = createControl("STATIC", "Motorista: -", WS_CHILD, 33, 210, 758, 24, hwndMain, 0)
+	hTruckStatus = createControl("STATIC", "TruckSim GPS       ● AGUARDANDO", WS_CHILD, 33, 252, 758, 26, hwndMain, 0)
+	hGatStatus = createControl("STATIC", "GAT LOG            ● AGUARDANDO", WS_CHILD, 33, 284, 758, 26, hwndMain, 0)
+	hTelStatus = createControl("STATIC", "Telemetria         ● AGUARDANDO", WS_CHILD, 33, 316, 758, 26, hwndMain, 0)
+	hCargo = createControl("STATIC", "Aguardando telemetria...", WS_CHILD, 33, 357, 758, 74, hwndMain, 0)
+	send(hCargo, WM_SETFONT, uintptr(fontBold), 1)
+	hTruck = createControl("BUTTON", "ABRIR TRUCKSIM GPS", WS_CHILD|WS_TABSTOP|BS_OWNERDRAW, 33, 458, 238, 38, hwndMain, idTruck)
+	hSwitch = createControl("BUTTON", "TROCAR SERVIDOR", WS_CHILD|WS_TABSTOP|BS_OWNERDRAW, 285, 458, 238, 38, hwndMain, idSwitch)
+	hExit = createControl("BUTTON", "SAIR", WS_CHILD|WS_TABSTOP|BS_OWNERDRAW, 537, 458, 254, 38, hwndMain, idExit)
+
+	hUpdate = createControl("BUTTON", "VERIFICAR ATUALIZACAO", WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_OWNERDRAW, 570, 580, 221, 28, hwndMain, idUpdate)
+	createControl("STATIC", "GAT-LOG  •  Telemetria 0.1  •  Biduzao", WS_CHILD|WS_VISIBLE, 33, 584, 500, 20, hwndMain, 0)
+
+	reloadCombo(settings.LastServer)
+	showSession(false)
+	refreshServerInfoAsync()
+	if autoConnect && len(servers) > 0 {
+		mu.Lock()
+		waiting = true
+		mu.Unlock()
+		setText(hLoginMsg, "Modo automatico ativo. AGUARDANDO ETS2...")
+		setText(hEnter, "AGUARDANDO ETS2...")
+	}
+	procSetTimer.Call(uintptr(hwndMain), 1, 1200, 0)
+	procShowWindow.Call(uintptr(hwndMain), SW_SHOW)
+	procUpdateWindow.Call(uintptr(hwndMain))
+	go func() { time.Sleep(1600 * time.Millisecond); checkUpdate(false) }()
+}
+
+func main() {
+	if len(os.Args) > 1 && os.Args[1] == "--install-update" {
+		runUpdateInstaller(os.Args[1:])
+		return
+	}
+	runtime.LockOSThread()
+	initTheme()
+	initPaths()
+	logLine("inicio " + appVersion)
+	defer func() {
+		if r := recover(); r != nil {
+			logLine(fmt.Sprintf("PANIC: %v", r))
+			msgBox(fmt.Sprintf("O GAT Telemetria encontrou um erro.\r\n\r\n%v\r\n\r\nLog: %s", r, logFile), "GAT Telemetria", MB_OK|MB_ICONERROR)
+		}
+	}()
+	loadServers()
+	logLine(fmt.Sprintf("servidores carregados: %d", len(servers)))
+	loadSettings()
+	deviceID = getDeviceID()
+	logLine("device id ok")
+	createUI()
+	logLine("interface criada")
+	var msg MSG
+	for {
+		r, _, _ := procGetMessage.Call(uintptr(unsafe.Pointer(&msg)), 0, 0, 0)
+		if int32(r) <= 0 {
+			break
+		}
+		procTranslateMessage.Call(uintptr(unsafe.Pointer(&msg)))
+		procDispatchMessage.Call(uintptr(unsafe.Pointer(&msg)))
+	}
+	logLine("encerrado")
+}
