@@ -23,15 +23,15 @@ jobs:
           cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
           tar -xf /tmp/gat-source.tar -C /tmp/gat-src
           exit 0
-      - name: Inspect end of UI source
+      - name: Inspect embedded UI assets
         shell: bash
         run: |
           set +e
           F=/tmp/gat-src/cmd/ui/main.go
-          echo '=== line count ==='
-          wc -l "$F"
-          echo '=== functions near end ==='
-          grep -a -n '^func ' "$F" | tail -n 80
-          echo '=== last 280 lines ==='
-          tail -n 280 "$F"
+          echo '=== top 80 ==='
+          head -n 80 "$F"
+          echo '=== loadImages ==='
+          grep -a -n -A45 -B5 '^func (a \*App) loadImages' "$F"
+          echo '=== image uses ==='
+          grep -a -nE 'bannerBytes|logoBytes|iconBytes|bannerPix|logoPix|embed' "$F"
           exit 0
