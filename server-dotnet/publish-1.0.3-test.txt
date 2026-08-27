@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server C# 1.0.3 TESTE para validar somente a redução do delay da telemetria.
