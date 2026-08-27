@@ -29,7 +29,7 @@ import (
 
 const (
 	appName        = "GAT Telemetria"
-	appVersion     = "2.0.5"
+	appVersion     = "2.0.6"
 	displayVersion = "0.1"
 	truckURL       = "http://127.0.0.1:31377/api/ets2/telemetry"
 	truckRoot      = "http://127.0.0.1:31377/"
@@ -1169,6 +1169,42 @@ func normalizeTelemetry(m map[string]any) map[string]any {
 		m["cargoMass"] = n
 		m["cargo_mass"] = n
 	}
+
+	// TruckSim GPS envia a distancia de navegacao em metros.
+	// Mantemos os dois aliases para compatibilidade com servidor antigo e novo.
+	if n, ok := num(pathValue(m, "navigation.estimatedDistance")); ok {
+		m["distance_m"] = n
+		m["remaining_km"] = n / 1000.0
+	} else if n, ok := num(pathValue(m, "navigation.estimated_distance")); ok {
+		m["distance_m"] = n
+		m["remaining_km"] = n / 1000.0
+	}
+
+	// No TruckSim GPS o campo normal e truck.speed (m/s).
+	// Converte para km/h e tambem aceita variantes ja normalizadas.
+	if n, ok := num(pathValue(m, "truck.speed")); ok {
+		m["speed_kmh"] = n * 3.6
+	} else if n, ok := num(pathValue(m, "truck.speedKmh")); ok {
+		m["speed_kmh"] = n
+	} else if n, ok := num(pathValue(m, "truck.speed_kmh")); ok {
+		m["speed_kmh"] = n
+	}
+
+	// Aliases simples para facilitar a leitura em qualquer versao do servidor.
+	if v := pathValue(m, "job.cargo"); v != nil {
+		m["cargo_name"] = fmt.Sprint(v)
+	} else if v := pathValue(m, "job.cargoName"); v != nil {
+		m["cargo_name"] = fmt.Sprint(v)
+	}
+	if v := pathValue(m, "job.sourceCity"); v != nil {
+		m["source_city"] = fmt.Sprint(v)
+	}
+	if v := pathValue(m, "job.destinationCity"); v != nil {
+		m["destination_city"] = fmt.Sprint(v)
+	}
+	if v := pathValue(m, "gameplay.onJob"); v != nil {
+		m["on_job"] = v
+	}
 	return m
 }
 func formatMass(n float64, ok bool) string {
@@ -1745,9 +1781,17 @@ func tickAsync() {
 				km := "-"
 				if x, ok := num(r.JSON["distance_m"]); ok {
 					km = fmt.Sprintf("%.1f km", x/1000)
+				} else if x, ok := num(r.JSON["remaining_km"]); ok {
+					km = fmt.Sprintf("%.1f km", x)
+				} else if x, ok := num(tele["distance_m"]); ok {
+					km = fmt.Sprintf("%.1f km", x/1000)
+				} else if x, ok := num(tele["remaining_km"]); ok {
+					km = fmt.Sprintf("%.1f km", x)
 				}
 				vel := "-"
 				if x, ok := num(r.JSON["speed_kmh"]); ok {
+					vel = fmt.Sprintf("%.0f km/h", x)
+				} else if x, ok := num(tele["speed_kmh"]); ok {
 					vel = fmt.Sprintf("%.0f km/h", x)
 				}
 				mass, mok := telemetryMass(tele)
