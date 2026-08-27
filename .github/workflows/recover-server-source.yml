@@ -1,0 +1,34 @@
+name: Recover server source partial
+
+on:
+  push:
+    branches:
+      - fix/server-ui-freeze
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover partial source
+        shell: bash
+        run: |
+          set +e
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/server_source.go
+          rc=$?
+          echo "gzip_rc=$rc"
+          echo "decoded_lines=$(wc -l < /tmp/server_source.go)"
+          echo "decoded_bytes=$(wc -c < /tmp/server_source.go)"
+          exit 0
+      - name: Show telemetry and player code
+        shell: bash
+        run: |
+          set +e
+          echo '=== symbols ==='
+          grep -nEi -C 30 'func .*clientTelemetry|func .*uiStatus|func .*refreshStatus|func .*clientPlayers|func .*saveTelemetry|func .*loadTelemetry|type .*Telemetry|players_online|player_count|players_count|telemetry' /tmp/server_source.go | head -n 5000
+          echo '=== tail ==='
+          tail -n 120 /tmp/server_source.go
+          exit 0
