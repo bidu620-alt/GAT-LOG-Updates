@@ -1,0 +1,25 @@
+name: Recover server source telemetry
+
+on:
+  push:
+    branches:
+      - fix/server-ui-freeze
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover and inspect
+        shell: bash
+        run: |
+          set +e
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/server_source.go
+          echo '=== player functions ==='
+          grep -a -nEi -C 45 'func \(a \*agent\).*clientPlayers|func \(a \*agent\).*refreshStatus|player_count|players_online|players_count' /tmp/server_source.go | head -n 3000
+          echo '=== telemetry functions ==='
+          grep -a -nEi -C 65 'func \(a \*agent\).*clientTelemetry|func \(a \*agent\).*uiStatus|func .*saveTelemetry|func .*loadTelemetry|TelemetryRecord|telemetry.json' /tmp/server_source.go | head -n 5000
+          exit 0
