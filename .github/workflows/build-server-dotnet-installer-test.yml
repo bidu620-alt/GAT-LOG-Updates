@@ -11,18 +11,16 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    runs-on: windows-latest
+  agent:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23.x'
+          cache: false
 
-      - name: Build current Go agent
+      - name: Recover and build current Go agent
         shell: bash
         run: |
           set +e
@@ -30,13 +28,35 @@ jobs:
           cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
           tar -xf /tmp/gat-source.tar -C /tmp/gat-src
           set -e
-          python server-native-0.1/build015/apply_015.py
-          python server-native-0.1/build015/fix_check_update.py
-          python server-native-0.1/build017/apply_017.py
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
           cd /tmp/gat-src
           gofmt -w cmd/agent/main.go internal/core/core.go
-          mkdir -p "$GITHUB_WORKSPACE/server-dotnet/GatLogInstaller/payload"
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/server-dotnet/GatLogInstaller/payload/GAT_LOG_AGENT.exe" ./cmd/agent
+          mkdir -p "$GITHUB_WORKSPACE/agent-out"
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe" ./cmd/agent
+          test -s "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-agent-payload
+          path: agent-out/GAT_LOG_AGENT.exe
+          retention-days: 2
+
+  installer:
+    needs: agent
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Download Go agent
+        uses: actions/download-artifact@v4
+        with:
+          name: dotnet-agent-payload
+          path: server-dotnet/GatLogInstaller/payload
 
       - name: Build CSharp server
         shell: pwsh
@@ -55,6 +75,8 @@ jobs:
           Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
           Copy-Item 'server-native-0.1/assets/logo.png' "$pay/assets/logo.png" -Force
           Copy-Item 'server-native-0.1/assets/banner.png' "$pay/assets/banner.png" -Force
+          if (-not (Test-Path "$pay/GAT_LOG_AGENT.exe")) { throw 'GAT_LOG_AGENT.exe não foi baixado do job Linux.' }
+          Get-ChildItem -Recurse $pay | Select-Object FullName, Length
 
       - name: Build installer
         shell: pwsh
