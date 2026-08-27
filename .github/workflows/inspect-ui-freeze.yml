@@ -1,0 +1,41 @@
+name: Inspect native UI freeze
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server-native-0.1/inspect-ui-freeze.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover current native source
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          cd /tmp/gat-src
+          gofmt -w cmd/ui/main.go cmd/agent/main.go internal/core/core.go
+      - name: Show UI polling and window handlers
+        shell: bash
+        run: |
+          set +e
+          echo '=== pollAgent ==='
+          grep -n -A140 -B20 'func (.*pollAgent' /tmp/gat-src/cmd/ui/main.go
+          echo '=== callAgent / api ==='
+          grep -n -A120 -B20 -E 'func (.*callAgent|func callAgent|http.Client|PostMessage|SendMessage|InvalidateRect' /tmp/gat-src/cmd/ui/main.go | head -n 2500
+          echo '=== window proc ==='
+          grep -n -A360 -B20 -E 'func wndProc|WM_TIMER|WM_PAINT|WM_APP|WM_USER|WM_COMMAND' /tmp/gat-src/cmd/ui/main.go | head -n 4000
+          echo '=== goroutines ==='
+          grep -n -E '\bgo\s+' /tmp/gat-src/cmd/ui/main.go | head -n 500
+          exit 0
