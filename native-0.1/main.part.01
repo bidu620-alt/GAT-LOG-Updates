@@ -1,0 +1,388 @@
+weight), 0, 0, 0,
+		1, 0, 0, 5, 0,
+		uintptr(unsafe.Pointer(utf16Ptr(face))),
+	)
+	return syscall.Handle(h)
+}
+
+func imageToBGRA(img image.Image) ([]byte, int, int) {
+	b := img.Bounds()
+	w, h := b.Dx(), b.Dy()
+	pix := make([]byte, w*h*4)
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			r, g, bb, _ := img.At(b.Min.X+x, b.Min.Y+y).RGBA()
+			i := (y*w + x) * 4
+			pix[i+0] = byte(bb >> 8)
+			pix[i+1] = byte(g >> 8)
+			pix[i+2] = byte(r >> 8)
+			pix[i+3] = 0
+		}
+	}
+	return pix, w, h
+}
+
+func initTheme() {
+	brushBg = makeBrush(5, 20, 33)
+	brushCard = makeBrush(13, 39, 58)
+	brushEdit = makeBrush(18, 49, 72)
+	brushBlue = makeBrush(27, 102, 196)
+	brushGreen = makeBrush(25, 132, 72)
+	brushRed = makeBrush(177, 44, 34)
+	brushSlate = makeBrush(46, 73, 94)
+	brushAmber = makeBrush(196, 126, 7)
+	fontTitle = makeFont(-32, 700, "Segoe UI")
+	fontSubtitle = makeFont(-17, 400, "Segoe UI")
+	fontNormal = makeFont(-16, 400, "Segoe UI")
+	fontBold = makeFont(-16, 700, "Segoe UI")
+	fontSmall = makeFont(-14, 400, "Segoe UI")
+	if img, err := png.Decode(bytes.NewReader(bannerBytes)); err == nil {
+		bannerImage = img
+		bannerPixels, bannerW, bannerH = imageToBGRA(img)
+	}
+	if img, err := png.Decode(bytes.NewReader(logoBytes)); err == nil {
+		logoImage = img
+		logoPixels, logoW, logoH = imageToBGRA(img)
+	}
+}
+
+func drawEmbeddedImage(hdc syscall.Handle, pix []byte, sw, sh int, x, y, w, h int32) {
+	if len(pix) == 0 || sw <= 0 || sh <= 0 {
+		return
+	}
+	bmi := BITMAPINFO{}
+	bmi.Header.Size = uint32(unsafe.Sizeof(BITMAPINFOHEADER{}))
+	bmi.Header.Width = int32(sw)
+	bmi.Header.Height = -int32(sh)
+	bmi.Header.Planes = 1
+	bmi.Header.BitCount = 32
+	bmi.Header.Compression = BI_RGB
+	procStretchDIBits.Call(
+		uintptr(hdc), uintptr(x), uintptr(y), uintptr(w), uintptr(h),
+		0, 0, uintptr(sw), uintptr(sh),
+		uintptr(unsafe.Pointer(&pix[0])), uintptr(unsafe.Pointer(&bmi)),
+		DIB_RGB_COLORS, SRCCOPY,
+	)
+}
+
+func fillRectHDC(hdc syscall.Handle, r RECT, brush syscall.Handle) {
+	procFillRect.Call(uintptr(hdc), uintptr(unsafe.Pointer(&r)), uintptr(brush))
+}
+
+func drawTextBlock(hdc syscall.Handle, text string, r RECT, font syscall.Handle, color uintptr) {
+	procSetBkMode.Call(uintptr(hdc), TRANSPARENT)
+	procSetTextColor.Call(uintptr(hdc), color)
+	old, _, _ := procSelectObject.Call(uintptr(hdc), uintptr(font))
+	procDrawText.Call(uintptr(hdc), uintptr(unsafe.Pointer(utf16Ptr(text))), uintptr(^uint32(0)), uintptr(unsafe.Pointer(&r)), DT_VCENTER|DT_SINGLELINE)
+	if old != 0 {
+		procSelectObject.Call(uintptr(hdc), old)
+	}
+}
+
+func paintMain(hwnd syscall.Handle) {
+	var ps PAINTSTRUCT
+	hdc, _, _ := procBeginPaint.Call(uintptr(hwnd), uintptr(unsafe.Pointer(&ps)))
+	if hdc == 0 {
+		return
+	}
+	defer procEndPaint.Call(uintptr(hwnd), uintptr(unsafe.Pointer(&ps)))
+	dc := syscall.Handle(hdc)
+
+	// Janela mais compacta e equilibrada: area cliente ~824x615.
+	fillRectHDC(dc, RECT{0, 0, 824, 615}, brushBg)
+	drawEmbeddedImage(dc, bannerPixels, bannerW, bannerH, 0, 0, 824, 150)
+	fillRectHDC(dc, RECT{0, 147, 824, 153}, brushBlue)
+	fillRectHDC(dc, RECT{18, 164, 806, 565}, brushCard)
+	fillRectHDC(dc, RECT{18, 574, 806, 610}, brushCard)
+
+	// Identidade desenhada direto no banner: sem caixas brancas de STATIC.
+	drawEmbeddedImage(dc, logoPixels, logoW, logoH, 24, 24, 88, 88)
+	drawTextBlock(dc, "GAT TELEMETRIA", RECT{130, 28, 650, 66}, fontTitle, rgb(245, 250, 255))
+	drawTextBlock(dc, "Cliente nativo ETS2  |  sem PowerShell  |  GAT-LOG", RECT{132, 68, 690, 94}, fontSubtitle, rgb(144, 204, 255))
+	drawTextBlock(dc, "VERSAO  "+displayVersion, RECT{642, 112, 802, 136}, fontSmall, rgb(144, 204, 255))
+}
+
+func buttonBrush(id uint32) syscall.Handle {
+	switch int(id) {
+	case idEnter:
+		return brushGreen
+	case idExit:
+		return brushRed
+	case idRemove:
+		return brushSlate
+	case idUpdate, idCopy, idAdd, idRefresh, idTruck, idSwitch:
+		return brushBlue
+	default:
+		return brushBlue
+	}
+}
+
+func drawOwnerButton(dis *DRAWITEMSTRUCT) {
+	if dis == nil || dis.HDC == 0 {
+		return
+	}
+	br := buttonBrush(dis.CtlID)
+	if dis.ItemState&ODS_SELECTED != 0 {
+		br = brushSlate
+	}
+	fillRectHDC(dis.HDC, dis.RcItem, br)
+	procSetBkMode.Call(uintptr(dis.HDC), TRANSPARENT)
+	procSetTextColor.Call(uintptr(dis.HDC), rgb(255, 255, 255))
+	old, _, _ := procSelectObject.Call(uintptr(dis.HDC), uintptr(fontBold))
+	text := getText(dis.HwndItem)
+	procDrawText.Call(
+		uintptr(dis.HDC), uintptr(unsafe.Pointer(utf16Ptr(text))), uintptr(^uint32(0)),
+		uintptr(unsafe.Pointer(&dis.RcItem)), DT_CENTER|DT_VCENTER|DT_SINGLELINE,
+	)
+	if old != 0 {
+		procSelectObject.Call(uintptr(dis.HDC), old)
+	}
+}
+
+func createControl(class, text string, style uint32, x, y, w, h int32, parent syscall.Handle, id int) syscall.Handle {
+	inst, _, _ := modKernel32.NewProc("GetModuleHandleW").Call(0)
+	hwnd, _, _ := procCreateWindowEx.Call(
+		0,
+		uintptr(unsafe.Pointer(utf16Ptr(class))),
+		uintptr(unsafe.Pointer(utf16Ptr(text))),
+		uintptr(style),
+		uintptr(x), uintptr(y), uintptr(w), uintptr(h),
+		uintptr(parent), uintptr(id), inst, 0,
+	)
+	font := uintptr(fontNormal)
+	if font == 0 {
+		font, _, _ = procGetStockObject.Call(DEFAULT_GUI_FONT)
+	}
+	send(syscall.Handle(hwnd), WM_SETFONT, font, 1)
+	return syscall.Handle(hwnd)
+}
+
+func initPaths() {
+	local := os.Getenv("LOCALAPPDATA")
+	appDataDir = filepath.Join(local, "GAT Telemetria Cliente") // compartilha dados da 1.8.x
+	_ = os.MkdirAll(appDataDir, 0755)
+	serversFile = filepath.Join(appDataDir, "servers.json")
+	credFile = filepath.Join(appDataDir, "credentials.json")
+	settingsFile = filepath.Join(appDataDir, "client_settings.json")
+	debugFile = filepath.Join(appDataDir, "telemetry_mass_debug.json")
+	logFile = filepath.Join(appDataDir, "gat2_startup.log")
+}
+
+func logLine(s string) {
+	if logFile == "" {
+		return
+	}
+	f, e := os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if e != nil {
+		return
+	}
+	defer f.Close()
+	_, _ = fmt.Fprintf(f, "%s %s\r\n", time.Now().Format("2006-01-02 15:04:05"), s)
+}
+
+func loadServers() {
+	b, err := os.ReadFile(serversFile)
+	if err == nil {
+		_ = json.Unmarshal(b, &servers)
+	}
+	if len(servers) == 0 {
+		servers = []Server{
+			{Name: "BIDUZAO - DOUGLAS", Endpoint: "https://douglas.tail4577e8.ts.net"},
+			{Name: "JC - JEAN", Endpoint: "https://jean-jc.tailf14a00.ts.net"},
+		}
+		saveJSON(serversFile, servers)
+	}
+	for i := range servers {
+		servers[i].Endpoint = strings.TrimRight(servers[i].Endpoint, "/")
+	}
+}
+func saveServers() { saveJSON(serversFile, servers) }
+func loadSettings() {
+	settings = Settings{AutoConnect: true}
+	if b, err := os.ReadFile(settingsFile); err == nil {
+		_ = json.Unmarshal(b, &settings)
+	}
+	autoConnect = settings.AutoConnect
+}
+func saveSettings() {
+	settings.AutoConnect = autoConnect
+	settings.UpdatedAt = time.Now().Format(time.RFC3339)
+	saveJSON(settingsFile, settings)
+}
+func loadCredentials() []Credential {
+	var c []Credential
+	if b, e := os.ReadFile(credFile); e == nil {
+		_ = json.Unmarshal(b, &c)
+	}
+	return c
+}
+func saveCredentials(c []Credential) { saveJSON(credFile, c) }
+func saveJSON(path string, v any) {
+	if b, e := json.MarshalIndent(v, "", "  "); e == nil {
+		_ = os.WriteFile(path, b, 0644)
+	}
+}
+
+func dpapiProtect(s string) string {
+	if s == "" {
+		return ""
+	}
+	inb := []byte(s)
+	in := DATA_BLOB{cbData: uint32(len(inb)), pbData: &inb[0]}
+	var out DATA_BLOB
+	r, _, _ := procCryptProtectData.Call(uintptr(unsafe.Pointer(&in)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(&out)))
+	if r == 0 || out.pbData == nil {
+		return ""
+	}
+	defer procLocalFree.Call(uintptr(unsafe.Pointer(out.pbData)))
+	data := unsafe.Slice(out.pbData, out.cbData)
+	return base64.StdEncoding.EncodeToString(data)
+}
+func dpapiUnprotect(v string) string {
+	if v == "" {
+		return ""
+	}
+	b, e := base64.StdEncoding.DecodeString(v)
+	if e != nil || len(b) == 0 {
+		return ""
+	}
+	in := DATA_BLOB{cbData: uint32(len(b)), pbData: &b[0]}
+	var out DATA_BLOB
+	r, _, _ := procCryptUnprotectData.Call(uintptr(unsafe.Pointer(&in)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(&out)))
+	if r == 0 || out.pbData == nil {
+		return ""
+	}
+	defer procLocalFree.Call(uintptr(unsafe.Pointer(out.pbData)))
+	data := unsafe.Slice(out.pbData, out.cbData)
+	return string(data)
+}
+func getSavedToken(ep, drv string) string {
+	ep = strings.ToLower(strings.TrimRight(ep, "/"))
+	for _, c := range loadCredentials() {
+		if strings.ToLower(strings.TrimRight(c.Endpoint, "/")) == ep && c.Driver == drv {
+			return dpapiUnprotect(c.Token)
+		}
+	}
+	return ""
+}
+func credentialsForEndpoint(ep string) []Credential {
+	ep = strings.ToLower(strings.TrimRight(ep, "/"))
+	out := []Credential{}
+	for _, c := range loadCredentials() {
+		if strings.ToLower(strings.TrimRight(c.Endpoint, "/")) == ep {
+			out = append(out, c)
+		}
+	}
+	return out
+}
+func saveToken(ep, drv, tok string) {
+	ep = strings.TrimRight(ep, "/")
+	all := loadCredentials()
+	out := []Credential{}
+	for _, c := range all {
+		if strings.EqualFold(strings.TrimRight(c.Endpoint, "/"), ep) && c.Driver == drv {
+			continue
+		}
+		out = append(out, c)
+	}
+	out = append(out, Credential{Endpoint: ep, Driver: drv, Token: dpapiProtect(tok), SavedAt: time.Now().Format(time.RFC3339)})
+	saveCredentials(out)
+}
+func removeOtherTokens(ep, keep string) {
+	ep = strings.ToLower(strings.TrimRight(ep, "/"))
+	out := []Credential{}
+	for _, c := range loadCredentials() {
+		if strings.ToLower(strings.TrimRight(c.Endpoint, "/")) == ep && c.Driver != keep {
+			continue
+		}
+		out = append(out, c)
+	}
+	saveCredentials(out)
+}
+
+func hiddenCommand(name string, args ...string) *exec.Cmd {
+	cmd := exec.Command(name, args...)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true, CreationFlags: CREATE_NO_WINDOW}
+	return cmd
+}
+func getDeviceID() string {
+	raw := ""
+	out, e := hiddenCommand("reg.exe", "query", `HKLM\SOFTWARE\Microsoft\Cryptography`, "/v", "MachineGuid").CombinedOutput()
+	if e == nil {
+		lines := strings.Split(string(out), "\n")
+		for _, l := range lines {
+			if strings.Contains(strings.ToLower(l), "machineguid") {
+				f := strings.Fields(l)
+				if len(f) > 0 {
+					raw = f[len(f)-1]
+				}
+			}
+		}
+	}
+	if raw == "" {
+		raw = os.Getenv("COMPUTERNAME") + "|" + os.Getenv("USERNAME")
+	}
+	h := sha256.Sum256([]byte(raw))
+	return hex.EncodeToString(h[:])
+}
+func isEts2Running() bool {
+	out, _ := hiddenCommand("tasklist.exe", "/FI", "IMAGENAME eq eurotrucks2.exe", "/NH").CombinedOutput()
+	return strings.Contains(strings.ToLower(string(out)), "eurotrucks2.exe")
+}
+func truckHealthy() bool { r := apiCall("GET", truckRoot, nil, 2*time.Second); return r.Status == 200 }
+func findTruckExe() string {
+	candidates := []string{
+		filepath.Join(os.Getenv("LOCALAPPDATA"), "Programs", "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
+		filepath.Join(os.Getenv("LOCALAPPDATA"), "Programs", "TruckSim GPS", "TruckSimGPS_Server.exe"),
+		filepath.Join(os.Getenv("ProgramFiles"), "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
+		filepath.Join(os.Getenv("ProgramFiles(x86)"), "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
+	}
+	for _, p := range candidates {
+		if p != "" {
+			if _, e := os.Stat(p); e == nil {
+				return p
+			}
+		}
+	}
+	return ""
+}
+func startTruck() {
+	if truckHealthy() {
+		return
+	}
+	exe := findTruckExe()
+	if exe == "" {
+		msgBox("O TruckSim GPS nao foi encontrado. Abra-o pelo Menu Iniciar ou instale o TruckSim GPS Server.", "GAT Telemetria", MB_OK|MB_ICONWARNING)
+		return
+	}
+	cmd := exec.Command(exe)
+	_ = cmd.Start()
+}
+
+func apiCall(method, url string, body any, timeout time.Duration) APIResult {
+	var rdr io.Reader
+	if body != nil {
+		b, e := json.Marshal(body)
+		if e != nil {
+			return APIResult{Err: e}
+		}
+		rdr = bytes.NewReader(b)
+	}
+	req, e := http.NewRequest(method, url, rdr)
+	if e != nil {
+		return APIResult{Err: e}
+	}
+	req.Header.Set("Cache-Control", "no-cache")
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	cl := &http.Client{Timeout: timeout}
+	resp, e := cl.Do(req)
+	if e != nil {
+		return APIResult{Err: e}
+	}
+	defer resp.Body.Close()
+	b, _ := io.ReadAll(resp.Body)
+	var obj map[string]any
+	_ = json.Unmarshal(b, &obj)
+	return APIResult{Stat
