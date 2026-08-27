@@ -1,12 +1,12 @@
 {
   "app": "GAT Telemetria Cliente",
   "channel": "stable",
-  "version": "1.7",
+  "version": "1.8.2",
   "obrigatoria": false,
-  "notas": "Atualizacao automatica pelo GitHub e identificacao automatica do motorista ao clicar ENTRAR.",
+  "notas": "Corrige a conexao automatica quando o motorista ja estava dentro da sessao antes de abrir o cliente.",
   "updater_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/updater/cliente_update.ps1",
   "script_url": "",
   "script_sha256": "",
-  "patch_url": "",
-  "patch_sha256": ""
+  "patch_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/cliente_patch_1.8.2.ps1",
+  "patch_sha256": "c18a8e544931b1c47827af1ce69f1d138107f26d0d21527f01e40914a4a3223b"
 }
