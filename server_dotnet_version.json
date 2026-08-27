@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.2",
-  "display_version": "1.0.2 TESTE",
-  "notas": "Etapa 2A: ativa e valida o sistema de atualização automática pelo botão ATUALIZAR APP. Mantém a correção do moderador da 1.0.1. Não altera telemetria nem sua frequência.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.2_TESTE.exe",
-  "sha256": "dbedb2c01c0230c6f4ba2f4ddf0e53f3067aa64f47fbdf0cce8cb09c0c2de988"
+  "version": "1.0.3",
+  "display_version": "1.0.3 TESTE",
+  "notas": "Etapa 2B: reduz o atraso visual da telemetria. A API entrega a telemetria mais recente diretamente da memória e a interface atualiza a cada 1 segundo, sem aumentar a leitura pesada do server.log. Mantém atualização automática e correção do moderador.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.3_TESTE.exe",
+  "sha256": "60ab75a5a67c519a58ac9059cfaa4c65d38f01133c0fd7a9a559b9c079bc163b"
 }
