@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.9",
-  "display_version": "1.0.9 TESTE",
-  "notas": "Adiciona ícone próprio vermelho GAT SERVER no executável, janela e atalho do Menu Iniciar. Mantém a sessão ETS2 oculta e todas as correções da 1.0.8.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe",
-  "sha256": "ba160c2465b164e67f16722894809722794f298bad38d3c3d3a517d5d16890b8"
+  "version": "1.0.10",
+  "display_version": "1.0.10 TESTE",
+  "notas": "Adiciona somente uma API pública de leitura para o site mostrar servidor, jogadores e telemetria ao vivo. Não expõe token, dispositivo, senha, moderador ou configurações internas. Mantém a estrutura e o ícone vermelho da 1.0.9.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.10_TESTE.exe",
+  "sha256": "9a2fdfb64b1b0a212a31b36e4994946e263a02b6972643de7de77671596fb2b3"
 }
