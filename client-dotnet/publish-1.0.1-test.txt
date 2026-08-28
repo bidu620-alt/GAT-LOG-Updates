@@ -1,0 +1,1 @@
+publish GAT Telemetria CSharp 1.0.1 TESTE
