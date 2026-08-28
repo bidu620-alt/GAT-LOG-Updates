@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.3",
-  "display_version": "1.0.3 TESTE",
-  "notas": "Etapa 2B: reduz o atraso visual da telemetria. A API entrega a telemetria mais recente diretamente da memória e a interface atualiza a cada 1 segundo, sem aumentar a leitura pesada do server.log. Mantém atualização automática e correção do moderador.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.3_TESTE.exe",
-  "sha256": "60ab75a5a67c519a58ac9059cfaa4c65d38f01133c0fd7a9a559b9c079bc163b"
+  "version": "1.0.4",
+  "display_version": "1.0.4 TESTE",
+  "notas": "Corrige somente a unidade da velocidade da telemetria. Campos speedKmh/speed_kmh passam a ser usados diretamente em km/h; apenas truck.speed, que vem em m/s, é convertido por 3.6. Mantém atualização de 1 segundo, moderador e atualização automática.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.4_TESTE.exe",
+  "sha256": "0c1593a6b664a98f53fa1bbc781b1007b4cf2680f876348bc5cda7dd42a59256"
 }
