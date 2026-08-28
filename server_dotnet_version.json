@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.6",
-  "display_version": "1.0.6 TESTE",
-  "notas": "Força o GAT-LOG Server a usar o agente da instalação atual em C:/ProgramData/GAT-LOG Server, encerrando agentes antigos de outras pastas. Mantém a correção de velocidade sem multiplicação por 3.6.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.6_TESTE.exe",
-  "sha256": "a8b3f0a8dea5b741d005b455a9164c409909ec5fb12d9fbe786b8aaaabadfe03"
+  "version": "1.0.7",
+  "display_version": "1.0.7 TESTE",
+  "notas": "Corrige o server_config.sii com moderador, impede iniciar o dedicado quando a configuracao falhar e corrige a leitura do nome da sessao.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.7_TESTE.exe",
+  "sha256": "09587fe6c98696a80de910202281064a4bf415109e74266835261ed52a01ee42"
 }
