@@ -1,0 +1,9 @@
+{
+  "app": "GAT Telemetria CSharp",
+  "channel": "test-dotnet",
+  "version": "1.0.0",
+  "display_version": "1.0.0 TESTE",
+  "notas": "Novo motor C# WinForms. Mantem servidores, motorista e token antigos, conecta mesmo com o jogo fechado, aguarda a sessao automaticamente e corrige truck.speed sem multiplicar por 3.6.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_SETUP_1.0.0_TESTE.exe",
+  "sha256": "06172515b84ab8f078c491f910d3d5b25fb7cf80a1e138b1c9b0ce14e21f1c03"
+}
