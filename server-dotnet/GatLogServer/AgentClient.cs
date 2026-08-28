@@ -44,9 +44,23 @@ namespace GatLogServer
 
         public async Task<bool> EnsureAgentAsync()
         {
-            if (await HealthAsync().ConfigureAwait(false)) return true;
             var exe = FindAgentExe();
             if (exe == null) return false;
+
+            // Do not trust only port 5055. Older GAT-LOG installations can also
+            // start GAT_LOG_AGENT.exe and answer /health. Keep only the agent
+            // that belongs to the current C# installation.
+            StopForeignAgents(exe);
+
+            if (IsAgentRunningFrom(exe) && await HealthAsync().ConfigureAwait(false))
+                return true;
+
+            // If our preferred executable is running but its API is unhealthy,
+            // restart that process as well before launching a clean instance.
+            StopAgentFrom(exe);
+            await Task.Delay(200).ConfigureAwait(false);
+            StopForeignAgents(exe);
+
             try
             {
                 var psi = new ProcessStartInfo(exe, "--background")
@@ -60,10 +74,12 @@ namespace GatLogServer
             }
             catch { return false; }
 
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 16; i++)
             {
                 await Task.Delay(250).ConfigureAwait(false);
-                if (await HealthAsync().ConfigureAwait(false)) return true;
+                StopForeignAgents(exe);
+                if (IsAgentRunningFrom(exe) && await HealthAsync().ConfigureAwait(false))
+                    return true;
             }
             return false;
         }
@@ -78,8 +94,83 @@ namespace GatLogServer
                 Path.Combine(common, "GAT-LOG Server", "GAT_LOG_AGENT.exe"),
                 Path.Combine(local, "Programs", "GAT-LOG Server", "GAT_LOG_AGENT.exe")
             };
-            foreach (var p in candidates) if (File.Exists(p)) return p;
+            foreach (var p in candidates) if (File.Exists(p)) return Path.GetFullPath(p);
             return null;
+        }
+
+        private static bool SamePath(string a, string b)
+        {
+            try
+            {
+                return string.Equals(Path.GetFullPath(a).TrimEnd('\\'), Path.GetFullPath(b).TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
+            }
+            catch { return false; }
+        }
+
+        private static string ProcessPath(Process p)
+        {
+            try { return p.MainModule?.FileName ?? ""; }
+            catch { return ""; }
+        }
+
+        private static bool IsAgentRunningFrom(string expectedExe)
+        {
+            try
+            {
+                foreach (var p in Process.GetProcessesByName("GAT_LOG_AGENT"))
+                {
+                    try
+                    {
+                        if (SamePath(ProcessPath(p), expectedExe)) return true;
+                    }
+                    finally { p.Dispose(); }
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        private static void StopForeignAgents(string expectedExe)
+        {
+            try
+            {
+                foreach (var p in Process.GetProcessesByName("GAT_LOG_AGENT"))
+                {
+                    try
+                    {
+                        var path = ProcessPath(p);
+                        if (!string.IsNullOrWhiteSpace(path) && !SamePath(path, expectedExe))
+                        {
+                            p.Kill();
+                            p.WaitForExit(1200);
+                        }
+                    }
+                    catch { }
+                    finally { p.Dispose(); }
+                }
+            }
+            catch { }
+        }
+
+        private static void StopAgentFrom(string expectedExe)
+        {
+            try
+            {
+                foreach (var p in Process.GetProcessesByName("GAT_LOG_AGENT"))
+                {
+                    try
+                    {
+                        if (SamePath(ProcessPath(p), expectedExe))
+                        {
+                            p.Kill();
+                            p.WaitForExit(1200);
+                        }
+                    }
+                    catch { }
+                    finally { p.Dispose(); }
+                }
+            }
+            catch { }
         }
 
         private async Task<string> SendAsync(HttpMethod method, string path, object body = null)
