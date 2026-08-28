@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.10 com API pública sanitizada para o painel ao vivo do site.
