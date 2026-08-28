@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.12 com contas individuais de motorista e telemetria pública vinculada.
