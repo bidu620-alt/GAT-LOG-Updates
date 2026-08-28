@@ -1,0 +1,35 @@
+name: Diagnose server config patch block 107
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/diag-server-config-block-107.txt'
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - name: Reconstruct and print exact config patch code
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          python3 server-dotnet/build103/apply_103_telemetry.py
+          python3 server-dotnet/build104/apply_104_speed_units.py
+          python3 server-dotnet/build105/apply_105_truck_speed_kmh.py
+          cd /tmp/gat-src
+          echo '=== PATCH SERVER CONFIG EXACT ==='
+          sed -n '525,568p' internal/core/core.go
+          echo '=== DOCUMENT HOME ==='
+          sed -n '360,405p' internal/core/core.go
