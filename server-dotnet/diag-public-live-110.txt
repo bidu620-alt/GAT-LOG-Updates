@@ -1,0 +1,1 @@
+Diagnosticar rotas públicas para painel ao vivo do site GAT LOG.
