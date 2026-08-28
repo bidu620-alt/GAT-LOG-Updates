@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GatTelemetry
 {
@@ -28,18 +29,92 @@ namespace GatTelemetry
             try
             {
                 if (!File.Exists(ServersFile)) return new List<ServerEntry>();
-                return JsonConvert.DeserializeObject<List<ServerEntry>>(File.ReadAllText(ServersFile, Encoding.UTF8)) ?? new List<ServerEntry>();
+
+                string text = File.ReadAllText(ServersFile, Encoding.UTF8);
+                var root = JToken.Parse(text);
+                var found = new List<ServerEntry>();
+                CollectServers(root, found);
+
+                // Algumas versões antigas salvaram um objeto PowerShell contendo
+                // { value: [ ... ], Count: N } junto com as entradas normais.
+                // Normalizamos tudo e removemos duplicados pelo endpoint.
+                var map = new Dictionary<string, ServerEntry>(StringComparer.OrdinalIgnoreCase);
+                foreach (var item in found)
+                {
+                    if (item == null || string.IsNullOrWhiteSpace(item.Endpoint)) continue;
+                    string ep = NormalizeEndpoint(item.Endpoint);
+                    if (string.IsNullOrWhiteSpace(ep)) continue;
+                    map[ep] = new ServerEntry
+                    {
+                        Name = string.IsNullOrWhiteSpace(item.Name) ? "Servidor GAT" : item.Name.Trim(),
+                        Endpoint = ep
+                    };
+                }
+
+                var result = map.Values.OrderBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
+
+                // Ao detectar formato legado/misturado, guarda backup e regrava no
+                // formato canônico para as próximas inicializações.
+                string canonical = JsonConvert.SerializeObject(result, Formatting.Indented);
+                if (!JsonEquivalent(text, canonical))
+                {
+                    BackupOnce(ServersFile, "servers.before-dotnet-migration.json");
+                    File.WriteAllText(ServersFile, canonical, Encoding.UTF8);
+                    Log("servers.json legado normalizado: " + result.Count + " servidor(es)");
+                }
+
+                return result;
             }
-            catch
+            catch (Exception ex)
             {
+                Log("LoadServers falhou: " + ex.Message);
                 return new List<ServerEntry>();
             }
+        }
+
+        private static void CollectServers(JToken token, List<ServerEntry> output)
+        {
+            if (token == null || output == null) return;
+
+            var array = token as JArray;
+            if (array != null)
+            {
+                foreach (var child in array) CollectServers(child, output);
+                return;
+            }
+
+            var obj = token as JObject;
+            if (obj == null) return;
+
+            string endpoint = obj.Value<string>("endpoint");
+            if (!string.IsNullOrWhiteSpace(endpoint))
+            {
+                output.Add(new ServerEntry
+                {
+                    Name = obj.Value<string>("name"),
+                    Endpoint = endpoint
+                });
+            }
+
+            // Suporta o wrapper criado por versões antigas/PowerShell.
+            var value = obj["value"] ?? obj["Value"];
+            if (value != null) CollectServers(value, output);
         }
 
         public static void SaveServers(List<ServerEntry> servers)
         {
             Ensure();
-            File.WriteAllText(ServersFile, JsonConvert.SerializeObject(servers ?? new List<ServerEntry>(), Formatting.Indented), Encoding.UTF8);
+            var clean = (servers ?? new List<ServerEntry>())
+                .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Endpoint))
+                .Select(x => new ServerEntry
+                {
+                    Name = string.IsNullOrWhiteSpace(x.Name) ? "Servidor GAT" : x.Name.Trim(),
+                    Endpoint = NormalizeEndpoint(x.Endpoint)
+                })
+                .GroupBy(x => x.Endpoint, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.Last())
+                .ToList();
+            File.WriteAllText(ServersFile, JsonConvert.SerializeObject(clean, Formatting.Indented), Encoding.UTF8);
         }
 
         public static ClientSettings LoadSettings()
@@ -69,12 +144,54 @@ namespace GatTelemetry
             try
             {
                 if (!File.Exists(CredentialsFile)) return new List<CredentialEntry>();
-                return JsonConvert.DeserializeObject<List<CredentialEntry>>(File.ReadAllText(CredentialsFile, Encoding.UTF8)) ?? new List<CredentialEntry>();
+
+                string text = File.ReadAllText(CredentialsFile, Encoding.UTF8);
+                var root = JToken.Parse(text);
+                var found = new List<CredentialEntry>();
+                CollectCredentials(root, found);
+
+                return found
+                    .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Endpoint) && !string.IsNullOrWhiteSpace(x.Driver))
+                    .GroupBy(x => NormalizeEndpoint(x.Endpoint) + "\n" + x.Driver, StringComparer.OrdinalIgnoreCase)
+                    .Select(g => g.OrderByDescending(x => x.SavedAt).First())
+                    .ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Log("LoadCredentials falhou: " + ex.Message);
                 return new List<CredentialEntry>();
             }
+        }
+
+        private static void CollectCredentials(JToken token, List<CredentialEntry> output)
+        {
+            if (token == null || output == null) return;
+
+            var array = token as JArray;
+            if (array != null)
+            {
+                foreach (var child in array) CollectCredentials(child, output);
+                return;
+            }
+
+            var obj = token as JObject;
+            if (obj == null) return;
+
+            string endpoint = obj.Value<string>("endpoint");
+            string driver = obj.Value<string>("driver");
+            if (!string.IsNullOrWhiteSpace(endpoint) && !string.IsNullOrWhiteSpace(driver))
+            {
+                output.Add(new CredentialEntry
+                {
+                    Endpoint = NormalizeEndpoint(endpoint),
+                    Driver = driver,
+                    Token = obj.Value<string>("token"),
+                    SavedAt = obj.Value<string>("saved_at")
+                });
+            }
+
+            var value = obj["value"] ?? obj["Value"];
+            if (value != null) CollectCredentials(value, output);
         }
 
         public static CredentialEntry FindCredential(string endpoint, string preferredDriver = null)
@@ -156,6 +273,25 @@ namespace GatTelemetry
                 !endpoint.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 endpoint = "https://" + endpoint;
             return endpoint;
+        }
+
+        private static bool JsonEquivalent(string a, string b)
+        {
+            try
+            {
+                return JToken.DeepEquals(JToken.Parse(a), JToken.Parse(b));
+            }
+            catch { return false; }
+        }
+
+        private static void BackupOnce(string sourcePath, string backupName)
+        {
+            try
+            {
+                string backup = Path.Combine(DataDir, backupName);
+                if (File.Exists(sourcePath) && !File.Exists(backup)) File.Copy(sourcePath, backup, false);
+            }
+            catch { }
         }
 
         public static void Log(string text)
