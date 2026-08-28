@@ -21,9 +21,6 @@ jobs:
           rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
           cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
           tar -xf /tmp/gat-source.tar -C /tmp/gat-src
-          python3 server-native-0.1/build015/apply_015.py
-          python3 server-native-0.1/build015/fix_check_update.py
-          python3 server-native-0.1/build017/apply_017.py
           {
             echo '=== exec.Command occurrences ==='
             grep -RIn -C 8 'exec.Command' /tmp/gat-src/internal /tmp/gat-src/cmd || true
