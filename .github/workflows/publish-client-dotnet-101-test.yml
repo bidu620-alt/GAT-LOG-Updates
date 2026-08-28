@@ -1,0 +1,122 @@
+name: Publish GAT Telemetria DotNet 1.0.1 Test
+
+on:
+  push:
+    branches: [client-dotnet-winforms]
+    paths:
+      - 'client-dotnet/publish-1.0.1-test.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: client-dotnet-winforms
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Validate migration and telemetry speed
+        shell: pwsh
+        run: |
+          $tel = Get-Content 'client-dotnet/GatTelemetry/TelemetryEngine.cs' -Raw
+          if ($tel -match 'speed\s*\*\s*3\.6' -or $tel -match 'truck\.speed[^\r\n]*3\.6') {
+            throw 'Conversão indevida por 3.6 encontrada no novo cliente.'
+          }
+          if ($tel -notmatch '"truck\.speed"') { throw 'Campo truck.speed não encontrado.' }
+
+          $store = Get-Content 'client-dotnet/GatTelemetry/ClientStore.cs' -Raw
+          if ($store -notmatch 'CollectServers' -or $store -notmatch 'obj\["value"\]') {
+            throw 'Migração do servers.json legado não encontrada.'
+          }
+          if ($store -notmatch 'servers\.before-dotnet-migration\.json') {
+            throw 'Backup de migração dos servidores não encontrado.'
+          }
+          Write-Host 'OK: velocidade e migração legada validadas.'
+
+      - name: Mark client and installer as 1.0.1
+        shell: pwsh
+        run: |
+          $ui = 'client-dotnet/GatTelemetry/MainForm.cs'
+          $s = Get-Content $ui -Raw
+          $s = $s.Replace('CurrentVersion = "1.0.0"', 'CurrentVersion = "1.0.1"')
+          $s = $s.Replace('GAT Telemetria C# 1.0 TESTE', 'GAT Telemetria C# 1.0.1 TESTE')
+          Set-Content $ui $s -Encoding UTF8
+
+          $proj = 'client-dotnet/GatTelemetry/GatTelemetry.csproj'
+          $p = Get-Content $proj -Raw
+          $p = $p.Replace('<Version>1.0.0.0</Version>', '<Version>1.0.1.0</Version>')
+          $p = $p.Replace('<FileVersion>1.0.0.0</FileVersion>', '<FileVersion>1.0.1.0</FileVersion>')
+          $p = $p.Replace('<AssemblyVersion>1.0.0.0</AssemblyVersion>', '<AssemblyVersion>1.0.1.0</AssemblyVersion>')
+          Set-Content $proj $p -Encoding UTF8
+
+          $ip = 'client-dotnet/GatTelemetryInstaller/Program.cs'
+          $is = Get-Content $ip -Raw
+          $is = $is.Replace('1.0.0 TESTE', '1.0.1 TESTE')
+          Set-Content $ip $is -Encoding UTF8
+
+          $iproj = 'client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj'
+          $i = Get-Content $iproj -Raw
+          $i = $i.Replace('GAT_TELEMETRIA_DOTNET_SETUP_1.0.0_TESTE', 'GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE')
+          Set-Content $iproj $i -Encoding UTF8
+
+      - name: Build CSharp telemetry client
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetry/GatTelemetry.csproj
+          dotnet build client-dotnet/GatTelemetry/GatTelemetry.csproj -c Release --no-restore
+
+      - name: Prepare installer payload
+        shell: pwsh
+        run: |
+          $out = 'client-dotnet/GatTelemetry/bin/Release/net48'
+          $pay = 'client-dotnet/GatTelemetryInstaller/payload'
+          New-Item -ItemType Directory -Force $pay | Out-Null
+          Copy-Item "$out/GAT_TELEMETRIA.exe" "$pay/GAT_TELEMETRIA.exe" -Force
+          Copy-Item "$out/GAT_TELEMETRIA.exe.config" "$pay/GAT_TELEMETRIA.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          if (-not (Test-Path "$pay/GAT_TELEMETRIA.exe")) { throw 'Cliente ausente no payload.' }
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj
+          dotnet build client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj -c Release --no-restore
+          $setup = 'client-dotnet/GatTelemetryInstaller/bin/Release/net48/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe'
+          if (-not (Test-Path $setup)) { throw 'Instalador do cliente 1.0.1 não foi gerado.' }
+          Copy-Item $setup "$env:RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe" -Force
+
+      - name: Publish setup and updater manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git reset --hard HEAD
+          git clean -fdx
+          git checkout -B main origin/main
+          mkdir -p releases
+          cp "$RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe" releases/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe
+          SHA=$(sha256sum releases/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe | awk '{print $1}')
+          cat > client_dotnet_version.json <<EOF2
+          {
+            "app": "GAT Telemetria CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.1",
+            "display_version": "1.0.1 TESTE",
+            "notas": "Corrige a migracao do servers.json legado com wrapper value/Count, remove servidores duplicados e tambem recupera credenciais antigas no mesmo formato. Mantem a velocidade sem multiplicar por 3.6.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF2
+          git add releases/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe client_dotnet_version.json
+          git commit -m "Publica GAT Telemetria CSharp 1.0.1 TESTE"
+          git push origin main
+          sha256sum releases/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe
