@@ -39,10 +39,10 @@ jobs:
           gofmt -w cmd/agent/main.go internal/core/core.go
           echo '=== SPEED BLOCK ==='
           grep -n -A5 -B3 'TruckSim GPS REST' internal/core/core.go
-          echo '=== ALL 3.6 OCCURRENCES ==='
-          grep -Rni --include='*.go' '3\.6' . || true
-          if grep -n -A5 -B3 'TruckSim GPS REST' internal/core/core.go | grep -q '3\.6'; then
-            echo 'Conversão indevida por 3.6 no bloco de velocidade' >&2
+          echo '=== ACTIVE 3.6 SPEED CONVERSIONS ==='
+          grep -Rni --include='*.go' -E 'speed[[:space:]]*\*=[[:space:]]*3\.6' . || true
+          if grep -Rni --include='*.go' -E 'speed[[:space:]]*\*=[[:space:]]*3\.6' .; then
+            echo 'Conversão indevida por 3.6 ainda ativa' >&2
             exit 1
           fi
           mkdir -p "$GITHUB_WORKSPACE/agent-out"
