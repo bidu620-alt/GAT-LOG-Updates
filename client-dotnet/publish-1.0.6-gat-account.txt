@@ -1,1 +1,1 @@
-Publicar GAT Telemetria 1.0.6 com Conta GAT vinculada ao cadastro do site.
+Publicar GAT Telemetria 1.0.6 com Conta GAT vinculada ao cadastro do site e campos identificados. tentativa 2
