@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.3",
-  "display_version": "1.0.3 TESTE",
-  "notas": "Restaura e fixa automaticamente os dois servidores clássicos BIDUZAO - DOUGLAS e JC - JEAN em instalações novas ou existentes, sem apagar servidores adicionais. Mantém motorista, token, conexão automática, telemetria e o ícone azul do cliente.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe",
-  "sha256": "55b01b1a2f6eb177d70cee5dd61fe9a5d6b71ca86ec4fa1e9d611f58a39962dd"
+  "version": "1.0.4",
+  "display_version": "1.0.4 TESTE",
+  "notas": "Identifica automaticamente o motorista pela conta Steam ativa do próprio PC, mesmo com muitos jogadores na sessão. Mantém os dois servidores clássicos, motorista/token já salvos, conexão automática, telemetria e ícone azul da 1.0.3.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.4_TESTE.exe",
+  "sha256": "8ba36c30dff55d9544ea4324efba08e675093f7d350155a076db081e9ab495bb"
 }
