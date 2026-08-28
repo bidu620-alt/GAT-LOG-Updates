@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.7",
-  "display_version": "1.0.7 TESTE",
-  "notas": "Corrige o server_config.sii com moderador, impede iniciar o dedicado quando a configuracao falhar e corrige a leitura do nome da sessao.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.7_TESTE.exe",
-  "sha256": "09587fe6c98696a80de910202281064a4bf415109e74266835261ed52a01ee42"
+  "version": "1.0.8",
+  "display_version": "1.0.8 TESTE",
+  "notas": "Oculta completamente a janela preta da sessão do servidor dedicado ETS2. Mantém interface, telemetria, moderador, mods, configurações e histórico da 1.0.7.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.8_TESTE.exe",
+  "sha256": "c93ef778e059a0e637c883d79aa97a033c9fe52ddf2517c958b10d7ff4dfedb3"
 }
