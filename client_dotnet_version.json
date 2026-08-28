@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.2",
-  "display_version": "1.0.2 TESTE",
-  "notas": "Adiciona ícone próprio azul GAT CLIENT no executável, janela e atalho do Menu Iniciar. Mantém servidores, motorista, token, conexão automática e correções da 1.0.1.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe",
-  "sha256": "590128410b6c69451a3ae9fb6f71949c4650be9403c5a533d1102f747dc5e7ce"
+  "version": "1.0.3",
+  "display_version": "1.0.3 TESTE",
+  "notas": "Restaura e fixa automaticamente os dois servidores clássicos BIDUZAO - DOUGLAS e JC - JEAN em instalações novas ou existentes, sem apagar servidores adicionais. Mantém motorista, token, conexão automática, telemetria e o ícone azul do cliente.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe",
+  "sha256": "55b01b1a2f6eb177d70cee5dd61fe9a5d6b71ca86ec4fa1e9d611f58a39962dd"
 }
