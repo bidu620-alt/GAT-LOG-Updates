@@ -4,118 +4,77 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#070a0f" />
-  <title>GAT LOG • ETS2 Telemetria</title>
-  <meta name="description" content="GAT LOG: telemetria, trabalhos, entregas e ranking para Euro Truck Simulator 2." />
+  <title>GAT LOG • ETS2 ao vivo</title>
+  <meta name="description" content="Painel público do GAT LOG com servidores, motoristas e telemetria do Euro Truck Simulator 2 em tempo real." />
   <link rel="stylesheet" href="site.css" />
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#inicio" aria-label="GAT LOG">
-      <span class="brand-mark">GAT</span><span class="brand-log">LOG</span>
-    </a>
+    <a class="brand" href="#inicio"><span class="brand-mark">GAT</span><span class="brand-log">LOG</span></a>
     <nav>
-      <a href="#inicio">Início</a>
-      <a href="#trabalhos">Trabalhos</a>
-      <a href="#ranking">Ranking</a>
-      <a href="#downloads">Downloads</a>
-      <a href="#sobre">Sobre</a>
+      <a href="#inicio">Início</a><a href="#ao-vivo">Ao vivo</a><a href="#trabalhos">Trabalhos</a><a href="#downloads">Downloads</a><a href="#sobre">Sobre</a>
     </nav>
-    <span class="live"><i></i> PROJETO BETA</span>
+    <span class="live" id="globalLive"><i></i> CONECTANDO...</span>
   </header>
 
   <main>
     <section id="inicio" class="hero shell">
       <div class="hero-copy">
-        <span class="eyebrow">EURO TRUCK SIMULATOR 2 • TELEMETRIA</span>
-        <h1>Mais que quilometragem.<br><strong>Uma carreira na estrada.</strong></h1>
-        <p>O GAT LOG conecta servidor, motorista e telemetria em um só ecossistema. Entregas, desafios, desempenho e ranking com regras próprias.</p>
-        <div class="actions">
-          <a class="btn primary" href="#downloads">Baixar GAT Telemetria</a>
-          <a class="btn ghost" href="#trabalhos">Ver conceito de trabalhos</a>
-        </div>
+        <span class="eyebrow">EURO TRUCK SIMULATOR 2 • GAT LOG</span>
+        <h1>A estrada acontecendo.<br><strong>Todo mundo pode acompanhar.</strong></h1>
+        <p>O GAT LOG reúne servidor, motoristas e telemetria em um painel público. Veja quem está online, qual carga está levando, a rota, a velocidade e o andamento da viagem.</p>
+        <div class="actions"><a class="btn primary" href="#ao-vivo">Ver motoristas ao vivo</a><a class="btn ghost" href="#downloads">Baixar GAT Telemetria</a></div>
       </div>
-      <div class="hero-road" aria-hidden="true">
-        <div class="truck">
-          <div class="cab"><span>GAT</span></div>
-          <div class="lights"></div>
-        </div>
-        <div class="lane lane-a"></div><div class="lane lane-b"></div>
-      </div>
-      <div class="trip-card glass">
-        <div><span class="mini">VIAGEM EM ANDAMENTO</span><b>Telemetria em tempo real</b></div>
-        <span class="pill cyan">AO VIVO</span>
-        <div class="trip-line"><strong>Origem</strong><span>→</span><strong>Destino</strong></div>
-        <div class="trip-meta"><span>Velocidade</span><b>— km/h</b><span>Carga</span><b>—</b></div>
+      <div class="hero-road" aria-hidden="true"><div class="truck"><div class="cab"><span>GAT</span></div><div class="lights"></div></div><div class="lane lane-a"></div><div class="lane lane-b"></div></div>
+      <div class="trip-card glass" id="heroTrip">
+        <div><span class="mini">VIAGEM EM ANDAMENTO</span><b id="heroDriver">Aguardando telemetria...</b></div>
+        <span class="pill cyan" id="heroState">AO VIVO</span>
+        <div class="trip-line"><strong id="heroSource">Origem</strong><span>→</span><strong id="heroDestination">Destino</strong></div>
+        <div class="trip-meta"><span>Velocidade</span><b id="heroSpeed">— km/h</b><span>Carga</span><b id="heroCargo">—</b></div>
       </div>
     </section>
 
     <section class="shell stats-grid">
-      <article class="stat"><span class="icon blue">◉</span><div><small>SERVIDOR</small><b>GAT LOG</b><em>status integrado em breve</em></div></article>
-      <article class="stat"><span class="icon green">↗</span><div><small>TELEMETRIA</small><b>Cliente C#</b><em>carga, peso, rota e velocidade</em></div></article>
-      <article class="stat"><span class="icon amber">★</span><div><small>COMPETIÇÃO</small><b>Ranking próprio</b><em>sem favorecer sempre a mesma carga</em></div></article>
+      <article class="stat"><span class="icon blue">◉</span><div><small>SERVIDORES</small><b id="statServers">0 online</b><em id="statServersSub">consultando GAT Servers</em></div></article>
+      <article class="stat"><span class="icon green">↗</span><div><small>MOTORISTAS</small><b id="statDrivers">0 online</b><em id="statDriversSub">sessões atuais</em></div></article>
+      <article class="stat"><span class="icon amber">◆</span><div><small>EM ROTA</small><b id="statRoutes">0 viagens</b><em id="statRoutesSub">telemetria ativa</em></div></article>
+    </section>
+
+    <section id="ao-vivo" class="shell section">
+      <div class="section-head"><div><span class="eyebrow">CENTRAL AO VIVO</span><h2>O que está acontecendo agora</h2></div><span class="pill cyan" id="lastUpdate">ATUALIZANDO</span></div>
+      <p class="lead">Os dados abaixo vêm diretamente dos GAT Servers. A página atualiza automaticamente; ninguém precisa fazer login apenas para acompanhar.</p>
+      <div id="serverCards" class="server-grid"><article class="live-placeholder">Conectando aos servidores...</article></div>
+      <div class="live-title"><div><span class="eyebrow">MOTORISTAS</span><h3>Telemetria dos jogadores</h3></div><span id="driverCountBadge" class="pill blue">0 MOTORISTAS</span></div>
+      <div id="driverGrid" class="driver-grid"><article class="live-placeholder">Aguardando dados...</article></div>
     </section>
 
     <section id="trabalhos" class="shell section">
-      <div class="section-head">
-        <div><span class="eyebrow">CENTRAL DE TRABALHOS</span><h2>Trabalho sorteado para o motorista</h2></div>
-        <span class="pill amber">CONCEITO</span>
-      </div>
-      <p class="lead">A ideia é o motorista entrar no site, receber uma missão e cumprir a regra mínima — sem obrigar uma carga tão específica que seja impossível encontrar.</p>
-
+      <div class="section-head"><div><span class="eyebrow">CENTRAL DE TRABALHOS</span><h2>Próxima etapa do GAT LOG</h2></div><span class="pill amber">EM DESENVOLVIMENTO</span></div>
+      <p class="lead">O ranking fica para depois. Primeiro vamos consolidar o painel público e, em seguida, ligar os trabalhos à telemetria real.</p>
       <div class="job-layout">
         <article class="job-card">
-          <div class="job-title"><div><span class="mini">MISSÃO GAT</span><h3>Contrato externo • longa distância</h3></div><span class="pill blue">WORLD OF TRUCKS</span></div>
+          <div class="job-title"><div><span class="mini">MISSÃO GAT #001</span><h3>Contrato externo • longa distância</h3></div><span class="pill blue">WORLD OF TRUCKS</span></div>
           <div class="job-rule-grid">
-            <div><small>TIPO</small><b>External Contract</b></div>
-            <div><small>DISTÂNCIA MÍNIMA</small><b>500 km</b></div>
-            <div><small>CARGA</small><b>Qualquer elegível</b></div>
-            <div><small>VALIDADE</small><b>24 horas</b></div>
+            <div><small>TIPO</small><b>World of Trucks</b></div><div><small>DISTÂNCIA MÍNIMA</small><b>800 km</b></div><div><small>PESO MÍNIMO</small><b>12 t</b></div><div><small>ROTA / CARGA</small><b>Livre e compatível</b></div>
           </div>
-          <div class="job-footer"><span>Recompensa e pontuação ainda serão definidas.</span><button id="exampleJob" type="button">Gerar exemplo</button></div>
+          <div class="job-footer"><span>Sem prazo definido. Recompensa e ranking serão fechados depois.</span></div>
         </article>
-
-        <aside class="idea-card">
-          <h3>Por que assim?</h3>
-          <p>Em vez de sortear uma carga exata em uma cidade exata, o trabalho pode definir uma <strong>categoria + distância mínima</strong>. O motorista continua tendo liberdade para encontrar um contrato válido no mapa.</p>
-          <ul>
-            <li>Evita missão impossível de achar.</li>
-            <li>Permite variar cargas sem quebrar o ranking.</li>
-            <li>Podemos exigir apenas contratos externos.</li>
-          </ul>
-        </aside>
+        <aside class="idea-card"><h3>Primeiro: transparência</h3><p>A prioridade agora é qualquer pessoa poder abrir o site e enxergar o movimento do GAT LOG em tempo real.</p><ul><li>Servidor e jogadores online.</li><li>Motorista e carga em andamento.</li><li>Origem, destino e km restantes.</li><li>Velocidade e peso da carga.</li></ul></aside>
       </div>
-    </section>
-
-    <section id="ranking" class="shell section">
-      <div class="section-head"><div><span class="eyebrow">RANKING</span><h2>Uma competição mais justa</h2></div><span class="pill red">EM DISCUSSÃO</span></div>
-      <div class="ranking-grid">
-        <article class="rank-card featured"><span>#1</span><div><small>EXEMPLO</small><h3>Motorista Alpha</h3><p>Regularidade + entregas válidas + condução limpa</p></div><b>— pts</b></article>
-        <article class="rank-card"><span>#2</span><div><small>EXEMPLO</small><h3>Motorista Bravo</h3><p>Distância + dificuldade equilibrada</p></div><b>— pts</b></article>
-        <article class="rank-card"><span>#3</span><div><small>EXEMPLO</small><h3>Motorista Charlie</h3><p>Eficiência + variedade de trabalhos</p></div><b>— pts</b></article>
-      </div>
-      <div class="ranking-note">A fórmula ainda não está fechada. O objetivo é impedir que uma única carga vire a “carga meta” e domine a temporada inteira.</div>
     </section>
 
     <section id="downloads" class="shell section downloads">
       <div class="section-head"><div><span class="eyebrow">APLICATIVOS</span><h2>Downloads oficiais GAT LOG</h2></div></div>
       <div class="download-grid">
-        <article class="download-card server">
-          <span class="app-icon">S</span><div><small>HOST</small><h3>GAT-LOG Server</h3><p>Gerenciador do servidor ETS2 + telemetria.</p><span id="serverVersion">Consultando versão…</span></div><a id="serverDownload" class="btn red disabled" href="#">Baixar</a>
-        </article>
-        <article class="download-card client">
-          <span class="app-icon">C</span><div><small>MOTORISTA</small><h3>GAT Telemetria</h3><p>Cliente automático para envio da telemetria.</p><span id="clientVersion">Consultando versão…</span></div><a id="clientDownload" class="btn primary disabled" href="#">Baixar</a>
-        </article>
+        <article class="download-card server"><span class="app-icon">S</span><div><small>HOST</small><h3>GAT-LOG Server</h3><p>Gerenciador do servidor ETS2 + telemetria.</p><span id="serverVersion">Consultando versão…</span></div><a id="serverDownload" class="btn red disabled" href="#">Baixar</a></article>
+        <article class="download-card client"><span class="app-icon">C</span><div><small>MOTORISTA</small><h3>GAT Telemetria</h3><p>Cliente automático para envio da telemetria.</p><span id="clientVersion">Consultando versão…</span></div><a id="clientDownload" class="btn primary disabled" href="#">Baixar</a></article>
       </div>
     </section>
 
-    <section id="sobre" class="shell section about">
-      <span class="eyebrow">VISÃO DO PROJETO</span>
-      <h2>O site será a central do GAT LOG.</h2>
-      <p>Esta primeira versão é visual. Depois conectaremos dados reais: motoristas online, viagens em andamento, entregas, trabalhos aceitos, temporadas e ranking.</p>
-    </section>
+    <section id="sobre" class="shell section about"><span class="eyebrow">VISÃO DO PROJETO</span><h2>O site é a janela pública do GAT LOG.</h2><p>Motoristas usam o aplicativo para enviar telemetria; os servidores recebem os dados; o site mostra somente informações públicas da atividade da sessão. Tokens, IDs de dispositivo, senhas e configurações administrativas não são exibidos.</p></section>
   </main>
 
-  <footer><div class="shell"><span>GAT LOG • ETS2</span><span>Projeto em desenvolvimento</span></div></footer>
+  <footer><div class="shell"><span>GAT LOG • ETS2</span><span>Painel público em desenvolvimento</span></div></footer>
   <script src="site.js"></script>
 </body>
 </html>
