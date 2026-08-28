@@ -1,0 +1,123 @@
+name: Publish GAT Telemetria DotNet 1.0.6 GAT Account
+
+on:
+  push:
+    branches: [client-dotnet-winforms]
+    paths:
+      - 'client-dotnet/publish-1.0.6-gat-account.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: client-dotnet-winforms
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Apply preserved 1.0.3 base
+        shell: pwsh
+        run: python client-dotnet/build103/apply_103_fixed_servers.py
+
+      - name: Apply preserved 1.0.4 Steam identity
+        shell: pwsh
+        run: python client-dotnet/build104/apply_104_steam_identity.py
+
+      - name: Apply preserved 1.0.5 robust identity
+        shell: pwsh
+        run: python client-dotnet/build105/apply_105_robust_driver_identity.py
+
+      - name: Apply 1.0.6 GAT account
+        shell: pwsh
+        run: |
+          python client-dotnet/build106/apply_106_gat_account.py
+          $main = Get-Content 'client-dotnet/GatTelemetry/MainForm.cs' -Raw
+          $api = Get-Content 'client-dotnet/GatTelemetry/ApiClient.cs' -Raw
+          $store = Get-Content 'client-dotnet/GatTelemetry/ClientStore.cs' -Raw
+          if ($main -notmatch 'CONTA GAT') { throw 'UI Conta GAT ausente.' }
+          if ($main -notmatch 'AccountAuthority') { throw 'Autoridade da conta ausente.' }
+          if ($main -notmatch 'ChooseDriver\(players\.Players, identityTelemetry\)') { throw 'Identificação robusta 1.0.5 foi perdida.' }
+          if ($main -notmatch 'account_user') { throw 'Vínculo da conta no login ausente.' }
+          if ($main -notmatch 'CurrentVersion = "1\.0\.6"') { throw 'Versão 1.0.6 ausente.' }
+          if ($api -notmatch 'AccountLoginAsync') { throw 'Login de conta no ApiClient ausente.' }
+          if ($api -notmatch 'account_token') { throw 'Token da conta não é enviado ao servidor.' }
+          if ($store -notmatch 'LoadAccountCredential') { throw 'Persistência da Conta GAT ausente.' }
+          if ($store -notmatch 'ProtectedData\.Protect') { throw 'Token da conta não está protegido pelo Windows.' }
+          if ($store -notmatch 'douglas\.tail4577e8\.ts\.net') { throw 'Servidor Douglas foi perdido.' }
+          if ($store -notmatch 'jean-jc\.tailf14a00\.ts\.net') { throw 'Servidor JC foi perdido.' }
+
+      - name: Reuse blue GAT CLIENT icon
+        shell: pwsh
+        run: |
+          $src = Join-Path $env:RUNNER_TEMP 'GAT_TELEMETRIA_1.0.5.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.5_TESTE.exe' -OutFile $src
+          Add-Type -AssemblyName System.Drawing
+          $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($src)
+          if ($null -eq $icon) { throw 'Não foi possível extrair o ícone azul.' }
+          $paths = @('client-dotnet/GatTelemetry/assets/GAT_CLIENT.ico','client-dotnet/GatTelemetryInstaller/assets/GAT_CLIENT.ico')
+          foreach ($p in $paths) {
+            New-Item -ItemType Directory -Force (Split-Path $p -Parent) | Out-Null
+            $fs=[System.IO.File]::Create($p); try {$icon.Save($fs)} finally {$fs.Dispose()}
+          }
+          $icon.Dispose()
+
+      - name: Build CSharp telemetry client
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetry/GatTelemetry.csproj
+          dotnet build client-dotnet/GatTelemetry/GatTelemetry.csproj -c Release --no-restore
+          if (-not (Test-Path 'client-dotnet/GatTelemetry/bin/Release/net48/GAT_TELEMETRIA.exe')) { throw 'Cliente não gerado.' }
+
+      - name: Prepare updater payload
+        shell: pwsh
+        run: |
+          $out='client-dotnet/GatTelemetry/bin/Release/net48'
+          $pay='client-dotnet/GatTelemetryInstaller/payload'
+          if (Test-Path $pay) { Remove-Item $pay -Recurse -Force }
+          New-Item -ItemType Directory -Force $pay | Out-Null
+          Copy-Item "$out/GAT_TELEMETRIA.exe" "$pay/GAT_TELEMETRIA.exe" -Force
+          Copy-Item "$out/GAT_TELEMETRIA.exe.config" "$pay/GAT_TELEMETRIA.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+
+      - name: Build 1.0.6 updater
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj
+          dotnet build client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj -c Release --no-restore
+          $update='client-dotnet/GatTelemetryInstaller/bin/Release/net48/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe'
+          if (-not (Test-Path $update)) { throw 'Atualizador 1.0.6 não gerado.' }
+          Copy-Item $update "$env:RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe" -Force
+
+      - name: Publish updater and manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git reset --hard HEAD
+          git clean -fdx
+          git checkout -B main origin/main
+          mkdir -p releases
+          cp "$RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe" releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe
+          SHA=$(sha256sum releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe | awk '{print $1}')
+          cat > client_dotnet_version.json <<EOF
+          {
+            "app": "GAT Telemetria CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.6",
+            "display_version": "1.0.6 TESTE",
+            "notas": "Adiciona a Conta GAT: o motorista entra com o mesmo usuário e senha cadastrados no site, o cliente guarda somente o token protegido pelo Windows e vincula essa conta ao jogador detectado na sessão ETS2. Mantém a identificação robusta da 1.0.5, servidores, conexão automática e ícone azul.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe client_dotnet_version.json
+          git commit -m "Publica GAT Telemetria 1.0.6 com Conta GAT"
+          git push origin main
