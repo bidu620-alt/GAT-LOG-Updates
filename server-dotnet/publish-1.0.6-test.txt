@@ -1,1 +1,1 @@
-publish 1.0.6 test
+publish 1.0.6 test retry 2
