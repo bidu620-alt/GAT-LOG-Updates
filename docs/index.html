@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#070a0f" />
   <title>GAT LOG • ETS2 ao vivo</title>
-  <meta name="description" content="Painel público do GAT LOG com servidores, motoristas e telemetria do Euro Truck Simulator 2 em tempo real." />
+  <meta name="description" content="Painel público do GAT LOG com servidores, motoristas, empresa, mapa e telemetria do Euro Truck Simulator 2 em tempo real." />
   <link rel="stylesheet" href="site.css" />
   <link rel="stylesheet" href="login.css" />
 </head>
@@ -39,7 +39,7 @@
   <header class="topbar">
     <a class="brand" href="#inicio"><span class="brand-mark">GAT</span><span class="brand-log">LOG</span></a>
     <nav>
-      <a href="#inicio">Início</a><a href="#ao-vivo">Ao vivo</a><a href="#trabalhos">Trabalhos</a><a href="#downloads">Downloads</a><a href="#sobre">Sobre</a>
+      <a href="#inicio">Início</a><a href="#motoristas">Motoristas</a><a href="#empresa">Empresa</a><a href="#mapa">Mapa</a><a href="#trabalhos">Trabalhos</a><a href="#downloads">Downloads</a>
     </nav>
     <span class="live" id="globalLive"><i></i> CONECTANDO...</span>
     <button id="accountButton" class="logout-button" type="button">ENTRAR / CADASTRAR</button>
@@ -51,7 +51,7 @@
         <span class="eyebrow">EURO TRUCK SIMULATOR 2 • GAT LOG</span>
         <h1>A estrada acontecendo.<br><strong>Todo mundo pode acompanhar.</strong></h1>
         <p>O GAT LOG reúne servidor, motoristas e telemetria em um painel público. O motorista cria sua Conta GAT para vincular o cliente à identidade dele; quem visita o site pode acompanhar tudo ao vivo.</p>
-        <div class="actions"><a class="btn primary" href="#ao-vivo">Ver motoristas ao vivo</a><button id="heroAccountButton" class="btn ghost" type="button">Criar Conta GAT</button></div>
+        <div class="actions"><a class="btn primary" href="#motoristas">Ver motoristas</a><button id="heroAccountButton" class="btn ghost" type="button">Criar Conta GAT</button></div>
       </div>
       <div class="hero-road" aria-hidden="true"><div class="truck"><div class="cab"><span>GAT</span></div><div class="lights"></div></div><div class="lane lane-a"></div><div class="lane lane-b"></div></div>
       <div class="trip-card glass" id="heroTrip">
@@ -68,8 +68,53 @@
       <article class="stat"><span class="icon amber">◆</span><div><small>EM ROTA</small><b id="statRoutes">0 viagens</b><em id="statRoutesSub">telemetria ativa</em></div></article>
     </section>
 
+    <section class="shell portal-tabs" aria-label="Áreas do GAT LOG">
+      <a href="#motoristas"><span>01</span><b>Motoristas</b><small>Perfis e atividade</small></a>
+      <a href="#empresa"><span>02</span><b>Empresa</b><small>Números do GAT</small></a>
+      <a href="#mapa"><span>03</span><b>Mapa</b><small>Rotas em andamento</small></a>
+    </section>
+
+    <section id="motoristas" class="shell section">
+      <div class="section-head"><div><span class="eyebrow">ABA MOTORISTAS</span><h2>Motoristas GAT</h2></div><span id="driverDirectoryCount" class="pill blue">0 MOTORISTAS</span></div>
+      <p class="lead">Aqui ficam os motoristas presentes nas sessões, a Conta GAT vinculada, o servidor em que estão e a viagem atual quando houver telemetria.</p>
+      <div id="driverDirectoryGrid" class="driver-directory"><article class="live-placeholder">Carregando motoristas...</article></div>
+    </section>
+
+    <section id="empresa" class="shell section">
+      <div class="section-head"><div><span class="eyebrow">ABA EMPRESA</span><h2>GAT LOG Transportes</h2></div><span class="pill cyan">OPERAÇÃO ONLINE</span></div>
+      <p class="lead">Resumo geral da empresa virtual GAT LOG usando os dados ao vivo dos servidores e da telemetria.</p>
+      <div class="company-layout">
+        <article class="company-main">
+          <div class="company-logo">GAT</div>
+          <div><span class="mini">EMPRESA VIRTUAL ETS2</span><h3>GAT LOG Transportes</h3><p>Central integrada de comboios, motoristas, trabalhos e telemetria. A Conta GAT será a identidade usada para histórico, missões e ranking.</p></div>
+        </article>
+        <div class="company-stats">
+          <article><small>MOTORISTAS ONLINE</small><b id="companyDrivers">0</b></article>
+          <article><small>VIAGENS ATIVAS</small><b id="companyRoutes">0</b></article>
+          <article><small>SERVIDORES ONLINE</small><b id="companyServers">0</b></article>
+          <article><small>CONTAS GAT ATIVAS</small><b id="companyAccounts">0</b></article>
+        </div>
+      </div>
+      <div id="companyStatus" class="company-status">Aguardando dados da empresa...</div>
+    </section>
+
+    <section id="mapa" class="shell section">
+      <div class="section-head"><div><span class="eyebrow">ABA MAPA</span><h2>Mapa das viagens</h2></div><span id="mapTripCount" class="pill amber">0 ROTAS</span></div>
+      <p class="lead">Visualização operacional das rotas que estão em andamento. Por enquanto o desenho é esquemático, usando origem e destino recebidos pela telemetria; não representa coordenadas reais do ETS2.</p>
+      <div class="map-layout">
+        <article class="route-map-card">
+          <div class="route-map-head"><div><span class="mini">CENTRAL DE ROTAS</span><h3>Viagens em andamento</h3></div><span class="map-live-dot">AO VIVO</span></div>
+          <div id="routeMap" class="route-map"><div class="map-empty">Aguardando uma viagem ativa...</div></div>
+        </article>
+        <aside class="map-route-panel">
+          <span class="mini">ROTAS ATIVAS</span>
+          <div id="mapRouteList" class="map-route-list"><div class="map-route-empty">Nenhuma rota ativa neste momento.</div></div>
+        </aside>
+      </div>
+    </section>
+
     <section id="ao-vivo" class="shell section">
-      <div class="section-head"><div><span class="eyebrow">CENTRAL AO VIVO</span><h2>O que está acontecendo agora</h2></div><span class="pill cyan" id="lastUpdate">ATUALIZANDO</span></div>
+      <div class="section-head"><div><span class="eyebrow">CENTRAL AO VIVO</span><h2>Servidores e telemetria</h2></div><span class="pill cyan" id="lastUpdate">ATUALIZANDO</span></div>
       <p class="lead">Os dados vêm diretamente dos GAT Servers e atualizam automaticamente. O painel é público; a Conta GAT é usada para identificar corretamente cada motorista e sua telemetria.</p>
       <div id="serverCards" class="server-grid"><article class="live-placeholder">Conectando aos servidores...</article></div>
       <div class="live-title"><div><span class="eyebrow">MOTORISTAS</span><h3>Telemetria dos jogadores</h3></div><span id="driverCountBadge" class="pill blue">0 MOTORISTAS</span></div>
