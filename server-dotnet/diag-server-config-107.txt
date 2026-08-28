@@ -1,0 +1,1 @@
+Diagnose server config and session parsing for 1.0.7
