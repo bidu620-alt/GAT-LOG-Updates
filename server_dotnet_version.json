@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.11",
-  "display_version": "1.0.11 TESTE",
-  "notas": "Adiciona login real para acesso ao site. O servidor permite configurar usuário e senha próprios do site, armazena somente hash e protege a API pública por sessão Bearer temporária. Mantém telemetria, ícone vermelho e todas as configurações anteriores.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.11_TESTE.exe",
-  "sha256": "f4ed64ce2d055a1170736d80fa6f19d1c489b84de2accad7db20e20f7e15d654"
+  "version": "1.0.12",
+  "display_version": "1.0.12 TESTE",
+  "notas": "Adiciona contas individuais de motorista para ligar cadastro do site ao GAT Telemetria. A conta é validada separadamente do nome do jogador ETS2, a telemetria pública passa a informar a conta vinculada e o painel do site continua público. Clientes antigos permanecem temporariamente compatíveis.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.12_TESTE.exe",
+  "sha256": "40d01f15a467921b76db9747ae208e180fe133c3d17a2062cffdca32a803ea37"
 }
