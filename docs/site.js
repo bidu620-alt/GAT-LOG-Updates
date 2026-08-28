@@ -4,10 +4,16 @@ const GAT_SERVERS=[
   {label:'JC - JEAN',url:'https://jean-jc.tailf14a00.ts.net'}
 ];
 const LIVE_PATH='/api/public/live';
+const LOGIN_PATH='/api/public/site-login';
+const SESSION_PATH='/api/public/site-session';
+const TOKEN_KEY='gat_site_tokens_v1';
 const REFRESH_MS=5000;
 const FRESH_MS=20000;
 let heroTrips=[];
 let heroIndex=0;
+let liveTimer=null;
+let heroTimer=null;
+let siteTokens=loadTokens();
 
 async function bindRelease(manifest,versionId,buttonId){
   const versionEl=document.getElementById(versionId),button=document.getElementById(buttonId);
@@ -23,6 +29,87 @@ async function bindRelease(manifest,versionId,buttonId){
 bindRelease('server_dotnet_version.json','serverVersion','serverDownload');
 bindRelease('client_dotnet_version.json','clientVersion','clientDownload');
 
+function loadTokens(){
+  try{const x=JSON.parse(sessionStorage.getItem(TOKEN_KEY)||'{}');return x&&typeof x==='object'?x:{};}catch(_){return {};}
+}
+function saveTokens(){try{sessionStorage.setItem(TOKEN_KEY,JSON.stringify(siteTokens));}catch(_){}}
+function clearTokens(){siteTokens={};try{sessionStorage.removeItem(TOKEN_KEY);}catch(_){}}
+function tokenFor(server){return String(siteTokens[server.url]||'');}
+function authHeaders(server,extra={}){const token=tokenFor(server);return token?{...extra,Authorization:'Bearer '+token}:extra;}
+function setLoginStatus(text,type=''){const e=document.getElementById('loginStatus');e.textContent=text;e.className='login-status'+(type?' '+type:'');}
+
+function stopLive(){if(liveTimer){clearInterval(liveTimer);liveTimer=null;}if(heroTimer){clearInterval(heroTimer);heroTimer=null;}}
+function lockSite(message='Faça login para acessar o GAT LOG.'){
+  stopLive();
+  document.body.classList.add('site-locked');
+  document.getElementById('loginPassword').value='';
+  setLoginStatus(message,message.includes('expir')?'error':'');
+}
+function unlockSite(){
+  document.body.classList.remove('site-locked');
+  setLoginStatus('Acesso liberado.','ok');
+  startLive();
+}
+
+async function validateSession(server){
+  const token=tokenFor(server);if(!token)return false;
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),4000);
+  try{
+    const r=await fetch(server.url+SESSION_PATH,{cache:'no-store',signal:controller.signal,headers:{Authorization:'Bearer '+token}});
+    return r.ok;
+  }catch(_){return false;}finally{clearTimeout(timer);}
+}
+
+async function restoreSession(){
+  const configured=GAT_SERVERS.filter(s=>tokenFor(s));
+  if(!configured.length){lockSite('Faça login para acessar o GAT LOG.');return;}
+  setLoginStatus('Validando sessão...');
+  const checks=await Promise.all(configured.map(async s=>({server:s,ok:await validateSession(s)})));
+  checks.filter(x=>!x.ok).forEach(x=>delete siteTokens[x.server.url]);
+  saveTokens();
+  if(checks.some(x=>x.ok)){unlockSite();}else{clearTokens();lockSite('Sua sessão expirou. Entre novamente.');}
+}
+
+async function loginServer(server,user,password){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),6000);
+  try{
+    const r=await fetch(server.url+LOGIN_PATH,{method:'POST',cache:'no-store',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({user,password})});
+    let data=null;try{data=await r.json();}catch(_){}
+    if(r.ok&&data?.ok&&data.token)return {server,ok:true,token:data.token};
+    if(r.status===401)return {server,ok:false,reason:'invalid'};
+    if(r.status===404)return {server,ok:false,reason:'update'};
+    if(r.status===503&&data?.error==='site_access_not_configured')return {server,ok:false,reason:'not_configured'};
+    return {server,ok:false,reason:'unavailable'};
+  }catch(_){return {server,ok:false,reason:'unavailable'};}finally{clearTimeout(timer);}
+}
+
+async function submitLogin(event){
+  event.preventDefault();
+  const user=document.getElementById('loginUser').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  const button=document.getElementById('loginButton');
+  if(!user||!password){setLoginStatus('Preencha usuário e senha.','error');return;}
+  button.disabled=true;button.textContent='ENTRANDO...';setLoginStatus('Validando acesso nos GAT Servers...');
+  try{
+    const results=await Promise.all(GAT_SERVERS.map(s=>loginServer(s,user,password)));
+    const ok=results.filter(x=>x.ok);
+    if(ok.length){
+      siteTokens={};ok.forEach(x=>siteTokens[x.server.url]=x.token);saveTokens();
+      document.getElementById('loginPassword').value='';
+      unlockSite();
+      return;
+    }
+    clearTokens();
+    if(results.some(x=>x.reason==='invalid'))setLoginStatus('Usuário ou senha incorretos.','error');
+    else if(results.some(x=>x.reason==='not_configured'))setLoginStatus('O login do site ainda não foi configurado no GAT Server. Atualize para 1.0.11 e configure em CONTA / SENHA.','error');
+    else if(results.some(x=>x.reason==='update'))setLoginStatus('O GAT Server precisa da versão 1.0.11 para liberar o login do site.','error');
+    else setLoginStatus('Não foi possível conectar aos GAT Servers.','error');
+  }finally{button.disabled=false;button.textContent='ENTRAR';}
+}
+
+document.getElementById('loginForm').addEventListener('submit',submitLogin);
+document.getElementById('logoutButton').addEventListener('click',()=>{clearTokens();lockSite('Você saiu do GAT LOG.');});
+
 function escText(v,fallback='—'){const s=String(v??'').trim();return s||fallback;}
 function num(v){const n=Number(v);return Number.isFinite(n)?n:0;}
 function ageMs(iso){const t=Date.parse(iso||'');return Number.isFinite(t)?Date.now()-t:Infinity;}
@@ -34,13 +121,15 @@ function formatSpeed(v){return Math.max(0,Math.round(num(v)))+' km/h';}
 function el(tag,cls,text){const x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=text;return x;}
 
 async function fetchServer(server){
+  if(!tokenFor(server))return {server,data:null,error:'auth'};
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),4500);
   try{
-    const r=await fetch(server.url+LIVE_PATH,{cache:'no-store',signal:controller.signal});
-    if(!r.ok) throw new Error('HTTP '+r.status);
+    const r=await fetch(server.url+LIVE_PATH,{cache:'no-store',signal:controller.signal,headers:authHeaders(server)});
+    if(r.status===401){delete siteTokens[server.url];saveTokens();return {server,data:null,error:'auth'};}
+    if(!r.ok)throw new Error('HTTP '+r.status);
     const data=await r.json();
-    if(!data||data.ok!==true) throw new Error('resposta inválida');
+    if(!data||data.ok!==true)throw new Error('resposta inválida');
     return {server,data,error:null};
   }catch(e){return {server,data:null,error:e?.message||'offline'};}
   finally{clearTimeout(timer);}
@@ -56,13 +145,11 @@ function renderServerCards(results){
     card.append(top);
     const meta=el('div','server-live-meta');
     if(data){
-      meta.append(
-        metric('Jogadores',(data.player_count??data.players?.length??0)+' / '+(data.max_players??'—')),
-        metric('ID da sala',escText(data.session_id)),
-        metric('Telemetrias',String((data.telemetry||[]).filter(isFresh).length))
-      );
+      meta.append(metric('Jogadores',(data.player_count??data.players?.length??0)+' / '+(data.max_players??'—')),metric('ID da sala',escText(data.session_id)),metric('Telemetrias',String((data.telemetry||[]).filter(isFresh).length)));
     }else{
-      const msg=el('div','server-error');msg.textContent=error?.includes('404')?'Aguardando atualização GAT Server 1.0.10':'Servidor/API indisponível';card.append(msg);
+      const msg=el('div','server-error');
+      msg.textContent=error==='auth'?'Login não validado neste servidor':error?.includes('404')?'GAT Server 1.0.11 necessário':'Servidor/API indisponível';
+      card.append(msg);
     }
     card.append(meta);root.append(card);
   });
@@ -72,7 +159,7 @@ function metric(name,value){const d=el('div');d.append(el('small','',name),el('b
 function buildDrivers(results){
   const out=[];
   results.forEach(({server,data})=>{
-    if(!data) return;
+    if(!data)return;
     const players=Array.isArray(data.players)?data.players:[];
     const telemetry=Array.isArray(data.telemetry)?data.telemetry:[];
     const byName=new Map(telemetry.map(t=>[normalize(t.driver),t]));
@@ -109,9 +196,7 @@ function renderDrivers(drivers){
 
 function renderHero(){
   const driver=document.getElementById('heroDriver'),state=document.getElementById('heroState');
-  if(!heroTrips.length){
-    driver.textContent='Aguardando uma viagem em andamento';document.getElementById('heroSource').textContent='Origem';document.getElementById('heroDestination').textContent='Destino';document.getElementById('heroSpeed').textContent='— km/h';document.getElementById('heroCargo').textContent='—';state.textContent='AO VIVO';return;
-  }
+  if(!heroTrips.length){driver.textContent='Aguardando uma viagem em andamento';document.getElementById('heroSource').textContent='Origem';document.getElementById('heroDestination').textContent='Destino';document.getElementById('heroSpeed').textContent='— km/h';document.getElementById('heroCargo').textContent='—';state.textContent='AO VIVO';return;}
   const d=heroTrips[heroIndex%heroTrips.length];heroIndex++;
   driver.textContent=d.driver+' • '+d.server;
   document.getElementById('heroSource').textContent=escText(d.t.source,'Origem');
@@ -122,7 +207,9 @@ function renderHero(){
 }
 
 async function refreshLive(){
+  if(document.body.classList.contains('site-locked'))return;
   const results=await Promise.all(GAT_SERVERS.map(fetchServer));
+  if(!GAT_SERVERS.some(s=>tokenFor(s))){clearTokens();lockSite('Sua sessão expirou. Entre novamente.');return;}
   renderServerCards(results);
   const drivers=buildDrivers(results);renderDrivers(drivers);
   const responding=results.filter(x=>x.data),online=results.filter(x=>x.data?.online);
@@ -137,6 +224,10 @@ async function refreshLive(){
   renderHero();
 }
 
-refreshLive();
-setInterval(refreshLive,REFRESH_MS);
-setInterval(renderHero,7000);
+function startLive(){
+  refreshLive();
+  if(!liveTimer)liveTimer=setInterval(refreshLive,REFRESH_MS);
+  if(!heroTimer)heroTimer=setInterval(renderHero,7000);
+}
+
+restoreSession();
