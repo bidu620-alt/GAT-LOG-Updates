@@ -5,5 +5,5 @@
   "display_version": "1.0.12 TESTE",
   "notas": "Adiciona contas individuais de motorista para ligar cadastro do site ao GAT Telemetria. A conta é validada separadamente do nome do jogador ETS2, a telemetria pública passa a informar a conta vinculada e o painel do site continua público. Clientes antigos permanecem temporariamente compatíveis.",
   "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.12_TESTE.exe",
-  "sha256": "40d01f15a467921b76db9747ae208e180fe133c3d17a2062cffdca32a803ea37"
+  "sha256": "540c776bf1c638abe5ba78bcb807ab74959247b46285e1d2f21d7f19500939aa"
 }
