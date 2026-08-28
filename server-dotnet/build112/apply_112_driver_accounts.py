@@ -11,7 +11,6 @@ if 'InternalVersion = "1.0.10"' in c:
 elif 'InternalVersion = "1.0.12"' not in c:
     raise SystemExit('versao 1.0.10 do agente nao encontrada')
 
-# Keep the existing binding structure and only add the account identity.
 if 'AccountUser string' not in c:
     marker = 'type Binding struct {'
     pos = c.find(marker)
@@ -26,7 +25,6 @@ for imp in ['"crypto/rand"', '"crypto/sha256"', '"crypto/subtle"', '"encoding/he
     if imp not in s:
         s = s.replace('import (\n', 'import (\n\t' + imp + '\n', 1)
 
-# Browser/client account endpoints. The account authority is the main Douglas GAT host.
 routes = '\tm.HandleFunc("/api/account/register", a.accountRegister)\n\tm.HandleFunc("/api/account/login", a.accountLogin)\n\tm.HandleFunc("/api/account/session", a.accountSession)\n'
 if '/api/account/register' not in s:
     needle = '\tm.HandleFunc("/api/public/live", a.publicLive)\n'
@@ -63,7 +61,6 @@ type accountSessionReply struct {
 
 func driverAccountsPath() string { return filepath.Join(core.DataDir(), "driver_accounts.json") }
 func driverAccountSessionsPath() string { return filepath.Join(core.DataDir(), "driver_account_sessions.json") }
-
 func accountKey(v string) string { return strings.ToLower(strings.TrimSpace(v)) }
 
 func validAccountUser(v string) bool {
@@ -102,16 +99,13 @@ func loadDriverAccounts() []driverAccount {
 	if list == nil { list = []driverAccount{} }
 	return list
 }
-
 func saveDriverAccounts(list []driverAccount) error { return core.SaveJSON(driverAccountsPath(), list) }
-
 func loadDriverAccountSessions() []driverAccountSession {
 	var list []driverAccountSession
 	_ = core.LoadJSON(driverAccountSessionsPath(), &list)
 	if list == nil { list = []driverAccountSession{} }
 	return list
 }
-
 func saveDriverAccountSessions(list []driverAccountSession) error { return core.SaveJSON(driverAccountSessionsPath(), list) }
 
 func verifyDriverPassword(user, password string) (driverAccount, bool) {
@@ -160,12 +154,10 @@ func verifyLocalDriverAccountToken(token string) (string, bool) {
 	return "", false
 }
 
+// Every GAT server validates the account against the central Douglas authority.
+// This keeps one account valid on Douglas, JC and future servers.
 func verifyDriverAccountAuthority(user, token string) (string, bool) {
-	if local, ok := verifyLocalDriverAccountToken(token); ok {
-		if user == "" || strings.EqualFold(strings.TrimSpace(user), strings.TrimSpace(local)) { return local, true }
-		return "", false
-	}
-
+	if strings.TrimSpace(token) == "" { return "", false }
 	req, err := http.NewRequest(http.MethodGet, accountAuthority+"/api/account/session", nil)
 	if err != nil { return "", false }
 	req.Header.Set("Authorization", "Bearer "+token)
@@ -227,7 +219,6 @@ if 'type driverAccount struct {' not in s:
     if pos < 0: raise SystemExit('publicLive nao encontrado')
     s = s[:pos] + support + s[pos:]
 
-# Extend client identity request without breaking old clients.
 old_req = '''type clientReq struct {\n\tDriver    string         `json:"driver"`\n\tDeviceID  string         `json:"device_id"`\n\tToken     string         `json:"token"`\n\tTelemetry map[string]any `json:"telemetry"`\n}'''
 new_req = '''type clientReq struct {\n\tDriver       string         `json:"driver"`\n\tDeviceID     string         `json:"device_id"`\n\tToken        string         `json:"token"`\n\tAccountUser  string         `json:"account_user"`\n\tAccountToken string         `json:"account_token"`\n\tTelemetry    map[string]any `json:"telemetry"`\n}'''
 if old_req in s:
@@ -235,16 +226,13 @@ if old_req in s:
 elif 'AccountUser  string' not in s:
     raise SystemExit('clientReq nao encontrado')
 
-# During /api/client/login verify the optional GAT account and bind it to the session player.
 needle = '\tkey := bindKey(canonical)\n\ta.mu.Lock()\n'
 if needle not in s:
     raise SystemExit('clientLogin binding point not found')
 account_check = '''\tverifiedAccount := ""\n\tif strings.TrimSpace(q.AccountUser) != "" || strings.TrimSpace(q.AccountToken) != "" {\n\t\tvar accountOK bool\n\t\tverifiedAccount, accountOK = verifyDriverAccountAuthority(q.AccountUser, q.AccountToken)\n\t\tif !accountOK {\n\t\t\tjsonOut(w, http.StatusUnauthorized, map[string]any{"ok": false, "error": "account_invalid"})\n\t\t\treturn\n\t\t}\n\t}\n'''
 if account_check not in s:
-    # only replace the first occurrence, which is clientLogin before validateClient
     s = s.replace(needle, account_check + needle, 1)
 
-# Persist account on Binding when authenticated.
 needle2 = '\tb.Driver = canonical\n\tb.DeviceID = q.DeviceID\n'
 replace2 = '\tb.Driver = canonical\n\tb.DeviceID = q.DeviceID\n\tif verifiedAccount != "" { b.AccountUser = verifiedAccount }\n'
 if needle2 in s:
@@ -255,7 +243,6 @@ new_reply = 'jsonOut(w, 200, map[string]any{"ok": true, "driver": canonical, "ac
 if old_reply in s:
     s = s.replace(old_reply, new_reply, 1)
 
-# Add account_user to the sanitized public feed by looking up the existing binding.
 old_public = '''\t\tpublicTelemetry = append(publicTelemetry, map[string]any{\n\t\t\t"driver":        v.Driver,'''
 new_public = '''\t\taccountUser := ""\n\t\ta.mu.RLock()\n\t\tif b, ok := a.bindings[bindKey(v.Driver)]; ok { accountUser = b.AccountUser }\n\t\ta.mu.RUnlock()\n\t\tpublicTelemetry = append(publicTelemetry, map[string]any{\n\t\t\t"driver":        v.Driver,\n\t\t\t"account_user":  accountUser,'''
 if old_public in s:
