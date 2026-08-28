@@ -1,1 +1,1 @@
-Diagnosticar rotas públicas para painel ao vivo do site GAT LOG.
+Diagnosticar login atual do motorista antes da conta unificada do site.
