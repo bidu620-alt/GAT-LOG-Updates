@@ -37,10 +37,13 @@ jobs:
         shell: pwsh
         run: |
           python client-dotnet/build106/apply_106_gat_account.py
+          python client-dotnet/build106/fix_106_account_labels.py
           $main = Get-Content 'client-dotnet/GatTelemetry/MainForm.cs' -Raw
           $api = Get-Content 'client-dotnet/GatTelemetry/ApiClient.cs' -Raw
           $store = Get-Content 'client-dotnet/GatTelemetry/ClientStore.cs' -Raw
           if ($main -notmatch 'CONTA GAT') { throw 'UI Conta GAT ausente.' }
+          if ($main -notmatch 'Usuário do site') { throw 'Rótulo do usuário ausente.' }
+          if ($main -notmatch 'Text = "Senha"') { throw 'Rótulo da senha ausente.' }
           if ($main -notmatch 'AccountAuthority') { throw 'Autoridade da conta ausente.' }
           if ($main -notmatch 'ChooseDriver\(players\.Players, identityTelemetry\)') { throw 'Identificação robusta 1.0.5 foi perdida.' }
           if ($main -notmatch 'account_user') { throw 'Vínculo da conta no login ausente.' }
