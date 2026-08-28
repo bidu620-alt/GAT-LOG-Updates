@@ -1,0 +1,242 @@
+name: Publish GAT-LOG Server DotNet 1.0.9 Icons
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/publish-1.0.9-icons.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+          cache: false
+      - name: Build Go agent preserving 1.0.8 fixes
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          python3 server-dotnet/build103/apply_103_telemetry.py
+          python3 server-dotnet/build104/apply_104_speed_units.py
+          python3 server-dotnet/build105/apply_105_truck_speed_kmh.py
+          python3 server-dotnet/build107/apply_107_server_config.py
+          python3 server-dotnet/build108/apply_108_hide_server_console.py
+          cd /tmp/gat-src
+          gofmt -w cmd/agent/main.go internal/core/core.go
+          mkdir -p "$GITHUB_WORKSPACE/agent-out"
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe" ./cmd/agent
+          test -s "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-agent-109
+          path: agent-out/GAT_LOG_AGENT.exe
+          retention-days: 2
+
+  publish:
+    needs: agent
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/download-artifact@v4
+        with:
+          name: dotnet-agent-109
+          path: server-dotnet/GatLogInstaller/payload
+
+      - name: Generate red GAT SERVER icon
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          @'
+          from PIL import Image, ImageDraw, ImageFont, ImageFilter
+          from pathlib import Path
+
+          W = 512
+          accent = (230, 42, 35, 255)
+          accent2 = (125, 8, 8, 255)
+          bg = (6, 8, 12, 255)
+          im = Image.new('RGBA', (W, W), bg)
+          d = ImageDraw.Draw(im)
+
+          # subtle vertical background gradient
+          for y in range(W):
+              t = y / (W - 1)
+              c = int(16 - 10*t)
+              d.line((0, y, W, y), fill=(c, c+2, c+6, 255))
+
+          glow = Image.new('RGBA', im.size, (0,0,0,0))
+          gd = ImageDraw.Draw(glow)
+          gd.rounded_rectangle((13,13,499,499), radius=78, outline=accent, width=16)
+          glow = glow.filter(ImageFilter.GaussianBlur(14))
+          im.alpha_composite(glow)
+          d = ImageDraw.Draw(im)
+          d.rounded_rectangle((18,18,494,494), radius=74, outline=(255,80,70,255), width=5)
+          d.rounded_rectangle((26,26,486,486), radius=67, outline=(75,8,8,255), width=3)
+
+          # road perspective
+          d.polygon([(225,280),(287,280),(460,486),(52,486)], fill=(8,10,13,255))
+          d.line((256,285,256,478), fill=accent, width=7)
+          for y,h in [(315,10),(345,13),(382,17),(426,22)]:
+              d.rectangle((252,y,260,y+h), fill=(255,130,110,255))
+          d.line((225,285,70,486), fill=(120,12,12,255), width=4)
+          d.line((287,285,442,486), fill=(120,12,12,255), width=4)
+
+          # front-facing truck silhouette
+          truck = (132,72,380,274)
+          d.rounded_rectangle(truck, radius=28, fill=(18,21,27,255), outline=(95,95,105,255), width=4)
+          d.rounded_rectangle((154,92,358,158), radius=12, fill=(5,12,20,255), outline=(70,78,90,255), width=3)
+          d.polygon([(168,105),(344,105),(329,148),(183,148)], fill=(10,20,31,255))
+          d.rectangle((116,116,136,193), fill=(18,21,27,255)); d.rectangle((376,116,396,193), fill=(18,21,27,255))
+          d.rounded_rectangle((151,170,361,252), radius=15, fill=(12,14,18,255), outline=(58,62,70,255), width=3)
+          for yy in (184,201,218,235):
+              d.line((171,yy,341,yy), fill=(80,83,90,255), width=4)
+          d.rounded_rectangle((147,226,190,249), radius=5, fill=(238,245,255,255), outline=accent, width=3)
+          d.rounded_rectangle((322,226,365,249), radius=5, fill=(238,245,255,255), outline=accent, width=3)
+          hg = Image.new('RGBA', im.size, (0,0,0,0)); hd=ImageDraw.Draw(hg)
+          hd.ellipse((126,209,207,272), fill=(255,40,30,90)); hd.ellipse((305,209,386,272), fill=(255,40,30,90))
+          im.alpha_composite(hg.filter(ImageFilter.GaussianBlur(16)))
+          d = ImageDraw.Draw(im)
+          d.rounded_rectangle((171,254,341,274), radius=7, fill=(5,5,6,255), outline=(65,65,70,255), width=2)
+
+          def font(size):
+              candidates = [r'C:\Windows\Fonts\arialbd.ttf', r'C:\Windows\Fonts\segoeuib.ttf']
+              for p in candidates:
+                  if Path(p).exists(): return ImageFont.truetype(p, size)
+              return ImageFont.load_default()
+          def centered(text, y, fnt, fill, stroke=0, stroke_fill=(0,0,0,255)):
+              box = d.textbbox((0,0), text, font=fnt, stroke_width=stroke)
+              x = (W - (box[2]-box[0]))//2
+              d.text((x,y), text, font=fnt, fill=fill, stroke_width=stroke, stroke_fill=stroke_fill)
+
+          centered('GAT', 286, font(118), (245,245,248,255), 5, (92,0,0,255))
+          centered('LOG', 392, font(40), (188,190,198,255), 2, (0,0,0,255))
+          d.rounded_rectangle((122,442,390,488), radius=15, fill=accent2, outline=accent, width=3)
+          centered('SERVER', 447, font(32), (255,255,255,255), 1, (30,0,0,255))
+
+          out1 = Path('server-dotnet/GatLogServer/assets/GAT_SERVER.ico')
+          out2 = Path('server-dotnet/GatLogInstaller/assets/GAT_SERVER.ico')
+          out1.parent.mkdir(parents=True, exist_ok=True); out2.parent.mkdir(parents=True, exist_ok=True)
+          im.save(out1, format='ICO', sizes=[(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)])
+          out2.write_bytes(out1.read_bytes())
+          '@ | Set-Content "$env:RUNNER_TEMP\make_server_icon.py" -Encoding UTF8
+          python "$env:RUNNER_TEMP\make_server_icon.py"
+          if (-not (Test-Path 'server-dotnet/GatLogServer/assets/GAT_SERVER.ico')) { throw 'Ícone do servidor não foi criado.' }
+
+      - name: Mark Server as 1.0.9 and embed icon
+        shell: pwsh
+        run: |
+          $ui = 'server-dotnet/GatLogServer/MainForm.cs'
+          $s = Get-Content $ui -Raw
+          $s = $s.Replace('CurrentVersion = "1.0.0"', 'CurrentVersion = "1.0.9"')
+          $s = $s.Replace('GAT-LOG SERVER 1.0 | ETS2 + Telemetria', 'GAT-LOG SERVER 1.0.9 | ETS2 + Telemetria')
+          $s = $s.Replace('C# WinForms 1.0.0', 'C# WinForms 1.0.9')
+          $s = $s.Replace('Interval = 3000', 'Interval = 1000')
+          if ($s -notmatch 'ExtractAssociatedIcon') {
+            $s = $s.Replace('DoubleBuffered = true;', 'DoubleBuffered = true;`r`n            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);')
+          }
+          Set-Content $ui $s -Encoding UTF8
+
+          $proj = 'server-dotnet/GatLogServer/GatLogServer.csproj'
+          $p = Get-Content $proj -Raw
+          $p = $p.Replace('<Version>1.0.0.0</Version>', '<Version>1.0.9.0</Version>')
+          $p = $p.Replace('<FileVersion>1.0.0.0</FileVersion>', '<FileVersion>1.0.9.0</FileVersion>')
+          $p = $p.Replace('<AssemblyVersion>1.0.0.0</AssemblyVersion>', '<AssemblyVersion>1.0.9.0</AssemblyVersion>')
+          $p = $p.Replace('<ApplicationManifest>app.manifest</ApplicationManifest>', '<ApplicationManifest>app.manifest</ApplicationManifest>`r`n    <ApplicationIcon>assets\GAT_SERVER.ico</ApplicationIcon>')
+          Set-Content $proj $p -Encoding UTF8
+
+          $ip = 'server-dotnet/GatLogInstaller/Program.cs'
+          $is = Get-Content $ip -Raw
+          $is = $is.Replace('using System.Reflection;', 'using System.Reflection;`r`nusing System.Runtime.InteropServices;')
+          $is = $is.Replace('Instalar GAT-LOG Server C# 1.0.0 TESTE?', 'Atualizar GAT-LOG Server C# para 1.0.9?')
+          $is = $is.Replace('GAT-LOG Server C# 1.0.0 TESTE instalado.', 'GAT-LOG Server C# 1.0.9 atualizado.')
+          $is = $is.Replace('internal static class Program`r`n    {', 'internal static class Program`r`n    {`r`n        [DllImport("shell32.dll")]`r`n        private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);')
+          $is = $is.Replace('shortcut.Description = "GAT-LOG Server";', 'shortcut.Description = "GAT-LOG Server";`r`n            shortcut.IconLocation = targetPath + ",0";')
+          $is = $is.Replace('CreateShortcut(Path.Combine(StartMenu, "GAT-LOG Server.lnk"), Path.Combine(InstallDir, "GAT_LOG_SERVER.exe"));', 'CreateShortcut(Path.Combine(StartMenu, "GAT-LOG Server.lnk"), Path.Combine(InstallDir, "GAT_LOG_SERVER.exe"));`r`n                SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);')
+          Set-Content $ip $is -Encoding UTF8
+
+          $iproj = 'server-dotnet/GatLogInstaller/GatLogInstaller.csproj'
+          $i = Get-Content $iproj -Raw
+          $i = $i.Replace('GAT_LOG_SERVER_DOTNET_SETUP_1.0.0_TESTE', 'GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE')
+          $i = $i.Replace('<ApplicationManifest>app.manifest</ApplicationManifest>', '<ApplicationManifest>app.manifest</ApplicationManifest>`r`n    <ApplicationIcon>assets\GAT_SERVER.ico</ApplicationIcon>')
+          Set-Content $iproj $i -Encoding UTF8
+
+          if ((Get-Content $proj -Raw) -notmatch 'GAT_SERVER.ico') { throw 'Ícone não foi inserido no projeto do servidor.' }
+          if ((Get-Content $iproj -Raw) -notmatch 'GAT_SERVER.ico') { throw 'Ícone não foi inserido no atualizador.' }
+
+      - name: Build CSharp server
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogServer/GatLogServer.csproj
+          dotnet build server-dotnet/GatLogServer/GatLogServer.csproj -c Release --no-restore
+
+      - name: Prepare updater payload
+        shell: pwsh
+        run: |
+          $out = 'server-dotnet/GatLogServer/bin/Release/net48'
+          $pay = 'server-dotnet/GatLogInstaller/payload'
+          New-Item -ItemType Directory -Force "$pay/assets" | Out-Null
+          Copy-Item "$out/GAT_LOG_SERVER.exe" "$pay/GAT_LOG_SERVER.exe" -Force
+          Copy-Item "$out/GAT_LOG_SERVER.exe.config" "$pay/GAT_LOG_SERVER.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          Copy-Item 'server-native-0.1/assets/logo.png' "$pay/assets/logo.png" -Force
+          Copy-Item 'server-native-0.1/assets/banner.png' "$pay/assets/banner.png" -Force
+          if (-not (Test-Path "$pay/GAT_LOG_AGENT.exe")) { throw 'Agente ausente.' }
+
+      - name: Build updater
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogInstaller/GatLogInstaller.csproj
+          dotnet build server-dotnet/GatLogInstaller/GatLogInstaller.csproj -c Release --no-restore
+          $update = 'server-dotnet/GatLogInstaller/bin/Release/net48/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe'
+          if (-not (Test-Path $update)) { throw 'Atualizador 1.0.9 não foi gerado.' }
+          Copy-Item $update "$env:RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe" -Force
+
+      - name: Publish updater and manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git reset --hard HEAD
+          git clean -fdx
+          git checkout -B main origin/main
+          mkdir -p releases
+          cp "$RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe" releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe
+          SHA=$(sha256sum releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe | awk '{print $1}')
+          cat > server_dotnet_version.json <<EOF
+          {
+            "app": "GAT-LOG Server CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.9",
+            "display_version": "1.0.9 TESTE",
+            "notas": "Adiciona ícone próprio vermelho GAT SERVER no executável, janela e atalho do Menu Iniciar. Mantém a sessão ETS2 oculta e todas as correções da 1.0.8.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe server_dotnet_version.json
+          git commit -m "Publica GAT-LOG Server CSharp 1.0.9 com ícone próprio"
+          git push origin main
+          sha256sum releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe
