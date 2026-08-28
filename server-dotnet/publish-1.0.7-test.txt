@@ -1,0 +1,1 @@
+publish 1.0.7 test - corrige server_config e sessao
