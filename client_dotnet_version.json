@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.4",
-  "display_version": "1.0.4 TESTE",
-  "notas": "Identifica automaticamente o motorista pela conta Steam ativa do próprio PC, mesmo com muitos jogadores na sessão. Mantém os dois servidores clássicos, motorista/token já salvos, conexão automática, telemetria e ícone azul da 1.0.3.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.4_TESTE.exe",
-  "sha256": "8ba36c30dff55d9544ea4324efba08e675093f7d350155a076db081e9ab495bb"
+  "version": "1.0.5",
+  "display_version": "1.0.5 TESTE",
+  "notas": "Identificação automática reforçada sem alterar a estrutura: motorista salvo, telemetria local, Steam e game.log, com normalização de nome para tolerar acentos, espaços, maiúsculas e pequenas tags. Mantém servidores, token, conexão automática, telemetria e ícone azul.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.5_TESTE.exe",
+  "sha256": "7a1878da6ae4c4941ed257747c16b354da22a3c52b58e963bd50fa3f32f51cfb"
 }
