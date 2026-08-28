@@ -31,7 +31,7 @@ jobs:
           python3 server-dotnet/build107/apply_107_server_config.py
           python3 server-dotnet/build108/apply_108_hide_server_console.py
           python3 server-dotnet/build110/apply_110_public_live.py
-          python3 server-dotnet/build111/apply_111_site_login.py
+          python3 server-dotnet/build111/apply_111_site_login_agent.py
       - name: Print identity blocks
         shell: bash
         run: |
