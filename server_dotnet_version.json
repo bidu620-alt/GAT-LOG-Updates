@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.8",
-  "display_version": "1.0.8 TESTE",
-  "notas": "Oculta completamente a janela preta da sessão do servidor dedicado ETS2. Mantém interface, telemetria, moderador, mods, configurações e histórico da 1.0.7.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.8_TESTE.exe",
-  "sha256": "c93ef778e059a0e637c883d79aa97a033c9fe52ddf2517c958b10d7ff4dfedb3"
+  "version": "1.0.9",
+  "display_version": "1.0.9 TESTE",
+  "notas": "Adiciona ícone próprio vermelho GAT SERVER no executável, janela e atalho do Menu Iniciar. Mantém a sessão ETS2 oculta e todas as correções da 1.0.8.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.9_TESTE.exe",
+  "sha256": "ba160c2465b164e67f16722894809722794f298bad38d3c3d3a517d5d16890b8"
 }
