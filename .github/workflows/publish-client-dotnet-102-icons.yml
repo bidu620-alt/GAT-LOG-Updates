@@ -1,0 +1,192 @@
+name: Publish GAT Telemetria DotNet 1.0.2 Icons
+
+on:
+  push:
+    branches: [client-dotnet-winforms]
+    paths:
+      - 'client-dotnet/publish-1.0.2-icons.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: client-dotnet-winforms
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Validate existing client fixes
+        shell: pwsh
+        run: |
+          $tel = Get-Content 'client-dotnet/GatTelemetry/TelemetryEngine.cs' -Raw
+          if ($tel -match 'speed\s*\*\s*3\.6' -or $tel -match 'truck\.speed[^\r\n]*3\.6') { throw 'Conversão indevida por 3.6 encontrada.' }
+          $store = Get-Content 'client-dotnet/GatTelemetry/ClientStore.cs' -Raw
+          if ($store -notmatch 'CollectServers' -or $store -notmatch 'servers\.before-dotnet-migration\.json') { throw 'Correções da 1.0.1 não encontradas.' }
+
+      - name: Generate blue GAT CLIENT icon
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          @'
+          from PIL import Image, ImageDraw, ImageFont, ImageFilter
+          from pathlib import Path
+
+          W = 512
+          accent = (32, 142, 255, 255)
+          accent2 = (7, 55, 118, 255)
+          bg = (5, 9, 15, 255)
+          im = Image.new('RGBA', (W, W), bg)
+          d = ImageDraw.Draw(im)
+          for y in range(W):
+              t = y / (W - 1)
+              b = int(26 - 13*t)
+              d.line((0,y,W,y), fill=(5, 10, b, 255))
+
+          glow = Image.new('RGBA', im.size, (0,0,0,0))
+          gd = ImageDraw.Draw(glow)
+          gd.rounded_rectangle((13,13,499,499), radius=78, outline=accent, width=16)
+          im.alpha_composite(glow.filter(ImageFilter.GaussianBlur(14)))
+          d = ImageDraw.Draw(im)
+          d.rounded_rectangle((18,18,494,494), radius=74, outline=(80,185,255,255), width=5)
+          d.rounded_rectangle((26,26,486,486), radius=67, outline=(5,47,100,255), width=3)
+
+          d.polygon([(225,280),(287,280),(460,486),(52,486)], fill=(7,11,17,255))
+          d.line((256,285,256,478), fill=accent, width=7)
+          for y,h in [(315,10),(345,13),(382,17),(426,22)]:
+              d.rectangle((252,y,260,y+h), fill=(120,210,255,255))
+          d.line((225,285,70,486), fill=(7,67,130,255), width=4)
+          d.line((287,285,442,486), fill=(7,67,130,255), width=4)
+
+          d.rounded_rectangle((132,72,380,274), radius=28, fill=(16,21,29,255), outline=(85,100,120,255), width=4)
+          d.rounded_rectangle((154,92,358,158), radius=12, fill=(4,14,25,255), outline=(65,95,125,255), width=3)
+          d.polygon([(168,105),(344,105),(329,148),(183,148)], fill=(8,23,39,255))
+          d.rectangle((116,116,136,193), fill=(16,21,29,255)); d.rectangle((376,116,396,193), fill=(16,21,29,255))
+          d.rounded_rectangle((151,170,361,252), radius=15, fill=(10,14,20,255), outline=(55,70,86,255), width=3)
+          for yy in (184,201,218,235): d.line((171,yy,341,yy), fill=(70,90,110,255), width=4)
+          d.rounded_rectangle((147,226,190,249), radius=5, fill=(240,250,255,255), outline=accent, width=3)
+          d.rounded_rectangle((322,226,365,249), radius=5, fill=(240,250,255,255), outline=accent, width=3)
+          hg = Image.new('RGBA', im.size, (0,0,0,0)); hd = ImageDraw.Draw(hg)
+          hd.ellipse((126,209,207,272), fill=(30,150,255,100)); hd.ellipse((305,209,386,272), fill=(30,150,255,100))
+          im.alpha_composite(hg.filter(ImageFilter.GaussianBlur(16)))
+          d = ImageDraw.Draw(im)
+          d.rounded_rectangle((171,254,341,274), radius=7, fill=(4,6,9,255), outline=(55,75,90,255), width=2)
+
+          def font(size):
+              for p in [r'C:\Windows\Fonts\arialbd.ttf', r'C:\Windows\Fonts\segoeuib.ttf']:
+                  if Path(p).exists(): return ImageFont.truetype(p, size)
+              return ImageFont.load_default()
+          def centered(text, y, fnt, fill, stroke=0, stroke_fill=(0,0,0,255)):
+              box = d.textbbox((0,0), text, font=fnt, stroke_width=stroke)
+              x = (W-(box[2]-box[0]))//2
+              d.text((x,y), text, font=fnt, fill=fill, stroke_width=stroke, stroke_fill=stroke_fill)
+
+          centered('GAT', 286, font(118), (245,248,255,255), 5, (0,45,100,255))
+          centered('LOG', 392, font(40), (190,205,220,255), 2, (0,0,0,255))
+          d.rounded_rectangle((122,442,390,488), radius=15, fill=accent2, outline=accent, width=3)
+          centered('CLIENT', 447, font(32), (255,255,255,255), 1, (0,20,50,255))
+
+          out1 = Path('client-dotnet/GatTelemetry/assets/GAT_CLIENT.ico')
+          out2 = Path('client-dotnet/GatTelemetryInstaller/assets/GAT_CLIENT.ico')
+          out1.parent.mkdir(parents=True, exist_ok=True); out2.parent.mkdir(parents=True, exist_ok=True)
+          im.save(out1, format='ICO', sizes=[(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)])
+          out2.write_bytes(out1.read_bytes())
+          '@ | Set-Content "$env:RUNNER_TEMP\make_client_icon.py" -Encoding UTF8
+          python "$env:RUNNER_TEMP\make_client_icon.py"
+          if (-not (Test-Path 'client-dotnet/GatTelemetry/assets/GAT_CLIENT.ico')) { throw 'Ícone do cliente não foi criado.' }
+
+      - name: Mark client as 1.0.2 and embed icon
+        shell: pwsh
+        run: |
+          $ui = 'client-dotnet/GatTelemetry/MainForm.cs'
+          $s = Get-Content $ui -Raw
+          $s = $s.Replace('CurrentVersion = "1.0.0"', 'CurrentVersion = "1.0.2"')
+          $s = $s.Replace('GAT Telemetria C# 1.0 TESTE', 'GAT Telemetria C# 1.0.2 TESTE')
+          if ($s -notmatch 'ExtractAssociatedIcon') {
+            $s = $s.Replace('Font = new Font("Segoe UI", 9F);', 'Font = new Font("Segoe UI", 9F);`r`n            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);')
+          }
+          Set-Content $ui $s -Encoding UTF8
+
+          $proj = 'client-dotnet/GatTelemetry/GatTelemetry.csproj'
+          $p = Get-Content $proj -Raw
+          $p = $p.Replace('<Version>1.0.0.0</Version>', '<Version>1.0.2.0</Version>')
+          $p = $p.Replace('<FileVersion>1.0.0.0</FileVersion>', '<FileVersion>1.0.2.0</FileVersion>')
+          $p = $p.Replace('<AssemblyVersion>1.0.0.0</AssemblyVersion>', '<AssemblyVersion>1.0.2.0</AssemblyVersion>')
+          $p = $p.Replace('<UseWindowsForms>true</UseWindowsForms>', '<UseWindowsForms>true</UseWindowsForms>`r`n    <ApplicationIcon>assets\GAT_CLIENT.ico</ApplicationIcon>')
+          Set-Content $proj $p -Encoding UTF8
+
+          $ip = 'client-dotnet/GatTelemetryInstaller/Program.cs'
+          $is = Get-Content $ip -Raw
+          $is = $is.Replace('using System.Reflection;', 'using System.Reflection;`r`nusing System.Runtime.InteropServices;')
+          $is = $is.Replace('Instalar GAT Telemetria C# 1.0.0 TESTE?', 'Atualizar GAT Telemetria para 1.0.2?')
+          $is = $is.Replace('GAT Telemetria C# 1.0.0 TESTE instalado.', 'GAT Telemetria C# 1.0.2 atualizado.')
+          $is = $is.Replace('internal static class Program`r`n    {', 'internal static class Program`r`n    {`r`n        [DllImport("shell32.dll")]`r`n        private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);')
+          $is = $is.Replace('shortcut.Description = "GAT Telemetria";', 'shortcut.Description = "GAT Telemetria";`r`n            shortcut.IconLocation = targetPath + ",0";')
+          $is = $is.Replace('CreateShortcut(Path.Combine(CommonPrograms, "GAT Telemetria.lnk"), Path.Combine(InstallDir, "GAT_TELEMETRIA.exe"));', 'CreateShortcut(Path.Combine(CommonPrograms, "GAT Telemetria.lnk"), Path.Combine(InstallDir, "GAT_TELEMETRIA.exe"));`r`n                SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);')
+          Set-Content $ip $is -Encoding UTF8
+
+          $iproj = 'client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj'
+          $i = Get-Content $iproj -Raw
+          $i = $i.Replace('GAT_TELEMETRIA_DOTNET_SETUP_1.0.0_TESTE', 'GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE')
+          $i = $i.Replace('<ApplicationManifest>app.manifest</ApplicationManifest>', '<ApplicationManifest>app.manifest</ApplicationManifest>`r`n    <ApplicationIcon>assets\GAT_CLIENT.ico</ApplicationIcon>')
+          Set-Content $iproj $i -Encoding UTF8
+
+      - name: Build CSharp telemetry client
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetry/GatTelemetry.csproj
+          dotnet build client-dotnet/GatTelemetry/GatTelemetry.csproj -c Release --no-restore
+
+      - name: Prepare updater payload
+        shell: pwsh
+        run: |
+          $out = 'client-dotnet/GatTelemetry/bin/Release/net48'
+          $pay = 'client-dotnet/GatTelemetryInstaller/payload'
+          New-Item -ItemType Directory -Force $pay | Out-Null
+          Copy-Item "$out/GAT_TELEMETRIA.exe" "$pay/GAT_TELEMETRIA.exe" -Force
+          Copy-Item "$out/GAT_TELEMETRIA.exe.config" "$pay/GAT_TELEMETRIA.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          if (-not (Test-Path "$pay/GAT_TELEMETRIA.exe")) { throw 'Cliente ausente no payload.' }
+
+      - name: Build updater
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj
+          dotnet build client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj -c Release --no-restore
+          $update = 'client-dotnet/GatTelemetryInstaller/bin/Release/net48/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe'
+          if (-not (Test-Path $update)) { throw 'Atualizador do cliente 1.0.2 não foi gerado.' }
+          Copy-Item $update "$env:RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe" -Force
+
+      - name: Publish updater and manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git reset --hard HEAD
+          git clean -fdx
+          git checkout -B main origin/main
+          mkdir -p releases
+          cp "$RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe" releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe
+          SHA=$(sha256sum releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe | awk '{print $1}')
+          cat > client_dotnet_version.json <<EOF
+          {
+            "app": "GAT Telemetria CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.2",
+            "display_version": "1.0.2 TESTE",
+            "notas": "Adiciona ícone próprio azul GAT CLIENT no executável, janela e atalho do Menu Iniciar. Mantém servidores, motorista, token, conexão automática e correções da 1.0.1.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe client_dotnet_version.json
+          git commit -m "Publica GAT Telemetria CSharp 1.0.2 com ícone próprio"
+          git push origin main
+          sha256sum releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe
