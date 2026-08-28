@@ -1,0 +1,110 @@
+name: Publish GAT Telemetria DotNet 1.0.3 Fixed Servers
+
+on:
+  push:
+    branches: [client-dotnet-winforms]
+    paths:
+      - 'client-dotnet/publish-1.0.3-fixed-servers.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: client-dotnet-winforms
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Apply 1.0.3 fixed server migration
+        shell: pwsh
+        run: |
+          python client-dotnet/build103/apply_103_fixed_servers.py
+          $store = Get-Content 'client-dotnet/GatTelemetry/ClientStore.cs' -Raw
+          if ($store -notmatch 'douglas\.tail4577e8\.ts\.net') { throw 'Servidor Douglas não foi aplicado.' }
+          if ($store -notmatch 'jean-jc\.tailf14a00\.ts\.net') { throw 'Servidor JC não foi aplicado.' }
+          if ($store -notmatch 'found\.InsertRange\(0, GetFixedServers\(\)\)') { throw 'Mesclagem de servidores fixos não foi aplicada.' }
+
+      - name: Reuse blue GAT CLIENT icon
+        shell: pwsh
+        run: |
+          $src = Join-Path $env:RUNNER_TEMP 'GAT_TELEMETRIA_1.0.2.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe' -OutFile $src
+          Add-Type -AssemblyName System.Drawing
+          $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($src)
+          if ($null -eq $icon) { throw 'Não foi possível extrair o ícone azul do cliente.' }
+          $paths = @(
+            'client-dotnet/GatTelemetry/assets/GAT_CLIENT.ico',
+            'client-dotnet/GatTelemetryInstaller/assets/GAT_CLIENT.ico'
+          )
+          foreach ($p in $paths) {
+            $dir = Split-Path $p -Parent
+            New-Item -ItemType Directory -Force $dir | Out-Null
+            $fs = [System.IO.File]::Create($p)
+            try { $icon.Save($fs) } finally { $fs.Dispose() }
+            if ((Get-Item $p).Length -le 0) { throw "Ícone vazio: $p" }
+          }
+          $icon.Dispose()
+
+      - name: Build CSharp telemetry client
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetry/GatTelemetry.csproj
+          dotnet build client-dotnet/GatTelemetry/GatTelemetry.csproj -c Release --no-restore
+          $exe = 'client-dotnet/GatTelemetry/bin/Release/net48/GAT_TELEMETRIA.exe'
+          if (-not (Test-Path $exe)) { throw 'GAT_TELEMETRIA.exe não foi gerado.' }
+
+      - name: Prepare updater payload
+        shell: pwsh
+        run: |
+          $out = 'client-dotnet/GatTelemetry/bin/Release/net48'
+          $pay = 'client-dotnet/GatTelemetryInstaller/payload'
+          if (Test-Path $pay) { Remove-Item $pay -Recurse -Force }
+          New-Item -ItemType Directory -Force $pay | Out-Null
+          Copy-Item "$out/GAT_TELEMETRIA.exe" "$pay/GAT_TELEMETRIA.exe" -Force
+          Copy-Item "$out/GAT_TELEMETRIA.exe.config" "$pay/GAT_TELEMETRIA.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+
+      - name: Build 1.0.3 updater
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj
+          dotnet build client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj -c Release --no-restore
+          $update = 'client-dotnet/GatTelemetryInstaller/bin/Release/net48/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe'
+          if (-not (Test-Path $update)) { throw 'Atualizador GAT Telemetria 1.0.3 não foi gerado.' }
+          Copy-Item $update "$env:RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe" -Force
+
+      - name: Publish updater and manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git reset --hard HEAD
+          git clean -fdx
+          git checkout -B main origin/main
+          mkdir -p releases
+          cp "$RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe" releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe
+          SHA=$(sha256sum releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe | awk '{print $1}')
+          cat > client_dotnet_version.json <<EOF
+          {
+            "app": "GAT Telemetria CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.3",
+            "display_version": "1.0.3 TESTE",
+            "notas": "Restaura e fixa automaticamente os dois servidores clássicos BIDUZAO - DOUGLAS e JC - JEAN em instalações novas ou existentes, sem apagar servidores adicionais. Mantém motorista, token, conexão automática, telemetria e o ícone azul do cliente.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe client_dotnet_version.json
+          git commit -m "Publica GAT Telemetria 1.0.3 com servidores antigos fixos"
+          git push origin main
+          sha256sum releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.3_TESTE.exe
