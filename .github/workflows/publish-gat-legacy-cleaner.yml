@@ -1,0 +1,51 @@
+name: Publish GAT Legacy Cleaner
+
+on:
+  push:
+    branches: [client-dotnet-winforms]
+    paths:
+      - 'tools/GatLegacyCleaner/publish-cleaner.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: client-dotnet-winforms
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build cleaner
+        shell: pwsh
+        run: |
+          dotnet restore tools/GatLegacyCleaner/GatLegacyCleaner.csproj
+          dotnet build tools/GatLegacyCleaner/GatLegacyCleaner.csproj -c Release --no-restore
+          $exe = 'tools/GatLegacyCleaner/bin/Release/net48/GAT_LOG_LIMPEZA_ANTIGOS.exe'
+          if (-not (Test-Path $exe)) { throw 'Executável do limpador não foi gerado.' }
+          Copy-Item $exe "$env:RUNNER_TEMP/GAT_LOG_LIMPEZA_ANTIGOS.exe" -Force
+
+      - name: Publish cleaner to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git reset --hard HEAD
+          git clean -fdx
+          git checkout -B main origin/main
+          mkdir -p releases
+          cp "$RUNNER_TEMP/GAT_LOG_LIMPEZA_ANTIGOS.exe" releases/GAT_LOG_LIMPEZA_ANTIGOS.exe
+          SHA=$(sha256sum releases/GAT_LOG_LIMPEZA_ANTIGOS.exe | awk '{print $1}')
+          printf '%s  %s\n' "$SHA" 'GAT_LOG_LIMPEZA_ANTIGOS.exe' > releases/GAT_LOG_LIMPEZA_ANTIGOS.sha256.txt
+          git add releases/GAT_LOG_LIMPEZA_ANTIGOS.exe releases/GAT_LOG_LIMPEZA_ANTIGOS.sha256.txt
+          git commit -m "Publica limpador de versões antigas GAT-LOG"
+          git push origin main
+          cat releases/GAT_LOG_LIMPEZA_ANTIGOS.sha256.txt
