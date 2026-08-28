@@ -5,5 +5,5 @@
   "display_version": "1.0.6 TESTE",
   "notas": "Adiciona a Conta GAT: o motorista entra com o mesmo usuário e senha cadastrados no site, o cliente guarda somente o token protegido pelo Windows e vincula essa conta ao jogador detectado na sessão ETS2. Mantém a identificação robusta da 1.0.5, servidores, conexão automática e ícone azul.",
   "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe",
-  "sha256": "2e25235aa1a21dde09dbe4302b8ba238e40a552e28e33b206ce42b74c1226c14"
+  "sha256": "f5a9e8cac5296aa3ea5913afb4923699945f72f64ec92299c6fb61af180b5aec"
 }
