@@ -1,0 +1,1 @@
+Publicar GAT Telemetria 1.0.4 TESTE com identificação automática do motorista pela conta Steam ativa, preservando integralmente a estrutura e os recursos da 1.0.3.
