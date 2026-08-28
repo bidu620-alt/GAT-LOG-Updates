@@ -1,0 +1,39 @@
+name: Inspect GAT-LOG server start 018
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server-native-0.1/inspect-start-trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover source and inspect start
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          {
+            echo '=== exec.Command occurrences ==='
+            grep -RIn -C 8 'exec.Command' /tmp/gat-src/internal /tmp/gat-src/cmd || true
+            echo '=== eurotrucks2_server occurrences ==='
+            grep -RIn -C 12 'eurotrucks2_server' /tmp/gat-src/internal /tmp/gat-src/cmd || true
+            echo '=== StartServer occurrences ==='
+            grep -RIn -C 20 'StartServer' /tmp/gat-src/internal /tmp/gat-src/cmd || true
+          } > server-native-0.1/inspect-start-result.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add server-native-0.1/inspect-start-result.txt
+          git commit -m 'Inspeciona inicializacao do servidor para 0.1.8' || exit 0
+          git push
