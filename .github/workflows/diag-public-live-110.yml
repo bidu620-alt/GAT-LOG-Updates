@@ -1,0 +1,56 @@
+name: Diagnose public live API 1.0.10
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/diag-public-live-110.txt'
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - name: Reconstruct current agent source
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          python3 server-dotnet/build103/apply_103_telemetry.py
+          python3 server-dotnet/build104/apply_104_speed_units.py
+          python3 server-dotnet/build105/apply_105_truck_speed_kmh.py
+          python3 server-dotnet/build107/apply_107_server_config.py
+          python3 server-dotnet/build108/apply_108_hide_server_console.py
+      - name: Print API blocks
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/gat-src/cmd/agent/main.go')
+          s=p.read_text(encoding='utf-8')
+          for name in ['routes','wrap','clientTelemetry','clientPlayers','clientServerInfo','uiStatus']:
+              marker=f'func (a *agent) {name}'
+              i=s.find(marker)
+              print('\n===== '+name+' =====')
+              if i<0:
+                  print('NOT FOUND')
+                  continue
+              j=s.find('\nfunc ',i+5)
+              print(s[i:j if j>0 else i+5000])
+          c=Path('/tmp/gat-src/internal/core/core.go').read_text(encoding='utf-8')
+          for marker in ['type TelemetryRecord struct','type ServerStatus struct']:
+              i=c.find(marker)
+              print('\n===== '+marker+' =====')
+              if i>=0:
+                  j=c.find('\ntype ',i+5)
+                  print(c[i:j if j>0 else i+2500])
+          PY
