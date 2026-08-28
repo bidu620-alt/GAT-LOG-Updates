@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.1",
-  "display_version": "1.0.1 TESTE",
-  "notas": "Corrige a migracao do servers.json legado com wrapper value/Count, remove servidores duplicados e tambem recupera credenciais antigas no mesmo formato. Mantem a velocidade sem multiplicar por 3.6.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_SETUP_1.0.1_TESTE.exe",
-  "sha256": "7b8d821f9fee2e07967a08569d6c5b2e771da95c6543d0e768f4b6ec12cfaab3"
+  "version": "1.0.2",
+  "display_version": "1.0.2 TESTE",
+  "notas": "Adiciona ícone próprio azul GAT CLIENT no executável, janela e atalho do Menu Iniciar. Mantém servidores, motorista, token, conexão automática e correções da 1.0.1.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE.exe",
+  "sha256": "590128410b6c69451a3ae9fb6f71949c4650be9403c5a533d1102f747dc5e7ce"
 }
