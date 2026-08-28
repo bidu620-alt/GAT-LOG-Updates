@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -10,6 +12,7 @@ namespace GatTelemetry
     {
         private const string TruckUrl = "http://127.0.0.1:31377/api/ets2/telemetry";
         private readonly HttpClient _http = new HttpClient { Timeout = TimeSpan.FromMilliseconds(1400) };
+        private DateTime _lastStartAttempt = DateTime.MinValue;
 
         public async Task<JObject> ReadAsync()
         {
@@ -22,7 +25,54 @@ namespace GatTelemetry
             }
             catch
             {
+                TryStartTruckSimGps();
                 return null;
+            }
+        }
+
+        private void TryStartTruckSimGps()
+        {
+            if ((DateTime.UtcNow - _lastStartAttempt).TotalSeconds < 10) return;
+            _lastStartAttempt = DateTime.UtcNow;
+
+            try
+            {
+                var running = Process.GetProcessesByName("TruckSimGPS_Server");
+                try
+                {
+                    if (running.Length > 0) return;
+                }
+                finally
+                {
+                    foreach (var p in running) p.Dispose();
+                }
+
+                string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                string pfx86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                string[] candidates =
+                {
+                    Path.Combine(local, "Programs", "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
+                    Path.Combine(local, "Programs", "TruckSim GPS", "TruckSimGPS_Server.exe"),
+                    Path.Combine(pf, "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
+                    Path.Combine(pfx86, "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe")
+                };
+
+                foreach (string exe in candidates)
+                {
+                    if (string.IsNullOrWhiteSpace(exe) || !File.Exists(exe)) continue;
+                    Process.Start(new ProcessStartInfo(exe)
+                    {
+                        UseShellExecute = true,
+                        WorkingDirectory = Path.GetDirectoryName(exe)
+                    });
+                    ClientStore.Log("TruckSim GPS iniciado automaticamente: " + exe);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                ClientStore.Log("Falha ao iniciar TruckSim GPS: " + ex.Message);
             }
         }
 
