@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.5",
-  "display_version": "1.0.5 TESTE",
-  "notas": "Corrige somente a velocidade do TruckSim GPS: truck.speed já é fornecido em km/h e agora é usado diretamente, sem multiplicação por 3.6. Mantém telemetria de 1 segundo, moderador e atualização automática.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.5_TESTE.exe",
-  "sha256": "bdad5cb56f3045be5f96bbf1e24ba283187b875cc401759f00df9e33731b8f14"
+  "version": "1.0.6",
+  "display_version": "1.0.6 TESTE",
+  "notas": "Força o GAT-LOG Server a usar o agente da instalação atual em C:\ProgramData\GAT-LOG Server, encerrando agentes antigos de outras pastas. Mantém a correção de velocidade sem multiplicação por 3.6.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_SETUP_1.0.6_TESTE.exe",
+  "sha256": "a8b3f0a8dea5b741d005b455a9164c409909ec5fb12d9fbe786b8aaaabadfe03"
 }
