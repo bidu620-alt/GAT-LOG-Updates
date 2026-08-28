@@ -1,1 +1,1 @@
-inspect 0.1.8 hidden server console
+inspect 0.1.8 hidden server console retry 2
