@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server CSharp 1.0.5 TESTE - correção exclusiva de unidade de velocidade TruckSim GPS.
