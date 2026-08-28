@@ -40,14 +40,12 @@ jobs:
           W = 512
           accent = (32, 142, 255, 255)
           accent2 = (7, 55, 118, 255)
-          bg = (5, 9, 15, 255)
-          im = Image.new('RGBA', (W, W), bg)
+          im = Image.new('RGBA', (W, W), (5, 9, 15, 255))
           d = ImageDraw.Draw(im)
           for y in range(W):
               t = y / (W - 1)
               b = int(26 - 13*t)
               d.line((0,y,W,y), fill=(5, 10, b, 255))
-
           glow = Image.new('RGBA', im.size, (0,0,0,0))
           gd = ImageDraw.Draw(glow)
           gd.rounded_rectangle((13,13,499,499), radius=78, outline=accent, width=16)
@@ -55,14 +53,11 @@ jobs:
           d = ImageDraw.Draw(im)
           d.rounded_rectangle((18,18,494,494), radius=74, outline=(80,185,255,255), width=5)
           d.rounded_rectangle((26,26,486,486), radius=67, outline=(5,47,100,255), width=3)
-
           d.polygon([(225,280),(287,280),(460,486),(52,486)], fill=(7,11,17,255))
           d.line((256,285,256,478), fill=accent, width=7)
-          for y,h in [(315,10),(345,13),(382,17),(426,22)]:
-              d.rectangle((252,y,260,y+h), fill=(120,210,255,255))
+          for y,h in [(315,10),(345,13),(382,17),(426,22)]: d.rectangle((252,y,260,y+h), fill=(120,210,255,255))
           d.line((225,285,70,486), fill=(7,67,130,255), width=4)
           d.line((287,285,442,486), fill=(7,67,130,255), width=4)
-
           d.rounded_rectangle((132,72,380,274), radius=28, fill=(16,21,29,255), outline=(85,100,120,255), width=4)
           d.rounded_rectangle((154,92,358,158), radius=12, fill=(4,14,25,255), outline=(65,95,125,255), width=3)
           d.polygon([(168,105),(344,105),(329,148),(183,148)], fill=(8,23,39,255))
@@ -76,21 +71,17 @@ jobs:
           im.alpha_composite(hg.filter(ImageFilter.GaussianBlur(16)))
           d = ImageDraw.Draw(im)
           d.rounded_rectangle((171,254,341,274), radius=7, fill=(4,6,9,255), outline=(55,75,90,255), width=2)
-
           def font(size):
               for p in [r'C:\Windows\Fonts\arialbd.ttf', r'C:\Windows\Fonts\segoeuib.ttf']:
                   if Path(p).exists(): return ImageFont.truetype(p, size)
               return ImageFont.load_default()
           def centered(text, y, fnt, fill, stroke=0, stroke_fill=(0,0,0,255)):
               box = d.textbbox((0,0), text, font=fnt, stroke_width=stroke)
-              x = (W-(box[2]-box[0]))//2
-              d.text((x,y), text, font=fnt, fill=fill, stroke_width=stroke, stroke_fill=stroke_fill)
-
+              d.text(((W-(box[2]-box[0]))//2,y), text, font=fnt, fill=fill, stroke_width=stroke, stroke_fill=stroke_fill)
           centered('GAT', 286, font(118), (245,248,255,255), 5, (0,45,100,255))
           centered('LOG', 392, font(40), (190,205,220,255), 2, (0,0,0,255))
           d.rounded_rectangle((122,442,390,488), radius=15, fill=accent2, outline=accent, width=3)
           centered('CLIENT', 447, font(32), (255,255,255,255), 1, (0,20,50,255))
-
           out1 = Path('client-dotnet/GatTelemetry/assets/GAT_CLIENT.ico')
           out2 = Path('client-dotnet/GatTelemetryInstaller/assets/GAT_CLIENT.ico')
           out1.parent.mkdir(parents=True, exist_ok=True); out2.parent.mkdir(parents=True, exist_ok=True)
@@ -103,38 +94,51 @@ jobs:
       - name: Mark client as 1.0.2 and embed icon
         shell: pwsh
         run: |
-          $ui = 'client-dotnet/GatTelemetry/MainForm.cs'
-          $s = Get-Content $ui -Raw
-          $s = $s.Replace('CurrentVersion = "1.0.0"', 'CurrentVersion = "1.0.2"')
-          $s = $s.Replace('GAT Telemetria C# 1.0 TESTE', 'GAT Telemetria C# 1.0.2 TESTE')
-          if ($s -notmatch 'ExtractAssociatedIcon') {
-            $s = $s.Replace('Font = new Font("Segoe UI", 9F);', 'Font = new Font("Segoe UI", 9F);`r`n            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);')
-          }
-          Set-Content $ui $s -Encoding UTF8
+          @'
+          from pathlib import Path
 
-          $proj = 'client-dotnet/GatTelemetry/GatTelemetry.csproj'
-          $p = Get-Content $proj -Raw
-          $p = $p.Replace('<Version>1.0.0.0</Version>', '<Version>1.0.2.0</Version>')
-          $p = $p.Replace('<FileVersion>1.0.0.0</FileVersion>', '<FileVersion>1.0.2.0</FileVersion>')
-          $p = $p.Replace('<AssemblyVersion>1.0.0.0</AssemblyVersion>', '<AssemblyVersion>1.0.2.0</AssemblyVersion>')
-          $p = $p.Replace('<UseWindowsForms>true</UseWindowsForms>', '<UseWindowsForms>true</UseWindowsForms>`r`n    <ApplicationIcon>assets\GAT_CLIENT.ico</ApplicationIcon>')
-          Set-Content $proj $p -Encoding UTF8
+          ui = Path('client-dotnet/GatTelemetry/MainForm.cs')
+          s = ui.read_text(encoding='utf-8')
+          s = s.replace('CurrentVersion = "1.0.0"', 'CurrentVersion = "1.0.2"')
+          s = s.replace('GAT Telemetria C# 1.0 TESTE', 'GAT Telemetria C# 1.0.2 TESTE')
+          if 'ExtractAssociatedIcon' not in s:
+              s = s.replace('Font = new Font("Segoe UI", 9F);', 'Font = new Font("Segoe UI", 9F);\n            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);', 1)
+          ui.write_text(s, encoding='utf-8')
 
-          $ip = 'client-dotnet/GatTelemetryInstaller/Program.cs'
-          $is = Get-Content $ip -Raw
-          $is = $is.Replace('using System.Reflection;', 'using System.Reflection;`r`nusing System.Runtime.InteropServices;')
-          $is = $is.Replace('Instalar GAT Telemetria C# 1.0.0 TESTE?', 'Atualizar GAT Telemetria para 1.0.2?')
-          $is = $is.Replace('GAT Telemetria C# 1.0.0 TESTE instalado.', 'GAT Telemetria C# 1.0.2 atualizado.')
-          $is = $is.Replace('internal static class Program`r`n    {', 'internal static class Program`r`n    {`r`n        [DllImport("shell32.dll")]`r`n        private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);')
-          $is = $is.Replace('shortcut.Description = "GAT Telemetria";', 'shortcut.Description = "GAT Telemetria";`r`n            shortcut.IconLocation = targetPath + ",0";')
-          $is = $is.Replace('CreateShortcut(Path.Combine(CommonPrograms, "GAT Telemetria.lnk"), Path.Combine(InstallDir, "GAT_TELEMETRIA.exe"));', 'CreateShortcut(Path.Combine(CommonPrograms, "GAT Telemetria.lnk"), Path.Combine(InstallDir, "GAT_TELEMETRIA.exe"));`r`n                SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);')
-          Set-Content $ip $is -Encoding UTF8
+          proj = Path('client-dotnet/GatTelemetry/GatTelemetry.csproj')
+          p = proj.read_text(encoding='utf-8')
+          p = p.replace('<Version>1.0.0.0</Version>', '<Version>1.0.2.0</Version>')
+          p = p.replace('<FileVersion>1.0.0.0</FileVersion>', '<FileVersion>1.0.2.0</FileVersion>')
+          p = p.replace('<AssemblyVersion>1.0.0.0</AssemblyVersion>', '<AssemblyVersion>1.0.2.0</AssemblyVersion>')
+          p = p.replace('<UseWindowsForms>true</UseWindowsForms>', '<UseWindowsForms>true</UseWindowsForms>\n    <ApplicationIcon>assets\\GAT_CLIENT.ico</ApplicationIcon>', 1)
+          proj.write_text(p, encoding='utf-8')
 
-          $iproj = 'client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj'
-          $i = Get-Content $iproj -Raw
-          $i = $i.Replace('GAT_TELEMETRIA_DOTNET_SETUP_1.0.0_TESTE', 'GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE')
-          $i = $i.Replace('<ApplicationManifest>app.manifest</ApplicationManifest>', '<ApplicationManifest>app.manifest</ApplicationManifest>`r`n    <ApplicationIcon>assets\GAT_CLIENT.ico</ApplicationIcon>')
-          Set-Content $iproj $i -Encoding UTF8
+          ip = Path('client-dotnet/GatTelemetryInstaller/Program.cs')
+          x = ip.read_text(encoding='utf-8')
+          if 'using System.Runtime.InteropServices;' not in x:
+              x = x.replace('using System.Reflection;', 'using System.Reflection;\nusing System.Runtime.InteropServices;', 1)
+          x = x.replace('Instalar GAT Telemetria C# 1.0.0 TESTE?', 'Atualizar GAT Telemetria para 1.0.2?')
+          x = x.replace('GAT Telemetria C# 1.0.0 TESTE instalado.', 'GAT Telemetria C# 1.0.2 atualizado.')
+          marker = 'internal static class Program\n    {'
+          if 'SHChangeNotify' not in x:
+              x = x.replace(marker, marker + '\n        [DllImport("shell32.dll")]\n        private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);', 1)
+          if 'shortcut.IconLocation' not in x:
+              x = x.replace('shortcut.Description = "GAT Telemetria";', 'shortcut.Description = "GAT Telemetria";\n            shortcut.IconLocation = targetPath + ",0";', 1)
+          call = 'CreateShortcut(Path.Combine(CommonPrograms, "GAT Telemetria.lnk"), Path.Combine(InstallDir, "GAT_TELEMETRIA.exe"));'
+          if 'SHChangeNotify(0x08000000' not in x:
+              x = x.replace(call, call + '\n                SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);', 1)
+          ip.write_text(x, encoding='utf-8')
+
+          iproj = Path('client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj')
+          q = iproj.read_text(encoding='utf-8')
+          q = q.replace('GAT_TELEMETRIA_DOTNET_SETUP_1.0.0_TESTE', 'GAT_TELEMETRIA_DOTNET_UPDATE_1.0.2_TESTE')
+          q = q.replace('<ApplicationManifest>app.manifest</ApplicationManifest>', '<ApplicationManifest>app.manifest</ApplicationManifest>\n    <ApplicationIcon>assets\\GAT_CLIENT.ico</ApplicationIcon>', 1)
+          iproj.write_text(q, encoding='utf-8')
+
+          if 'GAT_CLIENT.ico' not in proj.read_text(encoding='utf-8'): raise SystemExit('ícone ausente no projeto cliente')
+          if 'GAT_CLIENT.ico' not in iproj.read_text(encoding='utf-8'): raise SystemExit('ícone ausente no atualizador cliente')
+          '@ | Set-Content "$env:RUNNER_TEMP\patch_client_102.py" -Encoding UTF8
+          python "$env:RUNNER_TEMP\patch_client_102.py"
 
       - name: Build CSharp telemetry client
         shell: pwsh
