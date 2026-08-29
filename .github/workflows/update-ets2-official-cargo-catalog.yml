@@ -1,0 +1,57 @@
+name: Atualizar catálogo oficial de cargas ETS2
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/update_ets2_cargo_catalog.py'
+      - '.github/workflows/update-ets2-official-cargo-catalog.yml'
+  schedule:
+    - cron: '27 7 * * 1'
+
+permissions:
+  contents: write
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Baixar e classificar cargas reais do ETS2
+        run: python scripts/update_ets2_cargo_catalog.py
+
+      - name: Validar catálogo
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p='docs/ets2-official-cargos.json'
+          d=json.load(open(p,encoding='utf-8'))
+          assert int(d.get('total_entries',0)) >= 300, d.get('total_entries')
+          assert 'categories' in d and len(d['categories']) >= 29
+          print('Versão de referência:', d.get('reference_game_version'))
+          print('Total:', d['total_entries'])
+          PY
+
+      - name: Publicar catálogo no site
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/ets2-official-cargos.json; then
+            echo 'Catálogo já está atualizado.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/ets2-official-cargos.json
+          git commit -m 'Atualiza catálogo oficial de cargas ETS2'
+          git push origin main
