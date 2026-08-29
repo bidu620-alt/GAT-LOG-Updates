@@ -1,0 +1,66 @@
+name: Test GAT-LOG Agent 1.0.25 Catalog
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/test-1.0.25-catalog.txt'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+          cache: false
+      - name: Rebuild and compile agent
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          python3 server-dotnet/build103/apply_103_telemetry.py
+          python3 server-dotnet/build104/apply_104_speed_units.py
+          python3 server-dotnet/build105/apply_105_truck_speed_kmh.py
+          python3 server-dotnet/build107/apply_107_server_config.py
+          python3 server-dotnet/build108/apply_108_hide_server_console.py
+          python3 server-dotnet/build110/apply_110_public_live.py
+          python3 server-dotnet/build112/apply_112_driver_accounts.py
+          python3 server-dotnet/build113/apply_113_driver_history_missions.py
+          python3 server-dotnet/build114/apply_114_account_cors.py
+          python3 server-dotnet/build115/apply_115_public_version.py
+          python3 server-dotnet/build116/apply_116_site_browser_auth.py
+          python3 server-dotnet/build117/apply_117_live_map_truck.py
+          python3 server-dotnet/build118/apply_118_central_telemetry.py
+          python3 server-dotnet/build119/apply_119_simple_xp_levels.py
+          python3 server-dotnet/build120/apply_120_admin_panel.py
+          python3 server-dotnet/build121/apply_121_admin_driver_detail.py
+          python3 server-dotnet/build122/apply_122_admin_driver_route.py
+          python3 server-dotnet/build123/apply_123_short_test_mission.py
+          python3 server-dotnet/build124/apply_124_official_ready.py
+          python3 server-dotnet/build125/apply_125_catalog_500km_xp.py
+          python3 server-dotnet/build125/fix_125_escapes.py
+          python3 server-dotnet/build125/fix_125_admin_defs.py
+          cd /tmp/gat-src
+          gofmt -w cmd/agent/main.go internal/core/core.go
+          grep -q 'InternalVersion = "1.0.25"' internal/core/core.go
+          grep -q 'type gatAdminAuditEntry struct' cmd/agent/main.go
+          grep -q 'type gatAdminRequest struct' cmd/agent/main.go
+          grep -q 'type gatWorkItem struct' cmd/agent/main.go
+          grep -q 'func gatXPForDistance' cmd/agent/main.go
+          grep -q '/api/public/work/catalog' cmd/agent/main.go
+          grep -q '/api/site/work/select' cmd/agent/main.go
+          grep -q 'canStart := onJob && km >= 500 && gatCargoMatch' cmd/agent/main.go
+          grep -q 'p.CurrentMission.CatalogID == ""' cmd/agent/main.go
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o /tmp/GAT_LOG_AGENT.exe ./cmd/agent
+          test -s /tmp/GAT_LOG_AGENT.exe
