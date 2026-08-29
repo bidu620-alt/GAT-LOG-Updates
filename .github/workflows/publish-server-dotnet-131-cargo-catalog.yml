@@ -1,0 +1,152 @@
+name: Publish GAT-LOG Server DotNet 1.0.31 Cargo Catalog
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/publish-1.0.31-cargo-catalog.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+          cache: false
+      - name: Build validated Go agent 1.0.31
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          python3 server-dotnet/build103/apply_103_telemetry.py
+          python3 server-dotnet/build104/apply_104_speed_units.py
+          python3 server-dotnet/build105/apply_105_truck_speed_kmh.py
+          python3 server-dotnet/build107/apply_107_server_config.py
+          python3 server-dotnet/build108/apply_108_hide_server_console.py
+          python3 server-dotnet/build110/apply_110_public_live.py
+          python3 server-dotnet/build112/apply_112_driver_accounts.py
+          python3 server-dotnet/build113/apply_113_driver_history_missions.py
+          python3 server-dotnet/build114/apply_114_account_cors.py
+          python3 server-dotnet/build115/apply_115_public_version.py
+          python3 server-dotnet/build116/apply_116_site_browser_auth.py
+          python3 server-dotnet/build117/apply_117_live_map_truck.py
+          python3 server-dotnet/build118/apply_118_central_telemetry.py
+          python3 server-dotnet/build119/apply_119_simple_xp_levels.py
+          python3 server-dotnet/build120/apply_120_admin_panel.py
+          python3 server-dotnet/build121/apply_121_admin_driver_detail.py
+          python3 server-dotnet/build122/apply_122_admin_driver_route.py
+          python3 server-dotnet/build123/apply_123_short_test_mission.py
+          python3 server-dotnet/build124/apply_124_official_ready.py
+          python3 server-dotnet/build125/apply_125_catalog_500km_xp.py
+          python3 server-dotnet/build125/fix_125_escapes.py
+          python3 server-dotnet/build125/fix_125_admin_defs.py
+          python3 server-dotnet/build126/apply_126_cargo_groups.py
+          python3 server-dotnet/build127/apply_127_min_250.py
+          python3 server-dotnet/build128/apply_128_admin_confirm_mission.py
+          python3 server-dotnet/build129/apply_129_delivery_event.py
+          python3 server-dotnet/build130/apply_130_trip_receipts.py
+          python3 server-dotnet/build131/apply_131_cargo_catalog.py
+          cd /tmp/gat-src
+          gofmt -w cmd/agent/main.go internal/core/core.go
+          grep -q 'InternalVersion = "1.0.31"' internal/core/core.go
+          grep -q 'cargo_catalog.json' cmd/agent/main.go
+          grep -q 'compatible_cargos' cmd/agent/main.go
+          grep -q 'gatLearnCargoName(cargo)' cmd/agent/main.go
+          mkdir -p "$GITHUB_WORKSPACE/agent-out"
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe" ./cmd/agent
+          test -s "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-agent-131-cargo-catalog
+          path: agent-out/GAT_LOG_AGENT.exe
+          retention-days: 2
+
+  publish:
+    needs: agent
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/download-artifact@v4
+        with:
+          name: dotnet-agent-131-cargo-catalog
+          path: server-dotnet/GatLogInstaller/payload
+
+      - name: Reuse server icon
+        shell: pwsh
+        run: |
+          $src=Join-Path $env:RUNNER_TEMP 'GAT_SERVER_ICON.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.30_TESTE.exe' -OutFile $src
+          Add-Type -AssemblyName System.Drawing
+          $icon=[System.Drawing.Icon]::ExtractAssociatedIcon($src)
+          if ($null -eq $icon) { throw 'Icone nao encontrado.' }
+          foreach($p in @('server-dotnet/GatLogServer/assets/GAT_SERVER.ico','server-dotnet/GatLogInstaller/assets/GAT_SERVER.ico')) { New-Item -ItemType Directory -Force (Split-Path $p -Parent)|Out-Null; $fs=[IO.File]::Create($p); try{$icon.Save($fs)}finally{$fs.Dispose()} }
+          $icon.Dispose()
+
+      - name: Mark Server 1.0.31
+        shell: pwsh
+        run: |
+          python server-dotnet/build131/apply_131_ui.py
+          $s=Get-Content 'server-dotnet/GatLogServer/MainForm.cs' -Raw
+          if($s -notmatch 'CurrentVersion = "1\.0\.31"'){throw 'UI 1.0.31 ausente'}
+
+      - name: Build server and updater
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogServer/GatLogServer.csproj
+          dotnet build server-dotnet/GatLogServer/GatLogServer.csproj -c Release --no-restore
+          $out='server-dotnet/GatLogServer/bin/Release/net48'; $pay='server-dotnet/GatLogInstaller/payload'
+          New-Item -ItemType Directory -Force "$pay/assets"|Out-Null
+          Copy-Item "$out/GAT_LOG_SERVER.exe" "$pay/GAT_LOG_SERVER.exe" -Force
+          Copy-Item "$out/GAT_LOG_SERVER.exe.config" "$pay/GAT_LOG_SERVER.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          Copy-Item 'server-native-0.1/assets/logo.png' "$pay/assets/logo.png" -Force
+          Copy-Item 'server-native-0.1/assets/banner.png' "$pay/assets/banner.png" -Force
+          if(-not(Test-Path "$pay/GAT_LOG_AGENT.exe")){throw 'Agente 1.0.31 ausente.'}
+          dotnet restore server-dotnet/GatLogInstaller/GatLogInstaller.csproj
+          dotnet build server-dotnet/GatLogInstaller/GatLogInstaller.csproj -c Release --no-restore
+          $u='server-dotnet/GatLogInstaller/bin/Release/net48/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe'
+          if(-not(Test-Path $u)){throw 'Atualizador 1.0.31 nao gerado.'}
+          Copy-Item $u "$env:RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe" -Force
+
+      - name: Publish updater and manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main; git reset --hard HEAD; git clean -fdx; git checkout -B main origin/main
+          mkdir -p releases; cp "$RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe" releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe
+          SHA=$(sha256sum releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe|awk '{print $1}')
+          cat > server_dotnet_version.json <<EOF
+          {
+            "app": "GAT-LOG Server CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.31",
+            "display_version": "1.0.31 CATALOGO REAL DE CARGAS",
+            "notas": "A Central aprende os nomes reais das cargas que chegam pelo GAT Telemetria e publica essas cargas dentro do card correto do catálogo. O site pode mostrar uma seta com cargas compatíveis já vistas no ETS2. Mantidos recibos persistentes de viagem, mínimo de 250 km e validação por categoria.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe server_dotnet_version.json
+          git commit -m "Publica Server 1.0.31 com catalogo real de cargas"
+          git push origin main
