@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.18 com telemetria central independente do comboio.
