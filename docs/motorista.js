@@ -1,7 +1,7 @@
 const DRIVER_API='https://douglas.tail4577e8.ts.net';
 const LIVE_SERVERS=['https://douglas.tail4577e8.ts.net','https://jean-jc.tailf14a00.ts.net'];
 function q(id){return document.getElementById(id)}
-function getSession(){try{return JSON.parse(sessionStorage.getItem('gat_driver_account_v1')||'null')}catch(_){return null}}
+function getSession(){try{let raw=localStorage.getItem('gat_driver_account_v1');if(!raw){raw=sessionStorage.getItem('gat_driver_account_v1');if(raw){localStorage.setItem('gat_driver_account_v1',raw);sessionStorage.removeItem('gat_driver_account_v1');}}return JSON.parse(raw||'null')}catch(_){return null}}
 function cleanUser(v){return String(v||'').replace(/^@/,'').trim().toLowerCase()}
 function prettyUser(v){const s=cleanUser(v).replace(/[._-]+/g,' ');return s.replace(/\b\w/g,c=>c.toUpperCase())||'Motorista'}
 function num(v){return Number(v)||0}
