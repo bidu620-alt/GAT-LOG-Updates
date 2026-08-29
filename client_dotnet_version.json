@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.8",
-  "display_version": "1.0.8 TESTE",
-  "notas": "Envia posição X/Z, direção, marca e modelo do caminhão do TruckSim GPS para o GAT-LOG Server, permitindo mapa ao vivo e caminhão atual no perfil. Mantém Conta GAT, missões e identificação robusta.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.8_TESTE.exe",
-  "sha256": "0516dd81ba7ebde7cdfa704bbcd3e142b8e14a0b347894282a02600986515bb5"
+  "version": "1.0.9",
+  "display_version": "1.0.9 TESTE",
+  "notas": "Separa a Central GAT do comboio. A telemetria da Conta GAT, missões, mapa e perfil são enviados diretamente para a central mesmo jogando solo, em outro multiplayer ou com o GAT-LOG Server do comboio offline. O envio ao servidor Douglas/JC continua apenas como telemetria opcional do comboio.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.9_TESTE.exe",
+  "sha256": "34f49dd6ccc0d64053f20efc0bf47cbca219e82fcfc62bc8c180df6b70fb6f2a"
 }
