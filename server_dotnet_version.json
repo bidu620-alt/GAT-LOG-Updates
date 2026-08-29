@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.13",
-  "display_version": "1.0.13 TESTE",
-  "notas": "Adiciona histórico persistente por Conta GAT, progresso mensal de 40 missões e trabalho atual sem troca. Cada missão exige World of Trucks, mínimo de 800 km e uma faixa de peso de 8 toneladas. Cancelar uma carga não libera a próxima missão. XP e pontos ficam preparados, mas sem regra automática até a pontuação ser definida.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.13_TESTE.exe",
-  "sha256": "3a4b328384ebc0c1c7f7586a1ce9678cbb3d7840119bf89e64dcac7e00f99654"
+  "version": "1.0.14",
+  "display_version": "1.0.14 TESTE",
+  "notas": "Corrige o acesso do site às rotas autenticadas da Conta GAT, liberando CORS para Authorization e OPTIONS. O perfil, histórico e botão Pegar Trabalho passam a funcionar a partir do GitHub Pages sem alterar as regras das missões da 1.0.13.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.14_TESTE.exe",
+  "sha256": "61b670d98e540193b163c0d714192f5619b68d6ae6c5f48ed67ec37f41b402a9"
 }
