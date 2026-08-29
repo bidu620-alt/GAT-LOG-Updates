@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.9",
-  "display_version": "1.0.9 TESTE",
-  "notas": "Separa a Central GAT do comboio. A telemetria da Conta GAT, missões, mapa e perfil são enviados diretamente para a central mesmo jogando solo, em outro multiplayer ou com o GAT-LOG Server do comboio offline. O envio ao servidor Douglas/JC continua apenas como telemetria opcional do comboio.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.9_TESTE.exe",
-  "sha256": "34f49dd6ccc0d64053f20efc0bf47cbca219e82fcfc62bc8c180df6b70fb6f2a"
+  "version": "1.0.10",
+  "display_version": "1.0.10 MAPAS",
+  "notas": "Adiciona MAPA EM USO: Mapa Base, ProMods, RBR, Rotas Brasil ou Outro. A escolha fica salva no PC e é enviada junto da telemetria para o mapa ao vivo do site separar motoristas e contadores por mapa.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe",
+  "sha256": "81e4422affb3a0174f140839f961153a6530e18bc0d574f713217851b988d2c9"
 }
