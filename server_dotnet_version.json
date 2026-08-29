@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.23",
-  "display_version": "1.0.23 TESTE CURTO",
-  "notas": "MODO TEMPORARIO DE TESTE: missao aceita qualquer carga/mercado e qualquer peso, com minimo de 100 km, para validar inicio, entrega, 1/40 e +100 XP. Depois do teste o padrao volta para World of Trucks, faixa de peso e 800 km.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.23_TESTE.exe",
-  "sha256": "28cb459c6ec7e2e29e5411180d4e5a398c8a618fd21c64e79ed0d48309edbe2a"
+  "version": "1.0.24",
+  "display_version": "1.0.24 HOMOLOGACAO",
+  "notas": "Prepara a operacao oficial: ate 31/08 23:59 BRT o botao Pegar Trabalho funciona sem regras de mercado, distancia ou peso. Em 01/09 00:00 BRT a Central vira automaticamente para regras oficiais (World of Trucks, minimo 800 km e faixa de peso), zera o progresso mensal e passa a desempatar o ranking por KM do mes. Corrige a virada mensal para horario de Brasilia.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.24_TESTE.exe",
+  "sha256": "0a41f15fd059bfcb37a997479600b99cb266ecf8f4ded62d8a491a413f1c017e"
 }
