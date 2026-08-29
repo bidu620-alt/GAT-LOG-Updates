@@ -1,0 +1,1 @@
+inspect current telemetry source for map fields
