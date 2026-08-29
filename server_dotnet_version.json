@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.25",
-  "display_version": "1.0.25 CATALOGO",
-  "notas": "30 trabalhos por mes em catalogo comum; motorista escolhe a ordem; minimo 500 km; Mercado de Fretes, Mercado de Cargas, Trabalho Rapido e World of Trucks; XP de 20 por cada 100 km validos; carga personalizada disponivel no catalogo.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe",
-  "sha256": "afbfff5c7690cdb141bf59f4d3d41ca43b9364016478d9452d044a502e2bcce9"
+  "version": "1.0.26",
+  "display_version": "1.0.26 CARGAS INTELIGENTES",
+  "notas": "Categorias de carga com subcargas e aliases em portugues/ingles. Combustivel reconhece GLP, GPL, LPG, diesel, gasolina, querosene e outros; maquinas agricolas, alimentos e os demais cards reconhecem cargas relacionadas. Mantidos minimo 500 km, qualquer mercado e XP por distancia.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.26_TESTE.exe",
+  "sha256": "9a43bf498577aedfef53f0bbf7a0a98a1df6745324bae7f16fa925e3afbf1944"
 }
