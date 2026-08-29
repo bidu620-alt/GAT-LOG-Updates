@@ -1,0 +1,1 @@
+publish GAT Telemetria 1.0.8 live map and truck fields
