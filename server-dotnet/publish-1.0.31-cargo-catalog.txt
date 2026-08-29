@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.31 com catálogo real de cargas aprendidas pelo GAT Telemetria.
