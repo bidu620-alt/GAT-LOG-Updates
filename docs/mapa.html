@@ -58,15 +58,16 @@
     <section id="mapStage" class="ets2-map-stage map-look-dark">
       <div id="ets2Map" aria-label="Mapa do Euro Truck Simulator 2 com motoristas GAT ao vivo"></div>
       <div id="coordinateNotice" class="coordinate-notice"><b>AGUARDANDO POSIÇÃO DO MOTORISTA</b><span>Com o GAT Telemetria conectado, o caminhão aparece automaticamente na aba correspondente ao mapa escolhido.</span></div>
-      <div id="mapBaseNote" class="map-base-note">MAPA BASE • CARREGANDO EXPORTAÇÃO DO ETS2...</div>
+      <div id="mapBaseNote" class="map-base-note">MAPA BASE • CARREGANDO TILES ORIGINAIS DO ETS2...</div>
       <div class="map-legend"><span><i class="green-dot"></i> Em viagem</span><span><i class="amber-dot"></i> Online / parado</span><span><i class="gray-dot"></i> Sem posição recente</span></div>
     </section>
   </section>
 </main>
 <script src="official-v5.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="map-config.js?v=5"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="map-config.js?v=6"></script>
 <script src="mapa.js?v=7"></script>
-<script src="map-user-base.js?v=2"></script>
+<script src="map-zip-tiles.js?v=1"></script>
 </body>
 </html>
