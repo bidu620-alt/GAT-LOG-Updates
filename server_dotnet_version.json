@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.29",
-  "display_version": "1.0.29 ENTREGA CONFIÁVEL",
-  "notas": "Corrige a contagem de entregas usando o evento oficial JobDelivered do TruckSim GPS/ETS2. Cancelamentos são diferenciados de entregas e a regra antiga de proximidade fica apenas como fallback. Mantidos mínimo de 250 km, catálogo inteligente e revisão manual do Admin.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.29_TESTE.exe",
-  "sha256": "a806b3fc6c2caa68d71ecdebd0b23cace83adb886254352709be74b34713a7e3"
+  "version": "1.0.30",
+  "display_version": "1.0.30 RECIBO DE VIAGEM",
+  "notas": "A Central GAT agora aceita recibos persistentes de viagem enviados pelo GAT Telemetria. A viagem pode ter começado antes da escolha do trabalho; a distância planejada original do ETS2 é validada na entrega. Reenvios são idempotentes e não duplicam entregas. Catálogo alinhado ao mínimo de 250 km.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.30_TESTE.exe",
+  "sha256": "eab15821b4f2207f0847a5cf5b7ac9eae70aa233ceda50437e0e15de923147ef"
 }
