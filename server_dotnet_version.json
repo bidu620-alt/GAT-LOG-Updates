@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.26",
-  "display_version": "1.0.26 CARGAS INTELIGENTES",
-  "notas": "Categorias de carga com subcargas e aliases em portugues/ingles. Combustivel reconhece GLP, GPL, LPG, diesel, gasolina, querosene e outros; maquinas agricolas, alimentos e os demais cards reconhecem cargas relacionadas. Mantidos minimo 500 km, qualquer mercado e XP por distancia.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.26_TESTE.exe",
-  "sha256": "9a43bf498577aedfef53f0bbf7a0a98a1df6745324bae7f16fa925e3afbf1944"
+  "version": "1.0.27",
+  "display_version": "1.0.27 MÍNIMO 250 KM",
+  "notas": "Distância mínima dos trabalhos reduzida de 500 km para 250 km. Mantidos catálogo inteligente por categorias/subcargas, todos os mercados e XP de 20 por 100 km.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.27_TESTE.exe",
+  "sha256": "de5948024bd55055d5aa42a422316e2b4c7565f443948230025025cb5c3a8327"
 }
