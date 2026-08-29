@@ -8,6 +8,7 @@
 <meta name="description" content="Mapa operacional do GAT-LOG com motoristas e telemetria ao vivo.">
 <link rel="stylesheet" href="official-v4.css">
 <link rel="stylesheet" href="login.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="mapa.css">
 </head>
 <body class="map-page">
@@ -32,7 +33,7 @@
 <main class="map-live-page">
   <section class="map-toolbar">
     <div class="map-title"><span class="map-icon">⌖</span><div><h1>Mapa ao Vivo</h1><p>GAT LOG • ETS2</p></div></div>
-    <div class="map-stats"><div><small>ONLINE</small><b id="mapOnline">0</b></div><div><small>EM VIAGEM</small><b id="mapTrips">0</b></div><div><small>TELEMETRIA</small><b id="mapTelemetry">0</b></div><div><small>ATUALIZAÇÃO</small><b id="mapClock">--:--:--</b></div></div>
+    <div class="map-stats"><div><small>ONLINE</small><b id="mapOnline">0</b></div><div><small>EM VIAGEM</small><b id="mapTrips">0</b></div><div><small>COM POSIÇÃO</small><b id="mapTelemetry">0</b></div><div><small>ATUALIZAÇÃO</small><b id="mapClock">--:--:--</b></div></div>
     <span id="mapLiveState" class="map-live-badge">● CONECTANDO</span>
   </section>
   <section class="map-workspace">
@@ -42,14 +43,15 @@
       <div id="mapDrivers" class="map-driver-list"><div class="map-loading">Consultando GAT Servers...</div></div>
     </aside>
     <section class="ets2-map-stage">
-      <div class="map-grid-lines"></div><div class="continent c1">ESCANDINÁVIA</div><div class="continent c2">REINO UNIDO</div><div class="continent c3">EUROPA CENTRAL</div><div class="continent c4">ITÁLIA</div><div class="continent c5">BÁLCÃS</div>
-      <i class="road-line rl1"></i><i class="road-line rl2"></i><i class="road-line rl3"></i><i class="road-line rl4"></i><i class="road-line rl5"></i><i class="road-line rl6"></i>
-      <div id="truckLayer" class="truck-layer"></div>
-      <div id="coordinateNotice" class="coordinate-notice"><b>MAPA PREPARADO PARA POSIÇÃO AO VIVO</b><span>Os motoristas e a telemetria já são consultados em tempo real. Para o caminhão aparecer no ponto exato da estrada, falta o cliente enviar as coordenadas X/Z do ETS2.</span></div>
-      <div class="map-legend"><span><i class="green-dot"></i> Em viagem</span><span><i class="amber-dot"></i> Parado</span><span><i class="gray-dot"></i> Sem coordenada</span></div>
+      <div id="ets2Map" aria-label="Mapa do Euro Truck Simulator 2 com motoristas GAT ao vivo"></div>
+      <div id="coordinateNotice" class="coordinate-notice"><b>AGUARDANDO POSIÇÃO DO MOTORISTA</b><span>Quando um motorista estiver com GAT Telemetria 1.0.8 e um GAT-LOG Server 1.0.17, o caminhão aparece automaticamente no mapa.</span></div>
+      <div class="map-base-note">MAPA ETS2 • POSIÇÃO GAT EM TEMPO REAL</div>
+      <div class="map-legend"><span><i class="green-dot"></i> Em viagem</span><span><i class="amber-dot"></i> Online / parado</span><span><i class="gray-dot"></i> Sem posição recente</span></div>
     </section>
   </section>
 </main>
-<script src="official-v5.js"></script><script src="mapa.js"></script>
+<script src="official-v5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="mapa.js"></script>
 </body>
 </html>
