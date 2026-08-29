@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070a0f">
+<title>Mapa ao Vivo • GAT-LOG</title>
+<meta name="description" content="Mapa operacional do GAT-LOG com motoristas e telemetria ao vivo.">
+<link rel="stylesheet" href="official-v4.css">
+<link rel="stylesheet" href="login.css">
+<link rel="stylesheet" href="mapa.css">
+</head>
+<body class="map-page">
+<section id="accountModal" class="account-modal" aria-label="Conta GAT" aria-hidden="true">
+  <div class="account-panel">
+    <button id="accountClose" class="account-close" type="button" aria-label="Fechar">×</button>
+    <div class="login-brand"><span>GAT</span><span>LOG</span></div>
+    <span class="login-kicker">CONTA DO MOTORISTA</span>
+    <h1 id="accountTitle">Entrar na Conta GAT</h1>
+    <p id="accountIntro">Use a mesma conta no site e no GAT Telemetria.</p>
+    <div class="account-tabs"><button id="tabLogin" class="active" type="button">ENTRAR</button><button id="tabRegister" type="button">CRIAR CONTA</button></div>
+    <form id="loginForm" class="login-form" autocomplete="on"><div class="login-field"><label for="loginUser">USUÁRIO</label><input id="loginUser" name="username" autocomplete="username" required></div><div class="login-field"><label for="loginPassword">SENHA</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required></div><button id="loginButton" class="login-submit" type="submit">ENTRAR</button></form>
+    <form id="registerForm" class="login-form hidden" autocomplete="off"><div class="login-field"><label for="registerUser">CRIAR USUÁRIO</label><input id="registerUser" autocomplete="username" minlength="3" maxlength="32" required></div><div class="login-field"><label for="registerPassword">CRIAR SENHA</label><input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required></div><div class="login-field"><label for="registerConfirm">CONFIRMAR SENHA</label><input id="registerConfirm" type="password" autocomplete="new-password" minlength="6" required></div><button id="registerButton" class="login-submit" type="submit">CADASTRAR MOTORISTA</button></form>
+    <div id="loginStatus" class="login-status">Cadastre uma conta ou entre com uma conta existente.</div><div class="login-note">Depois do login, o navegador usa um token de sessão.</div>
+  </div>
+</section>
+<header class="topbar map-topbar">
+  <a class="brand" href="index.html"><b>GAT-<span>LOG</span></b></a>
+  <nav><a href="index.html">Início</a><a href="motorista.html">Motorista</a><a class="active-nav" href="mapa.html">Mapa</a><a href="index.html#ranking">Ranking</a></nav>
+  <button id="accountButton" class="account-btn logout-button" type="button">ENTRAR / CADASTRAR</button>
+</header>
+<main class="map-live-page">
+  <section class="map-toolbar">
+    <div class="map-title"><span class="map-icon">⌖</span><div><h1>Mapa ao Vivo</h1><p>GAT LOG • ETS2</p></div></div>
+    <div class="map-stats"><div><small>ONLINE</small><b id="mapOnline">0</b></div><div><small>EM VIAGEM</small><b id="mapTrips">0</b></div><div><small>TELEMETRIA</small><b id="mapTelemetry">0</b></div><div><small>ATUALIZAÇÃO</small><b id="mapClock">--:--:--</b></div></div>
+    <span id="mapLiveState" class="map-live-badge">● CONECTANDO</span>
+  </section>
+  <section class="map-workspace">
+    <aside class="map-sidebar">
+      <div class="map-side-head"><div><span class="eyebrow">MOTORISTAS</span><h2>Online</h2></div><span id="mapDriverCount" class="count-badge">0</span></div>
+      <div class="map-filters"><button class="active" type="button" data-filter="all">Todos</button><button type="button" data-filter="trip">Em viagem</button><button type="button" data-filter="idle">Parados</button></div>
+      <div id="mapDrivers" class="map-driver-list"><div class="map-loading">Consultando GAT Servers...</div></div>
+    </aside>
+    <section class="ets2-map-stage">
+      <div class="map-grid-lines"></div><div class="continent c1">ESCANDINÁVIA</div><div class="continent c2">REINO UNIDO</div><div class="continent c3">EUROPA CENTRAL</div><div class="continent c4">ITÁLIA</div><div class="continent c5">BÁLCÃS</div>
+      <i class="road-line rl1"></i><i class="road-line rl2"></i><i class="road-line rl3"></i><i class="road-line rl4"></i><i class="road-line rl5"></i><i class="road-line rl6"></i>
+      <div id="truckLayer" class="truck-layer"></div>
+      <div id="coordinateNotice" class="coordinate-notice"><b>MAPA PREPARADO PARA POSIÇÃO AO VIVO</b><span>Os motoristas e a telemetria já são consultados em tempo real. Para o caminhão aparecer no ponto exato da estrada, falta o cliente enviar as coordenadas X/Z do ETS2.</span></div>
+      <div class="map-legend"><span><i class="green-dot"></i> Em viagem</span><span><i class="amber-dot"></i> Parado</span><span><i class="gray-dot"></i> Sem coordenada</span></div>
+    </section>
+  </section>
+</main>
+<script src="official-v5.js"></script><script src="mapa.js"></script>
+</body>
+</html>
