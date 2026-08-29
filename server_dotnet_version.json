@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.17",
-  "display_version": "1.0.17 TESTE",
-  "notas": "Adiciona posição X/Z, direção e marca/modelo do caminhão à telemetria pública para o mapa ao vivo e o perfil do motorista, preservando Conta GAT, histórico e missões.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.17_TESTE.exe",
-  "sha256": "39b57cba00c7a675a1bf7a9e9aeeb7d96206546138df4fe5c46941f42d9e5845"
+  "version": "1.0.18",
+  "display_version": "1.0.18 TESTE",
+  "notas": "Separa a telemetria central do comboio: a Conta GAT passa a armazenar a telemetria autenticada do motorista e expõe um feed central para o site. O agente central também inicia com o Windows, enquanto o GAT-LOG Server continua disponível para comboio, mods e telemetria opcional.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.18_TESTE.exe",
+  "sha256": "1cbd0a640c471960e5e58c9022786c289c29b828184b0f0e622af09e3d83fbc7"
 }
