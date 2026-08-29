@@ -1,0 +1,1 @@
+Publicar GAT Telemetria 1.0.14 com diário local persistente e recibo de entrega para a Central GAT.
