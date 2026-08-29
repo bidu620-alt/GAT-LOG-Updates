@@ -25,9 +25,16 @@ Nunca publicar no manifesto uma nova versao antes de preencher `patch_url` e `pa
 O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `servers.json`, `credentials.json` e os demais dados existentes em `%LOCALAPPDATA%\GAT Telemetria Cliente`.
 
 ## 2026-08-29 — preparação oficial
-- Homologação sem regras até 31/08 23:59 (BRT).
-- Virada automática para ranking oficial em 01/09 00:00 (BRT).
+- Virada mensal em horário de Brasília.
 - Ranking desempata por KM do mês, não KM total.
 - Site mostra claramente HOMOLOGAÇÃO/OFICIAL.
 - Mapa e motorista usam fallback da telemetria bruta.
-- Revisão publicada para os testes de homologação de 29–31/08.
+
+## 2026-08-29 — catálogo GAT 1.0.25
+- 30 trabalhos por mês em um catálogo comum para todos os motoristas.
+- O motorista escolhe a ordem; outros motoristas podem escolher o mesmo trabalho para fazer em comboio.
+- Distância mínima de 500 km.
+- Aceita Mercado de Fretes, Mercado de Cargas, Trabalho Rápido e World of Trucks.
+- XP por distância: 20 XP a cada 100 km completos de uma entrega GAT válida.
+- Trabalho 30 permite criar uma carga personalizada pelo nome detectado no ETS2.
+- Cards visuais do catálogo publicados na área Trabalho Atual.
