@@ -30,3 +30,4 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - Ranking desempata por KM do mês, não KM total.
 - Site mostra claramente HOMOLOGAÇÃO/OFICIAL.
 - Mapa e motorista usam fallback da telemetria bruta.
+- Revisão publicada para os testes de homologação de 29–31/08.
