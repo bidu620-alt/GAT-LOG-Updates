@@ -1,20 +1,16 @@
 // GAT-LOG: configuração visual dos mapas.
-// O Mapa Base abaixo foi exportado diretamente do ETS2 para o GAT.
+// O Mapa Base usa a pirâmide de tiles original exportada diretamente do ETS2.
 window.GAT_MAP_CONFIG = {
   base: {
     label: 'Mapa Base',
-    type: 'gat-export',
+    type: 'gat-zip-tiles',
     source: 'GAT Map Exportador ETS2',
-    imageChunks: [
-      'maps/base/base-00.b64?v=2',
-      'maps/base/base-01.b64?v=2',
-      'maps/base/base-02.b64?v=2',
-      'maps/base/base-03.b64?v=2',
-      'maps/base/base-04.b64?v=2'
-    ],
-    imageMime: 'image/webp',
-    nativeImageSize: [1024, 1024],
-    // Limites lidos do TileMapInfo.json enviado com a exportação.
+    zipUrl: 'maps/base/GAT_MAPA_BASE.zip?v=1',
+    zipRoot: 'GAT_MAPA_BASE',
+    zipTileSize: 256,
+    minZoom: 0,
+    maxZoom: 6,
+    // Limites reais confirmados no TileMapInfo.json da exportação.
     gameBounds: {
       xMin: -113177.313,
       zMin: -122648.086,
