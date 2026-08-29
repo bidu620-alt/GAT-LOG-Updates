@@ -47,7 +47,7 @@
   }
   async function loadOfficial(){
     try{
-      const r=await fetch('ets2-official-cargos.json?v=1',{cache:'no-store'}),d=await r.json();
+      const r=await fetch('ets2-official-cargos.json?v=2',{cache:'no-store'}),d=await r.json();
       if(r.ok&&d?.categories){official=d;redraw()}
     }catch(_){decorate()}
   }
