@@ -1,24 +1,32 @@
 // GAT-LOG: configuração visual dos mapas.
-// Para adicionar uma imagem de mapa depois, preencha imageUrl e gameBounds.
-// gameBounds usa coordenadas do ETS2: xMin, zMin, xMax, zMax.
+// O Mapa Base abaixo foi exportado diretamente do ETS2 para o GAT.
 window.GAT_MAP_CONFIG = {
   base: {
     label: 'Mapa Base',
-    type: 'tiles',
-    // A base original usa uma camada sem cor por baixo e a colorida por cima.
-    // JsDelivr é usado para deixar o carregamento dos tiles mais estável no GitHub Pages.
-    underlayUrl: 'https://cdn.jsdelivr.net/gh/felix-d1strict/vtc-map@master/ets2map/uncoloured/{z}/{x}_{y}.png',
-    tileUrl: 'https://cdn.jsdelivr.net/gh/felix-d1strict/vtc-map@master/ets2map/coloured/{z}/{x}_{y}.png',
-    tileSize: 512,
-    minZoom: 0,
-    maxZoom: 8,
-    pixelBounds: [0, 192512, 173568, 0]
+    type: 'gat-export',
+    source: 'GAT Map Exportador ETS2',
+    imageChunks: [
+      'maps/base/base-00.b64?v=1',
+      'maps/base/base-01.b64?v=1',
+      'maps/base/base-02.b64?v=1',
+      'maps/base/base-03.b64?v=1',
+      'maps/base/base-04.b64?v=1'
+    ],
+    imageMime: 'image/webp',
+    nativeImageSize: [1024, 1024],
+    // Limites lidos do TileMapInfo.json enviado com a exportação.
+    gameBounds: {
+      xMin: -113177.313,
+      zMin: -122648.086,
+      xMax: 97925.625,
+      zMax: 88454.85
+    }
   },
   promods: {
     label: 'ProMods',
     type: 'reference',
     reference: 'base',
-    note: 'Mapa Base usado apenas como referência até entrar a base visual atual do ProMods.'
+    note: 'Mapa Base usado apenas como referência até entrar a exportação do ProMods.'
   },
   rbr: {
     label: 'RBR',
