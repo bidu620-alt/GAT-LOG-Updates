@@ -5,5 +5,5 @@
   "display_version": "1.0.12 AVISO POR VOZ",
   "notas": "Adiciona aviso de voz 'Trabalho iniciado' quando a Central GAT confirma que a missão passou para EM ANDAMENTO. O aviso também reconhece confirmação manual pelo Admin e toca uma única vez por missão.",
   "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.12_VOZ_TESTE.exe",
-  "sha256": "d73aa15aeae80e4cdfef6685536d750fe7bc9939a21f1f828cdeb0c61d945bd6"
+  "sha256": "06a1825ab9fd9d513645e0a011540cacc5bfed27879e29eedbbcdc50031c1df6"
 }
