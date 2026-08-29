@@ -1,0 +1,174 @@
+name: Publish GAT-LOG Server DotNet 1.0.25 Cargo Catalog XP Fix
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/publish-1.0.25-catalog-xp-fix.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+          cache: false
+      - name: Build Go agent 1.0.25 cargo catalog
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          python3 server-dotnet/build103/apply_103_telemetry.py
+          python3 server-dotnet/build104/apply_104_speed_units.py
+          python3 server-dotnet/build105/apply_105_truck_speed_kmh.py
+          python3 server-dotnet/build107/apply_107_server_config.py
+          python3 server-dotnet/build108/apply_108_hide_server_console.py
+          python3 server-dotnet/build110/apply_110_public_live.py
+          python3 server-dotnet/build112/apply_112_driver_accounts.py
+          python3 server-dotnet/build113/apply_113_driver_history_missions.py
+          python3 server-dotnet/build114/apply_114_account_cors.py
+          python3 server-dotnet/build115/apply_115_public_version.py
+          python3 server-dotnet/build116/apply_116_site_browser_auth.py
+          python3 server-dotnet/build117/apply_117_live_map_truck.py
+          python3 server-dotnet/build118/apply_118_central_telemetry.py
+          python3 server-dotnet/build119/apply_119_simple_xp_levels.py
+          python3 server-dotnet/build120/apply_120_admin_panel.py
+          python3 server-dotnet/build121/apply_121_admin_driver_detail.py
+          python3 server-dotnet/build122/apply_122_admin_driver_route.py
+          python3 server-dotnet/build123/apply_123_short_test_mission.py
+          python3 server-dotnet/build124/apply_124_official_ready.py
+          python3 server-dotnet/build125/apply_125_catalog_500km_xp.py
+          python3 server-dotnet/build125/fix_125_escapes.py
+          cd /tmp/gat-src
+          gofmt -w cmd/agent/main.go internal/core/core.go
+          grep -q 'InternalVersion = "1.0.25"' internal/core/core.go
+          grep -q 'type gatWorkItem struct' cmd/agent/main.go
+          grep -q 'func gatXPForDistance' cmd/agent/main.go
+          grep -q '/api/public/work/catalog' cmd/agent/main.go
+          grep -q '/api/site/work/select' cmd/agent/main.go
+          grep -q 'canStart := onJob && km >= 500 && gatCargoMatch' cmd/agent/main.go
+          grep -q 'monthly_goal": 30' cmd/agent/main.go
+          mkdir -p "$GITHUB_WORKSPACE/agent-out"
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe" ./cmd/agent
+          test -s "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-agent-125-fix
+          path: agent-out/GAT_LOG_AGENT.exe
+          retention-days: 2
+
+  publish:
+    needs: agent
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/download-artifact@v4
+        with:
+          name: dotnet-agent-125-fix
+          path: server-dotnet/GatLogInstaller/payload
+
+      - name: Reuse GAT Server icon
+        shell: pwsh
+        run: |
+          $src = Join-Path $env:RUNNER_TEMP 'GAT_SERVER_ICON.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.24_TESTE.exe' -OutFile $src
+          Add-Type -AssemblyName System.Drawing
+          $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($src)
+          if ($null -eq $icon) { throw 'Icone nao encontrado.' }
+          $paths = @('server-dotnet/GatLogServer/assets/GAT_SERVER.ico','server-dotnet/GatLogInstaller/assets/GAT_SERVER.ico')
+          foreach ($p in $paths) { New-Item -ItemType Directory -Force (Split-Path $p -Parent) | Out-Null; $fs=[System.IO.File]::Create($p); try {$icon.Save($fs)} finally {$fs.Dispose()} }
+          $icon.Dispose()
+
+      - name: Mark Server 1.0.25
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          ui=Path('server-dotnet/GatLogServer/MainForm.cs'); s=ui.read_text(encoding='utf-8')
+          s=s.replace('CurrentVersion = "1.0.0"','CurrentVersion = "1.0.25"').replace('GAT-LOG SERVER 1.0 | ETS2 + Telemetria','GAT-LOG SERVER 1.0.25 | ETS2 + Telemetria').replace('C# WinForms 1.0.0','C# WinForms 1.0.25').replace('Interval = 3000','Interval = 1000')
+          if 'ExtractAssociatedIcon' not in s: s=s.replace('DoubleBuffered = true;','DoubleBuffered = true;\n            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);',1)
+          ui.write_text(s,encoding='utf-8')
+          pth=Path('server-dotnet/GatLogServer/GatLogServer.csproj'); p=pth.read_text(encoding='utf-8').replace('<Version>1.0.0.0</Version>','<Version>1.0.25.0</Version>').replace('<FileVersion>1.0.0.0</FileVersion>','<FileVersion>1.0.25.0</FileVersion>').replace('<AssemblyVersion>1.0.0.0</AssemblyVersion>','<AssemblyVersion>1.0.25.0</AssemblyVersion>')
+          if '<ApplicationIcon>' not in p: p=p.replace('<ApplicationManifest>app.manifest</ApplicationManifest>','<ApplicationManifest>app.manifest</ApplicationManifest>\n    <ApplicationIcon>assets\\GAT_SERVER.ico</ApplicationIcon>',1)
+          pth.write_text(p,encoding='utf-8')
+          ip=Path('server-dotnet/GatLogInstaller/Program.cs'); x=ip.read_text(encoding='utf-8')
+          if 'using System.Runtime.InteropServices;' not in x: x=x.replace('using System.Reflection;','using System.Reflection;\nusing System.Runtime.InteropServices;',1)
+          x=x.replace('Instalar GAT-LOG Server C# 1.0.0 TESTE?','Atualizar GAT-LOG Server C# para 1.0.25?').replace('GAT-LOG Server C# 1.0.0 TESTE instalado.','GAT-LOG Server C# 1.0.25 atualizado.')
+          marker='internal static class Program\n    {'
+          if 'SHChangeNotify' not in x: x=x.replace(marker,marker+'\n        [DllImport("shell32.dll")]\n        private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);',1)
+          if 'private static string Startup' not in x: x=x.replace('private static string StartMenu => Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms);','private static string StartMenu => Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms);\n        private static string Startup => Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);',1)
+          x=x.replace('private static void CreateShortcut(string shortcutPath, string targetPath)','private static void CreateShortcut(string shortcutPath, string targetPath, string arguments = "")')
+          if 'shortcut.Arguments = arguments;' not in x: x=x.replace('shortcut.TargetPath = targetPath;','shortcut.TargetPath = targetPath;\n            shortcut.Arguments = arguments;',1)
+          if 'shortcut.IconLocation' not in x: x=x.replace('shortcut.Description = "GAT-LOG Server";','shortcut.Description = "GAT-LOG Server";\n            shortcut.IconLocation = targetPath + ",0";',1)
+          call='CreateShortcut(Path.Combine(StartMenu, "GAT-LOG Server.lnk"), Path.Combine(InstallDir, "GAT_LOG_SERVER.exe"));'
+          startup='CreateShortcut(Path.Combine(Startup, "GAT Central.lnk"), Path.Combine(InstallDir, "GAT_LOG_AGENT.exe"), "--background");'
+          if startup not in x: x=x.replace(call,call+'\n                '+startup,1)
+          if 'SHChangeNotify(0x08000000' not in x: x=x.replace(startup,startup+'\n                SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);',1)
+          ip.write_text(x,encoding='utf-8')
+          iproj=Path('server-dotnet/GatLogInstaller/GatLogInstaller.csproj'); q=iproj.read_text(encoding='utf-8').replace('GAT_LOG_SERVER_DOTNET_SETUP_1.0.0_TESTE','GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE')
+          if '<ApplicationIcon>' not in q: q=q.replace('<ApplicationManifest>app.manifest</ApplicationManifest>','<ApplicationManifest>app.manifest</ApplicationManifest>\n    <ApplicationIcon>assets\\GAT_SERVER.ico</ApplicationIcon>',1)
+          iproj.write_text(q,encoding='utf-8')
+          '@ | Set-Content "$env:RUNNER_TEMP\patch_server_125.py" -Encoding UTF8
+          python "$env:RUNNER_TEMP\patch_server_125.py"
+
+      - name: Build server and updater
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogServer/GatLogServer.csproj
+          dotnet build server-dotnet/GatLogServer/GatLogServer.csproj -c Release --no-restore
+          $out='server-dotnet/GatLogServer/bin/Release/net48'; $pay='server-dotnet/GatLogInstaller/payload'
+          New-Item -ItemType Directory -Force "$pay/assets" | Out-Null
+          Copy-Item "$out/GAT_LOG_SERVER.exe" "$pay/GAT_LOG_SERVER.exe" -Force
+          Copy-Item "$out/GAT_LOG_SERVER.exe.config" "$pay/GAT_LOG_SERVER.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          Copy-Item 'server-native-0.1/assets/logo.png' "$pay/assets/logo.png" -Force
+          Copy-Item 'server-native-0.1/assets/banner.png' "$pay/assets/banner.png" -Force
+          if (-not (Test-Path "$pay/GAT_LOG_AGENT.exe")) { throw 'Agente 1.0.25 ausente.' }
+          dotnet restore server-dotnet/GatLogInstaller/GatLogInstaller.csproj
+          dotnet build server-dotnet/GatLogInstaller/GatLogInstaller.csproj -c Release --no-restore
+          $update='server-dotnet/GatLogInstaller/bin/Release/net48/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe'
+          if (-not (Test-Path $update)) { throw 'Atualizador 1.0.25 nao gerado.' }
+          Copy-Item $update "$env:RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe" -Force
+
+      - name: Publish updater and manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main; git reset --hard HEAD; git clean -fdx; git checkout -B main origin/main
+          mkdir -p releases; cp "$RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe" releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe
+          SHA=$(sha256sum releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe | awk '{print $1}')
+          cat > server_dotnet_version.json <<EOF
+          {
+            "app": "GAT-LOG Server CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.25",
+            "display_version": "1.0.25 CATALOGO",
+            "notas": "Novo sistema de trabalhos: 30 cargas por mes, motorista escolhe a ordem, minimo 500 km, qualquer mercado do ETS2, varios motoristas podem escolher o mesmo trabalho e XP por distancia (20 XP a cada 100 km validos). Inclui carga personalizada como opcao 30.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe server_dotnet_version.json
+          git commit -m "Publica Server 1.0.25 com catalogo de cargas e XP por km"
+          git push origin main
