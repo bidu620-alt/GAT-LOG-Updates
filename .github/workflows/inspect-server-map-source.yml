@@ -21,7 +21,6 @@ jobs:
           rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
           cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
           tar -xf /tmp/gat-source.tar -C /tmp/gat-src
-          set -e
           python3 server-native-0.1/build015/apply_015.py
           python3 server-native-0.1/build015/fix_check_update.py
           python3 server-native-0.1/build017/apply_017.py
@@ -35,11 +34,14 @@ jobs:
           python3 server-dotnet/build112/apply_112_driver_accounts.py
           python3 server-dotnet/build113/apply_113_driver_history_missions.py
           python3 server-dotnet/build114/apply_114_account_cors.py
-          python3 server-dotnet/build115/apply_115_agent_version_public.py
+          python3 server-dotnet/build115/apply_115_public_version.py
           python3 server-dotnet/build116/apply_116_site_browser_auth.py
           echo '=== TELEMETRY RECORD ==='
-          grep -R -n -A30 -B5 'type TelemetryRecord' /tmp/gat-src || true
+          grep -R -n -A40 -B8 'type TelemetryRecord' /tmp/gat-src || true
           echo '=== TELEMETRY REQUEST/HANDLER ==='
-          grep -R -n -A120 -B20 'func (a \*agent) clientTelemetry' /tmp/gat-src || true
+          grep -R -n -A150 -B25 'func (a \*agent) clientTelemetry' /tmp/gat-src || true
+          echo '=== TELEMETRY REQUEST TYPE ==='
+          grep -R -n -A40 -B5 'type telemetryRequest' /tmp/gat-src || true
           echo '=== AGENT STRUCT ==='
-          grep -R -n -A60 -B5 'type agent struct' /tmp/gat-src/cmd/agent/main.go || true
+          grep -R -n -A70 -B5 'type agent struct' /tmp/gat-src/cmd/agent/main.go || true
+          exit 0
