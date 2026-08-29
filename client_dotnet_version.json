@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.10",
-  "display_version": "1.0.10 MAPAS",
-  "notas": "Adiciona MAPA EM USO: Mapa Base, ProMods, RBR, Rotas Brasil ou Outro. A escolha fica salva no PC e é enviada junto da telemetria para o mapa ao vivo do site separar motoristas e contadores por mapa.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe",
-  "sha256": "81e4422affb3a0174f140839f961153a6530e18bc0d574f713217851b988d2c9"
+  "version": "1.0.11",
+  "display_version": "1.0.11 MAPAS + EAA",
+  "notas": "Adiciona EAA ao MAPA EM USO. Mapa Base, ProMods, RBR, Rotas Brasil, EAA e Outro são enviados junto da posição para a Central GAT separar os motoristas no mapa ao vivo.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.11_MAPAS_EAA_TESTE.exe",
+  "sha256": "2d3a4a6f607d2aa74f26cbf5abf330485041d39a5d3cdebbc73fff768f6d6fca"
 }
