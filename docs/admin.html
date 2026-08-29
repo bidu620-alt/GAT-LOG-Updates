@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070a0f">
+<title>Admin GAT • GAT-LOG</title>
+<meta name="description" content="Painel administrativo da Central GAT.">
+<link rel="stylesheet" href="official-v4.css"><link rel="stylesheet" href="login.css"><link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<section id="accountModal" class="account-modal" aria-label="Conta GAT" aria-hidden="true"><div class="account-panel"><button id="accountClose" class="account-close" type="button" aria-label="Fechar">×</button><div class="login-brand"><span>GAT</span><span>LOG</span></div><span class="login-kicker">CONTA DO MOTORISTA</span><h1 id="accountTitle">Entrar na Conta GAT</h1><p id="accountIntro">Use sua Conta GAT com permissão administrativa.</p><div class="account-tabs"><button id="tabLogin" class="active" type="button">ENTRAR</button><button id="tabRegister" type="button">CRIAR CONTA</button></div><form id="loginForm" class="login-form" autocomplete="on"><div class="login-field"><label for="loginUser">USUÁRIO</label><input id="loginUser" name="username" autocomplete="username" required></div><div class="login-field"><label for="loginPassword">SENHA</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required></div><button id="loginButton" class="login-submit" type="submit">ENTRAR</button></form><form id="registerForm" class="login-form hidden" autocomplete="off"><div class="login-field"><label for="registerUser">CRIAR USUÁRIO</label><input id="registerUser" autocomplete="username" minlength="3" maxlength="32" required></div><div class="login-field"><label for="registerPassword">CRIAR SENHA</label><input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required></div><div class="login-field"><label for="registerConfirm">CONFIRMAR SENHA</label><input id="registerConfirm" type="password" autocomplete="new-password" minlength="6" required></div><button id="registerButton" class="login-submit" type="submit">CADASTRAR MOTORISTA</button></form><div id="loginStatus" class="login-status">Entre com uma conta autorizada.</div><div class="login-note">A senha nunca é exibida no painel administrativo.</div></div></section>
+<header class="topbar"><a class="brand" href="index.html"><b>GAT-<span>LOG</span></b></a><nav><a href="index.html">Início</a><a href="motorista.html">Motorista</a><a href="mapa.html">Mapa</a><a class="admin-nav active" href="admin.html">Admin</a></nav><button id="accountButton" class="account-btn logout-button" type="button">ENTRAR / CADASTRAR</button></header>
+<main class="admin-page shell">
+<section class="admin-head"><div><span class="eyebrow">CENTRAL GAT • CONTROLE</span><h1>Painel Admin GAT</h1><p>Gerencie motoristas, missões, acesso e acompanhe a operação central.</p></div><div class="admin-ident"><small>SESSÃO ADMIN</small><b id="adminUser">—</b><span id="adminRole" class="role-pill">AGUARDANDO</span></div></section>
+<section id="adminGate" class="admin-gate"><div class="shield">G</div><h2>Área restrita</h2><p id="gateText">Entre com uma Conta GAT administrativa para continuar.</p><button id="adminLoginButton" class="btn primary" type="button">ENTRAR NA CONTA GAT</button></section>
+<div id="adminContent" hidden>
+<section class="admin-stats"><article><small>MOTORISTAS</small><b id="statDrivers">0</b></article><article><small>ONLINE AGORA</small><b id="statOnline">0</b></article><article><small>MISSÕES ATIVAS</small><b id="statMissions">0</b></article><article><small>BLOQUEADOS</small><b id="statBlocked">0</b></article></section>
+<nav class="admin-tabs"><button class="active" data-tab="drivers" type="button">MOTORISTAS</button><button data-tab="audit" type="button">AUDITORIA</button></nav>
+<section class="admin-panel active" data-panel="drivers">
+<div class="admin-toolbar"><div><span class="eyebrow">CONTAS GAT</span><h2>Motoristas cadastrados</h2></div><div class="admin-tools"><input id="adminSearch" type="search" placeholder="Buscar motorista..."><button id="refreshAdmin" class="btn ghost" type="button">ATUALIZAR</button></div></div>
+<div id="adminStatus" class="admin-status">Carregando Central GAT...</div>
+<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>MOTORISTA</th><th>ACESSO</th><th>TELEMETRIA</th><th>MISSÃO</th><th>PROGRESSO</th><th>CAMINHÃO / CARGA</th><th>AÇÕES</th></tr></thead><tbody id="adminRows"></tbody></table></div>
+</section>
+<section class="admin-panel" data-panel="audit"><div class="admin-toolbar"><div><span class="eyebrow">SEGURANÇA</span><h2>Log administrativo</h2></div><button id="refreshAudit" class="btn ghost" type="button">ATUALIZAR LOG</button></div><div id="auditStatus" class="admin-status">Abra esta aba para consultar as últimas ações.</div><div id="auditList" class="audit-list"></div></section>
+</div>
+</main>
+<footer class="footer"><div class="shell">GAT-LOG • Administração da Central GAT</div></footer>
+<script src="official-v5.js"></script><script src="admin.js"></script>
+</body></html>
