@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.22",
-  "display_version": "1.0.22 TESTE",
-  "notas": "Corrige a rota da ficha detalhada do Painel Admin. O Server 1.0.21 possuía o código da ficha, mas a rota /api/site/admin/driver não era registrada. Mantém telemetria, histórico, correções, XP e níveis.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.22_TESTE.exe",
-  "sha256": "2d989943e63878196e9b2625bfdbb1c52a49a55520fc881ede8106b71b261ba9"
+  "version": "1.0.23",
+  "display_version": "1.0.23 TESTE CURTO",
+  "notas": "MODO TEMPORARIO DE TESTE: missao aceita qualquer carga/mercado e qualquer peso, com minimo de 100 km, para validar inicio, entrega, 1/40 e +100 XP. Depois do teste o padrao volta para World of Trucks, faixa de peso e 800 km.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.23_TESTE.exe",
+  "sha256": "28cb459c6ec7e2e29e5411180d4e5a398c8a618fd21c64e79ed0d48309edbe2a"
 }
