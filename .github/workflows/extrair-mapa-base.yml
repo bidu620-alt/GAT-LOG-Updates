@@ -1,0 +1,60 @@
+name: Extrair mapa Base
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/maps/base/GAT_MAPA_BASE.zip'
+      - '.github/workflows/extrair-mapa-base.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extrair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Extrair tiles do ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .gat-map-extract docs/maps/base/tiles docs/maps/base/TileMapInfo.json
+          mkdir -p .gat-map-extract docs/maps/base/tiles
+          unzip -q docs/maps/base/GAT_MAPA_BASE.zip -d .gat-map-extract
+
+          ROOT=".gat-map-extract/GAT_MAPA_BASE"
+          if [ ! -d "$ROOT/Tiles" ]; then
+            ROOT=".gat-map-extract"
+          fi
+
+          if [ ! -d "$ROOT/Tiles" ]; then
+            echo "Pasta Tiles não encontrada no ZIP."
+            exit 1
+          fi
+
+          cp -R "$ROOT/Tiles/." docs/maps/base/tiles/
+          if [ -f "$ROOT/TileMapInfo.json" ]; then
+            cp "$ROOT/TileMapInfo.json" docs/maps/base/TileMapInfo.json
+          fi
+
+          echo "Tiles extraídos: $(find docs/maps/base/tiles -type f -name '*.png' | wc -l)"
+          test "$(find docs/maps/base/tiles -type f -name '*.png' | wc -l)" -gt 5000
+          rm -rf .gat-map-extract
+
+      - name: Publicar tiles no repositório
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/maps/base/tiles docs/maps/base/TileMapInfo.json
+          if git diff --cached --quiet; then
+            echo "Nada para atualizar."
+            exit 0
+          fi
+          git commit -m "Publica tiles originais do mapa Base"
+          git push
