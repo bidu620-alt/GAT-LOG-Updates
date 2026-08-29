@@ -1,1 +1,1 @@
-inspect current telemetry source for map fields
+inspect current telemetry source for map fields v2
