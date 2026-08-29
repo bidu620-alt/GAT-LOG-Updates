@@ -6,11 +6,11 @@ window.GAT_MAP_CONFIG = {
     type: 'gat-export',
     source: 'GAT Map Exportador ETS2',
     imageChunks: [
-      'maps/base/base-00.b64?v=1',
-      'maps/base/base-01.b64?v=1',
-      'maps/base/base-02.b64?v=1',
-      'maps/base/base-03.b64?v=1',
-      'maps/base/base-04.b64?v=1'
+      'maps/base/base-00.b64?v=2',
+      'maps/base/base-01.b64?v=2',
+      'maps/base/base-02.b64?v=2',
+      'maps/base/base-03.b64?v=2',
+      'maps/base/base-04.b64?v=2'
     ],
     imageMime: 'image/webp',
     nativeImageSize: [1024, 1024],
@@ -40,14 +40,14 @@ window.GAT_MAP_CONFIG = {
     type: 'image',
     imageUrl: '',
     gameBounds: null,
-    note: 'Aguardando imagem/base visual do Rotas Brasil.'
+    note: 'Aguardando base visual personalizada.'
   },
   eaa: {
     label: 'EAA',
     type: 'image',
     imageUrl: '',
     gameBounds: null,
-    note: 'Aguardando imagem/base visual do EAA.'
+    note: 'Aguardando base visual do EAA.'
   },
   other: {
     label: 'Outro mapa',
