@@ -38,3 +38,4 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - XP por distância: 20 XP a cada 100 km completos de uma entrega GAT válida.
 - Trabalho 30 permite criar uma carga personalizada pelo nome detectado no ETS2.
 - Cards visuais do catálogo publicados na área Trabalho Atual.
+- Corrigido o topo de Trabalho Atual para não voltar a exibir textos antigos de homologação, 800 km ou World of Trucks exclusivo.
