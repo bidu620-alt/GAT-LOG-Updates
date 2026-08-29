@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.27",
-  "display_version": "1.0.27 MÍNIMO 250 KM",
-  "notas": "Distância mínima dos trabalhos reduzida de 500 km para 250 km. Mantidos catálogo inteligente por categorias/subcargas, todos os mercados e XP de 20 por 100 km.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.27_TESTE.exe",
-  "sha256": "de5948024bd55055d5aa42a422316e2b4c7565f443948230025025cb5c3a8327"
+  "version": "1.0.28",
+  "display_version": "1.0.28 REVISÃO ADMIN",
+  "notas": "Painel Admin permite conferir trabalho esperado e carga atual e confirmar manualmente uma missão atribuída. A confirmação exige telemetria com trabalho ativo e pelo menos 250 km restantes. Mantidos catálogo inteligente e XP por distância.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.28_TESTE.exe",
+  "sha256": "b38f05125ea5206ec32a04bb2930631e80ebd4c49151941aba6782f5ac13d101"
 }
