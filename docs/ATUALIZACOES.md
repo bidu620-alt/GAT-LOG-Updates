@@ -23,3 +23,10 @@
 Nunca publicar no manifesto uma nova versao antes de preencher `patch_url` e `patch_sha256`. Assim nenhum motorista recebe aviso de uma atualizacao ainda incompleta.
 
 O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `servers.json`, `credentials.json` e os demais dados existentes em `%LOCALAPPDATA%\GAT Telemetria Cliente`.
+
+## 2026-08-29 — preparação oficial
+- Homologação sem regras até 31/08 23:59 (BRT).
+- Virada automática para ranking oficial em 01/09 00:00 (BRT).
+- Ranking desempata por KM do mês, não KM total.
+- Site mostra claramente HOMOLOGAÇÃO/OFICIAL.
+- Mapa e motorista usam fallback da telemetria bruta.
