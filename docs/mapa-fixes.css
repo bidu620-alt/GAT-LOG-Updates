@@ -1,0 +1,5 @@
+.map-driver-item{width:100%;border:0;background:transparent;font:inherit;text-align:left;cursor:pointer}
+.map-driver-item:hover{background:#101a25}
+.map-driver-item.selected{background:#10283d;box-shadow:inset 3px 0 #4aaeff}
+.map-driver-item.selected .map-driver-avatar{background:#17466d;color:#d7efff}
+.map-driver-item:focus-visible{outline:2px solid #4aaeff;outline-offset:-2px}
