@@ -14,21 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Recover patched source and inspect work validation
+      - name: Recover source and inspect work validation
         shell: bash
         run: |
-          set -euo pipefail
+          set -u
           rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
-          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
-          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
-          python3 server-native-0.1/build015/apply_015.py
-          python3 server-native-0.1/build015/fix_check_update.py
-          python3 server-native-0.1/build017/apply_017.py
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar || true
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src || true
           {
+            echo '=== recovered files ==='
+            find /tmp/gat-src -maxdepth 5 -type f | sort || true
             echo '=== work/catalog / mission / cargo validation ==='
-            grep -RIn -C 25 -E 'work/catalog|current_mission|catalog_id|mission|cargo.*match|match.*cargo|cargo.*category|category.*cargo|500|xp_per_100|work/select|work.*active|mission.*active' /tmp/gat-src/internal /tmp/gat-src/cmd || true
-            echo '=== fuel/agriculture/food terms ==='
-            grep -RIn -C 15 -Ei 'combust|fuel|diesel|glp|lpg|agric|maquina|máquina|alimento|food|carga' /tmp/gat-src/internal /tmp/gat-src/cmd || true
+            grep -RIn -C 30 -E 'work/catalog|current_mission|catalog_id|mission_already_active|mission|cargo.*match|match.*cargo|cargo.*category|category.*cargo|xp_per_100|work/select|work.*active|mission.*active' /tmp/gat-src 2>/dev/null || true
+            echo '=== distance / fuel / agriculture / food terms ==='
+            grep -RIn -C 20 -Ei '500|combust|fuel|diesel|glp|lpg|agric|maquina|máquina|alimento|food|cargo' /tmp/gat-src 2>/dev/null || true
           } > server-native-0.1/inspect-work-result.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
