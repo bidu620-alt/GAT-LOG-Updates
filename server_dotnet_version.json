@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.24",
-  "display_version": "1.0.24 HOMOLOGACAO",
-  "notas": "Prepara a operacao oficial: ate 31/08 23:59 BRT o botao Pegar Trabalho funciona sem regras de mercado, distancia ou peso. Em 01/09 00:00 BRT a Central vira automaticamente para regras oficiais (World of Trucks, minimo 800 km e faixa de peso), zera o progresso mensal e passa a desempatar o ranking por KM do mes. Corrige a virada mensal para horario de Brasilia.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.24_TESTE.exe",
-  "sha256": "0a41f15fd059bfcb37a997479600b99cb266ecf8f4ded62d8a491a413f1c017e"
+  "version": "1.0.25",
+  "display_version": "1.0.25 CATALOGO",
+  "notas": "30 trabalhos por mes em catalogo comum; motorista escolhe a ordem; minimo 500 km; Mercado de Fretes, Mercado de Cargas, Trabalho Rapido e World of Trucks; XP de 20 por cada 100 km validos; carga personalizada disponivel no catalogo.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe",
+  "sha256": "afbfff5c7690cdb141bf59f4d3d41ca43b9364016478d9452d044a502e2bcce9"
 }
