@@ -1,0 +1,463 @@
+=== recovered files ===
+/tmp/gat-src/cmd/agent/main.go
+/tmp/gat-src/cmd/ui/main.go
+/tmp/gat-src/go.mod
+/tmp/gat-src/internal/core/core.go
+=== work/catalog / mission / cargo validation ===
+=== distance / fuel / agriculture / food terms ===
+/tmp/gat-src/internal/core/core.go-52-	User      string `json:"user"`
+/tmp/gat-src/internal/core/core.go-53-	Salt      string `json:"salt"`
+/tmp/gat-src/internal/core/core.go-54-	Hash      string `json:"hash"`
+/tmp/gat-src/internal/core/core.go-55-	UpdatedAt string `json:"updated_at"`
+/tmp/gat-src/internal/core/core.go-56-}
+/tmp/gat-src/internal/core/core.go-57-
+/tmp/gat-src/internal/core/core.go-58-type Binding struct {
+/tmp/gat-src/internal/core/core.go-59-	Driver       string `json:"driver"`
+/tmp/gat-src/internal/core/core.go-60-	DeviceID     string `json:"device_id"`
+/tmp/gat-src/internal/core/core.go-61-	Token        string `json:"token"`
+/tmp/gat-src/internal/core/core.go-62-	Blocked      bool   `json:"blocked"`
+/tmp/gat-src/internal/core/core.go-63-	Disconnected bool   `json:"disconnected"`
+/tmp/gat-src/internal/core/core.go-64-	LastSeen     string `json:"last_seen"`
+/tmp/gat-src/internal/core/core.go-65-}
+/tmp/gat-src/internal/core/core.go-66-
+/tmp/gat-src/internal/core/core.go-67-type TelemetryRecord struct {
+/tmp/gat-src/internal/core/core.go-68-	Driver      string         `json:"driver"`
+/tmp/gat-src/internal/core/core.go-69-	DeviceID    string         `json:"device_id"`
+/tmp/gat-src/internal/core/core.go-70-	UpdatedAt   string         `json:"updated_at"`
+/tmp/gat-src/internal/core/core.go-71-	Status      string         `json:"status"`
+/tmp/gat-src/internal/core/core.go:72:	Cargo       string         `json:"cargo"`
+/tmp/gat-src/internal/core/core.go:73:	CargoMassKg float64        `json:"cargo_mass_kg"`
+/tmp/gat-src/internal/core/core.go-74-	Source      string         `json:"source"`
+/tmp/gat-src/internal/core/core.go-75-	Destination string         `json:"destination"`
+/tmp/gat-src/internal/core/core.go-76-	RemainingKm float64        `json:"remaining_km"`
+/tmp/gat-src/internal/core/core.go-77-	SpeedKmh    float64        `json:"speed_kmh"`
+/tmp/gat-src/internal/core/core.go-78-	OnJob       bool           `json:"on_job"`
+/tmp/gat-src/internal/core/core.go-79-	Raw         map[string]any `json:"telemetry,omitempty"`
+/tmp/gat-src/internal/core/core.go-80-}
+/tmp/gat-src/internal/core/core.go-81-
+/tmp/gat-src/internal/core/core.go-82-type Status struct {
+/tmp/gat-src/internal/core/core.go-83-	OK               bool              `json:"ok"`
+/tmp/gat-src/internal/core/core.go-84-	AgentVersion     string            `json:"agent_version"`
+/tmp/gat-src/internal/core/core.go-85-	AgentUptimeSec   int64             `json:"agent_uptime_sec"`
+/tmp/gat-src/internal/core/core.go-86-	ServerOnline     bool              `json:"server_online"`
+/tmp/gat-src/internal/core/core.go-87-	ServerName       string            `json:"server_name"`
+/tmp/gat-src/internal/core/core.go-88-	SessionID        string            `json:"session_id"`
+/tmp/gat-src/internal/core/core.go-89-	Ports            string            `json:"ports"`
+/tmp/gat-src/internal/core/core.go-90-	Players          []string          `json:"players"`
+/tmp/gat-src/internal/core/core.go-91-	PlayerCount      int               `json:"player_count"`
+/tmp/gat-src/internal/core/core.go-92-	MaxPlayers       int               `json:"max_players"`
+/tmp/gat-src/internal/core/core.go-93-	ServerExe        string            `json:"server_exe"`
+--
+/tmp/gat-src/internal/core/core.go-732-				return f
+/tmp/gat-src/internal/core/core.go-733-			}
+/tmp/gat-src/internal/core/core.go-734-		}
+/tmp/gat-src/internal/core/core.go-735-	}
+/tmp/gat-src/internal/core/core.go-736-	return 0
+/tmp/gat-src/internal/core/core.go-737-}
+/tmp/gat-src/internal/core/core.go-738-func BoolAny(m map[string]any, paths ...string) bool {
+/tmp/gat-src/internal/core/core.go-739-	for _, p := range paths {
+/tmp/gat-src/internal/core/core.go-740-		v := DeepGet(m, p)
+/tmp/gat-src/internal/core/core.go-741-		switch x := v.(type) {
+/tmp/gat-src/internal/core/core.go-742-		case bool:
+/tmp/gat-src/internal/core/core.go-743-			return x
+/tmp/gat-src/internal/core/core.go-744-		case string:
+/tmp/gat-src/internal/core/core.go-745-			b, _ := strconv.ParseBool(x)
+/tmp/gat-src/internal/core/core.go-746-			return b
+/tmp/gat-src/internal/core/core.go-747-		}
+/tmp/gat-src/internal/core/core.go-748-	}
+/tmp/gat-src/internal/core/core.go-749-	return false
+/tmp/gat-src/internal/core/core.go-750-}
+/tmp/gat-src/internal/core/core.go-751-func NormalizeTelemetry(driver, device string, t map[string]any) TelemetryRecord {
+/tmp/gat-src/internal/core/core.go:752:	cargo := StrAny(t, "job.cargo", "job.cargoName", "cargo", "cargo_name")
+/tmp/gat-src/internal/core/core.go:753:	mass := FloatAny(t, "job.cargoMass", "job.cargo_mass", "cargoMass", "cargo_mass", "mass_kg")
+/tmp/gat-src/internal/core/core.go-754-	src := StrAny(t, "job.sourceCity", "job.source_city", "sourceCity", "source")
+/tmp/gat-src/internal/core/core.go-755-	dst := StrAny(t, "job.destinationCity", "job.destination_city", "destinationCity", "destination")
+/tmp/gat-src/internal/core/core.go-756-	rem := FloatAny(t, "navigation.estimatedDistance", "navigation.estimated_distance", "remaining_distance", "remaining_km")
+/tmp/gat-src/internal/core/core.go-757-	if rem > 10000 {
+/tmp/gat-src/internal/core/core.go-758-		rem /= 1000
+/tmp/gat-src/internal/core/core.go-759-	}
+/tmp/gat-src/internal/core/core.go-760-	speed := FloatAny(t, "truck.speedKmh", "truck.speed_kmh", "speed_kmh", "truck.speed")
+/tmp/gat-src/internal/core/core.go-761-	if speed > 0 && speed < 45 {
+/tmp/gat-src/internal/core/core.go-762-		speed *= 3.6
+/tmp/gat-src/internal/core/core.go-763-	}
+/tmp/gat-src/internal/core/core.go-764-	onjob := BoolAny(t, "gameplay.onJob", "gameplay.on_job", "on_job")
+/tmp/gat-src/internal/core/core.go:765:	if !onjob && cargo != "" {
+/tmp/gat-src/internal/core/core.go-766-		onjob = true
+/tmp/gat-src/internal/core/core.go-767-	}
+/tmp/gat-src/internal/core/core.go-768-	status := "FORA DA SESSAO"
+/tmp/gat-src/internal/core/core.go-769-	if onjob {
+/tmp/gat-src/internal/core/core.go-770-		status = "EM ROTA"
+/tmp/gat-src/internal/core/core.go:771:	} else if cargo != "" {
+/tmp/gat-src/internal/core/core.go-772-		status = "CARGA DETECTADA"
+/tmp/gat-src/internal/core/core.go-773-	}
+/tmp/gat-src/internal/core/core.go:774:	return TelemetryRecord{Driver: driver, DeviceID: device, UpdatedAt: time.Now().UTC().Format(time.RFC3339Nano), Status: status, Cargo: cargo, CargoMassKg: mass, Source: src, Destination: dst, RemainingKm: rem, SpeedKmh: speed, OnJob: onjob, Raw: t}
+/tmp/gat-src/internal/core/core.go-775-}
+/tmp/gat-src/internal/core/core.go-776-
+/tmp/gat-src/internal/core/core.go-777-func HTTPJSON(method, url string, body any, timeout time.Duration) (int, map[string]any, []byte, error) {
+/tmp/gat-src/internal/core/core.go-778-	var r io.Reader
+/tmp/gat-src/internal/core/core.go-779-	if body != nil {
+/tmp/gat-src/internal/core/core.go-780-		b, _ := json.Marshal(body)
+/tmp/gat-src/internal/core/core.go-781-		r = bytes.NewReader(b)
+/tmp/gat-src/internal/core/core.go-782-	}
+/tmp/gat-src/internal/core/core.go-783-	req, e := http.NewRequest(method, url, r)
+/tmp/gat-src/internal/core/core.go-784-	if e != nil {
+/tmp/gat-src/internal/core/core.go-785-		return 0, nil, nil, e
+/tmp/gat-src/internal/core/core.go-786-	}
+/tmp/gat-src/internal/core/core.go-787-	if body != nil {
+/tmp/gat-src/internal/core/core.go-788-		req.Header.Set("Content-Type", "application/json")
+/tmp/gat-src/internal/core/core.go-789-	}
+/tmp/gat-src/internal/core/core.go-790-	cl := &http.Client{Timeout: timeout}
+/tmp/gat-src/internal/core/core.go-791-	resp, e := cl.Do(req)
+/tmp/gat-src/internal/core/core.go-792-	if e != nil {
+/tmp/gat-src/internal/core/core.go-793-		return 0, nil, nil, e
+/tmp/gat-src/internal/core/core.go-794-	}
+--
+/tmp/gat-src/cmd/ui/main.go-326-		}
+/tmp/gat-src/cmd/ui/main.go-327-		pTranslateMessage.Call(uintptr(unsafe.Pointer(&m)))
+/tmp/gat-src/cmd/ui/main.go-328-		pDispatchMessage.Call(uintptr(unsafe.Pointer(&m)))
+/tmp/gat-src/cmd/ui/main.go-329-	}
+/tmp/gat-src/cmd/ui/main.go-330-}
+/tmp/gat-src/cmd/ui/main.go-331-
+/tmp/gat-src/cmd/ui/main.go-332-func createEdit(name string, x, y, w, h int32, password bool) syscall.Handle {
+/tmp/gat-src/cmd/ui/main.go-333-	style := uintptr(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL)
+/tmp/gat-src/cmd/ui/main.go-334-	if password {
+/tmp/gat-src/cmd/ui/main.go-335-		style |= ES_PASSWORD
+/tmp/gat-src/cmd/ui/main.go-336-	}
+/tmp/gat-src/cmd/ui/main.go-337-	hw, _, _ := pCreateWindowEx.Call(0, uintptr(unsafe.Pointer(u16("EDIT"))), uintptr(unsafe.Pointer(u16(""))), style, uintptr(x), uintptr(y), uintptr(w), uintptr(h), uintptr(app.hwnd), 0, 0, 0)
+/tmp/gat-src/cmd/ui/main.go-338-	hnd := syscall.Handle(hw)
+/tmp/gat-src/cmd/ui/main.go-339-	pSendMessage.Call(hw, WM_SETFONT, uintptr(app.fontNormal), 1)
+/tmp/gat-src/cmd/ui/main.go-340-	app.edits[name] = hnd
+/tmp/gat-src/cmd/ui/main.go-341-	return hnd
+/tmp/gat-src/cmd/ui/main.go-342-}
+/tmp/gat-src/cmd/ui/main.go-343-func createEdits() {
+/tmp/gat-src/cmd/ui/main.go-344-	createEdit("login_user", 520, 345, 260, 34, false)
+/tmp/gat-src/cmd/ui/main.go-345-	createEdit("login_pass", 520, 402, 260, 34, true)
+/tmp/gat-src/cmd/ui/main.go:346:	createEdit("cfg_name", 465, 215, 500, 34, false)
+/tmp/gat-src/cmd/ui/main.go:347:	createEdit("cfg_desc", 465, 275, 500, 34, false)
+/tmp/gat-src/cmd/ui/main.go:348:	createEdit("cfg_pass", 465, 335, 500, 34, false)
+/tmp/gat-src/cmd/ui/main.go-349-	createEdit("cfg_max", 465, 395, 160, 34, false)
+/tmp/gat-src/cmd/ui/main.go:350:	createEdit("cfg_funnel", 465, 455, 500, 34, false)
+/tmp/gat-src/cmd/ui/main.go-351-	createEdit("mod_steam", 465, 250, 430, 34, false)
+/tmp/gat-src/cmd/ui/main.go-352-	createEdit("acc_user", 465, 245, 350, 34, false)
+/tmp/gat-src/cmd/ui/main.go-353-	createEdit("acc_old", 465, 305, 350, 34, true)
+/tmp/gat-src/cmd/ui/main.go-354-	createEdit("acc_new", 465, 365, 350, 34, true)
+/tmp/gat-src/cmd/ui/main.go-355-	createEdit("acc_confirm", 465, 425, 350, 34, true)
+/tmp/gat-src/cmd/ui/main.go-356-	updateEditVisibility()
+/tmp/gat-src/cmd/ui/main.go-357-}
+/tmp/gat-src/cmd/ui/main.go-358-func updateEditVisibility() {
+/tmp/gat-src/cmd/ui/main.go-359-	for n, h := range app.edits {
+/tmp/gat-src/cmd/ui/main.go-360-		v := false
+/tmp/gat-src/cmd/ui/main.go-361-		switch app.page {
+/tmp/gat-src/cmd/ui/main.go-362-		case "login":
+/tmp/gat-src/cmd/ui/main.go-363-			v = strings.HasPrefix(n, "login_")
+/tmp/gat-src/cmd/ui/main.go-364-		case "config":
+/tmp/gat-src/cmd/ui/main.go-365-			v = strings.HasPrefix(n, "cfg_")
+/tmp/gat-src/cmd/ui/main.go-366-		case "moderator":
+/tmp/gat-src/cmd/ui/main.go-367-			v = n == "mod_steam"
+/tmp/gat-src/cmd/ui/main.go-368-		case "account":
+/tmp/gat-src/cmd/ui/main.go-369-			v = strings.HasPrefix(n, "acc_")
+/tmp/gat-src/cmd/ui/main.go-370-		}
+--
+/tmp/gat-src/cmd/ui/main.go-732-		roundFill(dc, Rect{x, 155, h1.w, 36}, rgb(13, 61, 91), 4)
+/tmp/gat-src/cmd/ui/main.go-733-		text(dc, h1.s, Rect{x + 5, 155, h1.w - 10, 36}, app.fontBold, rgb(220, 235, 246), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-734-		x += h1.w + 4
+/tmp/gat-src/cmd/ui/main.go-735-	}
+/tmp/gat-src/cmd/ui/main.go-736-	y := int32(200)
+/tmp/gat-src/cmd/ui/main.go-737-	if len(s.Telemetry) == 0 {
+/tmp/gat-src/cmd/ui/main.go-738-		text(dc, "Aguardando telemetria dos motoristas...", Rect{270, 245, 800, 40}, app.fontH1, rgb(160, 190, 215), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-739-	}
+/tmp/gat-src/cmd/ui/main.go-740-	for i, t := range s.Telemetry {
+/tmp/gat-src/cmd/ui/main.go-741-		if i >= 12 {
+/tmp/gat-src/cmd/ui/main.go-742-			break
+/tmp/gat-src/cmd/ui/main.go-743-		}
+/tmp/gat-src/cmd/ui/main.go-744-		x = 255
+/tmp/gat-src/cmd/ui/main.go-745-		bg := rgb(8, 43, 67)
+/tmp/gat-src/cmd/ui/main.go-746-		if i%2 == 1 {
+/tmp/gat-src/cmd/ui/main.go-747-			bg = rgb(7, 37, 59)
+/tmp/gat-src/cmd/ui/main.go-748-		}
+/tmp/gat-src/cmd/ui/main.go-749-		vals := []struct {
+/tmp/gat-src/cmd/ui/main.go-750-			s string
+/tmp/gat-src/cmd/ui/main.go-751-			w int32
+/tmp/gat-src/cmd/ui/main.go:752:		}{{t.Driver, 150}, {t.Status, 110}, {nz(t.Cargo, "Sem carga"), 205}, {fmt.Sprintf("%.0f kg", t.CargoMassKg), 95}, {nz(t.Source, "-"), 120}, {nz(t.Destination, "-"), 120}, {fmt.Sprintf("%.1f km", t.RemainingKm), 95}, {fmt.Sprintf("%.0f", t.SpeedKmh), 75}}
+/tmp/gat-src/cmd/ui/main.go-753-		for _, v := range vals {
+/tmp/gat-src/cmd/ui/main.go-754-			fill(dc, Rect{x, y, v.w, 40}, bg)
+/tmp/gat-src/cmd/ui/main.go-755-			text(dc, v.s, Rect{x + 5, y, v.w - 10, 40}, app.fontSmall, rgb(235, 242, 248), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-756-			x += v.w + 4
+/tmp/gat-src/cmd/ui/main.go-757-		}
+/tmp/gat-src/cmd/ui/main.go-758-		y += 44
+/tmp/gat-src/cmd/ui/main.go-759-	}
+/tmp/gat-src/cmd/ui/main.go-760-	text(dc, fmt.Sprintf("Motoristas na sala: %d | Telemetrias conhecidas: %d", s.PlayerCount, len(s.Telemetry)), Rect{255, h - 110, 600, 30}, app.fontNormal, rgb(92, 176, 237), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-761-}
+/tmp/gat-src/cmd/ui/main.go-762-
+/tmp/gat-src/cmd/ui/main.go-763-var sysRects = map[string]Rect{"backup": {270, 180, 210, 48}, "open": {495, 180, 210, 48}, "api": {720, 180, 210, 48}, "funnel": {945, 180, 210, 48}, "mods": {270, 250, 210, 48}, "firewall": {495, 250, 210, 48}, "redetect": {720, 250, 210, 48}, "restart": {945, 250, 210, 48}, "reg": {270, 320, 300, 48}}
+/tmp/gat-src/cmd/ui/main.go-764-
+/tmp/gat-src/cmd/ui/main.go-765-func drawSystem(dc syscall.Handle, w, h int32) {
+/tmp/gat-src/cmd/ui/main.go-766-	s, _, mods, binds := appSnapshot()
+/tmp/gat-src/cmd/ui/main.go-767-	card(dc, Rect{225, 35, w - 250, h - 70})
+/tmp/gat-src/cmd/ui/main.go-768-	text(dc, "SISTEMA", Rect{255, 65, 450, 45}, app.fontTitle, rgb(255, 255, 255), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-769-	drawButton(dc, sysRects["backup"], "CRIAR BACKUP", rgb(20, 107, 160), false)
+/tmp/gat-src/cmd/ui/main.go-770-	drawButton(dc, sysRects["open"], "ABRIR PASTA DE DADOS", rgb(12, 67, 101), false)
+/tmp/gat-src/cmd/ui/main.go-771-	drawButton(dc, sysRects["api"], "TESTAR API 5055", rgb(12, 67, 101), false)
+/tmp/gat-src/cmd/ui/main.go-772-	drawButton(dc, sysRects["funnel"], "ATIVAR FUNNEL", rgb(12, 67, 101), false)
+/tmp/gat-src/cmd/ui/main.go-773-	drawButton(dc, sysRects["mods"], "ATUALIZAR MODS / PACOTES", rgb(20, 107, 207), false)
+/tmp/gat-src/cmd/ui/main.go-774-	drawButton(dc, sysRects["firewall"], "CONFIGURAR FIREWALL", rgb(12, 67, 101), false)
+/tmp/gat-src/cmd/ui/main.go-775-	drawButton(dc, sysRects["redetect"], "REDETECTAR ETS2", rgb(12, 67, 101), false)
+/tmp/gat-src/cmd/ui/main.go-776-	drawButton(dc, sysRects["restart"], "REINICIAR AGENTE", rgb(12, 67, 101), false)
+/tmp/gat-src/cmd/ui/main.go-777-	regLabel := "BLOQUEAR NOVOS VÍNCULOS"
+/tmp/gat-src/cmd/ui/main.go-778-	if !s.RegistrationOpen {
+/tmp/gat-src/cmd/ui/main.go-779-		regLabel = "LIBERAR NOVOS VÍNCULOS"
+/tmp/gat-src/cmd/ui/main.go-780-	}
+/tmp/gat-src/cmd/ui/main.go-781-	drawButton(dc, sysRects["reg"], regLabel, rgb(83, 58, 163), false)
+/tmp/gat-src/cmd/ui/main.go-782-	text(dc, fmt.Sprintf("Agente: %s | Uptime: %s | API: %s", s.AgentVersion, fmtDuration(s.AgentUptimeSec), tern(app.agentReachable, "ATIVA", "OFFLINE")), Rect{270, 390, 850, 30}, app.fontBold, rgb(60, 230, 130), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-783-	text(dc, "PACOTES / MODS", Rect{270, 445, 360, 32}, app.fontH1, rgb(255, 255, 255), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-784-	text(dc, s.PackagesText, Rect{270, 480, 850, 30}, app.fontNormal, ternColor(s.PackagesOK), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-785-	y := int32(520)
+/tmp/gat-src/cmd/ui/main.go-786-	for i, m := range mods {
+/tmp/gat-src/cmd/ui/main.go-787-		if i >= 6 {
+/tmp/gat-src/cmd/ui/main.go-788-			break
+/tmp/gat-src/cmd/ui/main.go-789-		}
+/tmp/gat-src/cmd/ui/main.go-790-		text(dc, "• "+m, Rect{285, y, 800, 25}, app.fontSmall, rgb(190, 213, 230), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-791-		y += 25
+/tmp/gat-src/cmd/ui/main.go-792-	}
+/tmp/gat-src/cmd/ui/main.go:793:	text(dc, fmt.Sprintf("Vínculos de motoristas: %d", len(binds)), Rect{270, 690, 500, 30}, app.fontBold, rgb(92, 176, 237), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-794-	text(dc, "Dados e backups permanecem em "+core.DataDir(), Rect{270, 735, 850, 30}, app.fontSmall, rgb(155, 192, 218), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+/tmp/gat-src/cmd/ui/main.go-795-}
+/tmp/gat-src/cmd/ui/main.go-796-func tern(b bool, a, c string) string {
+/tmp/gat-src/cmd/ui/main.go-797-	if b {
+/tmp/gat-src/cmd/ui/main.go-798-		return a
+/tmp/gat-src/cmd/ui/main.go-799-	}
+/tmp/gat-src/cmd/ui/main.go-800-	return c
+/tmp/gat-src/cmd/ui/main.go-801-}
+/tmp/gat-src/cmd/ui/main.go-802-func ternColor(b bool) uintptr {
+/tmp/gat-src/cmd/ui/main.go-803-	if b {
+/tmp/gat-src/cmd/ui/main.go-804-		return rgb(60, 230, 130)
+/tmp/gat-src/cmd/ui/main.go-805-	}
+/tmp/gat-src/cmd/ui/main.go-806-	return rgb(255, 180, 60)
+/tmp/gat-src/cmd/ui/main.go-807-}
+/tmp/gat-src/cmd/ui/main.go-808-
+/tmp/gat-src/cmd/ui/main.go-809-var accountSave = Rect{465, 490, 250, 48}
+/tmp/gat-src/cmd/ui/main.go-810-
+/tmp/gat-src/cmd/ui/main.go-811-func drawAccount(dc syscall.Handle, w, h int32) {
+/tmp/gat-src/cmd/ui/main.go-812-	card(dc, Rect{225, 35, w - 250, h - 70})
+/tmp/gat-src/cmd/ui/main.go-813-	text(dc, "CONTA / SENHA", Rect{255, 65, 550, 45}, app.fontTitle, rgb(255, 255, 255), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
+--
+/tmp/gat-src/cmd/agent/main.go-130-	m.HandleFunc("/api/ui/action", a.admin(a.uiAction))
+/tmp/gat-src/cmd/agent/main.go-131-	m.HandleFunc("/api/ui/bindings", a.admin(a.uiBindings))
+/tmp/gat-src/cmd/agent/main.go-132-	m.HandleFunc("/api/ui/mods", a.admin(a.uiMods))
+/tmp/gat-src/cmd/agent/main.go-133-}
+/tmp/gat-src/cmd/agent/main.go-134-
+/tmp/gat-src/cmd/agent/main.go-135-func (a *agent) pollLoop() {
+/tmp/gat-src/cmd/agent/main.go-136-	t := time.NewTicker(2 * time.Second)
+/tmp/gat-src/cmd/agent/main.go-137-	defer t.Stop()
+/tmp/gat-src/cmd/agent/main.go-138-	for range t.C {
+/tmp/gat-src/cmd/agent/main.go-139-		a.refreshStatus()
+/tmp/gat-src/cmd/agent/main.go-140-	}
+/tmp/gat-src/cmd/agent/main.go-141-}
+/tmp/gat-src/cmd/agent/main.go-142-func (a *agent) refreshStatus() {
+/tmp/gat-src/cmd/agent/main.go-143-	a.mu.Lock()
+/tmp/gat-src/cmd/agent/main.go-144-	cfg := a.cfg
+/tmp/gat-src/cmd/agent/main.go-145-	a.mu.Unlock()
+/tmp/gat-src/cmd/agent/main.go-146-	online := core.IsProcessRunning("eurotrucks2_server.exe")
+/tmp/gat-src/cmd/agent/main.go-147-	ss := core.ParseSession(cfg)
+/tmp/gat-src/cmd/agent/main.go-148-	pkgOK, pkgText := core.PackagesStatus(cfg)
+/tmp/gat-src/cmd/agent/main.go-149-	a.mu.Lock()
+/tmp/gat-src/cmd/agent/main.go:150:	// Mark telemetry as outside session if the driver is no longer present, but keep the last cargo visible.
+/tmp/gat-src/cmd/agent/main.go-151-	for k, v := range a.telemetry {
+/tmp/gat-src/cmd/agent/main.go-152-		if _, ok := core.ContainsPlayer(ss.Players, v.Driver); !ok && online {
+/tmp/gat-src/cmd/agent/main.go-153-			v.Status = "FORA DA SESSAO"
+/tmp/gat-src/cmd/agent/main.go-154-			v.OnJob = false
+/tmp/gat-src/cmd/agent/main.go-155-			a.telemetry[k] = v
+/tmp/gat-src/cmd/agent/main.go-156-		}
+/tmp/gat-src/cmd/agent/main.go-157-	}
+/tmp/gat-src/cmd/agent/main.go-158-	tel := make([]core.TelemetryRecord, 0, len(a.telemetry))
+/tmp/gat-src/cmd/agent/main.go-159-	for _, v := range a.telemetry {
+/tmp/gat-src/cmd/agent/main.go-160-		tel = append(tel, v)
+/tmp/gat-src/cmd/agent/main.go-161-	}
+/tmp/gat-src/cmd/agent/main.go-162-	sortTelemetry(tel)
+/tmp/gat-src/cmd/agent/main.go-163-	a.status = core.Status{OK: true, AgentVersion: core.InternalVersion, AgentUptimeSec: int64(time.Since(a.started).Seconds()), ServerOnline: online, ServerName: ss.Name, SessionID: ss.ID, Ports: ss.Ports, Players: ss.Players, PlayerCount: ss.Count, MaxPlayers: ss.Max, ServerExe: cfg.ServerExe, ServerLog: core.ServerLogPath(cfg), PackagesOK: pkgOK, PackagesText: pkgText, FunnelURL: cfg.FunnelURL, DataDir: core.DataDir(), Telemetry: tel, RegistrationOpen: cfg.RegistrationOpen, LastRefresh: time.Now().Format(time.RFC3339)}
+/tmp/gat-src/cmd/agent/main.go-164-	a.mu.Unlock()
+/tmp/gat-src/cmd/agent/main.go-165-}
+/tmp/gat-src/cmd/agent/main.go-166-func sortTelemetry(t []core.TelemetryRecord) {
+/tmp/gat-src/cmd/agent/main.go-167-	for i := 0; i < len(t); i++ {
+/tmp/gat-src/cmd/agent/main.go-168-		for j := i + 1; j < len(t); j++ {
+/tmp/gat-src/cmd/agent/main.go-169-			if strings.ToLower(t[j].Driver) < strings.ToLower(t[i].Driver) {
+/tmp/gat-src/cmd/agent/main.go-170-				t[i], t[j] = t[j], t[i]
+--
+/tmp/gat-src/cmd/agent/main.go-321-		return
+/tmp/gat-src/cmd/agent/main.go-322-	}
+/tmp/gat-src/cmd/agent/main.go-323-	b, code, st, ok := a.validateClient(q)
+/tmp/gat-src/cmd/agent/main.go-324-	if !ok {
+/tmp/gat-src/cmd/agent/main.go-325-		jsonOut(w, st, map[string]any{"ok": false, "error": code})
+/tmp/gat-src/cmd/agent/main.go-326-		return
+/tmp/gat-src/cmd/agent/main.go-327-	}
+/tmp/gat-src/cmd/agent/main.go-328-	if q.Telemetry == nil {
+/tmp/gat-src/cmd/agent/main.go-329-		q.Telemetry = map[string]any{}
+/tmp/gat-src/cmd/agent/main.go-330-	}
+/tmp/gat-src/cmd/agent/main.go-331-	rec := core.NormalizeTelemetry(b.Driver, b.DeviceID, q.Telemetry)
+/tmp/gat-src/cmd/agent/main.go-332-	rec.Status = "ONLINE"
+/tmp/gat-src/cmd/agent/main.go-333-	if rec.OnJob {
+/tmp/gat-src/cmd/agent/main.go-334-		rec.Status = "EM ROTA"
+/tmp/gat-src/cmd/agent/main.go-335-	}
+/tmp/gat-src/cmd/agent/main.go-336-	key := bindKey(b.Driver)
+/tmp/gat-src/cmd/agent/main.go-337-	a.mu.Lock()
+/tmp/gat-src/cmd/agent/main.go-338-	prev := a.telemetry[key]
+/tmp/gat-src/cmd/agent/main.go-339-	a.prevTelemetry[key] = prev
+/tmp/gat-src/cmd/agent/main.go-340-	a.telemetry[key] = rec
+/tmp/gat-src/cmd/agent/main.go:341:	persist := time.Since(a.lastPersist) > 1500*time.Millisecond
+/tmp/gat-src/cmd/agent/main.go-342-	if persist {
+/tmp/gat-src/cmd/agent/main.go-343-		a.lastPersist = time.Now()
+/tmp/gat-src/cmd/agent/main.go-344-	}
+/tmp/gat-src/cmd/agent/main.go-345-	a.mu.Unlock()
+/tmp/gat-src/cmd/agent/main.go-346-	if persist {
+/tmp/gat-src/cmd/agent/main.go-347-		a.saveTelemetry()
+/tmp/gat-src/cmd/agent/main.go-348-	}
+/tmp/gat-src/cmd/agent/main.go-349-	a.detectEvents(prev, rec)
+/tmp/gat-src/cmd/agent/main.go-350-	jsonOut(w, 200, map[string]any{"ok": true, "driver": b.Driver, "received_at": rec.UpdatedAt})
+/tmp/gat-src/cmd/agent/main.go-351-}
+/tmp/gat-src/cmd/agent/main.go-352-func (a *agent) detectEvents(prev, cur core.TelemetryRecord) {
+/tmp/gat-src/cmd/agent/main.go-353-	if cur.Driver == "" {
+/tmp/gat-src/cmd/agent/main.go-354-		return
+/tmp/gat-src/cmd/agent/main.go-355-	}
+/tmp/gat-src/cmd/agent/main.go-356-	if !prev.OnJob && cur.OnJob {
+/tmp/gat-src/cmd/agent/main.go:357:		core.AppendEvent(map[string]any{"type": "cargo_started", "at": cur.UpdatedAt, "driver": cur.Driver, "cargo": cur.Cargo, "mass_kg": cur.CargoMassKg, "source": cur.Source, "destination": cur.Destination})
+/tmp/gat-src/cmd/agent/main.go-358-	}
+/tmp/gat-src/cmd/agent/main.go-359-	if prev.OnJob && !cur.OnJob {
+/tmp/gat-src/cmd/agent/main.go:360:		core.AppendEvent(map[string]any{"type": "cargo_ended", "at": cur.UpdatedAt, "driver": cur.Driver, "cargo": prev.Cargo, "mass_kg": prev.CargoMassKg, "source": prev.Source, "destination": prev.Destination})
+/tmp/gat-src/cmd/agent/main.go-361-	}
+/tmp/gat-src/cmd/agent/main.go-362-}
+/tmp/gat-src/cmd/agent/main.go-363-
+/tmp/gat-src/cmd/agent/main.go-364-func (a *agent) uiStatus(w http.ResponseWriter, r *http.Request) {
+/tmp/gat-src/cmd/agent/main.go-365-	a.refreshStatus()
+/tmp/gat-src/cmd/agent/main.go-366-	a.mu.RLock()
+/tmp/gat-src/cmd/agent/main.go-367-	s := a.status
+/tmp/gat-src/cmd/agent/main.go-368-	a.mu.RUnlock()
+/tmp/gat-src/cmd/agent/main.go-369-	jsonOut(w, 200, s)
+/tmp/gat-src/cmd/agent/main.go-370-}
+/tmp/gat-src/cmd/agent/main.go-371-func (a *agent) uiConfig(w http.ResponseWriter, r *http.Request) {
+/tmp/gat-src/cmd/agent/main.go-372-	if r.Method == "GET" {
+/tmp/gat-src/cmd/agent/main.go-373-		a.mu.RLock()
+/tmp/gat-src/cmd/agent/main.go-374-		c := a.cfg
+/tmp/gat-src/cmd/agent/main.go-375-		a.mu.RUnlock()
+/tmp/gat-src/cmd/agent/main.go-376-		jsonOut(w, 200, map[string]any{"ok": true, "config": c})
+/tmp/gat-src/cmd/agent/main.go-377-		return
+/tmp/gat-src/cmd/agent/main.go-378-	}
+/tmp/gat-src/cmd/agent/main.go-379-	if r.Method != "POST" {
+/tmp/gat-src/cmd/agent/main.go-380-		jsonOut(w, 405, map[string]any{"ok": false})
+/tmp/gat-src/cmd/agent/main.go-381-		return
+/tmp/gat-src/cmd/agent/main.go-382-	}
+/tmp/gat-src/cmd/agent/main.go-383-	var c core.Config
+/tmp/gat-src/cmd/agent/main.go-384-	if decode(r, &c) != nil {
+/tmp/gat-src/cmd/agent/main.go-385-		jsonOut(w, 400, map[string]any{"ok": false, "error": "bad_config"})
+/tmp/gat-src/cmd/agent/main.go-386-		return
+/tmp/gat-src/cmd/agent/main.go-387-	}
+/tmp/gat-src/cmd/agent/main.go-388-	if c.MaxPlayers < 1 {
+/tmp/gat-src/cmd/agent/main.go-389-		c.MaxPlayers = 128
+/tmp/gat-src/cmd/agent/main.go-390-	}
+/tmp/gat-src/cmd/agent/main.go-391-	if c.ServerExe == "" {
+/tmp/gat-src/cmd/agent/main.go-392-		c.ServerExe = core.DetectServerExe()
+/tmp/gat-src/cmd/agent/main.go-393-	}
+/tmp/gat-src/cmd/agent/main.go-394-	if c.DocumentsHome == "" {
+/tmp/gat-src/cmd/agent/main.go-395-		c.DocumentsHome = core.DetectDocumentsHome()
+/tmp/gat-src/cmd/agent/main.go-396-	}
+/tmp/gat-src/cmd/agent/main.go-397-	if err := core.SaveConfig(c); err != nil {
+/tmp/gat-src/cmd/agent/main.go:398:		jsonOut(w, 500, map[string]any{"ok": false, "error": err.Error()})
+/tmp/gat-src/cmd/agent/main.go-399-		return
+/tmp/gat-src/cmd/agent/main.go-400-	}
+/tmp/gat-src/cmd/agent/main.go-401-	a.mu.Lock()
+/tmp/gat-src/cmd/agent/main.go-402-	a.cfg = c
+/tmp/gat-src/cmd/agent/main.go-403-	a.mu.Unlock()
+/tmp/gat-src/cmd/agent/main.go-404-	err := core.PatchServerConfig(c)
+/tmp/gat-src/cmd/agent/main.go-405-	if err != nil {
+/tmp/gat-src/cmd/agent/main.go-406-		core.AppendLog("Configuracao salva, mas nao foi possivel aplicar server_config.sii: %v", err)
+/tmp/gat-src/cmd/agent/main.go-407-		jsonOut(w, 200, map[string]any{"ok": true, "warning": err.Error()})
+/tmp/gat-src/cmd/agent/main.go-408-		return
+/tmp/gat-src/cmd/agent/main.go-409-	}
+/tmp/gat-src/cmd/agent/main.go-410-	a.refreshStatus()
+/tmp/gat-src/cmd/agent/main.go-411-	jsonOut(w, 200, map[string]any{"ok": true})
+/tmp/gat-src/cmd/agent/main.go-412-}
+/tmp/gat-src/cmd/agent/main.go-413-func (a *agent) uiBindings(w http.ResponseWriter, r *http.Request) {
+/tmp/gat-src/cmd/agent/main.go-414-	a.mu.RLock()
+/tmp/gat-src/cmd/agent/main.go-415-	list := make([]core.Binding, 0, len(a.bindings))
+/tmp/gat-src/cmd/agent/main.go-416-	for _, b := range a.bindings {
+/tmp/gat-src/cmd/agent/main.go-417-		b.Token = ""
+/tmp/gat-src/cmd/agent/main.go-418-		list = append(list, b)
+--
+/tmp/gat-src/cmd/agent/main.go-485-		err = a.bindingAction(q.Driver, "unblock")
+/tmp/gat-src/cmd/agent/main.go-486-		msg = "Motorista liberado"
+/tmp/gat-src/cmd/agent/main.go-487-	case "unlink_driver":
+/tmp/gat-src/cmd/agent/main.go-488-		err = a.bindingAction(q.Driver, "unlink")
+/tmp/gat-src/cmd/agent/main.go-489-		msg = "PC desvinculado"
+/tmp/gat-src/cmd/agent/main.go-490-	case "disconnect_driver":
+/tmp/gat-src/cmd/agent/main.go-491-		err = a.bindingAction(q.Driver, "disconnect")
+/tmp/gat-src/cmd/agent/main.go-492-		msg = "Motorista desconectado"
+/tmp/gat-src/cmd/agent/main.go-493-	case "backup":
+/tmp/gat-src/cmd/agent/main.go-494-		var p string
+/tmp/gat-src/cmd/agent/main.go-495-		p, err = a.backup()
+/tmp/gat-src/cmd/agent/main.go-496-		msg = p
+/tmp/gat-src/cmd/agent/main.go-497-	case "shutdown_agent":
+/tmp/gat-src/cmd/agent/main.go-498-		jsonOut(w, 200, map[string]any{"ok": true})
+/tmp/gat-src/cmd/agent/main.go-499-		go func() { time.Sleep(150 * time.Millisecond); _ = a.httpSrv.Close() }()
+/tmp/gat-src/cmd/agent/main.go-500-		return
+/tmp/gat-src/cmd/agent/main.go-501-	default:
+/tmp/gat-src/cmd/agent/main.go-502-		err = fmt.Errorf("acao desconhecida: %s", q.Action)
+/tmp/gat-src/cmd/agent/main.go-503-	}
+/tmp/gat-src/cmd/agent/main.go-504-	if err != nil {
+/tmp/gat-src/cmd/agent/main.go:505:		jsonOut(w, 500, map[string]any{"ok": false, "error": err.Error()})
+/tmp/gat-src/cmd/agent/main.go-506-		return
+/tmp/gat-src/cmd/agent/main.go-507-	}
+/tmp/gat-src/cmd/agent/main.go-508-	a.refreshStatus()
+/tmp/gat-src/cmd/agent/main.go-509-	jsonOut(w, 200, map[string]any{"ok": true, "message": msg})
+/tmp/gat-src/cmd/agent/main.go-510-}
+/tmp/gat-src/cmd/agent/main.go-511-func (a *agent) startServer() error {
+/tmp/gat-src/cmd/agent/main.go-512-	a.mu.RLock()
+/tmp/gat-src/cmd/agent/main.go-513-	c := a.cfg
+/tmp/gat-src/cmd/agent/main.go-514-	a.mu.RUnlock()
+/tmp/gat-src/cmd/agent/main.go-515-	if core.IsProcessRunning("eurotrucks2_server.exe") {
+/tmp/gat-src/cmd/agent/main.go-516-		return nil
+/tmp/gat-src/cmd/agent/main.go-517-	}
+/tmp/gat-src/cmd/agent/main.go-518-	if _, e := os.Stat(c.ServerExe); e != nil {
+/tmp/gat-src/cmd/agent/main.go-519-		c.ServerExe = core.DetectServerExe()
+/tmp/gat-src/cmd/agent/main.go-520-		a.mu.Lock()
+/tmp/gat-src/cmd/agent/main.go-521-		a.cfg.ServerExe = c.ServerExe
+/tmp/gat-src/cmd/agent/main.go-522-		a.mu.Unlock()
+/tmp/gat-src/cmd/agent/main.go-523-		_ = core.SaveConfig(c)
+/tmp/gat-src/cmd/agent/main.go-524-	}
+/tmp/gat-src/cmd/agent/main.go-525-	if _, e := os.Stat(c.ServerExe); e != nil {
+/tmp/gat-src/cmd/agent/main.go-526-		return fmt.Errorf("eurotrucks2_server.exe nao encontrado")
+/tmp/gat-src/cmd/agent/main.go-527-	}
+/tmp/gat-src/cmd/agent/main.go-528-	_ = core.PatchServerConfig(c)
+/tmp/gat-src/cmd/agent/main.go-529-	cmd := exec.Command(c.ServerExe)
+/tmp/gat-src/cmd/agent/main.go-530-	cmd.Dir = filepath.Dir(c.ServerExe)
+/tmp/gat-src/cmd/agent/main.go-531-	if e := cmd.Start(); e != nil {
+/tmp/gat-src/cmd/agent/main.go-532-		return e
+/tmp/gat-src/cmd/agent/main.go-533-	}
+/tmp/gat-src/cmd/agent/main.go-534-	core.AppendLog("Dedicated Server iniciado PID %d", cmd.Process.Pid)
+/tmp/gat-src/cmd/agent/main.go-535-	return nil
+/tmp/gat-src/cmd/agent/main.go-536-}
+/tmp/gat-src/cmd/agent/main.go-537-func (a *agent) prepareMods() error {
+/tmp/gat-src/cmd/agent/main.go-538-	a.mu.RLock()
+/tmp/gat-src/cmd/agent/main.go-539-	c := a.cfg
+/tmp/gat-src/cmd/agent/main.go-540-	a.mu.RUnlock()
+/tmp/gat-src/cmd/agent/main.go-541-	if core.IsProcessRunning("eurotrucks2_server.exe") {
+/tmp/gat-src/cmd/agent/main.go-542-		_ = core.KillProcess("eurotrucks2_server.exe")
+/tmp/gat-src/cmd/agent/main.go:543:		time.Sleep(500 * time.Millisecond)
+/tmp/gat-src/cmd/agent/main.go-544-	}
+/tmp/gat-src/cmd/agent/main.go-545-	_ = core.EnableETS2Console(c)
+/tmp/gat-src/cmd/agent/main.go-546-	game := core.DetectETS2Exe()
+/tmp/gat-src/cmd/agent/main.go-547-	if _, e := os.Stat(game); e == nil {
+/tmp/gat-src/cmd/agent/main.go-548-		cmd := exec.Command(game)
+/tmp/gat-src/cmd/agent/main.go-549-		cmd.Dir = filepath.Dir(game)
+/tmp/gat-src/cmd/agent/main.go-550-		return cmd.Start()
+/tmp/gat-src/cmd/agent/main.go-551-	}
+/tmp/gat-src/cmd/agent/main.go-552-	return exec.Command("cmd.exe", "/c", "start", "", "steam://rungameid/227300").Start()
+/tmp/gat-src/cmd/agent/main.go-553-}
+/tmp/gat-src/cmd/agent/main.go-554-func (a *agent) bindingAction(driver, action string) error {
+/tmp/gat-src/cmd/agent/main.go-555-	key := bindKey(driver)
+/tmp/gat-src/cmd/agent/main.go-556-	a.mu.Lock()
+/tmp/gat-src/cmd/agent/main.go-557-	defer a.mu.Unlock()
+/tmp/gat-src/cmd/agent/main.go-558-	b, ok := a.bindings[key]
+/tmp/gat-src/cmd/agent/main.go-559-	if !ok {
+/tmp/gat-src/cmd/agent/main.go-560-		return fmt.Errorf("motorista nao encontrado")
+/tmp/gat-src/cmd/agent/main.go-561-	}
+/tmp/gat-src/cmd/agent/main.go-562-	switch action {
+/tmp/gat-src/cmd/agent/main.go-563-	case "block":
