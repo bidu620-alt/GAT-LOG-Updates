@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.13",
-  "display_version": "1.0.13 TRABALHO EM ANDAMENTO",
-  "notas": "Mostra TRABALHO EM ANDAMENTO em verde na parte inferior da aba Telemetria enquanto a missão estiver ativa. Mantém o aviso por voz quando o trabalho é iniciado.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.13_STATUS_TESTE.exe",
-  "sha256": "ac62d89f55693b7f578045cfb113ac46592a09170382f4972bcc7d27febb73a7"
+  "version": "1.0.14",
+  "display_version": "1.0.14 DIARIO DE VIAGEM",
+  "notas": "O GAT Telemetria passa a guardar a viagem localmente em trip_journal.json, independente da internet e do servidor de comboio. Se o cliente entrar no meio da viagem, usa a distancia planejada original do contrato ETS2. Ao receber JobDelivered, cria um recibo persistente e tenta envia-lo diretamente para a Central GAT ate receber confirmacao, evitando perder entregas em quedas ou intervalos de telemetria.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.14_JOURNAL_TESTE.exe",
+  "sha256": "aa23426ed7ade0a3a1774845f96c24ae63162ebea31e5d25daf8adff03330416"
 }
