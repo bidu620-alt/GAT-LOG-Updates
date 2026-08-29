@@ -1,0 +1,109 @@
+name: Publish GAT Site Official Ready
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/publish-site-official-ready.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch main site
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout -B main origin/main
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          manifest=json.loads(Path('server_dotnet_version.json').read_text(encoding='utf-8'))
+          if manifest.get('version') != '1.0.24':
+              raise SystemExit('Server 1.0.24 ainda nao publicado em main')
+
+          # HOME: modo atual, ranking mensal e download correto.
+          p=Path('docs/index.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace('<article class="stat"><small>DISTÂNCIA MÍNIMA</small><b>800 km</b></article>',
+                      '<article class="stat"><small id="homeModeLabel">MODO ATUAL</small><b id="homeModeValue">Homologação</b></article>')
+          s=s.replace('<p class="lead">A classificação é formada pelo progresso real das missões do mês. Enquanto a regra de pontos não for definida, a ordem usa missões concluídas e quilômetros como desempate.</p>',
+                      '<p id="rankingIntro" class="lead">Homologação em andamento. O ranking exibido agora é de teste e será zerado na virada oficial de setembro.</p>')
+          s=s.replace('releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.22_TESTE.exe','releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.24_TESTE.exe')
+          s=s.replace('SERVIDOR • 1.0.22','SERVIDOR • 1.0.24')
+          s=s.replace('Central GAT com missões, mapa, XP, níveis e Painel Admin com ficha detalhada. Corrige a abertura da ficha administrativa do motorista.',
+                      'Central GAT pronta para homologação e virada oficial: horário do Brasil, KM mensal no ranking e regras automáticas a partir de setembro.')
+          p.write_text(s,encoding='utf-8')
+
+          # Ranking usa somente KM do mês e identifica homologação/oficial.
+          Path('docs/home-v6.js').write_text(r'''const RANKING_URL='https://douglas.tail4577e8.ts.net/api/public/ranking';
+          function escRank(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+          function rankLabel(user){const s=String(user||'motorista').replace(/^@/,'');return s.charAt(0).toUpperCase()+s.slice(1);}
+          function monthlyKm(item){return Number(item?.monthly_km)||0}
+          function podiumCard(item,place){const a=document.createElement('a');a.className='podium-card '+(place===1?'first':place===2?'second':'third');a.href='motorista.html?u='+encodeURIComponent(item.user);const initial=rankLabel(item.user).charAt(0);a.innerHTML='<span class="place '+(place===1?'crown':'')+'">'+place+'º</span><div class="rank-avatar">'+escRank(initial)+'</div><b>'+escRank(rankLabel(item.user))+'</b><small>@'+escRank(item.user)+'</small><strong>'+Number(item.monthly_completed||0)+' / 40</strong><em>'+Math.round(monthlyKm(item)).toLocaleString('pt-BR')+' km no mês • '+Number(item.total_deliveries||0)+' entregas totais</em>';return a;}
+          function smallCard(item,place){const el=document.createElement(item?'a':'div');el.className='rank-small'+(item?'':' empty');if(item)el.href='motorista.html?u='+encodeURIComponent(item.user);const initial=item?rankLabel(item.user).charAt(0):'—';el.innerHTML='<div class="rank-small-top"><span class="rank-small-place">'+place+'º</span><div class="rank-small-avatar">'+escRank(initial)+'</div><div class="rank-small-name"><b>'+escRank(item?rankLabel(item.user):'Aguardando')+'</b><small>'+(item?'@'+escRank(item.user):'novo motorista')+'</small></div></div><div class="rank-small-bottom"><strong>'+(item?Number(item.monthly_completed||0)+' / 40':'—')+'</strong><em>'+(item?Math.round(monthlyKm(item)).toLocaleString('pt-BR')+' km no mês':'—')+'</em></div>';return el;}
+          function applyMode(data){const official=data?.operation_mode==='official'||data?.rules_enabled===true;const label=document.getElementById('homeModeLabel'),value=document.getElementById('homeModeValue'),intro=document.getElementById('rankingIntro');if(label)label.textContent=official?'RANKING':'MODO ATUAL';if(value)value.textContent=official?'OFICIAL':'Homologação';if(intro)intro.textContent=official?'Ranking oficial do mês: primeiro por missões concluídas e, em caso de empate, por quilômetros feitos no mês.':'Homologação: as cargas estão sem regra para testes. Às 00:00 de 01/09 (horário de Brasília), o progresso mensal zera e o ranking passa automaticamente para OFICIAL.';}
+          function renderRanking(list,data){const podium=document.getElementById('podium'),grid=document.getElementById('rankGrid'),status=document.getElementById('rankingStatus');podium.textContent='';grid.textContent='';const top=(Array.isArray(list)?list:[]).slice(0,10),official=data?.operation_mode==='official'||data?.rules_enabled===true;if(!top.length){status.textContent=official?'Nenhuma missão oficial registrada neste mês ainda.':'Nenhuma missão de homologação registrada ainda.';for(let p=1;p<=10;p++)grid.appendChild(smallCard(null,p));return;}status.textContent=official?'RANKING OFICIAL • atualizado automaticamente pela Central GAT.':'HOMOLOGAÇÃO • classificação apenas para teste; não vale para o ranking oficial.';const first=top[0],second=top[1],third=top[2];if(second)podium.appendChild(podiumCard(second,2));if(first)podium.appendChild(podiumCard(first,1));if(third)podium.appendChild(podiumCard(third,3));for(let p=4;p<=10;p++)grid.appendChild(smallCard(top[p-1]||null,p));}
+          async function loadRanking(){const status=document.getElementById('rankingStatus');try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);const r=await fetch(RANKING_URL,{cache:'no-store',signal:c.signal});clearTimeout(t);const data=await r.json().catch(()=>null);if(r.ok&&data?.ok){applyMode(data);renderRanking(data.ranking,data);return;}if(r.status===404)status.textContent='Atualize a Central GAT para liberar o ranking.';else status.textContent='Ranking temporariamente indisponível.';}catch(_){status.textContent='Ranking aguardando conexão com a Central GAT.';}}
+          loadRanking();setInterval(loadRanking,15000);
+          ''',encoding='utf-8')
+
+          # Motorista: IDs para a regra dinâmica.
+          p=Path('docs/motorista.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace('<div><small>MERCADO</small><b>World of Trucks</b></div><div><small>DISTÂNCIA MÍNIMA</small><b>800 km</b></div><div><small>FAIXA DE PESO</small><b id="workWeight">—</b></div><div><small>CARGA / CIDADE</small><b>Livre dentro da regra</b></div>',
+                      '<div><small>MERCADO</small><b id="workMarket">Livre</b></div><div><small>DISTÂNCIA MÍNIMA</small><b id="workMinKm">Sem mínimo</b></div><div><small>FAIXA DE PESO</small><b id="workWeight">Sem regra</b></div><div><small>CARGA / CIDADE</small><b id="workFreedom">Qualquer carga • homologação</b></div>')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('docs/motorista.js'); s=p.read_text(encoding='utf-8')
+          old="function renderMission(m){const btn=q('takeWorkButton'),state=q('workState');if(!m){q('workTitle').textContent='Próxima missão GAT';state.textContent='DISPONÍVEL';state.className='pill green';q('workWeight').textContent='Definida ao pegar';btn.textContent='PEGAR TRABALHO';return}q('workTitle').textContent='Missão GAT #'+m.sequence;state.textContent=stateLabel(m.state);state.className=stateClass(m.state);q('workWeight').textContent=(num(m.min_weight_kg)/1000).toFixed(0)+'–'+(num(m.max_weight_kg)/1000).toFixed(0)+' t';btn.textContent='TRABALHO JÁ DEFINIDO';}"
+          new="function workRulesEnabled(){return profile?.rules_enabled===true} function applyWorkRuleView(){const official=workRulesEnabled();q('workMarket').textContent=official?'World of Trucks':'Livre';q('workMinKm').textContent=official?'800 km':'Sem mínimo';q('workFreedom').textContent=official?'Livre dentro da regra':'Qualquer carga • homologação';} function renderMission(m){const btn=q('takeWorkButton'),state=q('workState'),official=workRulesEnabled();applyWorkRuleView();if(!m){q('workTitle').textContent='Próxima missão GAT';state.textContent='DISPONÍVEL';state.className='pill green';q('workWeight').textContent=official?'Definida ao pegar':'Sem regra';btn.textContent='PEGAR TRABALHO';return}q('workTitle').textContent='Missão GAT #'+m.sequence;state.textContent=stateLabel(m.state);state.className=stateClass(m.state);q('workWeight').textContent=(!official||String(m.market||'')==='test_any')?'Sem regra':(num(m.min_weight_kg)/1000).toFixed(0)+'–'+(num(m.max_weight_kg)/1000).toFixed(0)+' t';btn.textContent='TRABALHO JÁ DEFINIDO';}"
+          if old not in s: raise SystemExit('renderMission atual nao encontrado')
+          s=s.replace(old,new,1)
+          old="function updateOwnerArea(){session=getSession();const own=ownProfile(),btn=q('takeWorkButton'),msg=q('workOwnerMessage');if(own){q('profileType').textContent='SEU PERFIL';const m=profile?.current_mission;if(m){if(String(m.state).toLowerCase()==='active')msg.textContent='Missão em andamento pela Central GAT. Você pode jogar solo ou em qualquer multiplayer; o comboio GAT não é obrigatório.';else msg.textContent='Trabalho atribuído. Pegue no World of Trucks uma carga dentro da faixa e com pelo menos 800 km.';msg.classList.add('owner-ok');btn.disabled=true}else if(num(profile?.monthly_completed)>=40){msg.textContent='Meta de 40 missões concluída neste mês.';msg.classList.add('owner-ok');btn.disabled=true}else{msg.textContent='Você pode gerar seu trabalho atual. A faixa de peso será definida e não poderá ser trocada.';msg.classList.add('owner-ok');btn.disabled=false;btn.textContent='PEGAR TRABALHO'}}else{q('profileType').textContent=queryUser?'PERFIL PÚBLICO':'PERFIL DO MOTORISTA';msg.textContent='Somente @'+key+' pode pegar trabalho neste perfil.';msg.classList.remove('owner-ok');btn.disabled=true}}"
+          new="function updateOwnerArea(){session=getSession();const own=ownProfile(),btn=q('takeWorkButton'),msg=q('workOwnerMessage'),official=workRulesEnabled();if(own){q('profileType').textContent='SEU PERFIL';const m=profile?.current_mission;if(m){if(String(m.state).toLowerCase()==='active')msg.textContent='Missão em andamento pela Central GAT. Você pode jogar solo ou em qualquer multiplayer; o comboio GAT não é obrigatório.';else msg.textContent=official?'Trabalho atribuído. Pegue no World of Trucks uma carga dentro da faixa e com pelo menos 800 km.':'HOMOLOGAÇÃO: trabalho atribuído. Pegue qualquer carga do ETS2; mercado, distância e peso estão sem regra para o teste.';msg.classList.add('owner-ok');btn.disabled=true}else if(num(profile?.monthly_completed)>=40){msg.textContent='Meta de 40 missões concluída neste mês.';msg.classList.add('owner-ok');btn.disabled=true}else{msg.textContent=official?'Gere a próxima missão oficial. A faixa de peso será definida e não poderá ser trocada.':'HOMOLOGAÇÃO: clique em PEGAR TRABALHO e depois aceite qualquer carga para testar o fluxo completo.';msg.classList.add('owner-ok');btn.disabled=false;btn.textContent='PEGAR TRABALHO'}}else{q('profileType').textContent=queryUser?'PERFIL PÚBLICO':'PERFIL DO MOTORISTA';msg.textContent='Somente @'+key+' pode pegar trabalho neste perfil.';msg.classList.remove('owner-ok');btn.disabled=true}}"
+          if old not in s: raise SystemExit('updateOwnerArea atual nao encontrado')
+          s=s.replace(old,new,1)
+          s=s.replace("profile.current_mission=res.data.mission;profile.monthly_completed=num(res.data.completed);renderMission(profile.current_mission);", "profile.current_mission=res.data.mission;profile.monthly_completed=num(res.data.completed);if(typeof res.data.rules_enabled==='boolean')profile.rules_enabled=res.data.rules_enabled;if(res.data.operation_mode)profile.operation_mode=res.data.operation_mode;renderMission(profile.current_mission);")
+          p.write_text(s,encoding='utf-8')
+
+          # Admin: homologação deve aparecer como sem regras, não 0-0 t / test_any.
+          p=Path('docs/admin.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace("function marketLabel(v){const s=String(v||'').toLowerCase();if(s.includes('world')||s.includes('external')||s.includes('wot'))return 'World of Trucks';return v||'—'}",
+                      "function marketLabel(v){const s=String(v||'').toLowerCase();if(s==='test_any')return 'Homologação';if(s.includes('world')||s.includes('external')||s.includes('wot'))return 'World of Trucks';return v||'—'}")
+          s=s.replace("const m=d.current_mission,band=m?Math.round(n(m.min_weight_kg)/1000)+'–'+Math.round(n(m.max_weight_kg)/1000)+' t':'Sem missão'",
+                      "const m=d.current_mission,band=m?(String(m.market||'')==='test_any'?'Sem regras':Math.round(n(m.min_weight_kg)/1000)+'–'+Math.round(n(m.max_weight_kg)/1000)+' t'):'Sem missão'")
+          old="const band=Math.round(n(m.min_weight_kg)/1000)+'–'+Math.round(n(m.max_weight_kg)/1000)+' t',accepted=[m.source,m.destination].filter(Boolean).join(' → ');$('detailMissionBody').innerHTML='<strong>Missão GAT #'+esc(m.sequence)+'</strong><div><b>Regra:</b> '+esc(marketLabel(m.market))+' • mínimo '+esc(m.min_km)+' km • '+esc(band)+'</div><div><b>Status:</b> '+esc(stateLabel(m.state))+'</div>'"
+          new="const testMode=String(m.market||'')==='test_any',band=testMode?'Sem regra':Math.round(n(m.min_weight_kg)/1000)+'–'+Math.round(n(m.max_weight_kg)/1000)+' t',accepted=[m.source,m.destination].filter(Boolean).join(' → '),ruleText=testMode?'Homologação • regras desativadas • qualquer carga':marketLabel(m.market)+' • mínimo '+m.min_km+' km • '+band;$('detailMissionBody').innerHTML='<strong>Missão GAT #'+esc(m.sequence)+'</strong><div><b>Regra:</b> '+esc(ruleText)+'</div><div><b>Status:</b> '+esc(stateLabel(m.state))+'</div>'"
+          if old in s: s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+
+          # Mapa: usa também o objeto bruto de telemetria para evitar campos vazios.
+          p=Path('docs/mapa.js'); s=p.read_text(encoding='utf-8')
+          old="const fresh=t=>age(t?.updated_at)<=FRESH_MS;\nconst hasPosition=t=>{if(!fresh(t))return false;const x=Number(t?.map_x),z=Number(t?.map_z);return Number.isFinite(x)&&Number.isFinite(z)&&(Math.abs(x)>.01||Math.abs(z)>.01)};\nconst truckText=t=>{const a=String(t?.truck_make||'').trim(),b=String(t?.truck_model||'').trim();return [a,b].filter(Boolean).join(' ')||'Caminhão não informado'};\nconst sourceOf=t=>String(t?.source_city||t?.source||'').trim();\nconst destinationOf=t=>String(t?.destination_city||t?.destination||'').trim();"
+          new="const fresh=t=>age(t?.updated_at)<=FRESH_MS;\nconst rawOf=t=>t&&t.telemetry&&typeof t.telemetry==='object'?t.telemetry:{};\nconst deep=(o,path)=>{let cur=o;for(const part of String(path).split('.')){if(!cur||typeof cur!=='object'||!(part in cur))return undefined;cur=cur[part]}return cur};\nconst textValue=(t,...paths)=>{for(const src of [t,rawOf(t)])for(const path of paths){const v=deep(src,path);if(v!==undefined&&v!==null&&typeof v!=='object'&&String(v).trim())return String(v).trim()}return ''};\nconst numberValue=(t,...paths)=>{for(const src of [t,rawOf(t)])for(const path of paths){const v=deep(src,path),n=Number(v);if(v!==undefined&&v!==null&&Number.isFinite(n))return n}return 0};\nconst hasPosition=t=>{if(!fresh(t))return false;const x=numberValue(t,'map_x','truck.placement.x'),z=numberValue(t,'map_z','truck.placement.z');return Number.isFinite(x)&&Number.isFinite(z)&&(Math.abs(x)>.01||Math.abs(z)>.01)};\nconst truckText=t=>{const a=textValue(t,'truck_make','truck.make','Truck.Make'),b=textValue(t,'truck_model','truck.model','Truck.Model');return [a,b].filter(Boolean).join(' ')||'Caminhão não informado'};\nconst sourceOf=t=>textValue(t,'source_city','source','job.sourceCity','Job.SourceCity');\nconst destinationOf=t=>textValue(t,'destination_city','destination','job.destinationCity','Job.DestinationCity');"
+          if old not in s: raise SystemExit('map fallback patch point not found')
+          s=s.replace(old,new,1)
+          s=s.replace("deg=headingDeg(d.t?.map_heading)","deg=headingDeg(numberValue(d.t,'map_heading','truck.placement.heading'))")
+          s=s.replace("speed=Math.round(Number(t.speed_kmh)||0)","speed=Math.round(Math.abs(numberValue(t,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed')))")
+          s=s.replace("speed=Math.round(Number(d.t?.speed_kmh)||0)","speed=Math.round(Math.abs(numberValue(d.t,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed')))")
+          s=s.replace("ll=gameToLatLng(d.t.map_x,d.t.map_z)","ll=gameToLatLng(numberValue(d.t,'map_x','truck.placement.x'),numberValue(d.t,'map_z','truck.placement.z'))")
+          p.write_text(s,encoding='utf-8')
+
+          # Registro curto para manutenção.
+          p=Path('docs/ATUALIZACOES.md')
+          old=p.read_text(encoding='utf-8') if p.exists() else ''
+          note='''\n## 2026-08-29 — preparação oficial\n- Homologação sem regras até 31/08 23:59 (BRT).\n- Virada automática para ranking oficial em 01/09 00:00 (BRT).\n- Ranking desempata por KM do mês, não KM total.\n- Site mostra claramente HOMOLOGAÇÃO/OFICIAL.\n- Mapa e motorista usam fallback da telemetria bruta.\n'''
+          if '2026-08-29 — preparação oficial' not in old: p.write_text(old+note,encoding='utf-8')
+          PY
+          git add docs
+          git commit -m "Prepara site para homologacao e ranking oficial"
+          git push origin main
