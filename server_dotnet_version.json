@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.21",
-  "display_version": "1.0.21 TESTE",
-  "notas": "Amplia o Painel Admin GAT com ficha detalhada do motorista, telemetria ao vivo, missão atual, histórico de entregas e correção segura de progresso. XP continua derivado automaticamente das entregas válidas.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.21_TESTE.exe",
-  "sha256": "28acd692acce743f35660d011f17b0069a666590945f6f959caaeacba45f5ffd"
+  "version": "1.0.22",
+  "display_version": "1.0.22 TESTE",
+  "notas": "Corrige a rota da ficha detalhada do Painel Admin. O Server 1.0.21 possuía o código da ficha, mas a rota /api/site/admin/driver não era registrada. Mantém telemetria, histórico, correções, XP e níveis.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.22_TESTE.exe",
+  "sha256": "2d989943e63878196e9b2625bfdbb1c52a49a55520fc881ede8106b71b261ba9"
 }
