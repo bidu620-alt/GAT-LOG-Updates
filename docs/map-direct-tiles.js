@@ -1,5 +1,5 @@
 // GAT-LOG • mapa Base em tiles PNG diretos do GitHub Pages.
-// Evita abrir/decompactar ZIP no navegador e elimina o pisca-pisca ao dar zoom.
+// Evita abrir/decompactar ZIP no navegador e mantém o mapa visível mesmo acima do zoom nativo.
 (function(){
   if(typeof L==='undefined'||typeof liveMap==='undefined')return;
 
@@ -9,13 +9,16 @@
   const oldGameToLatLng=gameToLatLng;
   const oldApplyLayerForMap=applyLayerForMap;
   const TILE_SIZE=Number(cfg.tileSize||256);
-  const MAX_ZOOM=Number(cfg.maxZoom??6);
+  // O exportador GAT só possui PNGs até este nível (normalmente 6).
+  // Leaflet pode continuar aproximando até o zoom do mapa (8), ampliando o último tile nativo.
+  const NATIVE_MAX_ZOOM=Number(cfg.maxZoom??6);
+  const DISPLAY_MAX_ZOOM=Math.max(NATIVE_MAX_ZOOM,Number(liveMap.options?.maxZoom??8),8);
   const MIN_ZOOM=Number(cfg.minZoom??0);
-  const WORLD_PX=TILE_SIZE*Math.pow(2,MAX_ZOOM);
+  const WORLD_PX=TILE_SIZE*Math.pow(2,NATIVE_MAX_ZOOM);
   const gameBounds=cfg.gameBounds||null;
   const directBounds=L.latLngBounds(
-    liveMap.unproject([0,WORLD_PX],MAX_ZOOM),
-    liveMap.unproject([WORLD_PX,0],MAX_ZOOM)
+    liveMap.unproject([0,WORLD_PX],NATIVE_MAX_ZOOM),
+    liveMap.unproject([WORLD_PX,0],NATIVE_MAX_ZOOM)
   );
 
   // Os tiles entram imediatamente, sem animação de opacidade entre níveis.
@@ -37,7 +40,7 @@
     const nz=(Number(z)-Number(b.zMin))/(Number(b.zMax)-Number(b.zMin));
     const px=Math.max(0,Math.min(WORLD_PX,nx*WORLD_PX));
     const py=Math.max(0,Math.min(WORLD_PX,nz*WORLD_PX));
-    return liveMap.unproject([px,py],MAX_ZOOM);
+    return liveMap.unproject([px,py],NATIVE_MAX_ZOOM);
   }
 
   gameToLatLng=function(x,z){
@@ -47,9 +50,9 @@
   const directLayer=L.tileLayer(cfg.tileUrl,{
     tileSize:TILE_SIZE,
     minZoom:MIN_ZOOM,
-    maxZoom:MAX_ZOOM,
+    maxZoom:DISPLAY_MAX_ZOOM,
     minNativeZoom:MIN_ZOOM,
-    maxNativeZoom:MAX_ZOOM,
+    maxNativeZoom:NATIVE_MAX_ZOOM,
     bounds:directBounds,
     noWrap:true,
     keepBuffer:12,
