@@ -5,7 +5,10 @@ window.GAT_MAP_CONFIG = {
   base: {
     label: 'Mapa Base',
     type: 'tiles',
-    tileUrl: 'https://raw.githubusercontent.com/felix-d1strict/vtc-map/master/ets2map/coloured/{z}/{x}_{y}.png',
+    // A base original usa uma camada sem cor por baixo e a colorida por cima.
+    // JsDelivr é usado para deixar o carregamento dos tiles mais estável no GitHub Pages.
+    underlayUrl: 'https://cdn.jsdelivr.net/gh/felix-d1strict/vtc-map@master/ets2map/uncoloured/{z}/{x}_{y}.png',
+    tileUrl: 'https://cdn.jsdelivr.net/gh/felix-d1strict/vtc-map@master/ets2map/coloured/{z}/{x}_{y}.png',
     tileSize: 512,
     minZoom: 0,
     maxZoom: 8,
