@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.12",
-  "display_version": "1.0.12 TESTE",
-  "notas": "Adiciona contas individuais de motorista para ligar cadastro do site ao GAT Telemetria. A conta é validada separadamente do nome do jogador ETS2, a telemetria pública passa a informar a conta vinculada e o painel do site continua público. Clientes antigos permanecem temporariamente compatíveis.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.12_TESTE.exe",
-  "sha256": "540c776bf1c638abe5ba78bcb807ab74959247b46285e1d2f21d7f19500939aa"
+  "version": "1.0.13",
+  "display_version": "1.0.13 TESTE",
+  "notas": "Adiciona histórico persistente por Conta GAT, progresso mensal de 40 missões e trabalho atual sem troca. Cada missão exige World of Trucks, mínimo de 800 km e uma faixa de peso de 8 toneladas. Cancelar uma carga não libera a próxima missão. XP e pontos ficam preparados, mas sem regra automática até a pontuação ser definida.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.13_TESTE.exe",
+  "sha256": "3a4b328384ebc0c1c7f7586a1ce9678cbb3d7840119bf89e64dcac7e00f99654"
 }
