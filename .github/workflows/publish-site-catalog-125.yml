@@ -1,0 +1,121 @@
+name: Publish GAT Site Cargo Catalog 1.0.25
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/publish-site-catalog-125.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Add 30-work cargo catalog UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          # Motorista HTML: preserve the current upper trip/work layout and add catalog below.
+          p=Path('docs/motorista.html'); s=p.read_text(encoding='utf-8')
+          if 'work-catalog.css' not in s:
+              s=s.replace('<link rel="stylesheet" href="official-v4.css"><link rel="stylesheet" href="login.css"><link rel="stylesheet" href="motorista.css">','<link rel="stylesheet" href="official-v4.css"><link rel="stylesheet" href="login.css"><link rel="stylesheet" href="motorista.css"><link rel="stylesheet" href="work-catalog.css">',1)
+          s=s.replace('0 / 40','0 / 30')
+          s=s.replace('Cada missão GAT concluída vale 100 XP. A cada 2.000 XP o motorista sobe 1 nível. O XP é calculado pelo histórico de entregas válidas para evitar contagem duplicada ou perdida.','O XP recompensa a distância: a cada 100 km completos de uma entrega GAT válida, o motorista recebe 20 XP. Uma rota de 500 km vale 100 XP; 1.000 km vale 200 XP. A cada 2.000 XP sobe 1 nível.')
+          s=s.replace('<h2>40 missões</h2>','<h2>30 trabalhos</h2>')
+          s=s.replace('O objetivo é concluir as 40 missões do mês.','O objetivo é concluir os 30 trabalhos do catálogo durante o mês.')
+          s=s.replace('<b id="workMarket">Livre</b>','<b id="workMarket">Todos os mercados</b>')
+          s=s.replace('<b id="workMinKm">Sem mínimo</b>','<b id="workMinKm">500 km</b>')
+          s=s.replace('<b id="workFreedom">Qualquer carga • homologação</b>','<b id="workFreedom">Escolha no catálogo • cidades livres</b>')
+          marker='<div id="workOwnerMessage" class="owner-message">Entre na sua Conta GAT para receber seu trabalho.</div><button id="takeWorkButton" class="btn primary take-work" type="button" disabled>PEGAR TRABALHO</button></article></section>'
+          catalog='''<div id="workOwnerMessage" class="owner-message">Entre na sua Conta GAT para escolher um trabalho.</div><button id="takeWorkButton" class="btn primary take-work legacy-take-work" type="button" disabled>PEGAR TRABALHO</button></article>\n<section class="work-catalog-section"><div class="catalog-head"><div><span class="eyebrow">CATÁLOGO GAT • 30 TRABALHOS</span><h2>Escolha sua próxima carga</h2><p>Todos veem os mesmos trabalhos. Você escolhe a ordem e outros motoristas podem escolher a mesma carga para fazer em comboio.</p></div><div class="catalog-rule"><b>500 km</b><span>MÍNIMO</span><b>20 XP</b><span>/ 100 KM</span></div></div><div id="workCatalogStatus" class="catalog-status">Carregando catálogo da Central GAT...</div><div id="workCatalogGrid" class="work-catalog-grid"></div></section></section>'''
+          if 'id="workCatalogGrid"' not in s:
+              if marker not in s: raise SystemExit('motorista catalog marker not found')
+              s=s.replace(marker,catalog,1)
+          if 'work-catalog.js' not in s:
+              s=s.replace('<script src="motorista.js"></script><script src="xp-levels.js"></script>','<script src="motorista.js"></script><script src="work-catalog.js"></script><script src="xp-levels.js"></script>',1)
+          p.write_text(s,encoding='utf-8')
+
+          # Home summary and downloads.
+          p=Path('docs/index.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace('<small>META MENSAL</small><b>40 missões</b>','<small>META MENSAL</small><b>30 trabalhos</b>')
+          s=s.replace('Homologação em andamento. O ranking exibido agora é de teste e será zerado na virada oficial de setembro.','Catálogo GAT com 30 trabalhos mensais. Cada motorista escolhe a ordem; o ranking usa trabalhos concluídos e KM do mês.')
+          s=s.replace('GAT_LOG_SERVER_DOTNET_UPDATE_1.0.24_TESTE.exe','GAT_LOG_SERVER_DOTNET_UPDATE_1.0.25_TESTE.exe')
+          s=s.replace('SERVIDOR • 1.0.24','SERVIDOR • 1.0.25')
+          s=s.replace('Central GAT pronta para homologação e virada oficial: horário do Brasil, KM mensal no ranking e regras automáticas a partir de setembro.','Central GAT com catálogo de 30 trabalhos, mínimo 500 km, qualquer mercado do ETS2 e XP por distância.')
+          s=s.replace('<script src="home-v6.js"></script>','<script src="home-v7.js"></script>')
+          p.write_text(s,encoding='utf-8')
+
+          # Admin copy: 30 works and distance XP.
+          p=Path('docs/admin.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace('0 / 40','0 / 30')
+          s=s.replace('max="40"','max="30"')
+          s=s.replace('XP não é editável: ele é recalculado automaticamente pelo total de entregas × 100.','XP não é editável: ele é recalculado automaticamente pela distância das entregas válidas (20 XP a cada 100 km completos).')
+          p.write_text(s,encoding='utf-8')
+
+          # Admin dynamic text.
+          p=Path('docs/admin.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace("n(d.monthly_completed)+' / 40 • Nv. '+n(d.level)","n(d.monthly_completed)+' / '+n(d.monthly_goal||30)+' • Nv. '+n(d.level)")
+          s=s.replace("n(p.monthly_completed)+' / 40'","n(p.monthly_completed)+' / '+n(p.monthly_goal||30)")
+          s=s.replace("const testMode=String(m.market||'')==='test_any',band=testMode?'Sem regra':Math.round(n(m.min_weight_kg)/1000)+'–'+Math.round(n(m.max_weight_kg)/1000)+' t',accepted=[m.source,m.destination].filter(Boolean).join(' → '),ruleText=testMode?'Homologação • regras desativadas • qualquer carga':marketLabel(m.market)+' • mínimo '+m.min_km+' km • '+band;","const catalogMode=!!m.catalog_id,band=catalogMode?'Sem regra de peso':Math.round(n(m.min_weight_kg)/1000)+'–'+Math.round(n(m.max_weight_kg)/1000)+' t',accepted=[m.source,m.destination].filter(Boolean).join(' → '),ruleText=catalogMode?((m.title||m.category||'Carga do catálogo')+' • mínimo 500 km • qualquer mercado'):marketLabel(m.market)+' • mínimo '+m.min_km+' km • '+band;")
+          p.write_text(s,encoding='utf-8')
+
+          # New distance-based XP helper.
+          Path('docs/xp-levels.js').write_text(r'''(()=>{
+            const XP_PER_100KM=20,XP_PER_LEVEL=2000;
+            const fmt=n=>(Number(n)||0).toLocaleString('pt-BR');
+            const historyXp=list=>(Array.isArray(list)?list:[]).reduce((sum,d)=>{const saved=Number(d?.xp_awarded);if(Number.isFinite(saved)&&saved>0)return sum+saved;const km=Math.max(0,Number(d?.distance_km)||0);return sum+Math.floor(km/100)*XP_PER_100KM},0);
+            function applyXp(){try{if(typeof profile==='undefined'||!profile)return;const serverXp=Number(profile.xp),derived=historyXp(profile.deliveries),xp=(profile.xp_rule_pending===false&&Number.isFinite(serverXp))?Math.max(0,serverXp):derived,level=1+Math.floor(xp/XP_PER_LEVEL),inside=xp%XP_PER_LEVEL,pct=Math.min(100,inside/XP_PER_LEVEL*100);profile.xp=xp;profile.level=level;profile.xp_rule_pending=false;const set=(id,text)=>{const e=document.getElementById(id);if(e)e.textContent=text};set('driverLevel','★ Nível '+level);set('driverXp','↗ '+fmt(xp)+' XP');set('statLevel',String(level));set('statXp',fmt(xp));set('xpLevelNow','Nível '+level);set('xpProgress',fmt(inside)+' / 2.000 XP');const bar=document.getElementById('xpBar');if(bar)bar.style.width=pct.toFixed(1)+'%'}catch(_){}}
+            document.addEventListener('DOMContentLoaded',applyXp);setInterval(applyXp,900);
+          })();''',encoding='utf-8')
+          PY
+
+          cat > docs/work-catalog.css <<'CSS'
+          .legacy-take-work{display:none!important}.work-catalog-section{margin-top:22px;padding:24px;border:1px solid #173047;border-radius:22px;background:linear-gradient(180deg,#0b151f,#081019)}.catalog-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px}.catalog-head h2{margin:5px 0 7px;font-size:28px}.catalog-head p{margin:0;color:#91a8bd;max-width:760px}.catalog-rule{display:grid;grid-template-columns:auto auto;gap:2px 10px;align-items:center;padding:12px 16px;border:1px solid #1c3b57;border-radius:14px;background:#0d1c29;white-space:nowrap}.catalog-rule b{font-size:17px;color:#eaf5ff}.catalog-rule span{font-size:10px;font-weight:900;letter-spacing:.08em;color:#5eaef9}.catalog-status{padding:11px 14px;margin-bottom:15px;border-radius:12px;background:#0b1a26;color:#89a8c0;font-size:13px}.work-catalog-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.cargo-card{position:relative;overflow:hidden;border:1px solid #1a3348;border-radius:17px;background:#0a141e;min-height:255px;display:flex;flex-direction:column;transition:.18s ease}.cargo-card:hover{transform:translateY(-2px);border-color:#287ec4;box-shadow:0 12px 28px #0005}.cargo-card.completed{border-color:#145b45;background:#091a17}.cargo-card.selected{border-color:#278fe7;box-shadow:0 0 0 1px #278fe755,0 14px 30px #0006}.cargo-card.locked:not(.selected):not(.completed){opacity:.56}.cargo-visual{height:105px;display:flex;align-items:center;justify-content:center;position:relative;background:radial-gradient(circle at 70% 25%,#1c557a 0,#102b42 30%,#09131d 72%);border-bottom:1px solid #18334a}.cargo-visual:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 35%,#ffffff09 35%,#ffffff09 37%,transparent 37%)}.cargo-icon{font-size:52px;filter:drop-shadow(0 8px 10px #0009);z-index:1}.cargo-number{position:absolute;left:12px;top:10px;font:900 11px/1 system-ui;color:#7bbef6;letter-spacing:.08em}.cargo-state{position:absolute;right:10px;top:9px;padding:6px 8px;border-radius:999px;background:#101d29;color:#8fa5b7;font-size:9px;font-weight:900;letter-spacing:.06em}.cargo-card.completed .cargo-state{background:#08392b;color:#4fe2ae}.cargo-card.selected .cargo-state{background:#0d4776;color:#70c1ff}.cargo-body{padding:14px 14px 10px;display:flex;flex-direction:column;flex:1}.cargo-body small{font-size:10px;color:#62adf1;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.cargo-body h3{margin:5px 0 8px;font-size:17px;color:#f3f8fc}.cargo-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto}.cargo-meta span{padding:5px 7px;border:1px solid #1a344a;border-radius:8px;color:#8fa7bc;font-size:10px;font-weight:800}.cargo-select{width:calc(100% - 28px);margin:0 14px 14px;border:0;border-radius:10px;padding:10px 11px;background:#248ef0;color:white;font-weight:900;cursor:pointer}.cargo-select:hover{filter:brightness(1.08)}.cargo-select:disabled{cursor:default;background:#152434;color:#647b8e}.cargo-card.completed .cargo-select{background:#0c4d3a;color:#67e5b6}.custom-card .cargo-visual{background:radial-gradient(circle at 70% 25%,#5a3e14 0,#30240f 32%,#11150f 75%)}.catalog-hint{grid-column:1/-1;padding:18px;border:1px dashed #27415a;border-radius:14px;color:#92a9bd;text-align:center}@media(max-width:1100px){.work-catalog-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.catalog-head{display:block}.catalog-rule{margin-top:14px;width:max-content}.work-catalog-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.work-catalog-grid{grid-template-columns:1fr}.cargo-card{min-height:235px}}
+          CSS
+
+          cat > docs/work-catalog.js <<'JS'
+          (()=>{
+            const API='https://douglas.tail4577e8.ts.net',GRID='workCatalogGrid',STATUS='workCatalogStatus';
+            let items=[];
+            const clean=v=>String(v||'').replace(/^@/,'').trim().toLowerCase();
+            const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            const session=()=>{try{return JSON.parse(localStorage.getItem('gat_driver_account_v1')||sessionStorage.getItem('gat_driver_account_v1')||'null')}catch(_){return null}};
+            const pageUser=()=>{try{if(typeof key!=='undefined'&&key)return clean(key)}catch(_){}const u=new URLSearchParams(location.search).get('u');return clean(u||session()?.user)};
+            const own=()=>!!session()?.token&&clean(session().user)===pageUser();
+            const current=()=>{try{return typeof profile!=='undefined'?profile?.current_mission:null}catch(_){return null}};
+            function top(){const m=current(),set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t};set('workMarket','Todos os mercados');set('workMinKm','500 km');set('workWeight','Sem regra de peso');set('workFreedom',m?(m.custom_cargo||m.title||m.category||'Carga escolhida'):'Escolha um trabalho abaixo • cidades livres');const msg=document.getElementById('workOwnerMessage');if(msg){if(!own())msg.textContent='Este é um perfil público. Entre na sua própria Conta GAT para escolher um trabalho.';else if(m)msg.textContent='Trabalho selecionado. Procure uma carga compatível de pelo menos 500 km em qualquer mercado do ETS2 e conclua a entrega.';else msg.textContent='Escolha um dos trabalhos abaixo. Outros motoristas podem escolher o mesmo card para fazer em comboio.'}}
+            async function getCatalog(){const user=pageUser();if(!user)return null;const c=new AbortController(),t=setTimeout(()=>c.abort(),5500);try{const r=await fetch(API+'/api/public/work/catalog?user='+encodeURIComponent(user),{cache:'no-store',signal:c.signal});const data=await r.json().catch(()=>null);if(!r.ok||!data?.ok)return null;return data}catch(_){return null}finally{clearTimeout(t)}}
+            async function select(item){if(!own()){alert('Entre na sua própria Conta GAT para escolher o trabalho.');return}if(current()){alert('Você já possui um trabalho atual. Conclua ou peça ao Admin para resetar antes de escolher outro.');return}if(item.completed)return;let custom='';if(item.custom){custom=(prompt('CRIAR CARGA PERSONALIZADA\n\nDigite o nome da carga como ela aparece no ETS2. Ex.: Volvo L250H, Transformador, Helicóptero etc.')||'').trim();if(custom.length<2)return}const s=session(),status=document.getElementById(STATUS);if(status)status.textContent='Selecionando '+item.title+'...';try{const r=await fetch(API+'/api/site/work/select',{method:'POST',cache:'no-store',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({token:s.token,work_id:item.id,custom_cargo:custom})});const data=await r.json().catch(()=>null);if(r.ok&&data?.ok){try{if(typeof profile!=='undefined'&&profile){profile.current_mission=data.mission;profile.monthly_completed=Number(data.completed)||0;profile.monthly_goal=30;profile.xp_per_100_km=20;if(typeof renderMission==='function')renderMission(profile.current_mission);if(typeof updateOwnerArea==='function')updateOwnerArea()}}catch(_){}items=Array.isArray(data.catalog)?data.catalog:items;render();top();if(status)status.textContent='Trabalho escolhido. Agora aceite uma carga compatível no ETS2 com pelo menos 500 km.';return}const er=data?.error||('HTTP '+r.status);if(status)status.textContent=er==='work_already_completed'?'Esse trabalho já foi concluído por você neste mês.':er==='mission_already_active'?'Você já possui um trabalho em andamento.':'Não foi possível selecionar o trabalho: '+er}catch(_){if(status)status.textContent='Central GAT não respondeu ao selecionar o trabalho.'}}
+            function render(){const root=document.getElementById(GRID);if(!root)return;root.textContent='';const m=current(),active=String(m?.catalog_id||'');if(!items.length){root.innerHTML='<div class="catalog-hint">Catálogo aguardando GAT-LOG Server 1.0.25 na Central.</div>';return}items.forEach(item=>{const selected=active===item.id,done=!!item.completed,locked=!!active&&!selected&&!done,card=document.createElement('article');card.className='cargo-card'+(selected?' selected':'')+(done?' completed':'')+(locked?' locked':'')+(item.custom?' custom-card':'');const state=done?'CONCLUÍDO':selected?'SELECIONADO':locked?'AGUARDANDO':'DISPONÍVEL',button=done?'CONCLUÍDO':selected?'TRABALHO ATUAL':locked?'CONCLUA O ATUAL':item.custom?'CRIAR E PEGAR':'PEGAR TRABALHO';card.innerHTML='<div class="cargo-visual"><span class="cargo-number">#'+String(item.position||0).padStart(2,'0')+'</span><span class="cargo-state">'+state+'</span><span class="cargo-icon">'+esc(item.icon||'🚚')+'</span></div><div class="cargo-body"><small>'+esc(item.category||'Carga')+'</small><h3>'+esc(item.title||'Trabalho GAT')+'</h3><div class="cargo-meta"><span>≥ 500 KM</span><span>TODOS OS MERCADOS</span><span>20 XP / 100 KM</span></div></div><button class="cargo-select" type="button" '+((done||selected||locked||!own())?'disabled':'')+'>'+button+'</button>';card.querySelector('button').onclick=()=>select(item);root.appendChild(card)})}
+            async function refresh(){top();const d=await getCatalog();const status=document.getElementById(STATUS);if(!d){if(status)status.textContent='Catálogo aguardando a Central GAT 1.0.25.';render();return}items=Array.isArray(d.catalog)?d.catalog:[];render();if(status)status.textContent=(current()?'1 trabalho selecionado • ':'')+items.filter(x=>x.completed).length+' / 30 concluídos • mínimo 500 km • 20 XP por 100 km.'}
+            document.addEventListener('DOMContentLoaded',refresh);window.addEventListener('gat-account-change',()=>setTimeout(refresh,300));setInterval(refresh,5000);
+          })();
+          JS
+
+          cat > docs/home-v7.js <<'JS'
+          const RANKING_URL='https://douglas.tail4577e8.ts.net/api/public/ranking';
+          function escRank(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+          function rankLabel(user){const s=String(user||'motorista').replace(/^@/,'');return s.charAt(0).toUpperCase()+s.slice(1);}
+          function monthlyKm(item){return Number(item?.monthly_km)||0} function goal(item){return Number(item?.monthly_goal)||30}
+          function podiumCard(item,place){const a=document.createElement('a');a.className='podium-card '+(place===1?'first':place===2?'second':'third');a.href='motorista.html?u='+encodeURIComponent(item.user);const initial=rankLabel(item.user).charAt(0);a.innerHTML='<span class="place '+(place===1?'crown':'')+'">'+place+'º</span><div class="rank-avatar">'+escRank(initial)+'</div><b>'+escRank(rankLabel(item.user))+'</b><small>@'+escRank(item.user)+'</small><strong>'+Number(item.monthly_completed||0)+' / '+goal(item)+'</strong><em>'+Math.round(monthlyKm(item)).toLocaleString('pt-BR')+' km no mês • '+Number(item.total_deliveries||0)+' entregas totais</em>';return a;}
+          function smallCard(item,place){const el=document.createElement(item?'a':'div');el.className='rank-small'+(item?'':' empty');if(item)el.href='motorista.html?u='+encodeURIComponent(item.user);const initial=item?rankLabel(item.user).charAt(0):'—';el.innerHTML='<div class="rank-small-top"><span class="rank-small-place">'+place+'º</span><div class="rank-small-avatar">'+escRank(initial)+'</div><div class="rank-small-name"><b>'+escRank(item?rankLabel(item.user):'Aguardando')+'</b><small>'+(item?'@'+escRank(item.user):'novo motorista')+'</small></div></div><div class="rank-small-bottom"><strong>'+(item?Number(item.monthly_completed||0)+' / '+goal(item):'—')+'</strong><em>'+(item?Math.round(monthlyKm(item)).toLocaleString('pt-BR')+' km no mês':'—')+'</em></div>';return el;}
+          function applyMode(data){const official=data?.operation_mode==='official'||data?.rules_enabled===true,label=document.getElementById('homeModeLabel'),value=document.getElementById('homeModeValue'),intro=document.getElementById('rankingIntro');if(label)label.textContent=official?'RANKING':'MODO ATUAL';if(value)value.textContent=official?'OFICIAL':'Homologação';if(intro)intro.textContent=official?'Ranking oficial: 30 trabalhos do catálogo. Empates são decididos pelos quilômetros válidos feitos no mês.':'Homologação do novo catálogo: 30 trabalhos, mínimo 500 km e XP por distância. Os testes não valem para o ranking oficial.';}
+          function renderRanking(list,data){const podium=document.getElementById('podium'),grid=document.getElementById('rankGrid'),status=document.getElementById('rankingStatus');podium.textContent='';grid.textContent='';const top=(Array.isArray(list)?list:[]).slice(0,10),official=data?.operation_mode==='official'||data?.rules_enabled===true;if(!top.length){status.textContent=official?'Nenhum trabalho oficial registrado neste mês ainda.':'Nenhum trabalho de homologação registrado ainda.';for(let p=1;p<=10;p++)grid.appendChild(smallCard(null,p));return}status.textContent=official?'RANKING OFICIAL • atualizado automaticamente pela Central GAT.':'HOMOLOGAÇÃO • classificação apenas para teste.';const first=top[0],second=top[1],third=top[2];if(second)podium.appendChild(podiumCard(second,2));if(first)podium.appendChild(podiumCard(first,1));if(third)podium.appendChild(podiumCard(third,3));for(let p=4;p<=10;p++)grid.appendChild(smallCard(top[p-1]||null,p));}
+          async function loadRanking(){const status=document.getElementById('rankingStatus');try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000),r=await fetch(RANKING_URL,{cache:'no-store',signal:c.signal});clearTimeout(t);const data=await r.json().catch(()=>null);if(r.ok&&data?.ok){applyMode(data);renderRanking(data.ranking,data);return}status.textContent=r.status===404?'Atualize a Central GAT para liberar o ranking.':'Ranking temporariamente indisponível.'}catch(_){status.textContent='Ranking aguardando conexão com a Central GAT.'}}
+          loadRanking();setInterval(loadRanking,15000);
+          JS
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/motorista.html docs/motorista.css docs/work-catalog.css docs/work-catalog.js docs/xp-levels.js docs/index.html docs/home-v7.js docs/admin.html docs/admin.js
+          git commit -m "Adiciona catalogo visual de 30 trabalhos e XP por distancia"
+          git push origin main
