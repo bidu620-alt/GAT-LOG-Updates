@@ -9,7 +9,8 @@
 <link rel="stylesheet" href="official-v4.css">
 <link rel="stylesheet" href="login.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="mapa.css">
+<link rel="stylesheet" href="mapa.css?v=3">
+<link rel="stylesheet" href="mapa-fixes.css?v=2">
 </head>
 <body class="map-page">
 <section id="accountModal" class="account-modal" aria-label="Conta GAT" aria-hidden="true">
@@ -39,8 +40,7 @@
 
   <section class="map-mapbar">
     <div class="map-world-tabs" aria-label="Mapa em uso">
-      <button class="active" type="button" data-map="all">TODOS <b id="mapCountAll">0</b></button>
-      <button type="button" data-map="base">MAPA BASE <b id="mapCountBase">0</b></button>
+      <button class="active" type="button" data-map="base">MAPA BASE <b id="mapCountBase">0</b></button>
       <button type="button" data-map="promods">PROMODS <b id="mapCountPromods">0</b></button>
       <button type="button" data-map="rbr">RBR <b id="mapCountRbr">0</b></button>
       <button type="button" data-map="rotas_brasil">ROTAS BRASIL <b id="mapCountRotas">0</b></button>
@@ -59,14 +59,15 @@
     <section id="mapStage" class="ets2-map-stage map-look-dark">
       <div id="ets2Map" aria-label="Mapa do Euro Truck Simulator 2 com motoristas GAT ao vivo"></div>
       <div id="coordinateNotice" class="coordinate-notice"><b>AGUARDANDO POSIÇÃO DO MOTORISTA</b><span>Com o GAT Telemetria conectado, o caminhão aparece automaticamente na aba correspondente ao mapa escolhido.</span></div>
-      <div id="mapBaseNote" class="map-base-note">TODOS OS MAPAS • POSIÇÃO GAT EM TEMPO REAL</div>
+      <div id="mapBaseNote" class="map-base-note">MAPA BASE • POSIÇÃO GAT EM TEMPO REAL</div>
       <div class="map-legend"><span><i class="green-dot"></i> Em viagem</span><span><i class="amber-dot"></i> Online / parado</span><span><i class="gray-dot"></i> Sem posição recente</span></div>
     </section>
   </section>
 </main>
 <script src="official-v5.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="map-config.js"></script>
-<script src="mapa.js"></script>
+<script src="map-config.js?v=2"></script>
+<script src="mapa.js?v=4"></script>
+<script>document.querySelector('.map-world-tabs button[data-map="base"]')?.click();</script>
 </body>
 </html>
