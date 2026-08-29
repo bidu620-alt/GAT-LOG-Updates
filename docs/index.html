@@ -1,153 +1,86 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#070a0f" />
-  <title>GAT LOG • ETS2 ao vivo</title>
-  <meta name="description" content="Painel público do GAT LOG com servidores, motoristas, empresa, mapa e telemetria do Euro Truck Simulator 2 em tempo real." />
-  <link rel="stylesheet" href="site.css" />
-  <link rel="stylesheet" href="login.css" />
-  <link rel="stylesheet" href="portal.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070a0f">
+<title>GAT-LOG • A cada viagem, uma história</title>
+<meta name="description" content="Central GAT-LOG para Euro Truck Simulator 2: motoristas, telemetria, mapa, trabalhos e perfis.">
+<link rel="stylesheet" href="official.css">
+<link rel="stylesheet" href="gat-logo.css">
 </head>
 <body>
-  <section id="accountModal" class="account-modal" aria-label="Conta GAT" aria-hidden="true">
-    <div class="account-panel">
-      <button id="accountClose" class="account-close" type="button" aria-label="Fechar">×</button>
-      <div class="login-brand"><span>GAT</span><span>LOG</span></div>
-      <span class="login-kicker">CONTA DO MOTORISTA</span>
-      <h1 id="accountTitle">Entrar na Conta GAT</h1>
-      <p id="accountIntro">Use a mesma conta no site e no GAT Telemetria para vincular sua atividade ao seu perfil.</p>
-      <div class="account-tabs"><button id="tabLogin" class="active" type="button">ENTRAR</button><button id="tabRegister" type="button">CRIAR CONTA</button></div>
-
-      <form id="loginForm" class="login-form" autocomplete="on">
-        <div class="login-field"><label for="loginUser">USUÁRIO</label><input id="loginUser" name="username" autocomplete="username" required /></div>
-        <div class="login-field"><label for="loginPassword">SENHA</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required /></div>
-        <button id="loginButton" class="login-submit" type="submit">ENTRAR</button>
-      </form>
-
-      <form id="registerForm" class="login-form hidden" autocomplete="off">
-        <div class="login-field"><label for="registerUser">CRIAR USUÁRIO</label><input id="registerUser" autocomplete="username" minlength="3" maxlength="32" required /></div>
-        <div class="login-field"><label for="registerPassword">CRIAR SENHA</label><input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required /></div>
-        <div class="login-field"><label for="registerConfirm">CONFIRMAR SENHA</label><input id="registerConfirm" type="password" autocomplete="new-password" minlength="6" required /></div>
-        <button id="registerButton" class="login-submit" type="submit">CADASTRAR MOTORISTA</button>
-      </form>
-      <div id="loginStatus" class="login-status">Cadastre uma conta ou entre com uma conta existente.</div>
-      <div class="login-note">A senha é usada somente para autenticar. O cliente e o navegador trabalham com um token de sessão depois do login.</div>
-    </div>
-  </section>
-
-  <header class="topbar">
-    <a class="brand" href="#inicio"><span class="brand-mark">GAT</span><span class="brand-log">LOG</span></a>
-    <nav>
-      <a href="#inicio">Início</a><a href="#motoristas">Motoristas</a><a href="#empresa">Empresa</a><a href="#mapa">Mapa</a><a href="#trabalhos">Trabalhos</a><a href="#downloads">Downloads</a>
-    </nav>
-    <span class="live" id="globalLive"><i></i> CONECTANDO...</span>
-    <button id="accountButton" class="logout-button" type="button">ENTRAR / CADASTRAR</button>
-  </header>
-
-  <main>
-    <section id="inicio" class="hero shell">
-      <div class="hero-copy">
-        <span class="eyebrow">EURO TRUCK SIMULATOR 2 • GAT LOG</span>
-        <h1>A estrada acontecendo.<br><strong>Todo mundo pode acompanhar.</strong></h1>
-        <p>O GAT LOG reúne servidor, motoristas e telemetria em um painel público. O motorista cria sua Conta GAT para vincular o cliente à identidade dele; quem visita o site pode acompanhar tudo ao vivo.</p>
-        <div class="actions"><a class="btn primary" href="#motoristas">Ver motoristas</a><button id="heroAccountButton" class="btn ghost" type="button">Criar Conta GAT</button></div>
-      </div>
-      <div class="hero-road" aria-hidden="true"><div class="truck"><div class="cab"><span>GAT</span></div><div class="lights"></div></div><div class="lane lane-a"></div><div class="lane lane-b"></div></div>
-      <div class="trip-card glass" id="heroTrip">
-        <div><span class="mini">VIAGEM EM ANDAMENTO</span><b id="heroDriver">Aguardando telemetria...</b></div>
-        <span class="pill cyan" id="heroState">AO VIVO</span>
-        <div class="trip-line"><strong id="heroSource">Origem</strong><span>→</span><strong id="heroDestination">Destino</strong></div>
-        <div class="trip-meta"><span>Velocidade</span><b id="heroSpeed">— km/h</b><span>Carga</span><b id="heroCargo">—</b></div>
-      </div>
-    </section>
-
-    <section class="shell stats-grid">
-      <article class="stat"><span class="icon blue">◉</span><div><small>SERVIDORES</small><b id="statServers">0 online</b><em id="statServersSub">consultando GAT Servers</em></div></article>
-      <article class="stat"><span class="icon green">↗</span><div><small>MOTORISTAS</small><b id="statDrivers">0 online</b><em id="statDriversSub">sessões atuais</em></div></article>
-      <article class="stat"><span class="icon amber">◆</span><div><small>EM ROTA</small><b id="statRoutes">0 viagens</b><em id="statRoutesSub">telemetria ativa</em></div></article>
-    </section>
-
-    <section class="shell portal-tabs" aria-label="Áreas do GAT LOG">
-      <a href="#motoristas"><span>01</span><b>Motoristas</b><small>Perfis e atividade</small></a>
-      <a href="#empresa"><span>02</span><b>Empresa</b><small>Números do GAT</small></a>
-      <a href="#mapa"><span>03</span><b>Mapa</b><small>Rotas em andamento</small></a>
-    </section>
-
-    <section id="motoristas" class="shell section">
-      <div class="section-head"><div><span class="eyebrow">ABA MOTORISTAS</span><h2>Motoristas GAT</h2></div><span id="driverDirectoryCount" class="pill blue">0 MOTORISTAS</span></div>
-      <p class="lead">Aqui ficam os motoristas presentes nas sessões, a Conta GAT vinculada, o servidor em que estão e a viagem atual quando houver telemetria.</p>
-      <div id="driverDirectoryGrid" class="driver-directory"><article class="live-placeholder">Carregando motoristas...</article></div>
-    </section>
-
-    <section id="empresa" class="shell section">
-      <div class="section-head"><div><span class="eyebrow">ABA EMPRESA</span><h2>GAT LOG Transportes</h2></div><span class="pill cyan">OPERAÇÃO ONLINE</span></div>
-      <p class="lead">Resumo geral da empresa virtual GAT LOG usando os dados ao vivo dos servidores e da telemetria.</p>
-      <div class="company-layout">
-        <article class="company-main">
-          <div class="company-logo">GAT</div>
-          <div><span class="mini">EMPRESA VIRTUAL ETS2</span><h3>GAT LOG Transportes</h3><p>Central integrada de comboios, motoristas, trabalhos e telemetria. A Conta GAT será a identidade usada para histórico, missões e ranking.</p></div>
-        </article>
-        <div class="company-stats">
-          <article><small>MOTORISTAS ONLINE</small><b id="companyDrivers">0</b></article>
-          <article><small>VIAGENS ATIVAS</small><b id="companyRoutes">0</b></article>
-          <article><small>SERVIDORES ONLINE</small><b id="companyServers">0</b></article>
-          <article><small>CONTAS GAT ATIVAS</small><b id="companyAccounts">0</b></article>
-        </div>
-      </div>
-      <div id="companyStatus" class="company-status">Aguardando dados da empresa...</div>
-    </section>
-
-    <section id="mapa" class="shell section">
-      <div class="section-head"><div><span class="eyebrow">ABA MAPA</span><h2>Mapa das viagens</h2></div><span id="mapTripCount" class="pill amber">0 ROTAS</span></div>
-      <p class="lead">Visualização operacional das rotas que estão em andamento. Por enquanto o desenho é esquemático, usando origem e destino recebidos pela telemetria; não representa coordenadas reais do ETS2.</p>
-      <div class="map-layout">
-        <article class="route-map-card">
-          <div class="route-map-head"><div><span class="mini">CENTRAL DE ROTAS</span><h3>Viagens em andamento</h3></div><span class="map-live-dot">AO VIVO</span></div>
-          <div id="routeMap" class="route-map"><div class="map-empty">Aguardando uma viagem ativa...</div></div>
-        </article>
-        <aside class="map-route-panel">
-          <span class="mini">ROTAS ATIVAS</span>
-          <div id="mapRouteList" class="map-route-list"><div class="map-route-empty">Nenhuma rota ativa neste momento.</div></div>
-        </aside>
-      </div>
-    </section>
-
-    <section id="ao-vivo" class="shell section">
-      <div class="section-head"><div><span class="eyebrow">CENTRAL AO VIVO</span><h2>Servidores e telemetria</h2></div><span class="pill cyan" id="lastUpdate">ATUALIZANDO</span></div>
-      <p class="lead">Os dados vêm diretamente dos GAT Servers e atualizam automaticamente. O painel é público; a Conta GAT é usada para identificar corretamente cada motorista e sua telemetria.</p>
-      <div id="serverCards" class="server-grid"><article class="live-placeholder">Conectando aos servidores...</article></div>
-      <div class="live-title"><div><span class="eyebrow">MOTORISTAS</span><h3>Telemetria dos jogadores</h3></div><span id="driverCountBadge" class="pill blue">0 MOTORISTAS</span></div>
-      <div id="driverGrid" class="driver-grid"><article class="live-placeholder">Aguardando dados...</article></div>
-    </section>
-
-    <section id="trabalhos" class="shell section">
-      <div class="section-head"><div><span class="eyebrow">CENTRAL DE TRABALHOS</span><h2>Próxima etapa do GAT LOG</h2></div><span class="pill amber">EM DESENVOLVIMENTO</span></div>
-      <p class="lead">O ranking fica para depois. Primeiro vamos consolidar as contas dos motoristas e a telemetria vinculada; depois os trabalhos serão associados à Conta GAT.</p>
-      <div class="job-layout">
-        <article class="job-card">
-          <div class="job-title"><div><span class="mini">MISSÃO GAT #001</span><h3>Contrato externo • longa distância</h3></div><span class="pill blue">WORLD OF TRUCKS</span></div>
-          <div class="job-rule-grid"><div><small>TIPO</small><b>World of Trucks</b></div><div><small>DISTÂNCIA MÍNIMA</small><b>800 km</b></div><div><small>PESO MÍNIMO</small><b>12 t</b></div><div><small>ROTA / CARGA</small><b>Livre e compatível</b></div></div>
-          <div class="job-footer"><span>Sem prazo definido. Recompensa e ranking serão fechados depois.</span></div>
-        </article>
-        <aside class="idea-card"><h3>Identidade única</h3><p>A Conta GAT passa a ser a identidade permanente do motorista. O nome usado no ETS2 continua aparecendo como o motorista daquela sessão.</p><ul><li>Cadastro único no site.</li><li>Mesmo login no GAT Telemetria.</li><li>Conta vinculada ao jogador ETS2 detectado.</li><li>Telemetria exibida publicamente.</li></ul></aside>
-      </div>
-    </section>
-
-    <section id="downloads" class="shell section downloads">
-      <div class="section-head"><div><span class="eyebrow">APLICATIVOS</span><h2>Downloads oficiais GAT LOG</h2></div></div>
-      <div class="download-grid">
-        <article class="download-card server"><span class="app-icon">S</span><div><small>HOST</small><h3>GAT-LOG Server</h3><p>Gerenciador do servidor ETS2 + telemetria.</p><span id="serverVersion">Consultando versão…</span></div><a id="serverDownload" class="btn red disabled" href="#">Baixar</a></article>
-        <article class="download-card client"><span class="app-icon">C</span><div><small>MOTORISTA</small><h3>GAT Telemetria</h3><p>Cliente automático ligado à Conta GAT.</p><span id="clientVersion">Consultando versão…</span></div><a id="clientDownload" class="btn primary disabled" href="#">Baixar</a></article>
-      </div>
-    </section>
-
-    <section id="sobre" class="shell section about"><span class="eyebrow">VISÃO DO PROJETO</span><h2>O site é a janela pública do GAT LOG.</h2><p>A Conta GAT identifica o motorista; o aplicativo reconhece o jogador dentro da sessão ETS2 e envia a telemetria vinculada. O site mostra somente a atividade pública. Senhas, tokens e IDs do computador não são exibidos.</p></section>
-  </main>
-
-  <footer><div class="shell"><span>GAT LOG • ETS2</span><span>Painel público em desenvolvimento</span></div></footer>
-  <script src="site.js"></script>
-  <script src="portal.js"></script>
-</body>
-</html>
+<div id="accountModal" class="account-modal" aria-hidden="true">
+ <div class="account-panel">
+  <button id="accountClose" class="account-close">×</button>
+  <span class="eyebrow">CONTA DO MOTORISTA</span><h2 id="accountTitle">Entrar na Conta GAT</h2>
+  <p class="lead" style="font-size:12px">Use a mesma conta no site e no GAT Telemetria.</p>
+  <div class="tabs"><button id="tabLogin" class="active">ENTRAR</button><button id="tabRegister">CRIAR CONTA</button></div>
+  <form id="loginForm" class="form">
+   <div class="field"><label>USUÁRIO</label><input id="loginUser" autocomplete="username" required></div>
+   <div class="field"><label>SENHA</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+   <button id="loginButton" class="submit">ENTRAR</button>
+  </form>
+  <form id="registerForm" class="form hidden">
+   <div class="field"><label>CRIAR USUÁRIO</label><input id="registerUser" minlength="3" maxlength="32" required></div>
+   <div class="field"><label>CRIAR SENHA</label><input id="registerPassword" type="password" minlength="6" required></div>
+   <div class="field"><label>CONFIRMAR SENHA</label><input id="registerConfirm" type="password" minlength="6" required></div>
+   <button id="registerButton" class="submit">CADASTRAR MOTORISTA</button>
+  </form>
+  <div id="accountStatus" class="message">Cadastre uma conta ou entre com uma conta existente.</div>
+ </div>
+</div>
+<header class="topbar">
+ <a class="brand" href="#inicio"><span>GAT-<b>LOG</b></span></a>
+ <nav><a href="#inicio">Início</a><a href="#motoristas">Motoristas</a><a href="#mapa">Mapa</a><a href="#trabalhos">Trabalhos</a><a href="#downloads">Downloads</a></nav>
+ <span class="live" id="globalLive"><i></i> CONECTANDO...</span>
+ <button id="accountButton" class="account-btn">ENTRAR / CADASTRAR</button>
+</header>
+<main>
+<section id="inicio" class="hero shell">
+ <div class="hero-copy">
+  <div class="hero-logo hero-logo-img" role="img" aria-label="Logo GAT-LOG"></div>
+  <span class="eyebrow">CENTRAL GAT • EURO TRUCK SIMULATOR 2</span>
+  <h1>A cada viagem,<br><strong>uma história.</strong></h1>
+  <p>Motoristas, telemetria ao vivo, trabalhos mensais, perfis e rotas reunidos em uma única central GAT-LOG.</p>
+  <div class="actions"><a class="btn primary" href="#motoristas">VER MOTORISTAS</a><a class="btn ghost" href="#trabalhos">VER TRABALHOS</a></div>
+ </div>
+ <div class="road"><div class="truck"><div class="trailer"></div><div class="cab"></div><div class="wheel a"></div><div class="wheel b"></div><div class="wheel c"></div></div></div>
+ <div class="trip">
+  <div class="trip-top"><div><small>VIAGEM EM ANDAMENTO</small><b id="heroDriver">Aguardando telemetria...</b></div><span class="pill live">AO VIVO</span></div>
+  <div id="heroRoute" class="trip-route">Origem → Destino</div>
+  <div class="trip-meta"><div><span>CARGA</span><strong id="heroCargo">—</strong></div><div><span>PESO</span><strong id="heroWeight">—</strong></div><div><span>RESTANTE</span><strong id="heroDistance">—</strong></div><div><span>VELOCIDADE</span><strong id="heroSpeed">—</strong></div></div>
+ </div>
+</section>
+<section class="shell stats">
+ <article class="stat"><small>SERVIDORES</small><b id="statServers">0 online</b><em id="statServersSub">consultando...</em></article>
+ <article class="stat"><small>MOTORISTAS</small><b id="statDrivers">0 online</b><em>sessões atuais</em></article>
+ <article class="stat"><small>EM VIAGEM</small><b id="statRoutes">0 viagens</b><em>telemetria ativa</em></article>
+</section>
+<section id="motoristas" class="shell section">
+ <div class="section-head"><div><span class="eyebrow">MOTORISTAS</span><h2>Equipe GAT</h2></div><span id="driverCount" class="badge">0 MOTORISTAS</span></div>
+ <p class="lead">Clique em um motorista para abrir o perfil. Entregas, km total, pontos, XP, nível e caminhão favorito serão acumulados aqui assim que o histórico permanente for ativado.</p>
+ <div class="table-wrap"><table><thead><tr><th>MOTORISTA</th><th>NÍVEL</th><th>CAMINHÃO</th><th>ENTREGAS</th><th>KM TOTAL</th><th>PONTOS</th><th>MISSÕES</th><th>STATUS</th></tr></thead><tbody id="driversTable"><tr><td colspan="8" class="dim">Aguardando dados dos GAT Servers...</td></tr></tbody></table></div>
+</section>
+<section id="mapa" class="shell section">
+ <div class="section-head"><div><span class="eyebrow">MAPA GAT</span><h2>Rotas em andamento</h2></div><span id="mapCount" class="badge amber">0 ROTAS</span></div>
+ <p class="lead">O mapa mostra as viagens recebidas pela telemetria. Enquanto não enviarmos coordenadas X/Z do ETS2, as linhas representam origem → destino de forma esquemática.</p>
+ <div class="map-layout"><div id="mapBox" class="map-box"><div class="map-grid"></div><div class="map-empty">Aguardando viagens ativas...</div></div><aside class="map-side"><span class="eyebrow">MOTORISTAS EM VIAGEM</span><div id="mapList"></div></aside></div>
+</section>
+<section id="trabalhos" class="shell section">
+ <div class="section-head"><div><span class="eyebrow">TRABALHOS GAT</span><h2>40 missões por mês</h2></div><span class="badge green">META MENSAL</span></div>
+ <p class="lead">O trabalho atual precisa ser concluído para liberar o próximo. Todas as missões exigem no mínimo <b>800 km</b>. O que muda é a faixa de peso direcionada ao motorista, em blocos de 8 toneladas.</p>
+ <div class="work-grid">
+  <article class="work-card"><span class="eyebrow">TRABALHO ATUAL</span><h3 id="workTitle">Entre na Conta GAT</h3><div class="rules"><div><small>MERCADO</small><b>World of Trucks</b></div><div><small>DISTÂNCIA MÍNIMA</small><b>800 km</b></div><div><small>FAIXA DE PESO</small><b id="workWeight">—</b></div><div><small>CARGA / CIDADE</small><b>Livre dentro da regra</b></div></div><div class="weight-bands"><small>FAIXAS POSSÍVEIS</small><div class="bands" id="weightBands"><span>0–8 t</span><span>8–16 t</span><span>16–24 t</span><span>24–32 t</span><span>32–40 t</span><span>40–48 t</span><span>48–56 t</span></div></div><div class="work-current"><strong id="workState">Faça login para identificar o motorista.</strong><p id="workHelp">O sistema definitivo de trabalhos será gravado no servidor para impedir troca ou avanço sem conclusão.</p><button id="workButton" class="work-btn" disabled>TRABALHO BLOQUEADO</button></div></article>
+  <aside class="month-card"><span class="eyebrow">PROGRESSO MENSAL</span><h3 id="monthTitle">0 / 40 concluídos</h3><div class="progress"><i id="monthProgress"></i></div><div class="month-row"><span>Missões restantes</span><b id="monthRemaining">40</b></div><div class="month-row"><span>Limite diário</span><b>Sem limite</b></div><div class="month-row"><span>Próximo trabalho</span><b>Após concluir o atual</b></div><div class="month-row"><span>XP</span><b>Ganho por missão concluída</b></div></aside>
+ </div>
+</section>
+<section id="downloads" class="shell section">
+ <div class="section-head"><div><span class="eyebrow">APLICATIVOS</span><h2>Downloads oficiais</h2></div></div>
+ <div class="downloads"><article class="download server"><div class="appicon">S</div><div><small>HOST</small><h3>GAT-LOG Server</h3><p id="serverVersion">Consultando versão...</p></div><a id="serverDownload" href="#">BAIXAR</a></article><article class="download"><div class="appicon">C</div><div><small>MOTORISTA</small><h3>GAT Telemetria</h3><p id="clientVersion">Consultando versão...</p></div><a id="clientDownload" href="#">BAIXAR</a></article></div>
+</section>
+</main>
+<footer><div class="shell"><span>GAT-LOG • ETS2</span><span>A cada viagem, uma história.</span></div></footer>
+<div id="profileModal" class="modal" aria-hidden="true"><article class="profile"><div class="profile-head"><button id="profileClose" class="profile-close">×</button><div class="profile-id"><div id="profileAvatar" class="big-avatar">G</div><div><h2 id="profileName">Motorista</h2><p id="profileAccount">@conta</p><div class="profile-badges"><span class="level" id="profileLevel">★ Nível —</span><span class="xp" id="profileXp">↗ XP —</span></div></div></div><div class="xp-panel"><div class="xp-panel-top"><span>PROGRESSO DO NÍVEL</span><span id="profileXpText">Histórico ainda não ativado</span></div><div class="xp-track"><i id="profileXpBar"></i></div></div></div><div class="profile-stats"><div><small>ENTREGAS</small><b id="profileDeliveries">—</b></div><div><small>KM TOTAL</small><b id="profileKm">—</b></div><div><small>PONTOS</small><b id="profilePoints">—</b></div><div><small>MISSÕES DO MÊS</small><b id="profileMissions">— / 40</b></div><div><small>STATUS</small><b id="profileStatus">—</b></div></div><div class="profile-body"><div class="profile-live"><div class="profile-live-top"><div><small>VIAGEM ATUAL</small><b id="profileRoute">Sem viagem ativa</b></div><span class="pill live">AO VIVO</span></div><p id="profileTripMeta" class="lead" style="font-size:11px;margin-bottom:0">—</p></div><div class="profile-grid"><section class="card"><span class="eyebrow">GARAGEM</span><h3>Caminhões</h3><div class="truck-card"><small>CAMINHÃO FAVORITO</small><b id="profileFavoriteTruck">Não configurado</b><small>O perfil poderá guardar o caminhão preferido do motorista.</small></div><div style="height:9px"></div><div class="truck-card"><small>CAMINHÃO ATUAL</small><b id="profileCurrentTruck">Aguardando dado</b><small>Será preenchido automaticamente quando a telemetria enviar marca/modelo.</small></div></section><section class="card"><span class="eyebrow">CONTA GAT</span><h3>Motorista</h3><div class="kv"><div><span>Conta</span><b id="profileAccount2">—</b></div><div><span>Servidor</span><b id="profileServer">—</b></div><div><span>Carga</span><b id="profileCargo">—</b></div><div><span>Última atualização</span><b id="profileUpdated">—</b></div></div></section></div></div></article></div>
+<script src="official.js"></script>
+</body></html>
