@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/update_ets2_cargo_catalog.py'
+      - 'scripts/refine_ets2_cargo_catalog.py'
       - '.github/workflows/update-ets2-official-cargo-catalog.yml'
   schedule:
     - cron: '27 7 * * 1'
@@ -27,7 +28,9 @@ jobs:
           python-version: '3.12'
 
       - name: Baixar e classificar cargas reais do ETS2
-        run: python scripts/update_ets2_cargo_catalog.py
+        run: |
+          python scripts/update_ets2_cargo_catalog.py
+          python scripts/refine_ets2_cargo_catalog.py
 
       - name: Validar catálogo
         shell: bash
@@ -38,8 +41,10 @@ jobs:
           d=json.load(open(p,encoding='utf-8'))
           assert int(d.get('total_entries',0)) >= 300, d.get('total_entries')
           assert 'categories' in d and len(d['categories']) >= 29
+          assert 'removed' not in str(d.get('categories','')).lower()
           print('Versão de referência:', d.get('reference_game_version'))
-          print('Total:', d['total_entries'])
+          print('Total atual:', d['total_entries'])
+          print('Removidas excluídas:', d.get('removed_entries_excluded',0))
           PY
 
       - name: Publicar catálogo no site
