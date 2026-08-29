@@ -1,0 +1,76 @@
+name: Build GAT Map Exporter
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-gat-map-exporter.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout GAT
+        uses: actions/checkout@v4
+
+      - name: Checkout ts-map
+        uses: actions/checkout@v4
+        with:
+          repository: dariowouters/ts-map
+          ref: master
+          path: external/ts-map
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore packages
+        shell: pwsh
+        run: nuget restore external/ts-map/TsMap.sln
+
+      - name: Build ts-map x64 Release
+        shell: pwsh
+        run: msbuild external/ts-map/TsMap.sln /m /p:Configuration=Release /p:Platform=x64
+
+      - name: Monta pacote GAT
+        shell: pwsh
+        run: |
+          $out = 'external/ts-map/TsMap.Canvas/bin/x64/Release'
+          if (!(Test-Path "$out/TsMap.Canvas.exe")) { throw 'TsMap.Canvas.exe nao foi gerado.' }
+          New-Item -ItemType Directory -Force -Path package | Out-Null
+          Copy-Item "$out/*" package -Recurse -Force
+          Copy-Item 'external/ts-map/LICENSE' 'package/LICENCA_TS_MAP.txt' -Force
+          @'
+          GAT MAPA EXPORTADOR - ETS2
+
+          1. Execute TsMap.Canvas.exe.
+          2. Em Game directory, selecione a pasta de instalacao do Euro Truck Simulator 2.
+             Padrao Steam: C:\Program Files (x86)\Steam\steamapps\common\Euro Truck Simulator 2
+          3. Para o MAPA BASE, nao marque carregamento de mods.
+          4. Clique Next e aguarde o mapa carregar.
+          5. No programa, abra a opcao de gerar/exportar Tile Map.
+          6. Marque Tiles e City Names. Recomendado: zoom inicial 0 e final 6 para o primeiro teste.
+          7. Escolha uma pasta vazia, por exemplo: C:\GAT_MAPA_BASE
+          8. Quando terminar, compacte a pasta C:\GAT_MAPA_BASE em ZIP e envie ao ChatGPT.
+
+          O ts-map le diretamente os arquivos .scs do ETS2; nao precisa extrair base.scs manualmente.
+          Para ProMods/RBR/EAA depois, o mesmo programa pode carregar mods da pasta Documentos\Euro Truck Simulator 2\mod.
+          '@ | Set-Content -Encoding UTF8 'package/LEIA-ME_GAT.txt'
+          if (Test-Path 'releases/GAT_MAP_EXPORTADOR_ETS2.zip') { Remove-Item 'releases/GAT_MAP_EXPORTADOR_ETS2.zip' -Force }
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          Compress-Archive -Path 'package/*' -DestinationPath 'releases/GAT_MAP_EXPORTADOR_ETS2.zip' -CompressionLevel Optimal
+
+      - name: Publica ZIP no repositorio
+        shell: pwsh
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_MAP_EXPORTADOR_ETS2.zip
+          if (git diff --cached --quiet) { Write-Host 'Sem alteracoes para publicar'; exit 0 }
+          git commit -m 'Publica GAT Map Exportador ETS2'
+          git push
