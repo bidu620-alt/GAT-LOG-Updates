@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.29 com contagem de entrega pelo evento oficial JobDelivered.
