@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.15",
-  "display_version": "1.0.15 TESTE",
-  "notas": "Adiciona diagnóstico da versão real do agente, libera CORS também para ranking e perfil público e mantém histórico, 40 missões e trabalho atual. O site passa a identificar diretamente qual agente está respondendo.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.15_TESTE.exe",
-  "sha256": "bdc1d9a00bf40e3234709ad601b338554212cb2aae6c992969c3d09ebdfbde73"
+  "version": "1.0.16",
+  "display_version": "1.0.16 TESTE",
+  "notas": "Adiciona rotas próprias para o site validar sessão, carregar perfil e pegar trabalho sem depender do cabeçalho Authorization do navegador. Mantém Conta GAT, histórico, 40 missões e telemetria da versão anterior.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.16_TESTE.exe",
+  "sha256": "9a7c95f653352e75bbf49af36047920475ea954b34a5b1868a3837e920b963c5"
 }
