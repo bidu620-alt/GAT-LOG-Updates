@@ -1,0 +1,2030 @@
+{
+  "game": "Euro Truck Simulator 2",
+  "source": "https://trucksimulator.wiki.gg/wiki/Cargo_types/Euro_Truck_Simulator_2",
+  "source_note": "Lista de cargos transportáveis do Truck Simulator Wiki; versão instalada de referência obtida do conjunto de dados AlexOQ/trucker.",
+  "reference_game_version": "",
+  "reference_data_refreshed": "",
+  "generated_at": "2026-08-29T23:51:32Z",
+  "total_entries": 379,
+  "category_titles": {
+    "tractor": "Trator e máquinas agrícolas",
+    "fuel": "Combustível",
+    "food": "Alimentos",
+    "drinks": "Bebidas",
+    "timber": "Madeira e toras",
+    "container": "Contêiner",
+    "heavy_machine": "Máquinas pesadas",
+    "vehicles": "Veículos",
+    "motorcycles": "Motocicletas",
+    "chemicals": "Produtos químicos",
+    "construction": "Material de construção",
+    "steel": "Aço e metais",
+    "paper": "Papel e celulose",
+    "electronics": "Eletrônicos",
+    "furniture": "Móveis",
+    "glass": "Vidro",
+    "pipes": "Tubos",
+    "cables": "Cabos e bobinas",
+    "industrial": "Equipamento industrial",
+    "mining": "Minério e carvão",
+    "grain": "Grãos e cereais",
+    "rural": "Animais e produtos rurais",
+    "dairy": "Leite e laticínios",
+    "medical": "Medicamentos e material médico",
+    "scrap": "Sucata e recicláveis",
+    "road_machine": "Máquinas rodoviárias",
+    "boats": "Barcos e iates",
+    "aircraft": "Aeronaves e helicópteros",
+    "refrigerated": "Carga refrigerada",
+    "custom": "Outras cargas oficiais / personalizada"
+  },
+  "category_counts": {
+    "tractor": 17,
+    "fuel": 9,
+    "food": 34,
+    "drinks": 7,
+    "timber": 8,
+    "container": 3,
+    "heavy_machine": 23,
+    "vehicles": 13,
+    "motorcycles": 3,
+    "chemicals": 16,
+    "construction": 15,
+    "steel": 12,
+    "paper": 1,
+    "electronics": 3,
+    "furniture": 2,
+    "glass": 2,
+    "pipes": 4,
+    "cables": 2,
+    "industrial": 22,
+    "mining": 2,
+    "grain": 8,
+    "rural": 5,
+    "dairy": 9,
+    "medical": 3,
+    "scrap": 2,
+    "road_machine": 1,
+    "boats": 3,
+    "aircraft": 1,
+    "refrigerated": 4,
+    "custom": 145
+  },
+  "categories": {
+    "tractor": [
+      {
+        "name": "Agricultural Telehandler Bobcat TL30.70",
+        "dlc": "Bobcat Cargo Pack",
+        "weight": "???"
+      },
+      {
+        "name": "Autonomous Tractor",
+        "dlc": "Farm Machinery",
+        "weight": "8"
+      },
+      {
+        "name": "Cotton Harvester",
+        "dlc": "Greece",
+        "weight": "30"
+      },
+      {
+        "name": "Crawler Tractor",
+        "dlc": "Farm Machinery",
+        "weight": "25"
+      },
+      {
+        "name": "Crawler Tractor",
+        "dlc": "High Power Cargo Pack",
+        "weight": "13"
+      },
+      {
+        "name": "Disc Harrows",
+        "dlc": "Farm Machinery",
+        "weight": "6"
+      },
+      {
+        "name": "Disk Mower Krone EasyCut B 880 CV",
+        "dlc": "KRONE Agriculture Equipment",
+        "weight": "2"
+      },
+      {
+        "name": "Forage Harvester",
+        "dlc": "Farm Machinery",
+        "weight": "13"
+      },
+      {
+        "name": "Forage Harvester Krone BiG X 1180",
+        "dlc": "KRONE Agriculture Equipment",
+        "weight": "17"
+      },
+      {
+        "name": "Log Harvester",
+        "dlc": "Forest Machinery",
+        "weight": "22"
+      },
+      {
+        "name": "Mower Conditioner Krone BiG M 45",
+        "dlc": "KRONE Agriculture Equipment",
+        "weight": "15"
+      },
+      {
+        "name": "Round Baler Krone VariPack V 190 XC",
+        "dlc": "KRONE Agriculture Equipment",
+        "weight": "4"
+      },
+      {
+        "name": "Sprayer",
+        "dlc": "Farm Machinery",
+        "weight": "15"
+      },
+      {
+        "name": "Square Baler",
+        "dlc": "Farm Machinery",
+        "weight": "7"
+      },
+      {
+        "name": "Square Baler Krone BiG Pack 1290 HDP VC",
+        "dlc": "KRONE Agriculture Equipment",
+        "weight": "10"
+      },
+      {
+        "name": "Tractor JCB Fastrac 4220",
+        "dlc": "JCB Equipment Pack",
+        "weight": "9"
+      },
+      {
+        "name": "Tractors",
+        "dlc": "Launch",
+        "weight": "8"
+      }
+    ],
+    "fuel": [
+      {
+        "name": "Diesel",
+        "dlc": "Launch",
+        "weight": "20–25"
+      },
+      {
+        "name": "Diesel Generators",
+        "dlc": "Vive la France!",
+        "weight": "12–21"
+      },
+      {
+        "name": "Fuel Oil",
+        "dlc": "Vive la France!",
+        "weight": "20–25"
+      },
+      {
+        "name": "Fuel Tanker",
+        "dlc": "Launch",
+        "weight": "9–19"
+      },
+      {
+        "name": "Fuel Tanks",
+        "dlc": "Scandinavia",
+        "weight": "5–10"
+      },
+      {
+        "name": "Kerosene",
+        "dlc": "Launch",
+        "weight": "18–23"
+      },
+      {
+        "name": "LPG",
+        "dlc": "Launch",
+        "weight": "10–22"
+      },
+      {
+        "name": "Petrol",
+        "dlc": "Launch",
+        "weight": "17–21"
+      },
+      {
+        "name": "Propane",
+        "dlc": "1.47",
+        "weight": "13–19"
+      }
+    ],
+    "food": [
+      {
+        "name": "Almond",
+        "dlc": "Launch",
+        "weight": "10–17"
+      },
+      {
+        "name": "Apples",
+        "dlc": "Launch",
+        "weight": "9–20"
+      },
+      {
+        "name": "Basil",
+        "dlc": "Vive la France!",
+        "weight": "14–24"
+      },
+      {
+        "name": "Beans",
+        "dlc": "Launch",
+        "weight": "7–12"
+      },
+      {
+        "name": "Beef",
+        "dlc": "Launch",
+        "weight": "12–20"
+      },
+      {
+        "name": "Canned Beans",
+        "dlc": "Launch",
+        "weight": "9–16"
+      },
+      {
+        "name": "Canned Beef",
+        "dlc": "Scandinavia",
+        "weight": "12–21"
+      },
+      {
+        "name": "Canned Pork",
+        "dlc": "Scandinavia",
+        "weight": "12–21"
+      },
+      {
+        "name": "Canned Sardines",
+        "dlc": "Italia",
+        "weight": "10–18"
+      },
+      {
+        "name": "Canned Tuna",
+        "dlc": "Scandinavia",
+        "weight": "10–18"
+      },
+      {
+        "name": "Cauliflower",
+        "dlc": "Launch",
+        "weight": "5–9"
+      },
+      {
+        "name": "Caviar",
+        "dlc": "Scandinavia",
+        "weight": "8–14"
+      },
+      {
+        "name": "Chewing Gums",
+        "dlc": "Launch",
+        "weight": "13–23"
+      },
+      {
+        "name": "Chicken Meat",
+        "dlc": "Scandinavia",
+        "weight": "9–17"
+      },
+      {
+        "name": "Chocolate",
+        "dlc": "Launch",
+        "weight": "13–23"
+      },
+      {
+        "name": "Fish Fingers",
+        "dlc": "Scandinavia",
+        "weight": "9–17"
+      },
+      {
+        "name": "Food Oil",
+        "dlc": "1.55",
+        "weight": "22–27"
+      },
+      {
+        "name": "Grapes",
+        "dlc": "Launch",
+        "weight": "8–14"
+      },
+      {
+        "name": "Locomotive CZ LOKO EffiShunter 1000",
+        "dlc": "Special Transport (1.56)",
+        "weight": "80"
+      },
+      {
+        "name": "Locomotive CZ LOKO EffiShunter 300",
+        "dlc": "1.56",
+        "weight": "36"
+      },
+      {
+        "name": "Olive Oil",
+        "dlc": "Italia",
+        "weight": "10–27"
+      },
+      {
+        "name": "Olive Trees",
+        "dlc": "Iberia",
+        "weight": "2"
+      },
+      {
+        "name": "Olives",
+        "dlc": "Vive la France!",
+        "weight": "10–18"
+      },
+      {
+        "name": "Onions",
+        "dlc": "Scandinavia",
+        "weight": "10–17"
+      },
+      {
+        "name": "Oranges",
+        "dlc": "Launch",
+        "weight": "11–20"
+      },
+      {
+        "name": "Packaged Food",
+        "dlc": "Launch",
+        "weight": "9–17"
+      },
+      {
+        "name": "Pasta",
+        "dlc": "Italia",
+        "weight": "11–20"
+      },
+      {
+        "name": "Pears",
+        "dlc": "Scandinavia",
+        "weight": "8–15"
+      },
+      {
+        "name": "Pet Food",
+        "dlc": "Scandinavia",
+        "weight": "9–20"
+      },
+      {
+        "name": "Pork",
+        "dlc": "Scandinavia",
+        "weight": "10–18"
+      },
+      {
+        "name": "Potatoes",
+        "dlc": "Launch",
+        "weight": "12–22"
+      },
+      {
+        "name": "Salmon Fillet",
+        "dlc": "Scandinavia",
+        "weight": "8–14"
+      },
+      {
+        "name": "Sugar",
+        "dlc": "Launch",
+        "weight": "12–22"
+      },
+      {
+        "name": "Tomatoes",
+        "dlc": "Launch",
+        "weight": "10–18"
+      }
+    ],
+    "drinks": [
+      {
+        "name": "Beverages",
+        "dlc": "Launch",
+        "weight": "10–28"
+      },
+      {
+        "name": "Bottled Water",
+        "dlc": "Launch",
+        "weight": "13–23"
+      },
+      {
+        "name": "Canned Iced Coffee",
+        "dlc": "Vive la France!",
+        "weight": "12–21"
+      },
+      {
+        "name": "Empty Wine Barrels",
+        "dlc": "Vive la France!",
+        "weight": "4–8"
+      },
+      {
+        "name": "Empty Wine Bottles",
+        "dlc": "Vive la France!",
+        "weight": "8–13"
+      },
+      {
+        "name": "Juice Concentrate",
+        "dlc": "Vive la France!",
+        "weight": "13–28"
+      },
+      {
+        "name": "Non-alcoholic Beer",
+        "dlc": "Launch",
+        "weight": "12–22"
+      }
+    ],
+    "timber": [
+      {
+        "name": "Logs",
+        "dlc": "Launch",
+        "weight": "24"
+      },
+      {
+        "name": "Lumber",
+        "dlc": "Launch",
+        "weight": "15"
+      },
+      {
+        "name": "Packed Lumber",
+        "dlc": "1.57",
+        "weight": "???"
+      },
+      {
+        "name": "Sawdust Panels",
+        "dlc": "Launch",
+        "weight": "12–21"
+      },
+      {
+        "name": "Wood Bark",
+        "dlc": "Scandinavia",
+        "weight": "6–9"
+      },
+      {
+        "name": "Wood Chipper",
+        "dlc": "Forest Machinery",
+        "weight": "26"
+      },
+      {
+        "name": "Wood Shavings",
+        "dlc": "Launch",
+        "weight": "3–6"
+      },
+      {
+        "name": "Wooden Beams",
+        "dlc": "Scandinavia",
+        "weight": "6–13"
+      }
+    ],
+    "container": [
+      {
+        "name": "Containerized Trees",
+        "dlc": "Launch",
+        "weight": "2–4"
+      },
+      {
+        "name": "IBC Containers",
+        "dlc": "Scandinavia",
+        "weight": "6–11"
+      },
+      {
+        "name": "Large Containers",
+        "dlc": "1.57",
+        "weight": "???"
+      }
+    ],
+    "heavy_machine": [
+      {
+        "name": "Articulated Hauler Volvo A25G",
+        "dlc": "Volvo Construction Equipment",
+        "weight": "25"
+      },
+      {
+        "name": "Backhoe Loader",
+        "dlc": "Launch",
+        "weight": "8"
+      },
+      {
+        "name": "Backhoe Loader JCB 4CX",
+        "dlc": "JCB Equipment Pack",
+        "weight": "8"
+      },
+      {
+        "name": "Crawler Carrier",
+        "dlc": "1.57",
+        "weight": "11"
+      },
+      {
+        "name": "Dozer Crawl - Z35K",
+        "dlc": "Heavy Cargo Pack",
+        "weight": "39"
+      },
+      {
+        "name": "Electric Mini Excavator JCB 19C-E",
+        "dlc": "JCB Equipment Pack",
+        "weight": "5"
+      },
+      {
+        "name": "Excavator",
+        "dlc": "Launch",
+        "weight": "21"
+      },
+      {
+        "name": "Excavator Bobcat E60",
+        "dlc": "Bobcat Cargo Pack",
+        "weight": "???"
+      },
+      {
+        "name": "Excavator Bucket",
+        "dlc": "Special Transport",
+        "weight": "25"
+      },
+      {
+        "name": "Excavator JCB 245XR",
+        "dlc": "JCB Equipment Pack",
+        "weight": "28"
+      },
+      {
+        "name": "Excavator Volvo EC220E",
+        "dlc": "Volvo Construction Equipment",
+        "weight": "20"
+      },
+      {
+        "name": "Excavator Volvo EW240E MH",
+        "dlc": "Volvo Construction Equipment",
+        "weight": "26"
+      },
+      {
+        "name": "Forestry Crawler Excavator",
+        "dlc": "Forest Machinery",
+        "weight": "17"
+      },
+      {
+        "name": "Haul Truck Chassis",
+        "dlc": "Special Transport",
+        "weight": "55"
+      },
+      {
+        "name": "Mini Excavator Bobcat E10e",
+        "dlc": "Bobcat Cargo Pack",
+        "weight": "???"
+      },
+      {
+        "name": "Mobile Crane - UTM SD-833",
+        "dlc": "Heavy Cargo Pack",
+        "weight": "36"
+      },
+      {
+        "name": "Rock Bucket Volvo SPN P T SEG",
+        "dlc": "Volvo Construction Equipment",
+        "weight": "3"
+      },
+      {
+        "name": "Skid-Steer Loader Bobcat S86",
+        "dlc": "Bobcat Cargo Pack",
+        "weight": "???"
+      },
+      {
+        "name": "Underground Loader",
+        "dlc": "Special Transport (Nordic Horizons)",
+        "weight": "54"
+      },
+      {
+        "name": "Wheel Loader",
+        "dlc": "Launch",
+        "weight": "15"
+      },
+      {
+        "name": "Wheel Loader Bobcat L95",
+        "dlc": "Bobcat Cargo Pack",
+        "weight": "???"
+      },
+      {
+        "name": "Wheel Loader JCB 457",
+        "dlc": "JCB Equipment Pack",
+        "weight": "20"
+      },
+      {
+        "name": "Wheel Loader Volvo L250H",
+        "dlc": "Volvo Construction Equipment",
+        "weight": "35"
+      }
+    ],
+    "vehicles": [
+      {
+        "name": "Campervans",
+        "dlc": "West Balkans",
+        "weight": "6"
+      },
+      {
+        "name": "Carbon Black Powder",
+        "dlc": "Italia",
+        "weight": "3–7"
+      },
+      {
+        "name": "Carbonated Water",
+        "dlc": "Launch",
+        "weight": "13–23"
+      },
+      {
+        "name": "Carrots",
+        "dlc": "Launch",
+        "weight": "7–16"
+      },
+      {
+        "name": "Cars",
+        "dlc": "Beyond the Baltic Sea",
+        "weight": "4"
+      },
+      {
+        "name": "Cars",
+        "dlc": "Launch",
+        "weight": "6–10"
+      },
+      {
+        "name": "Luxury SUVs",
+        "dlc": "Scandinavia",
+        "weight": "11"
+      },
+      {
+        "name": "Pickups",
+        "dlc": "Greece",
+        "weight": "6"
+      },
+      {
+        "name": "SUVs",
+        "dlc": "Greece",
+        "weight": "12"
+      },
+      {
+        "name": "Train Undercarriage",
+        "dlc": "Beyond the Baltic Sea",
+        "weight": "18"
+      },
+      {
+        "name": "Used Car Batteries",
+        "dlc": "Launch",
+        "weight": "9–17"
+      },
+      {
+        "name": "Vans",
+        "dlc": "Greece",
+        "weight": "8"
+      },
+      {
+        "name": "Vans",
+        "dlc": "Italia",
+        "weight": "6"
+      }
+    ],
+    "motorcycles": [
+      {
+        "name": "Motorcycle Tyres",
+        "dlc": "Italia",
+        "weight": "10–22"
+      },
+      {
+        "name": "Motorcycles",
+        "dlc": "Italia",
+        "weight": "8–15"
+      },
+      {
+        "name": "Scooters",
+        "dlc": "Italia",
+        "weight": "5–9"
+      }
+    ],
+    "chemicals": [
+      {
+        "name": "Acetylene",
+        "dlc": "Launch",
+        "weight": "9–19"
+      },
+      {
+        "name": "Acid",
+        "dlc": "Launch",
+        "weight": "16–19"
+      },
+      {
+        "name": "Anhydrous Ammonia",
+        "dlc": "1.47",
+        "weight": "19–27"
+      },
+      {
+        "name": "Arsenic",
+        "dlc": "Launch",
+        "weight": "9–18"
+      },
+      {
+        "name": "Boric Acid",
+        "dlc": "Vive la France!",
+        "weight": "9–16"
+      },
+      {
+        "name": "Brake Fluid",
+        "dlc": "Scandinavia",
+        "weight": "2–5"
+      },
+      {
+        "name": "Chemical Granules",
+        "dlc": "1.59",
+        "weight": "???"
+      },
+      {
+        "name": "Chemical Sorbent",
+        "dlc": "Launch",
+        "weight": "4–11"
+      },
+      {
+        "name": "Chemicals",
+        "dlc": "Launch",
+        "weight": "15–18"
+      },
+      {
+        "name": "Chlorine",
+        "dlc": "Launch",
+        "weight": "8–28"
+      },
+      {
+        "name": "Fertilizer",
+        "dlc": "Launch",
+        "weight": "11–19"
+      },
+      {
+        "name": "Fertilizer Spreader",
+        "dlc": "Farm Machinery",
+        "weight": "14"
+      },
+      {
+        "name": "Hot Chemicals",
+        "dlc": "Launch",
+        "weight": "16–19"
+      },
+      {
+        "name": "Hydrochloric Acid",
+        "dlc": "Launch",
+        "weight": "17–21"
+      },
+      {
+        "name": "Pesticides",
+        "dlc": "Launch",
+        "weight": "10–21"
+      },
+      {
+        "name": "Sulphuric Acid",
+        "dlc": "Launch",
+        "weight": "10–25"
+      }
+    ],
+    "construction": [
+      {
+        "name": "Bricks",
+        "dlc": "Launch",
+        "weight": "17–19"
+      },
+      {
+        "name": "Cement",
+        "dlc": "Launch",
+        "weight": "24–25"
+      },
+      {
+        "name": "Chimney Systems",
+        "dlc": "Launch",
+        "weight": "10–18"
+      },
+      {
+        "name": "Concrete Beams",
+        "dlc": "Beyond the Baltic Sea",
+        "weight": "14"
+      },
+      {
+        "name": "Concrete Beams",
+        "dlc": "Heavy Cargo Pack",
+        "weight": "51"
+      },
+      {
+        "name": "Concrete Centring",
+        "dlc": "Beyond the Baltic Sea",
+        "weight": "19"
+      },
+      {
+        "name": "Concrete Stairs",
+        "dlc": "Beyond the Baltic Sea",
+        "weight": "18"
+      },
+      {
+        "name": "Construction Staircase",
+        "dlc": "Special Transport",
+        "weight": "50"
+      },
+      {
+        "name": "Granite Cubes",
+        "dlc": "Vive la France!",
+        "weight": "20–27"
+      },
+      {
+        "name": "Gravel",
+        "dlc": "Launch",
+        "weight": "21–27"
+      },
+      {
+        "name": "Marble Blocks",
+        "dlc": "Italia",
+        "weight": "12–21"
+      },
+      {
+        "name": "Marble Slab",
+        "dlc": "Italia",
+        "weight": "23"
+      },
+      {
+        "name": "Roof Tiles",
+        "dlc": "Launch",
+        "weight": "11–19"
+      },
+      {
+        "name": "Sand",
+        "dlc": "Launch",
+        "weight": "21–27"
+      },
+      {
+        "name": "Sandwich Panels",
+        "dlc": "Launch",
+        "weight": "7–12"
+      }
+    ],
+    "steel": [
+      {
+        "name": "Aluminium Ingots",
+        "dlc": "West Balkans",
+        "weight": "23"
+      },
+      {
+        "name": "Aluminium Profiles",
+        "dlc": "West Balkans",
+        "weight": "16"
+      },
+      {
+        "name": "Copper Roof Gutters",
+        "dlc": "Launch",
+        "weight": "4–8"
+      },
+      {
+        "name": "Heavy Metals",
+        "dlc": "Launch",
+        "weight": "10–20"
+      },
+      {
+        "name": "Iron Pipes (large)",
+        "dlc": "Launch",
+        "weight": "20"
+      },
+      {
+        "name": "Iron Pipes (small)",
+        "dlc": "Launch",
+        "weight": "12"
+      },
+      {
+        "name": "Lead",
+        "dlc": "Launch",
+        "weight": "9–18"
+      },
+      {
+        "name": "Metal Beams",
+        "dlc": "Beyond the Baltic Sea",
+        "weight": "23"
+      },
+      {
+        "name": "Metal Cans",
+        "dlc": "Scandinavia",
+        "weight": "5–9"
+      },
+      {
+        "name": "Metal Centring",
+        "dlc": "Heavy Cargo Pack",
+        "weight": "28"
+      },
+      {
+        "name": "Metal Coil",
+        "dlc": "Italia",
+        "weight": "12"
+      },
+      {
+        "name": "Steel Cord",
+        "dlc": "Vive la France!",
+        "weight": "8–14"
+      }
+    ],
+    "paper": [
+      {
+        "name": "Office Paper",
+        "dlc": "Launch",
+        "weight": "10–18"
+      }
+    ],
+    "electronics": [
+      {
+        "name": "Computer Processors",
+        "dlc": "Vive la France!",
+        "weight": "2–3"
+      },
+      {
+        "name": "Electronics",
+        "dlc": "Launch",
+        "weight": "4–8"
+      },
+      {
+        "name": "High-Tech Device",
+        "dlc": "Special Transport",
+        "weight": "45"
+      }
+    ],
+    "furniture": [
+      {
+        "name": "Furniture",
+        "dlc": "Launch",
+        "weight": "9–16"
+      },
+      {
+        "name": "Tableware",
+        "dlc": "Launch",
+        "weight": "9–16"
+      }
+    ],
+    "glass": [
+      {
+        "name": "Glass Panels",
+        "dlc": "Launch",
+        "weight": "19–21"
+      },
+      {
+        "name": "Packed Glass",
+        "dlc": "Launch",
+        "weight": "22"
+      }
+    ],
+    "pipes": [
+      {
+        "name": "Backflow Preventers",
+        "dlc": "Vive la France!",
+        "weight": "13–23"
+      },
+      {
+        "name": "Gas Pipeline Parts",
+        "dlc": "High Power Cargo Pack",
+        "weight": "21"
+      },
+      {
+        "name": "Large Tubes",
+        "dlc": "Launch",
+        "weight": "21"
+      },
+      {
+        "name": "Plastic Pipes",
+        "dlc": "Launch",
+        "weight": "5"
+      }
+    ],
+    "cables": [
+      {
+        "name": "High Voltage Cables",
+        "dlc": "Vive la France!",
+        "weight": "12–21"
+      },
+      {
+        "name": "Industrial Cable Reel",
+        "dlc": "Heavy Cargo Pack",
+        "weight": "34"
+      }
+    ],
+    "industrial": [
+      {
+        "name": "Aircraft Tyres",
+        "dlc": "Vive la France!",
+        "weight": "10–18"
+      },
+      {
+        "name": "Boiler Part",
+        "dlc": "Special Transport",
+        "weight": "45"
+      },
+      {
+        "name": "Compact Generators JCB G100RS",
+        "dlc": "JCB Equipment Pack",
+        "weight": "11"
+      },
+      {
+        "name": "Compressor Bobcat PA12.7v",
+        "dlc": "Bobcat Cargo Pack",
+        "weight": "???"
+      },
+      {
+        "name": "Forklift Bobcat D30",
+        "dlc": "Bobcat Cargo Pack",
+        "weight": "???"
+      },
+      {
+        "name": "Forklifts",
+        "dlc": "Launch",
+        "weight": "16–21"
+      },
+      {
+        "name": "Giant Silo",
+        "dlc": "Special Transport",
+        "weight": "40"
+      },
+      {
+        "name": "Heat Exchanger",
+        "dlc": "Special Transport",
+        "weight": "70"
+      },
+      {
+        "name": "Huge Tyres",
+        "dlc": "Special Transport",
+        "weight": "20"
+      },
+      {
+        "name": "Industrial Condenser",
+        "dlc": "Special Transport",
+        "weight": "60"
+      },
+      {
+        "name": "Locomotive CZ LOKO MUV 75",
+        "dlc": "1.56",
+        "weight": "14"
+      },
+      {
+        "name": "Locomotive - Vossloh G6",
+        "dlc": "Heavy Cargo Pack",
+        "weight": "61"
+      },
+      {
+        "name": "Mobile Air Compressor",
+        "dlc": "1.59",
+        "weight": "???"
+      },
+      {
+        "name": "Pressure Tank",
+        "dlc": "Launch",
+        "weight": "7"
+      },
+      {
+        "name": "Reservoir Tank",
+        "dlc": "Launch",
+        "weight": "6"
+      },
+      {
+        "name": "Rough Terrain Forklift",
+        "dlc": "Greece",
+        "weight": "12"
+      },
+      {
+        "name": "Transformer - PK900",
+        "dlc": "Heavy Cargo Pack",
+        "weight": "47"
+      },
+      {
+        "name": "Truck Tyres",
+        "dlc": "Scandinavia",
+        "weight": "7–13"
+      },
+      {
+        "name": "Tyres",
+        "dlc": "Launch",
+        "weight": "9–16"
+      },
+      {
+        "name": "Wind Turbine Blade",
+        "dlc": "Special Transport (1.57)",
+        "weight": "5"
+      },
+      {
+        "name": "Wind Turbine Nacelle",
+        "dlc": "Scandinavia",
+        "weight": "21"
+      },
+      {
+        "name": "Wind Turbine Tower",
+        "dlc": "Scandinavia",
+        "weight": "9–19"
+      }
+    ],
+    "mining": [
+      {
+        "name": "Coal",
+        "dlc": "Launch",
+        "weight": "21–27"
+      },
+      {
+        "name": "Ore",
+        "dlc": "Launch",
+        "weight": "22–27"
+      }
+    ],
+    "grain": [
+      {
+        "name": "Barley",
+        "dlc": "Scandinavia",
+        "weight": "14–24"
+      },
+      {
+        "name": "Big-Bags of Seeds",
+        "dlc": "Launch",
+        "weight": "10–18"
+      },
+      {
+        "name": "Dryers",
+        "dlc": "Launch",
+        "weight": "7–13"
+      },
+      {
+        "name": "Flour",
+        "dlc": "Launch",
+        "weight": "11–20"
+      },
+      {
+        "name": "Rice",
+        "dlc": "Launch",
+        "weight": "8–22"
+      },
+      {
+        "name": "Rye",
+        "dlc": "Scandinavia",
+        "weight": "16–28"
+      },
+      {
+        "name": "Wheat",
+        "dlc": "Scandinavia",
+        "weight": "17–26"
+      },
+      {
+        "name": "Young Seedlings",
+        "dlc": "Launch",
+        "weight": "2–3"
+      }
+    ],
+    "rural": [
+      {
+        "name": "Live Cattle",
+        "dlc": "Scandinavia",
+        "weight": "23–25"
+      },
+      {
+        "name": "Live Pigs",
+        "dlc": "1.47",
+        "weight": "10–11"
+      },
+      {
+        "name": "Sheep Wool",
+        "dlc": "Scandinavia",
+        "weight": "7–13"
+      },
+      {
+        "name": "Stone Wool",
+        "dlc": "Scandinavia",
+        "weight": "3–5"
+      },
+      {
+        "name": "Straw Bales",
+        "dlc": "Launch",
+        "weight": "3–7"
+      }
+    ],
+    "dairy": [
+      {
+        "name": "Cheese",
+        "dlc": "Launch",
+        "weight": "10–18"
+      },
+      {
+        "name": "Coconut Milk",
+        "dlc": "Vive la France!",
+        "weight": "13–23"
+      },
+      {
+        "name": "Cottage Cheese",
+        "dlc": "Scandinavia",
+        "weight": "10–18"
+      },
+      {
+        "name": "Dry Milk",
+        "dlc": "Launch",
+        "weight": "10–18"
+      },
+      {
+        "name": "Goat Cheese",
+        "dlc": "Launch",
+        "weight": "9–15"
+      },
+      {
+        "name": "Milk",
+        "dlc": "Launch",
+        "weight": "11–28"
+      },
+      {
+        "name": "Peanut Butter",
+        "dlc": "Launch",
+        "weight": "11–19"
+      },
+      {
+        "name": "Soy Milk",
+        "dlc": "Vive la France!",
+        "weight": "12–27"
+      },
+      {
+        "name": "Yoghurt",
+        "dlc": "Launch",
+        "weight": "9–17"
+      }
+    ],
+    "medical": [
+      {
+        "name": "Hospital Waste",
+        "dlc": "Launch",
+        "weight": "11–23"
+      },
+      {
+        "name": "Medical Equipment",
+        "dlc": "Launch",
+        "weight": "3–5"
+      },
+      {
+        "name": "Medical Vaccines",
+        "dlc": "Launch",
+        "weight": "3–5"
+      }
+    ],
+    "scrap": [
+      {
+        "name": "Scrap Metals",
+        "dlc": "Launch",
+        "weight": "21–26"
+      },
+      {
+        "name": "Used Plastics",
+        "dlc": "Launch",
+        "weight": "3–9"
+      }
+    ],
+    "road_machine": [
+      {
+        "name": "Asphalt Miller - AM 0880",
+        "dlc": "Heavy Cargo Pack",
+        "weight": "44"
+      }
+    ],
+    "boats": [
+      {
+        "name": "Luxury Yacht",
+        "dlc": "Launch",
+        "weight": "9"
+      },
+      {
+        "name": "Service Boat",
+        "dlc": "Special Transport",
+        "weight": "25"
+      },
+      {
+        "name": "Yacht",
+        "dlc": "High Power Cargo Pack",
+        "weight": "6"
+      }
+    ],
+    "aircraft": [
+      {
+        "name": "Helicopter - 1808TX",
+        "dlc": "High Power Cargo Pack",
+        "weight": "3"
+      }
+    ],
+    "refrigerated": [
+      {
+        "name": "Fresh Fish",
+        "dlc": "Scandinavia",
+        "weight": "10–18"
+      },
+      {
+        "name": "Frozen Hake",
+        "dlc": "Scandinavia",
+        "weight": "10–17"
+      },
+      {
+        "name": "Frozen Octopi",
+        "dlc": "Italia",
+        "weight": "8–14"
+      },
+      {
+        "name": "Ice Cream",
+        "dlc": "Launch",
+        "weight": "8–14"
+      }
+    ],
+    "custom": [
+      {
+        "name": "Air Conditioners",
+        "dlc": "Greece",
+        "weight": "14–18"
+      },
+      {
+        "name": "Air Conditioners",
+        "dlc": "High Power Cargo Pack",
+        "weight": "16–33"
+      },
+      {
+        "name": "Airmail",
+        "dlc": "Vive la France!",
+        "weight": "6–10"
+      },
+      {
+        "name": "Ammunition",
+        "dlc": "Launch",
+        "weight": "10–18"
+      },
+      {
+        "name": "Atlantic Cod Fillet",
+        "dlc": "Scandinavia",
+        "weight": "9–16"
+      },
+      {
+        "name": "Auger Wagon",
+        "dlc": "Farm Machinery",
+        "weight": "7"
+      },
+      {
+        "name": "Batteries",
+        "dlc": "1.57",
+        "weight": "???"
+      },
+      {
+        "name": "Brake Pads",
+        "dlc": "Italia",
+        "weight": "11–20"
+      },
+      {
+        "name": "Clothes",
+        "dlc": "Launch",
+        "weight": "8–18"
+      },
+      {
+        "name": "Coconut Oil",
+        "dlc": "Vive la France!",
+        "weight": "13–23"
+      },
+      {
+        "name": "Compactor Volvo SD160B",
+        "dlc": "Volvo Construction Equipment",
+        "weight": "16"
+      },
+      {
+        "name": "Contaminated Material",
+        "dlc": "Launch",
+        "weight": "10–20"
+      },
+      {
+        "name": "Corks",
+        "dlc": "Vive la France!",
+        "weight": "2–5"
+      },
+      {
+        "name": "Cut Flowers",
+        "dlc": "Vive la France!",
+        "weight": "1"
+      },
+      {
+        "name": "Cyanide",
+        "dlc": "Launch",
+        "weight": "11–22"
+      },
+      {
+        "name": "Disinfectant",
+        "dlc": "Scandinavia",
+        "weight": "9–16"
+      },
+      {
+        "name": "Driller - D-50",
+        "dlc": "High Power Cargo Pack",
+        "weight": "8"
+      },
+      {
+        "name": "Dynamite",
+        "dlc": "Launch",
+        "weight": "9–17"
+      },
+      {
+        "name": "Electric Dumpster JCB HTD-5E",
+        "dlc": "JCB Equipment Pack",
+        "weight": "3"
+      },
+      {
+        "name": "Electrical Wiring",
+        "dlc": "Scandinavia",
+        "weight": "8–15"
+      },
+      {
+        "name": "Empty Barrels",
+        "dlc": "Scandinavia",
+        "weight": "5–9"
+      },
+      {
+        "name": "Empty Pallets",
+        "dlc": "Launch",
+        "weight": "12–22"
+      },
+      {
+        "name": "Empty Spool",
+        "dlc": "1.57",
+        "weight": "???"
+      },
+      {
+        "name": "Ethane",
+        "dlc": "1.47",
+        "weight": "14–21"
+      },
+      {
+        "name": "Excavated Soil",
+        "dlc": "Launch",
+        "weight": "22–27"
+      },
+      {
+        "name": "Exhaust Systems",
+        "dlc": "Italia",
+        "weight": "3–7"
+      },
+      {
+        "name": "Explosives",
+        "dlc": "Launch",
+        "weight": "6–12"
+      },
+      {
+        "name": "Feldbinder EUT",
+        "dlc": "Feldbinder Trailer Pack",
+        "weight": "6"
+      },
+      {
+        "name": "Feldbinder KIP",
+        "dlc": "Feldbinder Trailer Pack",
+        "weight": "6"
+      },
+      {
+        "name": "Feldbinder TSA ADR",
+        "dlc": "Feldbinder Trailer Pack",
+        "weight": "6"
+      },
+      {
+        "name": "Feldbinder TSA LM",
+        "dlc": "Feldbinder Trailer Pack",
+        "weight": "6"
+      },
+      {
+        "name": "Fireworks",
+        "dlc": "Launch",
+        "weight": "5–9"
+      },
+      {
+        "name": "Floor Panels",
+        "dlc": "Launch",
+        "weight": "19–21"
+      },
+      {
+        "name": "Fluorine",
+        "dlc": "Launch",
+        "weight": "6–13"
+      },
+      {
+        "name": "Forwarder",
+        "dlc": "Forest Machinery",
+        "weight": "20"
+      },
+      {
+        "name": "Fresh Herbs",
+        "dlc": "Italia",
+        "weight": "3–5"
+      },
+      {
+        "name": "Garlic",
+        "dlc": "Scandinavia",
+        "weight": "7–12"
+      },
+      {
+        "name": "Gnocchi",
+        "dlc": "Italia",
+        "weight": "10–18"
+      },
+      {
+        "name": "Graphite Grease",
+        "dlc": "Launch",
+        "weight": "9–16"
+      },
+      {
+        "name": "Grass Rolls",
+        "dlc": "Launch",
+        "weight": "8–15"
+      },
+      {
+        "name": "Guard Rails",
+        "dlc": "Scandinavia",
+        "weight": "12–22"
+      },
+      {
+        "name": "Gummy Bears",
+        "dlc": "Vive la France!",
+        "weight": "12–21"
+      },
+      {
+        "name": "Harvesting Bins",
+        "dlc": "Vive la France!",
+        "weight": "1–2"
+      },
+      {
+        "name": "High Pressure Slide Valves",
+        "dlc": "Vive la France!",
+        "weight": "10–19"
+      },
+      {
+        "name": "Honey",
+        "dlc": "Launch",
+        "weight": "11–20"
+      },
+      {
+        "name": "Horse Trailer",
+        "dlc": "Greece",
+        "weight": "7"
+      },
+      {
+        "name": "Hydrogen",
+        "dlc": "Launch",
+        "weight": "2–5"
+      },
+      {
+        "name": "Ketchup",
+        "dlc": "Launch",
+        "weight": "8–15"
+      },
+      {
+        "name": "Krone Box Liner",
+        "dlc": "Krone Trailer Pack",
+        "weight": "10"
+      },
+      {
+        "name": "Krone Cool Liner",
+        "dlc": "Krone Trailer Pack",
+        "weight": "8"
+      },
+      {
+        "name": "Krone Profi Liner",
+        "dlc": "Krone Trailer Pack",
+        "weight": "6"
+      },
+      {
+        "name": "Krone Profi Liner Building",
+        "dlc": "Krone Trailer Pack",
+        "weight": "6"
+      },
+      {
+        "name": "Lamb Stomachs",
+        "dlc": "Scandinavia",
+        "weight": "7–13"
+      },
+      {
+        "name": "Lavender",
+        "dlc": "Vive la France!",
+        "weight": "8–15"
+      },
+      {
+        "name": "Lemonade",
+        "dlc": "Launch",
+        "weight": "13–23"
+      },
+      {
+        "name": "Liver Paste",
+        "dlc": "Scandinavia",
+        "weight": "10–17"
+      },
+      {
+        "name": "Loaders",
+        "dlc": "Launch (removed in 1.54)",
+        "weight": "22-23"
+      },
+      {
+        "name": "Log Stacker",
+        "dlc": "Forest Machinery",
+        "weight": "54"
+      },
+      {
+        "name": "Low Bed Semi-trailers",
+        "dlc": "Launch",
+        "weight": "17"
+      },
+      {
+        "name": "Magnesium",
+        "dlc": "Launch",
+        "weight": "8–17"
+      },
+      {
+        "name": "Maple Syrup",
+        "dlc": "Launch",
+        "weight": "9–17"
+      },
+      {
+        "name": "Mason Jars",
+        "dlc": "Launch",
+        "weight": "4–7"
+      },
+      {
+        "name": "Massive Tech Part",
+        "dlc": "Special Transport",
+        "weight": "44"
+      },
+      {
+        "name": "Material Handler",
+        "dlc": "1.57",
+        "weight": "36"
+      },
+      {
+        "name": "Mercuric Chloride",
+        "dlc": "Launch",
+        "weight": "11–22"
+      },
+      {
+        "name": "Mobile Crusher",
+        "dlc": "Heavy Cargo Pack (Greece)",
+        "weight": "40"
+      },
+      {
+        "name": "Mobile Screener",
+        "dlc": "Heavy Cargo Pack (Greece)",
+        "weight": "39"
+      },
+      {
+        "name": "Mobile Stacker",
+        "dlc": "Heavy Cargo Pack (Greece)",
+        "weight": "10"
+      },
+      {
+        "name": "Mobile Traction Winch",
+        "dlc": "Forest Machinery",
+        "weight": "11"
+      },
+      {
+        "name": "Motor Oil",
+        "dlc": "Launch",
+        "weight": "7–18"
+      },
+      {
+        "name": "Mozzarella",
+        "dlc": "Italia",
+        "weight": "11–20"
+      },
+      {
+        "name": "Mulcher",
+        "dlc": "Forest Machinery",
+        "weight": "15"
+      },
+      {
+        "name": "Natural Rubber",
+        "dlc": "Vive la France!",
+        "weight": "12–21"
+      },
+      {
+        "name": "Neon",
+        "dlc": "Launch",
+        "weight": "8–17"
+      },
+      {
+        "name": "Nitrocellulose",
+        "dlc": "Launch",
+        "weight": "6–13"
+      },
+      {
+        "name": "Nitrogen",
+        "dlc": "Launch",
+        "weight": "9–18"
+      },
+      {
+        "name": "Nuts",
+        "dlc": "Launch",
+        "weight": "10–18"
+      },
+      {
+        "name": "Nylon Cord",
+        "dlc": "Vive la France!",
+        "weight": "13–23"
+      },
+      {
+        "name": "Oil",
+        "dlc": "Launch",
+        "weight": "19–24"
+      },
+      {
+        "name": "Oil Filters",
+        "dlc": "Launch",
+        "weight": "4–12"
+      },
+      {
+        "name": "Outdoor Floor Tiles",
+        "dlc": "Launch",
+        "weight": "11–19"
+      },
+      {
+        "name": "Peas",
+        "dlc": "Launch",
+        "weight": "10–18"
+      },
+      {
+        "name": "Performance Forks",
+        "dlc": "Italia",
+        "weight": "9–16"
+      },
+      {
+        "name": "Pesto",
+        "dlc": "Italia",
+        "weight": "10–18"
+      },
+      {
+        "name": "Plant Substrate",
+        "dlc": "Launch",
+        "weight": "9–17"
+      },
+      {
+        "name": "Planter",
+        "dlc": "Farm Machinery",
+        "weight": "8"
+      },
+      {
+        "name": "Plastic Film Rolls",
+        "dlc": "Scandinavia",
+        "weight": "5–18"
+      },
+      {
+        "name": "Plastic Granules",
+        "dlc": "Launch",
+        "weight": "24–27"
+      },
+      {
+        "name": "Plumbing Supplies",
+        "dlc": "Scandinavia",
+        "weight": "10–18"
+      },
+      {
+        "name": "Plums",
+        "dlc": "Launch",
+        "weight": "9–16"
+      },
+      {
+        "name": "Polystyrene Boxes",
+        "dlc": "Scandinavia",
+        "weight": "1–3"
+      },
+      {
+        "name": "Post Packages",
+        "dlc": "Vive la France!",
+        "weight": "6–11"
+      },
+      {
+        "name": "Potassium",
+        "dlc": "Launch",
+        "weight": "10–20"
+      },
+      {
+        "name": "Potassium Hydroxide",
+        "dlc": "Launch",
+        "weight": "16–19"
+      },
+      {
+        "name": "Potted Flowers",
+        "dlc": "Scandinavia",
+        "weight": "2–3"
+      },
+      {
+        "name": "Powerpack JCB 1.25QE",
+        "dlc": "JCB Equipment Pack",
+        "weight": "12"
+      },
+      {
+        "name": "Precast Stairs",
+        "dlc": "Launch",
+        "weight": "12–22"
+      },
+      {
+        "name": "Prosciutto",
+        "dlc": "Italia",
+        "weight": "9–16"
+      },
+      {
+        "name": "Protective Clothing",
+        "dlc": "Vive la France!",
+        "weight": "11–20"
+      },
+      {
+        "name": "Pumps",
+        "dlc": "Vive la France!",
+        "weight": "8–14"
+      },
+      {
+        "name": "Radiators",
+        "dlc": "Launch",
+        "weight": "5–9"
+      },
+      {
+        "name": "Reflective Posts",
+        "dlc": "Scandinavia",
+        "weight": "7–12"
+      },
+      {
+        "name": "Reinforcing Bars",
+        "dlc": "Beyond the Baltic Sea",
+        "weight": "15"
+      },
+      {
+        "name": "Roller - DYNA CC-2200",
+        "dlc": "High Power Cargo Pack",
+        "weight": "17"
+      },
+      {
+        "name": "Roofing Felt",
+        "dlc": "Launch",
+        "weight": "11–19"
+      },
+      {
+        "name": "Rooflights",
+        "dlc": "Launch",
+        "weight": "6–11"
+      },
+      {
+        "name": "Rotary Rakes Krone Swadro TC 1370",
+        "dlc": "KRONE Agriculture Equipment",
+        "weight": "4"
+      },
+      {
+        "name": "Salt & Spices",
+        "dlc": "Scandinavia",
+        "weight": "6–16"
+      },
+      {
+        "name": "Sausages",
+        "dlc": "Scandinavia",
+        "weight": "10–17"
+      },
+      {
+        "name": "Scaffolding",
+        "dlc": "Scandinavia",
+        "weight": "12–22"
+      },
+      {
+        "name": "Sealed Bearings",
+        "dlc": "Italia",
+        "weight": "13–23"
+      },
+      {
+        "name": "Shock Absorbers",
+        "dlc": "Scandinavia",
+        "weight": "9–16"
+      },
+      {
+        "name": "Silica",
+        "dlc": "Vive la France!",
+        "weight": "11–19"
+      },
+      {
+        "name": "Site Dumper JCB 6T-2",
+        "dlc": "JCB Equipment Pack",
+        "weight": "5"
+      },
+      {
+        "name": "Skidder",
+        "dlc": "Forest Machinery",
+        "weight": "20"
+      },
+      {
+        "name": "Smoked Eel",
+        "dlc": "Scandinavia",
+        "weight": "6–11"
+      },
+      {
+        "name": "Smoked Sprats",
+        "dlc": "Scandinavia",
+        "weight": "10–17"
+      },
+      {
+        "name": "Sodium",
+        "dlc": "Launch",
+        "weight": "9–19"
+      },
+      {
+        "name": "Sodium Hydroxide",
+        "dlc": "Launch",
+        "weight": "9–18"
+      },
+      {
+        "name": "Sodium Hypochlorite",
+        "dlc": "Launch",
+        "weight": "15–18"
+      },
+      {
+        "name": "Spherical Valves",
+        "dlc": "Vive la France!",
+        "weight": "12–22"
+      },
+      {
+        "name": "Square Tubing",
+        "dlc": "Italia",
+        "weight": "14"
+      },
+      {
+        "name": "Stone Dust",
+        "dlc": "Launch",
+        "weight": "22–27"
+      },
+      {
+        "name": "Stones",
+        "dlc": "Launch",
+        "weight": "21–27"
+      },
+      {
+        "name": "Sulphur",
+        "dlc": "1.59",
+        "weight": "???"
+      },
+      {
+        "name": "Telescopic Handler JCB 540-180",
+        "dlc": "JCB Equipment Pack",
+        "weight": "11"
+      },
+      {
+        "name": "Toys",
+        "dlc": "Launch",
+        "weight": "5–9"
+      },
+      {
+        "name": "Tracks",
+        "dlc": "High Power Cargo Pack",
+        "weight": "11"
+      },
+      {
+        "name": "Train Axles",
+        "dlc": "Beyond the Baltic Sea",
+        "weight": "23"
+      },
+      {
+        "name": "Transmissions",
+        "dlc": "Scandinavia",
+        "weight": "8–14"
+      },
+      {
+        "name": "Truck Batteries",
+        "dlc": "Scandinavia",
+        "weight": "7–18"
+      },
+      {
+        "name": "Truck Rims",
+        "dlc": "Scandinavia",
+        "weight": "4–12"
+      },
+      {
+        "name": "Trucks DAF",
+        "dlc": "1.59",
+        "weight": "???"
+      },
+      {
+        "name": "Trucks Scania",
+        "dlc": "Scandinavia",
+        "weight": "14"
+      },
+      {
+        "name": "Trucks Volvo",
+        "dlc": "Scandinavia",
+        "weight": "14"
+      },
+      {
+        "name": "Used Packaging",
+        "dlc": "Launch",
+        "weight": "11–20"
+      },
+      {
+        "name": "Ventilation Shaft",
+        "dlc": "Launch",
+        "weight": "4"
+      },
+      {
+        "name": "Vinegar",
+        "dlc": "Launch",
+        "weight": "4–15"
+      },
+      {
+        "name": "Wagon Krone GX 520",
+        "dlc": "KRONE Agriculture Equipment",
+        "weight": "10"
+      },
+      {
+        "name": "Wall Panels",
+        "dlc": "Launch",
+        "weight": "19–20"
+      },
+      {
+        "name": "Water Tank",
+        "dlc": "Greece",
+        "weight": "1–2"
+      },
+      {
+        "name": "Watermelons",
+        "dlc": "Launch",
+        "weight": "11–20"
+      },
+      {
+        "name": "Wheels with Volvo Rims",
+        "dlc": "Volvo Construction Equipment",
+        "weight": "11"
+      },
+      {
+        "name": "White Phosphorus",
+        "dlc": "Launch",
+        "weight": "8–17"
+      },
+      {
+        "name": "Work Clothes",
+        "dlc": "Italia",
+        "weight": "9–16"
+      }
+    ]
+  }
+}
