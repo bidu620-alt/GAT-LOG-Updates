@@ -23,6 +23,30 @@
 <section class="admin-panel" data-panel="audit"><div class="admin-toolbar"><div><span class="eyebrow">SEGURANÇA</span><h2>Log administrativo</h2></div><button id="refreshAudit" class="btn ghost" type="button">ATUALIZAR LOG</button></div><div id="auditStatus" class="admin-status">Abra esta aba para consultar as últimas ações.</div><div id="auditList" class="audit-list"></div></section>
 </div>
 </main>
+
+<section id="driverDetailModal" class="driver-detail-modal" aria-hidden="true" hidden>
+<div class="detail-backdrop" data-detail-close></div>
+<div class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+<header class="detail-head"><div><span class="eyebrow">FICHA ADMINISTRATIVA</span><h2 id="detailTitle">Motorista</h2><div class="detail-sub"><span id="detailRole" class="mini-role driver">MOTORISTA</span><span id="detailState" class="mini-state off">OFFLINE</span><span id="detailLastActivity">—</span></div></div><button id="detailClose" class="detail-close" type="button" aria-label="Fechar">×</button></header>
+<div id="detailStatus" class="admin-status">Carregando ficha...</div>
+<div id="detailContent" hidden>
+<section class="detail-stat-grid"><article><small>MISSÕES DO MÊS</small><b id="detailMonthly">0 / 40</b></article><article><small>NÍVEL / XP</small><b id="detailXp">Nv. 1 • 0 XP</b></article><article><small>ENTREGAS</small><b id="detailDeliveries">0</b></article><article><small>KM TOTAL</small><b id="detailKm">0 km</b></article></section>
+
+<div class="detail-grid">
+<article class="detail-card"><div class="detail-card-title"><div><span class="eyebrow">GAT TELEMETRIA</span><h3>Ao vivo</h3></div><span id="detailLivePill" class="mini-state off">OFFLINE</span></div><div class="detail-live-grid"><div><small>CAMINHÃO</small><b id="detailTruck">—</b></div><div><small>CARGA</small><b id="detailCargo">—</b></div><div><small>ROTA</small><b id="detailRoute">—</b></div><div><small>PESO</small><b id="detailWeight">—</b></div><div><small>RESTANTE</small><b id="detailRemaining">—</b></div><div><small>VELOCIDADE</small><b id="detailSpeed">0 km/h</b></div><div><small>MERCADO</small><b id="detailMarket">—</b></div><div><small>POSIÇÃO ETS2</small><b id="detailPosition">—</b></div></div></article>
+<article class="detail-card"><div class="detail-card-title"><div><span class="eyebrow">MISSÃO GAT</span><h3>Trabalho atual</h3></div><span id="detailMissionState" class="mini-state off">SEM MISSÃO</span></div><div id="detailMissionBody" class="detail-mission-body">Nenhuma missão atribuída.</div><button id="detailResetMission" class="detail-action warn" type="button" hidden>RESETAR MISSÃO</button></article>
+</div>
+
+<div class="detail-grid detail-admin-grid">
+<article class="detail-card"><div class="detail-card-title"><div><span class="eyebrow">CORREÇÃO ADMIN</span><h3>Progresso</h3></div></div><p class="detail-note">XP não é editável: ele é recalculado automaticamente pelo total de entregas × 100.</p><form id="progressCorrection" class="correction-form"><label>MISSÕES DO MÊS<input id="correctMonthly" type="number" min="0" max="40" step="1"></label><label>ENTREGAS TOTAIS<input id="correctDeliveries" type="number" min="0" step="1"></label><label>KM TOTAL<input id="correctKm" type="number" min="0" step="0.1"></label><button id="saveProgressCorrection" class="btn primary" type="submit">SALVAR CORREÇÃO</button></form></article>
+<article class="detail-card"><div class="detail-card-title"><div><span class="eyebrow">CONTA GAT</span><h3>Acesso</h3></div></div><div class="account-detail-list"><div><small>USUÁRIO</small><b id="detailAccountUser">—</b></div><div><small>CADASTRO</small><b id="detailCreated">—</b></div><div><small>SESSÕES ATIVAS</small><b id="detailSessions">0</b></div><div><small>STATUS</small><b id="detailAccountState">—</b></div></div><a id="detailPublicProfile" class="btn ghost detail-profile-link" href="motorista.html">ABRIR PERFIL PÚBLICO</a></article>
+</div>
+
+<article class="detail-card detail-history-card"><div class="detail-card-title"><div><span class="eyebrow">HISTÓRICO</span><h3>Entregas GAT</h3></div><span id="detailHistoryCount" class="mini-role driver">0</span></div><div class="detail-history-wrap"><table class="detail-history-table"><thead><tr><th>DATA</th><th>ROTA</th><th>CARGA</th><th>PESO</th><th>KM</th><th>MISSÃO</th><th>AÇÃO</th></tr></thead><tbody id="detailHistoryRows"></tbody></table></div></article>
+</div>
+</div>
+</section>
+
 <footer class="footer"><div class="shell">GAT-LOG • Administração da Central GAT</div></footer>
 <script src="official-v5.js"></script><script src="admin.js"></script>
 </body></html>
