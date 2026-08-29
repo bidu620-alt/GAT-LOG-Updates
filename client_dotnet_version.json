@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.11",
-  "display_version": "1.0.11 MAPAS + EAA",
-  "notas": "Adiciona EAA ao MAPA EM USO. Mapa Base, ProMods, RBR, Rotas Brasil, EAA e Outro são enviados junto da posição para a Central GAT separar os motoristas no mapa ao vivo.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.11_MAPAS_EAA_TESTE.exe",
-  "sha256": "2d3a4a6f607d2aa74f26cbf5abf330485041d39a5d3cdebbc73fff768f6d6fca"
+  "version": "1.0.12",
+  "display_version": "1.0.12 AVISO POR VOZ",
+  "notas": "Adiciona aviso de voz 'Trabalho iniciado' quando a Central GAT confirma que a missão passou para EM ANDAMENTO. O aviso também reconhece confirmação manual pelo Admin e toca uma única vez por missão.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.12_VOZ_TESTE.exe",
+  "sha256": "d73aa15aeae80e4cdfef6685536d750fe7bc9939a21f1f828cdeb0c61d945bd6"
 }
