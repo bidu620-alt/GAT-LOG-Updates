@@ -46,7 +46,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- docs/ets2-official-cargos.json; then
+          if [ -z "$(git status --porcelain -- docs/ets2-official-cargos.json)" ]; then
             echo 'Catálogo já está atualizado.'
             exit 0
           fi
