@@ -1,1 +1,1 @@
-publish GAT-LOG Server 1.0.21 Admin driver detail
+publish GAT-LOG Server 1.0.21 Admin driver detail - retry 2
