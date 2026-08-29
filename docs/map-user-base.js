@@ -41,13 +41,16 @@
 
     loading=(async()=>{
       const parts=await Promise.all(cfg.imageChunks.map(async url=>{
-        const r=await fetch(url,{cache:'force-cache'});
+        const r=await fetch(url,{cache:'no-cache'});
         if(!r.ok)throw new Error('Falha ao carregar parte do mapa: '+url);
         return (await r.text()).trim();
       }));
 
       const b64=parts.join('').replace(/\s+/g,'');
       const raw=atob(b64);
+      if(raw.length<12||raw.slice(0,4)!=='RIFF'||raw.slice(8,12)!=='WEBP'){
+        throw new Error('Imagem reconstruída do mapa Base é inválida.');
+      }
       const bytes=new Uint8Array(raw.length);
       for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
 
