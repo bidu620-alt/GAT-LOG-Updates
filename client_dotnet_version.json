@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.7",
-  "display_version": "1.0.7 TESTE",
-  "notas": "Liga a Conta GAT ao histórico e às missões mensais. O cliente envia ao servidor central o mercado da carga, distância, peso, rota e estado da viagem para iniciar e concluir automaticamente trabalhos GAT válidos, preservando a identificação robusta, os dois servidores e a Conta GAT da 1.0.6.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.7_TESTE.exe",
-  "sha256": "32d8785ea668ff5f95b1b115b1c7df2eebfa650330c375a61648b4d6578926a1"
+  "version": "1.0.8",
+  "display_version": "1.0.8 TESTE",
+  "notas": "Envia posição X/Z, direção, marca e modelo do caminhão do TruckSim GPS para o GAT-LOG Server, permitindo mapa ao vivo e caminhão atual no perfil. Mantém Conta GAT, missões e identificação robusta.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.8_TESTE.exe",
+  "sha256": "0516dd81ba7ebde7cdfa704bbcd3e142b8e14a0b347894282a02600986515bb5"
 }
