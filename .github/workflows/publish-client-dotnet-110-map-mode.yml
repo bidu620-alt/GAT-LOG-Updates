@@ -1,0 +1,112 @@
+name: Publish GAT Telemetria DotNet 1.0.10 Map Mode
+
+on:
+  push:
+    branches: [client-dotnet-winforms]
+    paths:
+      - 'client-dotnet/publish-1.0.10-map-mode.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: client-dotnet-winforms
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Apply preserved client through 1.0.9
+        shell: pwsh
+        run: |
+          python client-dotnet/build103/apply_103_fixed_servers.py
+          python client-dotnet/build104/apply_104_steam_identity.py
+          python client-dotnet/build105/apply_105_robust_driver_identity.py
+          python client-dotnet/build106/apply_106_gat_account.py
+          python client-dotnet/build106/fix_106_account_labels.py
+          python client-dotnet/build107/apply_107_mission_progress.py
+          python client-dotnet/build107/fix_107_versions.py
+          python client-dotnet/build108/apply_108_live_map_truck.py
+          python client-dotnet/build109/apply_109_independent_central.py
+
+      - name: Apply 1.0.10 map selector
+        shell: pwsh
+        run: |
+          python client-dotnet/build110/apply_110_map_mode.py
+          $main = Get-Content 'client-dotnet/GatTelemetry/MainForm.cs' -Raw
+          if ($main -notmatch 'CurrentVersion = "1\.0\.10"') { throw 'Versão 1.0.10 ausente.' }
+          if ($main -notmatch 'MAPA EM USO') { throw 'Seletor de mapa ausente.' }
+          if ($main -notmatch 'tele\["gat_map"\]') { throw 'Campo gat_map não é enviado.' }
+          if ($main -notmatch 'SendCentralTelemetryAsync') { throw 'Central independente perdida.' }
+          if ($main -notmatch 'COMBOIO / SERVIDOR \(OPCIONAL\)') { throw 'Comboio opcional perdido.' }
+
+      - name: Reuse blue GAT CLIENT icon
+        shell: pwsh
+        run: |
+          $src = Join-Path $env:RUNNER_TEMP 'GAT_TELEMETRIA_1.0.9.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.9_TESTE.exe' -OutFile $src
+          Add-Type -AssemblyName System.Drawing
+          $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($src)
+          if ($null -eq $icon) { throw 'Não foi possível extrair o ícone azul.' }
+          $paths = @('client-dotnet/GatTelemetry/assets/GAT_CLIENT.ico','client-dotnet/GatTelemetryInstaller/assets/GAT_CLIENT.ico')
+          foreach ($p in $paths) { New-Item -ItemType Directory -Force (Split-Path $p -Parent) | Out-Null; $fs=[System.IO.File]::Create($p); try {$icon.Save($fs)} finally {$fs.Dispose()} }
+          $icon.Dispose()
+
+      - name: Ensure application icons
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          proj=Path('client-dotnet/GatTelemetry/GatTelemetry.csproj'); s=proj.read_text(encoding='utf-8')
+          if '<ApplicationIcon>' not in s: s=s.replace('<ApplicationManifest>app.manifest</ApplicationManifest>','<ApplicationManifest>app.manifest</ApplicationManifest>\n    <ApplicationIcon>assets\\GAT_CLIENT.ico</ApplicationIcon>',1)
+          proj.write_text(s,encoding='utf-8')
+          ip=Path('client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj'); x=ip.read_text(encoding='utf-8')
+          if '<ApplicationIcon>' not in x: x=x.replace('<ApplicationManifest>app.manifest</ApplicationManifest>','<ApplicationManifest>app.manifest</ApplicationManifest>\n    <ApplicationIcon>assets\\GAT_CLIENT.ico</ApplicationIcon>',1)
+          ip.write_text(x,encoding='utf-8')
+          '@ | Set-Content "$env:RUNNER_TEMP\icons110.py" -Encoding UTF8
+          python "$env:RUNNER_TEMP\icons110.py"
+
+      - name: Build CSharp telemetry client and updater
+        shell: pwsh
+        run: |
+          dotnet restore client-dotnet/GatTelemetry/GatTelemetry.csproj
+          dotnet build client-dotnet/GatTelemetry/GatTelemetry.csproj -c Release --no-restore
+          $out='client-dotnet/GatTelemetry/bin/Release/net48'; $pay='client-dotnet/GatTelemetryInstaller/payload'
+          if (Test-Path $pay) { Remove-Item $pay -Recurse -Force }
+          New-Item -ItemType Directory -Force $pay | Out-Null
+          Copy-Item "$out/GAT_TELEMETRIA.exe" "$pay/GAT_TELEMETRIA.exe" -Force
+          Copy-Item "$out/GAT_TELEMETRIA.exe.config" "$pay/GAT_TELEMETRIA.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          dotnet restore client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj
+          dotnet build client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj -c Release --no-restore
+          $update='client-dotnet/GatTelemetryInstaller/bin/Release/net48/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe'
+          if (-not (Test-Path $update)) { throw 'Atualizador 1.0.10 não gerado.' }
+          Copy-Item $update "$env:RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe" -Force
+
+      - name: Publish updater and manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main; git reset --hard HEAD; git clean -fdx; git checkout -B main origin/main
+          mkdir -p releases; cp "$RUNNER_TEMP/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe" releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe
+          SHA=$(sha256sum releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe | awk '{print $1}')
+          cat > client_dotnet_version.json <<EOF
+          {
+            "app": "GAT Telemetria CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.10",
+            "display_version": "1.0.10 MAPAS",
+            "notas": "Adiciona MAPA EM USO: Mapa Base, ProMods, RBR, Rotas Brasil ou Outro. A escolha fica salva no PC e é enviada junto da telemetria para o mapa ao vivo do site separar motoristas e contadores por mapa.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.10_MAPAS_TESTE.exe client_dotnet_version.json
+          git commit -m "Publica GAT Telemetria 1.0.10 com seletor de mapas"
+          git push origin main
