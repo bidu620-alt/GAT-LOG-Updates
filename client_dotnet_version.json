@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.6",
-  "display_version": "1.0.6 TESTE",
-  "notas": "Adiciona a Conta GAT: o motorista entra com o mesmo usuário e senha cadastrados no site, o cliente guarda somente o token protegido pelo Windows e vincula essa conta ao jogador detectado na sessão ETS2. Mantém a identificação robusta da 1.0.5, servidores, conexão automática e ícone azul.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.6_TESTE.exe",
-  "sha256": "f5a9e8cac5296aa3ea5913afb4923699945f72f64ec92299c6fb61af180b5aec"
+  "version": "1.0.7",
+  "display_version": "1.0.7 TESTE",
+  "notas": "Liga a Conta GAT ao histórico e às missões mensais. O cliente envia ao servidor central o mercado da carga, distância, peso, rota e estado da viagem para iniciar e concluir automaticamente trabalhos GAT válidos, preservando a identificação robusta, os dois servidores e a Conta GAT da 1.0.6.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.7_TESTE.exe",
+  "sha256": "32d8785ea668ff5f95b1b115b1c7df2eebfa650330c375a61648b4d6578926a1"
 }
