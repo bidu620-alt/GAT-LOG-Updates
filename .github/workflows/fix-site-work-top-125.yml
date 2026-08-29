@@ -1,0 +1,45 @@
+name: Fix Site Work Top 1.0.25
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - '.github/workflows/fix-site-work-top-125.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Remove old homologation work view
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('docs/motorista.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('monthly_goal:40','monthly_goal:30')
+          s=s.replace('goal=num(p.monthly_goal)||40','goal=num(p.monthly_goal)||30')
+          start=s.index('function workRulesEnabled()')
+          end=s.index('\nasync function refreshProfileQuiet',start)
+          new=r'''function applyWorkRuleView(m){q('workMarket').textContent='Todos os mercados';q('workMinKm').textContent='500 km';q('workWeight').textContent='Sem regra de peso';const chosen=String(m?.custom_cargo||m?.title||m?.category||'').trim();q('workFreedom').textContent=chosen||'Escolha um trabalho no catálogo • cidades livres';}
+          function renderMission(m){const btn=q('takeWorkButton'),state=q('workState');applyWorkRuleView(m);btn.disabled=true;if(!m){q('workTitle').textContent='Escolha um trabalho GAT';state.textContent='DISPONÍVEL';state.className='pill green';btn.textContent='USE O CATÁLOGO ABAIXO';return}const label=String(m.custom_cargo||m.title||m.category||('Trabalho #'+(m.sequence||'GAT'))).trim();q('workTitle').textContent='Trabalho atual • '+label;state.textContent=stateLabel(m.state);state.className=stateClass(m.state);btn.textContent='TRABALHO JÁ DEFINIDO';}
+          function updateOwnerArea(){session=getSession();const own=ownProfile(),btn=q('takeWorkButton'),msg=q('workOwnerMessage'),m=profile?.current_mission;btn.disabled=true;if(own){q('profileType').textContent='SEU PERFIL';if(m){msg.textContent=String(m.state).toLowerCase()==='active'?'Trabalho em andamento pela Central GAT. A telemetria acompanha a viagem e o XP será calculado pela distância válida.':'Trabalho selecionado. Aceite no ETS2 uma carga compatível com pelo menos 500 km. Pode usar qualquer mercado e jogar solo ou em comboio.';msg.classList.add('owner-ok');btn.textContent='TRABALHO JÁ DEFINIDO'}else if(num(profile?.monthly_completed)>=30){msg.textContent='Meta de 30 trabalhos concluída neste mês.';msg.classList.add('owner-ok');btn.textContent='META CONCLUÍDA'}else{msg.textContent='Escolha abaixo um dos 30 trabalhos do catálogo. Você decide a ordem e outros motoristas podem escolher o mesmo trabalho para fazer em comboio.';msg.classList.add('owner-ok');btn.textContent='USE O CATÁLOGO ABAIXO'}}else{q('profileType').textContent=queryUser?'PERFIL PÚBLICO':'PERFIL DO MOTORISTA';msg.textContent='Somente @'+key+' pode escolher trabalho neste perfil.';msg.classList.remove('owner-ok');btn.textContent='CATÁLOGO SOMENTE DO MOTORISTA'}}'''
+          s=s[:start]+new+s[end:]
+          if 'Qualquer carga • homologação' in s or 'HOMOLOGAÇÃO:' in s or "?'World of Trucks':'Livre'" in s:
+              raise SystemExit('texto antigo de homologacao ainda presente no bloco de trabalho')
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/motorista.js
+          git commit -m "Corrige topo Trabalho Atual para catálogo 1.0.25"
+          git push origin main
