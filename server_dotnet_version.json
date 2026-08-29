@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.20",
-  "display_version": "1.0.20 TESTE",
-  "notas": "Adiciona o backend do Painel Admin GAT com cargos proprietário/admin/moderador, lista de motoristas, bloqueio, redefinição de senha, reset de missão, exclusão, promoção de cargos e log de auditoria. Mantém Central independente, XP, mapa, histórico e missões.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.20_TESTE.exe",
-  "sha256": "4a2c162c0fdf9f09ed567386bd03330f1474c5cfa1aae0920771f0a422db9ad0"
+  "version": "1.0.21",
+  "display_version": "1.0.21 TESTE",
+  "notas": "Amplia o Painel Admin GAT com ficha detalhada do motorista, telemetria ao vivo, missão atual, histórico de entregas e correção segura de progresso. XP continua derivado automaticamente das entregas válidas.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.21_TESTE.exe",
+  "sha256": "28acd692acce743f35660d011f17b0069a666590945f6f959caaeacba45f5ffd"
 }
