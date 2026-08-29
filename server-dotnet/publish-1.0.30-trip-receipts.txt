@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.30 com recibos persistentes de viagem para a Central GAT.
