@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070a0f">
+<title>Motorista • GAT-LOG</title>
+<meta name="description" content="Perfil do motorista GAT-LOG com viagens, caminhões, nível, XP e trabalhos.">
+<link rel="stylesheet" href="official-v4.css">
+<link rel="stylesheet" href="login.css">
+<link rel="stylesheet" href="motorista.css">
+</head>
+<body>
+<section id="accountModal" class="account-modal" aria-label="Conta GAT" aria-hidden="true">
+  <div class="account-panel">
+    <button id="accountClose" class="account-close" type="button" aria-label="Fechar">×</button>
+    <div class="login-brand"><span>GAT</span><span>LOG</span></div>
+    <span class="login-kicker">CONTA DO MOTORISTA</span>
+    <h1 id="accountTitle">Entrar na Conta GAT</h1>
+    <p id="accountIntro">Use a mesma conta no site e no GAT Telemetria.</p>
+    <div class="account-tabs"><button id="tabLogin" class="active" type="button">ENTRAR</button><button id="tabRegister" type="button">CRIAR CONTA</button></div>
+    <form id="loginForm" class="login-form" autocomplete="on">
+      <div class="login-field"><label for="loginUser">USUÁRIO</label><input id="loginUser" name="username" autocomplete="username" required></div>
+      <div class="login-field"><label for="loginPassword">SENHA</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required></div>
+      <button id="loginButton" class="login-submit" type="submit">ENTRAR</button>
+    </form>
+    <form id="registerForm" class="login-form hidden" autocomplete="off">
+      <div class="login-field"><label for="registerUser">CRIAR USUÁRIO</label><input id="registerUser" autocomplete="username" minlength="3" maxlength="32" required></div>
+      <div class="login-field"><label for="registerPassword">CRIAR SENHA</label><input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required></div>
+      <div class="login-field"><label for="registerConfirm">CONFIRMAR SENHA</label><input id="registerConfirm" type="password" autocomplete="new-password" minlength="6" required></div>
+      <button id="registerButton" class="login-submit" type="submit">CADASTRAR MOTORISTA</button>
+    </form>
+    <div id="loginStatus" class="login-status">Cadastre uma conta ou entre com uma conta existente.</div>
+    <div class="login-note">Depois do login, o navegador usa um token de sessão. A senha não fica salva na página.</div>
+  </div>
+</section>
+
+<header class="topbar">
+  <a class="brand" href="index.html"><b>GAT-<span>LOG</span></b></a>
+  <nav><a href="index.html">Início</a><a href="index.html#motoristas">Motoristas</a><a href="index.html#mapa">Mapa</a><a href="index.html#trabalhos">Trabalhos</a></nav>
+  <button id="accountButton" class="account-btn logout-button" type="button">ENTRAR / CADASTRAR</button>
+</header>
+
+<main class="driver-page shell">
+  <a class="back-link" href="index.html#motoristas">← Voltar para Motoristas</a>
+
+  <section class="driver-hero">
+    <div class="driver-avatar" id="driverAvatar">D</div>
+    <div class="driver-ident">
+      <span class="eyebrow" id="profileType">PERFIL PÚBLICO</span>
+      <h1 id="driverName">Douglas</h1>
+      <p id="driverAccount">@biduzao</p>
+      <div class="driver-badges">
+        <span class="level-badge" id="driverLevel">★ Nível 15</span>
+        <span class="xp-badge" id="driverXp">↗ 1.594 XP</span>
+        <span class="pill green" id="driverStatus">EM ROTA</span>
+      </div>
+    </div>
+    <div class="driver-month">
+      <small>MISSÕES DO MÊS</small>
+      <b id="driverMonthly">24 / 40</b>
+      <div class="monthly-track"><i id="monthlyBar"></i></div>
+      <span id="driverMonthlyText">60% concluído</span>
+    </div>
+  </section>
+
+  <section class="driver-stat-grid">
+    <article><small>ENTREGAS</small><b id="statDeliveries">128</b></article>
+    <article><small>KM TOTAL</small><b id="statKm">94.820 km</b></article>
+    <article><small>PONTOS</small><b id="statPoints">12.480</b></article>
+    <article><small>NÍVEL</small><b id="statLevel">15</b></article>
+    <article><small>XP TOTAL</small><b id="statXp">1.594</b></article>
+  </section>
+
+  <section class="driver-grid-main">
+    <article class="driver-card current-trip">
+      <div class="card-title"><div><span class="eyebrow">AO VIVO</span><h2>Viagem atual</h2></div><span class="pill green">TELEMETRIA</span></div>
+      <div class="route-big"><strong id="tripSource">Palermo</strong><span>→</span><strong id="tripDestination">Oslo</strong></div>
+      <div class="metric-grid">
+        <div><small>CARGA</small><b id="tripCargo">Equipamento industrial</b></div>
+        <div><small>PESO</small><b id="tripWeight">18,4 t</b></div>
+        <div><small>RESTANTE</small><b id="tripKm">1.247 km</b></div>
+        <div><small>VELOCIDADE</small><b id="tripSpeed">87 km/h</b></div>
+      </div>
+    </article>
+
+    <article class="driver-card garage-card">
+      <div class="card-title"><div><span class="eyebrow">GARAGEM</span><h2>Caminhões</h2></div></div>
+      <div class="truck-row"><div class="truck-symbol">★</div><div><small>CAMINHÃO FAVORITO</small><b id="favoriteTruck">Scania S 770</b><span>Azul • 770 cv • 6x2</span></div></div>
+      <div class="truck-row"><div class="truck-symbol live-truck">●</div><div><small>CAMINHÃO ATUAL</small><b id="currentTruck">Scania S 770</b><span>Detectado pela telemetria</span></div></div>
+    </article>
+  </section>
+
+  <section class="driver-grid-main lower">
+    <article class="driver-card work-driver-card">
+      <div class="card-title">
+        <div><span class="eyebrow">TRABALHO ATUAL</span><h2 id="workTitle">Missão GAT #25</h2></div>
+        <span class="pill amber" id="workState">AGUARDANDO CARGA</span>
+      </div>
+      <p class="lead">Para liberar o próximo trabalho, este precisa ser concluído.</p>
+      <div class="work-specs">
+        <div><small>MERCADO</small><b>World of Trucks</b></div>
+        <div><small>DISTÂNCIA MÍNIMA</small><b>800 km</b></div>
+        <div><small>FAIXA DE PESO</small><b id="workWeight">16–24 t</b></div>
+        <div><small>CARGA / CIDADE</small><b>Livre dentro da regra</b></div>
+      </div>
+      <div id="workOwnerMessage" class="owner-message">Entre na sua Conta GAT para pegar o trabalho direcionado a você.</div>
+      <button id="takeWorkButton" class="btn primary take-work" type="button" disabled>PEGAR TRABALHO</button>
+    </article>
+
+    <article class="driver-card xp-card">
+      <div class="card-title"><div><span class="eyebrow">NÍVEL E XP</span><h2>Progressão</h2></div></div>
+      <div class="xp-progress-head"><span id="xpLevelNow">Nível 15</span><b id="xpProgress">640 / 1.000 XP</b></div>
+      <div class="xp-track driver-xp-track"><i id="xpBar"></i></div>
+      <p class="lead">Cada missão GAT concluída gera XP. O XP aumenta o nível do motorista, separado dos pontos do ranking.</p>
+    </article>
+  </section>
+
+  <section class="driver-card deliveries-card">
+    <div class="card-title"><div><span class="eyebrow">HISTÓRICO</span><h2>Cargas concluídas</h2></div><span class="pill blue" id="deliveriesCount">128 ENTREGAS</span></div>
+    <div class="deliveries-table">
+      <div class="delivery-row delivery-head"><span>ROTA</span><span>CARGA</span><span>PESO</span><span>KM</span><span>MISSÃO</span><span>STATUS</span></div>
+      <div id="deliveryRows"></div>
+    </div>
+    <div class="data-note">Enquanto o histórico permanente do servidor não estiver conectado, os registros exibidos nesta página são demonstrativos.</div>
+  </section>
+</main>
+
+<footer class="footer"><div class="shell">GAT-LOG • A cada viagem, uma história.</div></footer>
+<script src="official-v4.js"></script>
+<script src="motorista.js"></script>
+</body>
+</html>
