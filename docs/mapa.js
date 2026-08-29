@@ -2,7 +2,7 @@ const CENTRAL={label:'CENTRAL GAT',url:'https://douglas.tail4577e8.ts.net'};
 const LIVE_PATH='/api/public/account-live',FRESH_MS=18000,REF_ZOOM=8;
 const MAP_CONFIG=window.GAT_MAP_CONFIG||{};
 const MAP_LABELS={all:'Todos os mapas',base:'Mapa Base',promods:'ProMods',rbr:'RBR',rotas_brasil:'Rotas Brasil',eaa:'EAA',other:'Outro mapa'};
-let mapDrivers=[],currentFilter='all',currentMap='all',firstPosition=true,activeImageLayer=null;
+let mapDrivers=[],currentFilter='all',currentMap='all',firstPosition=true,activeImageLayer=null,activeVisualKey='base',selectedDriverKey='';
 const truckMarkers=new Map();
 const norm=s=>String(s||'').trim().toLowerCase();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -17,91 +17,85 @@ const truckText=t=>{const a=textValue(t,'truck_make','truck.make','Truck.Make'),
 const sourceOf=t=>textValue(t,'source_city','source','job.sourceCity','Job.SourceCity');
 const destinationOf=t=>textValue(t,'destination_city','destination','job.destinationCity','Job.DestinationCity');
 
-function mapKey(t){
-  let k=norm(textValue(t,'gat_map','map_mode','gatMap')).replace(/[\s-]+/g,'_');
-  if(k==='promods'||k==='pro_mods')return 'promods';
-  if(k==='rbr')return 'rbr';
-  if(k==='rotas_brasil'||k==='rotasbrasil'||k==='rots_brasil')return 'rotas_brasil';
-  if(k==='eaa'||k==='mapa_eaa')return 'eaa';
-  if(k==='other'||k==='outro'||k==='outro_mapa')return 'other';
-  return 'base';
-}
+function mapKey(t){let k=norm(textValue(t,'gat_map','map_mode','gatMap')).replace(/[\s-]+/g,'_');if(k==='promods'||k==='pro_mods')return 'promods';if(k==='rbr')return 'rbr';if(k==='rotas_brasil'||k==='rotasbrasil'||k==='rots_brasil')return 'rotas_brasil';if(k==='eaa'||k==='mapa_eaa')return 'eaa';if(k==='other'||k==='outro'||k==='outro_mapa')return 'other';return 'base'}
 function mapLabel(k){return MAP_LABELS[k]||MAP_LABELS.base}
 function mapMatch(d){return currentMap==='all'||d.map===currentMap}
 function pinMapMatch(d){return currentMap==='all'?(d.map==='base'||d.map==='promods'):d.map===currentMap}
+function markerKey(d){return norm(d.t?.account_user||d.name)}
 
 const liveMap=L.map('ets2Map',{crs:L.CRS.Simple,minZoom:0,maxZoom:8,zoomControl:true,attributionControl:false,preferCanvas:true});
 const baseCfg=MAP_CONFIG.base||{};
 const px=Array.isArray(baseCfg.pixelBounds)?baseCfg.pixelBounds:[0,192512,173568,0];
 const mapBounds=L.latLngBounds(liveMap.unproject([px[0],px[1]],REF_ZOOM),liveMap.unproject([px[2],px[3]],REF_ZOOM));
 const broadBounds=L.latLngBounds(liveMap.unproject([-900000,900000],REF_ZOOM),liveMap.unproject([900000,-900000],REF_ZOOM));
-const baseLayer=L.tileLayer(baseCfg.tileUrl||'https://raw.githubusercontent.com/felix-d1strict/vtc-map/master/ets2map/coloured/{z}/{x}_{y}.png',{minZoom:Number(baseCfg.minZoom??0),maxZoom:Number(baseCfg.maxZoom??8),tileSize:Number(baseCfg.tileSize||512),bounds:mapBounds,noWrap:true,keepBuffer:3}).addTo(liveMap);
+const baseLayer=L.tileLayer(baseCfg.tileUrl||'https://raw.githubusercontent.com/felix-d1strict/vtc-map/master/ets2map/coloured/{z}/{x}_{y}.png',{minZoom:Number(baseCfg.minZoom??0),maxZoom:Number(baseCfg.maxZoom??8),tileSize:Number(baseCfg.tileSize||512),bounds:mapBounds,noWrap:true,keepBuffer:5,updateWhenIdle:true}).addTo(liveMap);
 liveMap.setMaxBounds(mapBounds.pad(.08));
 liveMap.setView(liveMap.unproject([90000,90000],REF_ZOOM),2);
 
 function gameToLatLng(x,z){return liveMap.unproject([Number(x)/.78125+89600,Number(z)/.78125+89600],REF_ZOOM)}
-function imageBounds(cfg){
-  const b=cfg&&cfg.gameBounds;
-  if(!b||![b.xMin,b.zMin,b.xMax,b.zMax].every(v=>Number.isFinite(Number(v))))return null;
-  return L.latLngBounds(gameToLatLng(Number(b.xMin),Number(b.zMin)),gameToLatLng(Number(b.xMax),Number(b.zMax)));
-}
+function imageBounds(cfg){const b=cfg&&cfg.gameBounds;if(!b||![b.xMin,b.zMin,b.xMax,b.zMax].every(v=>Number.isFinite(Number(v))))return null;return L.latLngBounds(gameToLatLng(Number(b.xMin),Number(b.zMin)),gameToLatLng(Number(b.xMax),Number(b.zMax)))}
 function headingDeg(v){const h=Number(v);if(!Number.isFinite(h))return 0;if(Math.abs(h)<=1.01)return h*360;if(Math.abs(h)<=Math.PI*2+.01)return h*180/Math.PI;return h%360}
-function markerKey(d){return norm(d.t?.account_user||d.name)}
 function markerIcon(d){const moving=fresh(d.t)&&d.t.on_job,deg=headingDeg(numberValue(d.t,'map_heading','truck.placement.heading'));return L.divIcon({className:'gat-truck-icon',iconSize:[48,48],iconAnchor:[24,24],html:'<div class="gat-truck-marker '+(moving?'':'idle')+'"><div class="gat-truck-arrow" style="transform:rotate('+deg.toFixed(1)+'deg)"><div class="gat-truck-body"></div></div><span class="gat-truck-label">'+esc(d.name)+'</span></div>'})}
 function popupHtml(d){const t=d.t||{},src=sourceOf(t),dst=destinationOf(t),route=t.on_job?((src||'Origem')+' → '+(dst||'Destino')):'Online • sem carga',speed=Math.round(Math.abs(numberValue(t,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed'))),acct=String(t.account_user||'').trim();return '<div class="gat-popup"><b>'+esc(d.name)+'</b><small>'+esc(mapLabel(d.map))+' • Central GAT</small><strong>'+esc(truckText(t))+'</strong><small>'+esc(route)+'</small><small>'+speed+' km/h'+(acct?' • @'+esc(acct):'')+'</small></div>'}
 
 async function fetchCentral(){const c=new AbortController(),timer=setTimeout(()=>c.abort(),4500);try{const r=await fetch(CENTRAL.url+LIVE_PATH,{cache:'no-store',signal:c.signal});if(!r.ok)throw 0;return await r.json()}catch(_){return null}finally{clearTimeout(timer)}}
 function build(data){const tel=Array.isArray(data?.telemetry)?data.telemetry:[],seen=new Set(),out=[];tel.filter(fresh).forEach(t=>{const name=String(t.driver||t.account_user||'Motorista').trim(),k=norm(t.account_user||name);if(!k||seen.has(k))return;seen.add(k);out.push({server:CENTRAL.label,name,t,map:mapKey(t)})});return out}
-
 function filteredList(){return mapDrivers.filter(d=>mapMatch(d)&&(currentFilter==='all'||(currentFilter==='trip'&&d.t?.on_job)||(currentFilter==='idle'&&!d.t?.on_job)))}
-function renderList(){const root=document.getElementById('mapDrivers');root.textContent='';const list=filteredList();document.getElementById('mapDriverCount').textContent=list.length;if(!list.length){root.innerHTML='<div class="map-loading">Nenhum motorista nesse filtro.</div>';return;}list.forEach(d=>{const a=document.createElement('a');a.className='map-driver-item';const acct=String(d.t?.account_user||'').trim();a.href='motorista.html?u='+encodeURIComponent((acct||d.name).replace(/^@/,'').toLowerCase());const src=sourceOf(d.t),dst=destinationOf(d.t),route=d.t?.on_job?((src||'Origem')+' → '+(dst||'Destino')):'Online • sem carga',speed=Math.round(Math.abs(numberValue(d.t,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed'))),pos=hasPosition(d.t);a.innerHTML='<div class="map-driver-avatar">'+esc(String(d.name||'?').charAt(0).toUpperCase())+'</div><div><b>'+esc(d.name||'Motorista')+'</b><small>'+esc(route)+'</small><small class="map-driver-truck">'+esc(truckText(d.t))+' • '+esc(mapLabel(d.map))+'</small></div><div class="map-driver-speed"><strong>'+speed+'</strong><br>km/h<i class="'+(pos?'positioned':'')+'"></i></div>';root.appendChild(a)})}
 
-function removeVisualLayers(){
+function setMapTab(key){currentMap=key||'all';document.querySelectorAll('.map-world-tabs button').forEach(x=>x.classList.toggle('active',(x.dataset.map||'all')===currentMap))}
+function showNoPosition(d){const notice=document.getElementById('coordinateNotice');if(!notice)return;notice.style.display='block';const b=notice.querySelector('b'),span=notice.querySelector('span');if(b)b.textContent='SEM POSIÇÃO RECENTE';if(span)span.textContent=(d?.name||'Motorista')+' está online, mas ainda não enviou uma posição válida para o mapa.'}
+function restoreNoticeText(){const notice=document.getElementById('coordinateNotice');if(!notice)return;const b=notice.querySelector('b'),span=notice.querySelector('span');if(b)b.textContent='AGUARDANDO POSIÇÃO DO MOTORISTA';if(span)span.textContent='Com o GAT Telemetria conectado, o caminhão aparece automaticamente na aba correspondente ao mapa escolhido.'}
+
+function focusDriver(d){
+  selectedDriverKey=markerKey(d);
+  if(!hasPosition(d.t)){renderList();showNoPosition(d);return}
+  if(currentMap==='all'&&d.map!=='base'&&d.map!=='promods'){
+    setMapTab(d.map);firstPosition=false;renderList();renderPins();
+  }
+  const marker=truckMarkers.get(selectedDriverKey);
+  if(!marker){renderPins()}
+  const found=truckMarkers.get(selectedDriverKey);
+  if(found){restoreNoticeText();const z=Math.max(6,liveMap.getZoom());liveMap.flyTo(found.getLatLng(),Math.min(z,8),{animate:true,duration:.65});setTimeout(()=>found.openPopup(),500)}
+  renderList();
+}
+
+function renderList(){
+  const root=document.getElementById('mapDrivers');root.textContent='';const list=filteredList();document.getElementById('mapDriverCount').textContent=list.length;
+  if(!list.length){root.innerHTML='<div class="map-loading">Nenhum motorista nesse filtro.</div>';return}
+  list.forEach(d=>{const item=document.createElement('button');item.type='button';item.className='map-driver-item'+(markerKey(d)===selectedDriverKey?' selected':'');item.title=hasPosition(d.t)?'Mostrar motorista no mapa':'Motorista sem posição recente';const src=sourceOf(d.t),dst=destinationOf(d.t),route=d.t?.on_job?((src||'Origem')+' → '+(dst||'Destino')):'Online • sem carga',speed=Math.round(Math.abs(numberValue(d.t,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed'))),pos=hasPosition(d.t);item.innerHTML='<div class="map-driver-avatar">'+esc(String(d.name||'?').charAt(0).toUpperCase())+'</div><div><b>'+esc(d.name||'Motorista')+'</b><small>'+esc(route)+'</small><small class="map-driver-truck">'+esc(truckText(d.t))+' • '+esc(mapLabel(d.map))+'</small></div><div class="map-driver-speed"><strong>'+speed+'</strong><br>km/h<i class="'+(pos?'positioned':'')+'"></i></div>';item.addEventListener('click',()=>focusDriver(d));root.appendChild(item)})
+}
+
+function desiredVisual(){
+  const cfg=currentMap==='all'?baseCfg:(MAP_CONFIG[currentMap]||{});
+  if(currentMap==='all'||currentMap==='base'||currentMap==='promods'||cfg.type==='tiles'||cfg.type==='reference')return {key:'base',cfg:baseCfg,label:mapLabel(currentMap)};
+  if(cfg.type==='image'&&cfg.imageUrl&&imageBounds(cfg))return {key:'image:'+currentMap+':'+cfg.imageUrl,cfg,label:mapLabel(currentMap)};
+  return {key:'blank:'+currentMap,cfg,label:mapLabel(currentMap)};
+}
+function updateMapNote(v){const note=document.getElementById('mapBaseNote');if(!note)return;if(currentMap==='all')note.textContent='TODOS • MAPA BASE/PROMODS VISÍVEIS • ESCOLHA RBR/ROTAS/EAA PARA A BASE PRÓPRIA';else if(currentMap==='base')note.textContent='MAPA BASE • POSIÇÃO GAT EM TEMPO REAL';else if(v.key==='base')note.textContent=v.label.toUpperCase()+' • MAPA BASE COMO REFERÊNCIA • POSIÇÃO GAT AO VIVO';else if(v.key.startsWith('image:'))note.textContent=v.label.toUpperCase()+' • BASE VISUAL GAT • POSIÇÃO AO VIVO';else note.textContent=v.label.toUpperCase()+' • AGUARDANDO BASE VISUAL • POSIÇÃO GAT JÁ PREPARADA'}
+function applyLayerForMap(){
+  const v=desiredVisual();updateMapNote(v);
+  if(v.key===activeVisualKey)return;
   if(liveMap.hasLayer(baseLayer))liveMap.removeLayer(baseLayer);
   if(activeImageLayer){liveMap.removeLayer(activeImageLayer);activeImageLayer=null}
-}
-function applyLayerForMap(){
-  removeVisualLayers();
-  const note=document.getElementById('mapBaseNote');
-  let cfg=currentMap==='all'?baseCfg:(MAP_CONFIG[currentMap]||{}),label=mapLabel(currentMap);
-  let usingBase=false;
-
-  if(currentMap==='all'||currentMap==='base'||cfg.type==='tiles'){
-    baseLayer.addTo(liveMap);usingBase=true;
-    liveMap.setMaxBounds(mapBounds.pad(.08));
-    if(note)note.textContent=currentMap==='all'?'TODOS • MAPA BASE/PROMODS VISÍVEIS • ESCOLHA RBR/ROTAS/EAA PARA A BASE PRÓPRIA':'MAPA BASE • POSIÇÃO GAT EM TEMPO REAL';
-  }else if(cfg.type==='reference'){
-    baseLayer.addTo(liveMap);usingBase=true;
-    liveMap.setMaxBounds(mapBounds.pad(.08));
-    if(note)note.textContent=label.toUpperCase()+' • MAPA BASE COMO REFERÊNCIA • POSIÇÃO GAT AO VIVO';
-  }else if(cfg.type==='image'&&cfg.imageUrl){
-    const bounds=imageBounds(cfg);
-    if(bounds){
-      activeImageLayer=L.imageOverlay(cfg.imageUrl,bounds,{interactive:false,opacity:1}).addTo(liveMap);
-      liveMap.setMaxBounds(bounds.pad(.05));
-      if(firstPosition)liveMap.fitBounds(bounds,{padding:[20,20]});
-      if(note)note.textContent=label.toUpperCase()+' • BASE VISUAL GAT • POSIÇÃO AO VIVO';
-    }else{
-      liveMap.setMaxBounds(broadBounds);
-      if(note)note.textContent=label.toUpperCase()+' • IMAGEM RECEBIDA, AGUARDANDO CALIBRAÇÃO X/Z';
-    }
-  }else{
-    liveMap.setMaxBounds(broadBounds);
-    if(note)note.textContent=label.toUpperCase()+' • AGUARDANDO BASE VISUAL • POSIÇÃO GAT JÁ PREPARADA';
-  }
+  if(v.key==='base'){baseLayer.addTo(liveMap);liveMap.setMaxBounds(mapBounds.pad(.08))}
+  else if(v.key.startsWith('image:')){const bounds=imageBounds(v.cfg);activeImageLayer=L.imageOverlay(v.cfg.imageUrl,bounds,{interactive:false,opacity:1}).addTo(liveMap);liveMap.setMaxBounds(bounds.pad(.05));if(firstPosition)liveMap.fitBounds(bounds,{padding:[20,20]})}
+  else liveMap.setMaxBounds(broadBounds);
+  activeVisualKey=v.key;
   document.getElementById('mapStage')?.classList.toggle('map-has-base-image',!!activeImageLayer);
-  return usingBase;
 }
 
-function renderPins(){applyLayerForMap();const positioned=mapDrivers.filter(d=>pinMapMatch(d)&&hasPosition(d.t)),active=new Set(),latlngs=[];positioned.forEach(d=>{const key=markerKey(d),ll=gameToLatLng(numberValue(d.t,'map_x','truck.placement.x'),numberValue(d.t,'map_z','truck.placement.z'));active.add(key);latlngs.push(ll);let marker=truckMarkers.get(key);if(!marker){marker=L.marker(ll,{icon:markerIcon(d),zIndexOffset:d.t?.on_job?500:300}).addTo(liveMap);truckMarkers.set(key,marker)}else{marker.setLatLng(ll);marker.setIcon(markerIcon(d));marker.setZIndexOffset(d.t?.on_job?500:300)}marker.bindPopup(popupHtml(d),{closeButton:false,offset:[0,-12]})});for(const [key,marker] of truckMarkers){if(!active.has(key)){liveMap.removeLayer(marker);truckMarkers.delete(key)}}const notice=document.getElementById('coordinateNotice');if(notice){notice.style.display=positioned.length?'none':'block';const span=notice.querySelector('span');if(span&&currentMap!=='all'&&MAP_CONFIG[currentMap]?.type==='image'&&!MAP_CONFIG[currentMap]?.imageUrl)span.textContent='A posição já está separada para '+mapLabel(currentMap)+'. Falta somente adicionar a base visual desse mapa no GitHub.'}if(firstPosition&&latlngs.length){firstPosition=false;if(latlngs.length===1)liveMap.setView(latlngs[0],6);else liveMap.fitBounds(L.latLngBounds(latlngs),{padding:[55,55],maxZoom:6})}}
+function renderPins(){
+  applyLayerForMap();const positioned=mapDrivers.filter(d=>pinMapMatch(d)&&hasPosition(d.t)),active=new Set(),latlngs=[];
+  positioned.forEach(d=>{const key=markerKey(d),ll=gameToLatLng(numberValue(d.t,'map_x','truck.placement.x'),numberValue(d.t,'map_z','truck.placement.z'));active.add(key);latlngs.push(ll);let marker=truckMarkers.get(key);if(!marker){marker=L.marker(ll,{icon:markerIcon(d),zIndexOffset:d.t?.on_job?500:300}).addTo(liveMap);truckMarkers.set(key,marker)}else{marker.setLatLng(ll);marker.setIcon(markerIcon(d));marker.setZIndexOffset(d.t?.on_job?500:300)}marker.bindPopup(popupHtml(d),{closeButton:false,offset:[0,-12]})});
+  for(const [key,marker] of truckMarkers){if(!active.has(key)){liveMap.removeLayer(marker);truckMarkers.delete(key)}}
+  const notice=document.getElementById('coordinateNotice');if(notice&&selectedDriverKey===''){notice.style.display=positioned.length?'none':'block';if(!positioned.length)restoreNoticeText()}
+  if(firstPosition&&latlngs.length){firstPosition=false;if(latlngs.length===1)liveMap.setView(latlngs[0],6);else liveMap.fitBounds(L.latLngBounds(latlngs),{padding:[55,55],maxZoom:6})}
+}
 
 function renderMapCounts(){const counts={base:0,promods:0,rbr:0,rotas_brasil:0,eaa:0,other:0};mapDrivers.forEach(d=>counts[d.map]=(counts[d.map]||0)+1);const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};set('mapCountAll',mapDrivers.length);set('mapCountBase',counts.base);set('mapCountPromods',counts.promods);set('mapCountRbr',counts.rbr);set('mapCountRotas',counts.rotas_brasil);set('mapCountEaa',counts.eaa);set('mapCountOther',counts.other)}
-
 async function refresh(){const data=await fetchCentral();mapDrivers=build(data);renderMapCounts();renderList();renderPins();const online=mapDrivers.length,trips=mapDrivers.filter(d=>d.t?.on_job).length,positioned=mapDrivers.filter(d=>hasPosition(d.t)).length;document.getElementById('mapOnline').textContent=online;document.getElementById('mapTrips').textContent=trips;document.getElementById('mapTelemetry').textContent=positioned;document.getElementById('mapClock').textContent=new Date().toLocaleTimeString('pt-BR');const badge=document.getElementById('mapLiveState'),ok=!!data;badge.textContent=ok?'● CENTRAL AO VIVO':'● CENTRAL OFFLINE';badge.classList.toggle('online',ok)}
 
 document.querySelectorAll('.map-filters button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.map-filters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');currentFilter=b.dataset.filter;renderList()}));
-document.querySelectorAll('.map-world-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.map-world-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');currentMap=b.dataset.map||'all';firstPosition=true;renderList();renderPins()}));
-document.querySelectorAll('.map-look-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.map-look-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');const stage=document.getElementById('mapStage'),look=b.dataset.look==='dark'?'dark':'realistic';stage.classList.toggle('map-look-realistic',look==='realistic');stage.classList.toggle('map-look-dark',look==='dark')}));
-window.addEventListener('resize',()=>liveMap.invalidateSize());
-setTimeout(()=>liveMap.invalidateSize(),250);
-refresh();setInterval(refresh,3000);
+document.querySelectorAll('.map-world-tabs button').forEach(b=>b.addEventListener('click',()=>{setMapTab(b.dataset.map||'all');selectedDriverKey='';firstPosition=true;restoreNoticeText();renderList();renderPins()}));
+document.querySelectorAll('.map-look-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.map-look-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');const stage=document.getElementById('mapStage'),look=b.dataset.look==='realistic'?'realistic':'dark';stage.classList.toggle('map-look-realistic',look==='realistic');stage.classList.toggle('map-look-dark',look==='dark')}));
+window.addEventListener('resize',()=>liveMap.invalidateSize());setTimeout(()=>liveMap.invalidateSize(),250);refresh();setInterval(refresh,3000);
