@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.12",
-  "display_version": "1.0.12 AVISO POR VOZ",
-  "notas": "Adiciona aviso de voz 'Trabalho iniciado' quando a Central GAT confirma que a missão passou para EM ANDAMENTO. O aviso também reconhece confirmação manual pelo Admin e toca uma única vez por missão.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.12_VOZ_TESTE.exe",
-  "sha256": "06a1825ab9fd9d513645e0a011540cacc5bfed27879e29eedbbcdc50031c1df6"
+  "version": "1.0.13",
+  "display_version": "1.0.13 TRABALHO EM ANDAMENTO",
+  "notas": "Mostra TRABALHO EM ANDAMENTO em verde na parte inferior da aba Telemetria enquanto a missão estiver ativa. Mantém o aviso por voz quando o trabalho é iniciado.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.13_STATUS_TESTE.exe",
+  "sha256": "ac62d89f55693b7f578045cfb113ac46592a09170382f4972bcc7d27febb73a7"
 }
