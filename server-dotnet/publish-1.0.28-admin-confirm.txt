@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.28 com confirmação manual de carga no painel Admin.
