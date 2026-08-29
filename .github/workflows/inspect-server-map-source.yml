@@ -1,0 +1,45 @@
+name: Inspect server map source
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths: ['server-dotnet/inspect-map-source.txt']
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+          cache: false
+      - name: Reconstruct current 1.0.16 source and show telemetry internals
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          python3 server-dotnet/build103/apply_103_telemetry.py
+          python3 server-dotnet/build104/apply_104_speed_units.py
+          python3 server-dotnet/build105/apply_105_truck_speed_kmh.py
+          python3 server-dotnet/build107/apply_107_server_config.py
+          python3 server-dotnet/build108/apply_108_hide_server_console.py
+          python3 server-dotnet/build110/apply_110_public_live.py
+          python3 server-dotnet/build112/apply_112_driver_accounts.py
+          python3 server-dotnet/build113/apply_113_driver_history_missions.py
+          python3 server-dotnet/build114/apply_114_account_cors.py
+          python3 server-dotnet/build115/apply_115_agent_version_public.py
+          python3 server-dotnet/build116/apply_116_site_browser_auth.py
+          echo '=== TELEMETRY RECORD ==='
+          grep -R -n -A30 -B5 'type TelemetryRecord' /tmp/gat-src || true
+          echo '=== TELEMETRY REQUEST/HANDLER ==='
+          grep -R -n -A120 -B20 'func (a \*agent) clientTelemetry' /tmp/gat-src || true
+          echo '=== AGENT STRUCT ==='
+          grep -R -n -A60 -B5 'type agent struct' /tmp/gat-src/cmd/agent/main.go || true
