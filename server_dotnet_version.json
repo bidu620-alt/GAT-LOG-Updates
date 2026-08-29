@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.30",
-  "display_version": "1.0.30 RECIBO DE VIAGEM",
-  "notas": "A Central GAT agora aceita recibos persistentes de viagem enviados pelo GAT Telemetria. A viagem pode ter começado antes da escolha do trabalho; a distância planejada original do ETS2 é validada na entrega. Reenvios são idempotentes e não duplicam entregas. Catálogo alinhado ao mínimo de 250 km.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.30_TESTE.exe",
-  "sha256": "eab15821b4f2207f0847a5cf5b7ac9eae70aa233ceda50437e0e15de923147ef"
+  "version": "1.0.31",
+  "display_version": "1.0.31 CATALOGO REAL DE CARGAS",
+  "notas": "A Central aprende os nomes reais das cargas que chegam pelo GAT Telemetria e publica essas cargas dentro do card correto do catálogo. O site pode mostrar uma seta com cargas compatíveis já vistas no ETS2. Mantidos recibos persistentes de viagem, mínimo de 250 km e validação por categoria.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe",
+  "sha256": "82520cdfc68b8972ad093f941c1c06d24c868f74b833583431ea5a3738f2b299"
 }
