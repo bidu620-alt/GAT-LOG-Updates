@@ -1,0 +1,1 @@
+publish fixed 1.0.25 cargo catalog xp 2026-08-29
