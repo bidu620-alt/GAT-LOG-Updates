@@ -48,6 +48,7 @@ jobs:
           python3 server-dotnet/build119/apply_119_simple_xp_levels.py
           python3 server-dotnet/build120/apply_120_admin_panel.py
           python3 server-dotnet/build121/apply_121_admin_driver_detail.py
+          python3 server-dotnet/build121/fix_121_admin_tabs.py
           cd /tmp/gat-src
           gofmt -w cmd/agent/main.go internal/core/core.go
           grep -q 'InternalVersion = "1.0.21"' internal/core/core.go
