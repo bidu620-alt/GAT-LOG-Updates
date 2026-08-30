@@ -1,5 +1,5 @@
 // GAT-LOG: configuração visual dos mapas.
-// O Mapa Base usa a pirâmide PNG original exportada do ETS2.
+// Mapas exportados pelo GAT Map Exportador usam pirâmides PNG diretas.
 window.GAT_MAP_CONFIG = {
   base: {
     label: 'Mapa Base',
@@ -9,7 +9,6 @@ window.GAT_MAP_CONFIG = {
     tileSize: 256,
     minZoom: 0,
     maxZoom: 6,
-    // Compatibilidade com o mapa principal, que trabalha com referência de zoom 8.
     pixelBounds: [0, 65536, 65536, 0],
     gameBounds: {
       xMin: -113177.313,
@@ -26,10 +25,18 @@ window.GAT_MAP_CONFIG = {
   },
   rbr: {
     label: 'RBR',
-    type: 'image',
-    imageUrl: '',
-    gameBounds: null,
-    note: 'Aguardando imagem/base visual do RBR.'
+    type: 'gat-direct-tiles',
+    source: 'GAT Map Exportador ETS2 + Cloudflare R2',
+    tileUrl: 'https://maps.gatlogets2.com.br/rbr/Tiles/{z}/{x}/{y}.png?v=1',
+    tileSize: 256,
+    minZoom: 0,
+    maxZoom: 8,
+    gameBounds: {
+      xMin: -311579.156,
+      zMin: -116616.6,
+      xMax: -23590.125,
+      zMax: 171372.438
+    }
   },
   rotas_brasil: {
     label: 'Rotas Brasil',
