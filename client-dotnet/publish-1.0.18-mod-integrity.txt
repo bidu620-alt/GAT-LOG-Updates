@@ -1,0 +1,1 @@
+Publicar GAT Telemetria 1.0.18 com verificação de integridade de mods ativos.
