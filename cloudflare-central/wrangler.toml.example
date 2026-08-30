@@ -1,0 +1,11 @@
+name = "gat-central-cloud"
+main = "worker.js"
+compatibility_date = "2026-08-30"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gat-central"
+database_id = "COLE_AQUI_O_DATABASE_ID"
+
+[vars]
+# MIGRATION_KEY deve ser criada como Secret no painel/CLI, nao neste arquivo.
