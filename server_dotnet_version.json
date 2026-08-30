@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.34",
-  "display_version": "1.0.34 ESTABILIDADE + GAMIFICACAO",
-  "notas": "Protege contra telemetria e recibos com valores impossiveis, cria backup automatico diario mantendo os ultimos 7, adiciona bonus de +5 XP por viagem perfeita, ranking de direcao segura, conquistas, estatisticas de seguranca e painel de saude da Central. Tambem verifica atualizacoes periodicamente e preserva configuracoes, contas, historico, tokens e backups.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.34_TESTE.exe",
-  "sha256": "c07b966624a02877a8e8e8eb71e96564ccf9c9c93b9b695eb99bd8b36b78df15"
+  "version": "1.0.35",
+  "display_version": "1.0.35 REGRAS OFICIAIS",
+  "notas": "Oficializa o Ranking GAT: 30 trabalhos mensais, minimo de 500 km, proibicao de repetir o mesmo par de cidades no mes e classificacao por trabalhos concluidos, viagens perfeitas e menor penalidade. XP e quilometragem continuam como progressao e estatistica, mas nao definem a colocacao. Mantem backup, auditoria, protecao de telemetria e demais recursos da 1.0.34.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.35_TESTE.exe",
+  "sha256": "786631b624e3a6fae95b1612cf9bdf4f6bd94775ba6e44d75321db1a4623a40a"
 }
