@@ -12,8 +12,6 @@ scanner=root/'client-dotnet/GatTelemetry/ModIntegrity.cs'
 try:
     exec(compile(base.read_text(encoding='utf-8'),str(base),'exec'))
 except SystemExit as ex:
-    # A 1.0.10 inseriu os campos gat_map entre gat_client_version e lblTruck.
-    # A base 1.0.18 ja deixou scanner + recibo prontos antes de chegar nesse ponto.
     if 'telemetria central para integridade nao encontrada' not in str(ex):
         raise
 
@@ -31,12 +29,10 @@ if 'gat_integrity_status' not in m:
     m=m.replace(marker,marker+insert,1)
 
 if 'MOD PROIBIDO - ENTREGA NAO VAI CONTAR' not in m:
-    needle='''            if (progress.StatusCode == 200 && progress.Json != null && ApiClient.Bool(progress.Json["ok"]))
-            {
+    needle='''                UpdateWorkStatus(progress.Json);
                 if (ApiClient.Bool(progress.Json["completed_now"]))
 '''
-    repl='''            if (progress.StatusCode == 200 && progress.Json != null && ApiClient.Bool(progress.Json["ok"]))
-            {
+    repl='''                UpdateWorkStatus(progress.Json);
                 if (string.Equals(integrity.Status, "blocked", StringComparison.OrdinalIgnoreCase))
                 {
                     lblTelemetry.Text = "Central GAT: MOD PROIBIDO - ENTREGA NAO VAI CONTAR";
@@ -89,11 +85,11 @@ for path in (proj,installer,installer_proj):
 checks=[
     (journal,'integrity_status'),(journal,'ApplyModIntegrity'),(main,'gat_integrity_status'),
     (main,'MOD PROIBIDO - ENTREGA NAO VAI CONTAR'),(main,'CurrentVersion = "1.0.18"'),
-    (scanner,'damage_mod_detected'),(scanner,'game.log.txt'),(main,'gat_map')
+    (scanner,'damage_mod_detected'),(scanner,'game.log.txt'),(main,'gat_map'),(main,'UpdateWorkStatus(progress.Json);')
 ]
 for path,text in checks:
     if text not in path.read_text(encoding='utf-8'): raise SystemExit('patch 1.0.18 v2 incompleto: '+text)
 if 'GAT_TELEMETRIA_DOTNET_UPDATE_1.0.18_INTEGRIDADE_TESTE' not in installer_proj.read_text(encoding='utf-8'):
     raise SystemExit('nome final do atualizador 1.0.18 nao aplicado')
 
-print('GAT Telemetria 1.0.18 v2: integridade de mods aplicada preservando selecao de mapa')
+print('GAT Telemetria 1.0.18 v2: integridade de mods aplicada preservando mapa, voz e status do trabalho')
