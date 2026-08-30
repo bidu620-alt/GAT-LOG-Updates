@@ -1,1 +1,0 @@
-Gerar snapshot temporário do fonte reconstruído 1.0.34 para validar as regras oficiais antes da publicação 1.0.35.
