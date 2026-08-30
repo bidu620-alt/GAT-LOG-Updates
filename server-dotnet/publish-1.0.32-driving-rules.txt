@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.32 com regras de conducao: 20 XP/100 km, multas por excesso acima de 91 km/h e penalidades fixas por dano de carga/caminhao.
