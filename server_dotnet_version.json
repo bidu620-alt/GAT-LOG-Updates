@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.33",
-  "display_version": "1.0.33 AUDITORIA DE XP",
-  "notas": "Adiciona correcao auditavel do XP final de uma entrega pelo Painel Admin. O Admin pode conferir XP base, multas, danos e XP final e corrigir uma entrega individual quando houver erro de telemetria. A alteracao recalcula o XP total pelo historico e fica registrada no log administrativo.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.33_TESTE.exe",
-  "sha256": "c27b0ec432f6de1fb9a0fdcb2977756cc9440be9948ba7063bd4de73b0f9e898"
+  "version": "1.0.34",
+  "display_version": "1.0.34 ESTABILIDADE + GAMIFICACAO",
+  "notas": "Protege contra telemetria e recibos com valores impossiveis, cria backup automatico diario mantendo os ultimos 7, adiciona bonus de +5 XP por viagem perfeita, ranking de direcao segura, conquistas, estatisticas de seguranca e painel de saude da Central. Tambem verifica atualizacoes periodicamente e preserva configuracoes, contas, historico, tokens e backups.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.34_TESTE.exe",
+  "sha256": "c07b966624a02877a8e8e8eb71e96564ccf9c9c93b9b695eb99bd8b36b78df15"
 }
