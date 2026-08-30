@@ -2,7 +2,7 @@
   const API='https://douglas.tail4577e8.ts.net',GRID='workCatalogGrid',STATUS='workCatalogStatus';
   let items=[];
   const clean=v=>String(v||'').replace(/^@/,'').trim().toLowerCase();
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const session=()=>{try{return JSON.parse(localStorage.getItem('gat_driver_account_v1')||sessionStorage.getItem('gat_driver_account_v1')||'null')}catch(_){return null}};
   const pageUser=()=>{try{if(typeof key!=='undefined'&&key)return clean(key)}catch(_){}const u=new URLSearchParams(location.search).get('u');return clean(u||session()?.user)};
   const own=()=>!!session()?.token&&clean(session().user)===pageUser();
