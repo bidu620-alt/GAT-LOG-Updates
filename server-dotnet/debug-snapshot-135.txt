@@ -1,0 +1,1 @@
+Gerar snapshot temporário do fonte reconstruído 1.0.35 para implementar proteção contra teleporte.
