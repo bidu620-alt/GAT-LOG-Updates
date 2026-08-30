@@ -69,14 +69,18 @@ main.write_text(m,encoding='utf-8')
 
 for path in (proj,installer,installer_proj):
     x=path.read_text(encoding='utf-8')
-    x=x.replace('1.0.15','1.0.16')
     x=x.replace('1.0.15.0','1.0.16.0')
-    x=x.replace('GAT_TELEMETRIA_DOTNET_UPDATE_1.0.15_REGRAS_TESTE','GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_ESTAVEL_TESTE')
-    x=x.replace('GAT_TELEMETRIA_DOTNET_UPDATE_1.0.15_JOURNAL_TESTE','GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_ESTAVEL_TESTE')
+    x=x.replace('1.0.15','1.0.16')
+    # Depois da troca genérica, normaliza qualquer nome legado para o nome final ESTAVEL.
+    x=x.replace('GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_REGRAS_TESTE','GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_ESTAVEL_TESTE')
+    x=x.replace('GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_JOURNAL_TESTE','GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_ESTAVEL_TESTE')
+    x=x.replace('GAT_TELEMETRIA_DOTNET_SETUP_1.0.16_TESTE','GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_ESTAVEL_TESTE')
     path.write_text(x,encoding='utf-8')
 
 checks=[('journal','speedKmh > 200.0'),('journal','v > 100.0'),('journal','remaining > 15000'),('main','CurrentVersion = "1.0.16"'),('main','_updateTimer')]
 for where,text in checks:
     target=journal.read_text(encoding='utf-8') if where=='journal' else main.read_text(encoding='utf-8')
     if text not in target: raise SystemExit('patch incompleto: '+text)
-print('GAT Telemetria 1.0.16: proteção contra picos inválidos e verificação periódica de atualização')
+if 'GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_ESTAVEL_TESTE' not in installer_proj.read_text(encoding='utf-8'):
+    raise SystemExit('nome final do atualizador 1.0.16 nao aplicado')
+print('GAT Telemetria 1.0.16: proteção contra picos inválidos, atualização periódica e nome do atualizador corrigido')
