@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.36 com validacao por odometro real, recibo obrigatorio e protecao contra teleporte/troca de caminhao.
