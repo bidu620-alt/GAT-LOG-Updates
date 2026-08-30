@@ -7,6 +7,7 @@
   const oldApplyLayerForMap=applyLayerForMap;
   const directLayers=new Map();
   const directBoundsByKey=new Map();
+  const DEFAULT_MAP_MAX_ZOOM=Number(liveMap.options?.maxZoom??8);
 
   try{liveMap._fadeAnimated=false}catch(_){}
 
@@ -51,10 +52,14 @@
     return key?gameToDirectLatLng(key,x,z):oldGameToLatLng(x,z);
   };
 
+  function getDisplayMax(cfg){
+    const nativeMax=Number(cfg.maxZoom??8);
+    return Math.max(nativeMax,Number(cfg.displayMaxZoom??DEFAULT_MAP_MAX_ZOOM),DEFAULT_MAP_MAX_ZOOM);
+  }
+
   function getLayer(key){
     if(directLayers.has(key))return directLayers.get(key);
-    const cfg=getCfg(key),tileSize=Number(cfg.tileSize||256),nativeMax=Number(cfg.maxZoom??8),minZoom=Number(cfg.minZoom??0);
-    const displayMax=Math.max(nativeMax,Number(liveMap.options?.maxZoom??8),8);
+    const cfg=getCfg(key),tileSize=Number(cfg.tileSize||256),nativeMax=Number(cfg.maxZoom??8),minZoom=Number(cfg.minZoom??0),displayMax=getDisplayMax(cfg);
     const layer=L.tileLayer(cfg.tileUrl,{
       tileSize,
       minZoom,
@@ -97,9 +102,10 @@
   function note(text){const el=document.getElementById('mapBaseNote');if(el)el.textContent=text}
 
   function showDirectLayer(key,fit){
-    const layer=getLayer(key),bounds=getBounds(key);
+    const cfg=getCfg(key),layer=getLayer(key),bounds=getBounds(key),displayMax=getDisplayMax(cfg);
     removeLegacyLayers();
     removeDirectLayers(key);
+    liveMap.setMaxZoom(displayMax);
     if(!liveMap.hasLayer(layer))layer.addTo(liveMap);
     liveMap.setMaxBounds(bounds.pad(.035));
     document.getElementById('mapStage')?.classList.add('map-has-base-image','map-gat-export','map-gat-tiles');
@@ -120,6 +126,8 @@
     }
 
     removeDirectLayers('');
+    liveMap.setMaxZoom(DEFAULT_MAP_MAX_ZOOM);
+    if(liveMap.getZoom()>DEFAULT_MAP_MAX_ZOOM)liveMap.setZoom(DEFAULT_MAP_MAX_ZOOM);
     document.getElementById('mapStage')?.classList.remove('map-gat-tiles','map-gat-export');
     oldApplyLayerForMap();
   };
