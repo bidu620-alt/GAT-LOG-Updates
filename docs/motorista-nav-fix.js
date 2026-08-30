@@ -9,9 +9,11 @@
     if((!current||current===user)&&activateWork())return;
     location.href='motorista.html?u='+encodeURIComponent(user)+'&tab=work';
   }
+  function removeDirectoryNav(){
+    document.querySelectorAll('.gat-driver-directory-nav').forEach(el=>el.remove());
+  }
   function apply(){
-    const old=document.querySelector('.gat-driver-directory-nav');
-    if(old)old.remove();
+    removeDirectoryNav();
     const nav=document.querySelector('.topbar nav');
     if(nav&&!document.getElementById('gatTopMyWork')){
       const btn=document.createElement('button');
@@ -24,7 +26,10 @@
     const params=new URLSearchParams(location.search);
     if(params.get('tab')==='work')setTimeout(activateWork,120);
   }
+  const observer=new MutationObserver(removeDirectoryNav);
+  observer.observe(document.documentElement,{childList:true,subtree:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
-  setTimeout(apply,400);
-  setTimeout(apply,1200);
+  setTimeout(apply,300);
+  setTimeout(apply,800);
+  setTimeout(apply,1600);
 })();
