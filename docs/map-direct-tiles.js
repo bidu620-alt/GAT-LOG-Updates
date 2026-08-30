@@ -1,74 +1,90 @@
-// GAT-LOG • mapa Base em tiles PNG diretos do GitHub Pages.
-// Evita abrir/decompactar ZIP no navegador e mantém o mapa visível mesmo acima do zoom nativo.
+// GAT-LOG • camadas de tiles PNG diretos para mapas exportados.
 (function(){
   if(typeof L==='undefined'||typeof liveMap==='undefined')return;
 
-  const cfg=(window.GAT_MAP_CONFIG||{}).base||{};
-  if(cfg.type!=='gat-direct-tiles'||!cfg.tileUrl)return;
-
+  const configs=window.GAT_MAP_CONFIG||{};
   const oldGameToLatLng=gameToLatLng;
   const oldApplyLayerForMap=applyLayerForMap;
-  const TILE_SIZE=Number(cfg.tileSize||256);
-  // O exportador GAT só possui PNGs até este nível (normalmente 6).
-  // Leaflet pode continuar aproximando até o zoom do mapa (8), ampliando o último tile nativo.
-  const NATIVE_MAX_ZOOM=Number(cfg.maxZoom??6);
-  const DISPLAY_MAX_ZOOM=Math.max(NATIVE_MAX_ZOOM,Number(liveMap.options?.maxZoom??8),8);
-  const MIN_ZOOM=Number(cfg.minZoom??0);
-  const WORLD_PX=TILE_SIZE*Math.pow(2,NATIVE_MAX_ZOOM);
-  const gameBounds=cfg.gameBounds||null;
-  const directBounds=L.latLngBounds(
-    liveMap.unproject([0,WORLD_PX],NATIVE_MAX_ZOOM),
-    liveMap.unproject([WORLD_PX,0],NATIVE_MAX_ZOOM)
-  );
+  const directLayers=new Map();
+  const directBoundsByKey=new Map();
 
-  // Os tiles entram imediatamente, sem animação de opacidade entre níveis.
   try{liveMap._fadeAnimated=false}catch(_){}
 
-  function note(text){
-    const el=document.getElementById('mapBaseNote');
-    if(el)el.textContent=text;
+  function directKey(){
+    if(currentMap==='promods')return 'base';
+    const cfg=configs[currentMap]||{};
+    return cfg.type==='gat-direct-tiles'&&cfg.tileUrl?currentMap:'';
   }
 
-  function baseSelected(){
-    return currentMap==='base'||currentMap==='promods';
+  function getCfg(key){return configs[key]||{}}
+
+  function worldPx(cfg){
+    const tileSize=Number(cfg.tileSize||256);
+    const nativeMax=Number(cfg.maxZoom??8);
+    return tileSize*Math.pow(2,nativeMax);
   }
 
-  function gameToDirectLatLng(x,z){
-    const b=gameBounds;
+  function getBounds(key){
+    if(directBoundsByKey.has(key))return directBoundsByKey.get(key);
+    const cfg=getCfg(key),nativeMax=Number(cfg.maxZoom??8),size=worldPx(cfg);
+    const bounds=L.latLngBounds(
+      liveMap.unproject([0,size],nativeMax),
+      liveMap.unproject([size,0],nativeMax)
+    );
+    directBoundsByKey.set(key,bounds);
+    return bounds;
+  }
+
+  function gameToDirectLatLng(key,x,z){
+    const cfg=getCfg(key),b=cfg.gameBounds;
     if(!b||![b.xMin,b.xMax,b.zMin,b.zMax].every(v=>Number.isFinite(Number(v))))return oldGameToLatLng(x,z);
+    const size=worldPx(cfg),nativeMax=Number(cfg.maxZoom??8);
     const nx=(Number(x)-Number(b.xMin))/(Number(b.xMax)-Number(b.xMin));
     const nz=(Number(z)-Number(b.zMin))/(Number(b.zMax)-Number(b.zMin));
-    const px=Math.max(0,Math.min(WORLD_PX,nx*WORLD_PX));
-    const py=Math.max(0,Math.min(WORLD_PX,nz*WORLD_PX));
-    return liveMap.unproject([px,py],NATIVE_MAX_ZOOM);
+    const px=Math.max(0,Math.min(size,nx*size));
+    const py=Math.max(0,Math.min(size,nz*size));
+    return liveMap.unproject([px,py],nativeMax);
   }
 
   gameToLatLng=function(x,z){
-    return baseSelected()?gameToDirectLatLng(x,z):oldGameToLatLng(x,z);
+    const key=directKey();
+    return key?gameToDirectLatLng(key,x,z):oldGameToLatLng(x,z);
   };
 
-  const directLayer=L.tileLayer(cfg.tileUrl,{
-    tileSize:TILE_SIZE,
-    minZoom:MIN_ZOOM,
-    maxZoom:DISPLAY_MAX_ZOOM,
-    minNativeZoom:MIN_ZOOM,
-    maxNativeZoom:NATIVE_MAX_ZOOM,
-    bounds:directBounds,
-    noWrap:true,
-    keepBuffer:12,
-    updateWhenIdle:false,
-    updateWhenZooming:true,
-    updateInterval:80,
-    pane:'tilePane'
-  });
+  function getLayer(key){
+    if(directLayers.has(key))return directLayers.get(key);
+    const cfg=getCfg(key),tileSize=Number(cfg.tileSize||256),nativeMax=Number(cfg.maxZoom??8),minZoom=Number(cfg.minZoom??0);
+    const displayMax=Math.max(nativeMax,Number(liveMap.options?.maxZoom??8),8);
+    const layer=L.tileLayer(cfg.tileUrl,{
+      tileSize,
+      minZoom,
+      maxZoom:displayMax,
+      minNativeZoom:minZoom,
+      maxNativeZoom:nativeMax,
+      bounds:getBounds(key),
+      noWrap:true,
+      keepBuffer:12,
+      updateWhenIdle:false,
+      updateWhenZooming:true,
+      updateInterval:80,
+      pane:'tilePane'
+    });
+    layer.on('tileload',e=>{
+      if(e&&e.tile){
+        e.tile.style.opacity='1';
+        e.tile.style.transition='none';
+        e.tile.style.backfaceVisibility='hidden';
+      }
+    });
+    directLayers.set(key,layer);
+    return layer;
+  }
 
-  directLayer.on('tileload',e=>{
-    if(e&&e.tile){
-      e.tile.style.opacity='1';
-      e.tile.style.transition='none';
-      e.tile.style.backfaceVisibility='hidden';
+  function removeDirectLayers(exceptKey){
+    for(const [key,layer] of directLayers){
+      if(key!==exceptKey&&liveMap.hasLayer(layer))liveMap.removeLayer(layer);
     }
-  });
+  }
 
   function removeLegacyLayers(){
     try{if(typeof baseLayer!=='undefined'&&liveMap.hasLayer(baseLayer))liveMap.removeLayer(baseLayer)}catch(_){}
@@ -78,43 +94,47 @@
     }
   }
 
-  function showDirectLayer(fit){
+  function note(text){const el=document.getElementById('mapBaseNote');if(el)el.textContent=text}
+
+  function showDirectLayer(key,fit){
+    const layer=getLayer(key),bounds=getBounds(key);
     removeLegacyLayers();
-    if(!liveMap.hasLayer(directLayer))directLayer.addTo(liveMap);
-    liveMap.setMaxBounds(directBounds.pad(.035));
+    removeDirectLayers(key);
+    if(!liveMap.hasLayer(layer))layer.addTo(liveMap);
+    liveMap.setMaxBounds(bounds.pad(.035));
     document.getElementById('mapStage')?.classList.add('map-has-base-image','map-gat-export','map-gat-tiles');
-    if(fit)liveMap.fitBounds(directBounds,{padding:[18,18],maxZoom:2});
-    note(currentMap==='promods'?'PROMODS • MAPA BASE GAT COMO REFERÊNCIA • TILES DIRETOS':'MAPA BASE • TILES ORIGINAIS DIRETOS • POSIÇÃO GAT AO VIVO');
+    const label=(configs[currentMap]?.label||configs[key]?.label||key).toUpperCase();
+    if(currentMap==='promods')note('PROMODS • MAPA BASE GAT COMO REFERÊNCIA • TILES DIRETOS');
+    else note(label+' • TILES GAT • POSIÇÃO AO VIVO');
+    if(fit)liveMap.fitBounds(bounds,{padding:[18,18],maxZoom:2});
   }
 
   applyLayerForMap=function(){
-    if(baseSelected()){
-      const changed=activeVisualKey!=='gat-direct:'+currentMap;
-      activeVisualKey='gat-direct:'+currentMap;
-      showDirectLayer(changed&&firstPosition);
+    const key=directKey();
+    if(key){
+      const visual='gat-direct:'+currentMap;
+      const changed=activeVisualKey!==visual;
+      activeVisualKey=visual;
+      showDirectLayer(key,changed&&firstPosition);
       return;
     }
 
-    if(liveMap.hasLayer(directLayer))liveMap.removeLayer(directLayer);
+    removeDirectLayers('');
     document.getElementById('mapStage')?.classList.remove('map-gat-tiles','map-gat-export');
     oldApplyLayerForMap();
   };
 
-  // O mapa antigo pode ter consumido o primeiro foco antes deste script carregar.
-  // Reinicia o foco para que, havendo motorista com posição, a tela abra nele.
-  removeLegacyLayers();
-  activeVisualKey='gat-direct:'+currentMap;
-  firstPosition=true;
-  showDirectLayer(false);
-  liveMap.setView(directBounds.getCenter(),2);
-  liveMap.invalidateSize();
-
-  setTimeout(()=>{
-    try{
-      renderPins();
-      if(firstPosition)liveMap.fitBounds(directBounds,{padding:[18,18],maxZoom:2});
-    }catch(_){
-      liveMap.fitBounds(directBounds,{padding:[18,18],maxZoom:2});
-    }
-  },0);
+  const initialKey=directKey();
+  if(initialKey){
+    removeLegacyLayers();
+    activeVisualKey='gat-direct:'+currentMap;
+    firstPosition=true;
+    showDirectLayer(initialKey,false);
+    liveMap.setView(getBounds(initialKey).getCenter(),2);
+    liveMap.invalidateSize();
+    setTimeout(()=>{
+      try{renderPins();if(firstPosition)liveMap.fitBounds(getBounds(initialKey),{padding:[18,18],maxZoom:2})}
+      catch(_){liveMap.fitBounds(getBounds(initialKey),{padding:[18,18],maxZoom:2})}
+    },0);
+  }
 })();
