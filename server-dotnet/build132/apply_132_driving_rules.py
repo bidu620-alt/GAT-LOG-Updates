@@ -31,21 +31,37 @@ if 'BaseXP' not in s:
     )
     s=s[:m.end()]+extra+s[m.end():]
 
-# O recibo do cliente passa a carregar os dados de conducao observados durante a viagem.
-if 'SpeedFines' not in s[s.find('type gatTripCompleteRequest struct'):s.find('func (a *agent) accountTripComplete(')]:
-    needle='\tCompletedAt              string  `json:"completed_at"`\n'
-    pos=s.find(needle,s.find('type gatTripCompleteRequest struct'))
-    if pos<0: raise SystemExit('CompletedAt do recibo nao encontrado')
-    end=pos+len(needle)
-    extra=(
-        '\tSpeedFines               int     `json:"speed_fines"`\n'
-        '\tCargoDamagePct           float64 `json:"cargo_damage_pct"`\n'
-        '\tTruckDamageStartPct      float64 `json:"truck_damage_start_pct"`\n'
-        '\tTruckDamageMaxPct        float64 `json:"truck_damage_max_pct"`\n'
-    )
-    s=s[:end]+extra+s[end:]
+# XP zero por penalidade e valido; somente historico legado sem BaseXP/PenaltyXP e reconstruido.
+pat=r'if x <= 0 \{ x = gatXPForDistance\(p\.Deliveries\[i\]\.DistanceKm\); p\.Deliveries\[i\]\.XPAwarded = x \}'
+repl='if x <= 0 && p.Deliveries[i].BaseXP == 0 && p.Deliveries[i].PenaltyXP == 0 { x = gatXPForDistance(p.Deliveries[i].DistanceKm); p.Deliveries[i].XPAwarded = x }'
+s,n=re.subn(pat,repl,s,count=1)
+if n==0 and repl not in s:
+    raise SystemExit('gatTotalXPFromHistory nao encontrado')
 
-rules=r'''
+req_start=s.find('type gatTripCompleteRequest struct {')
+handler_start=s.find('func (a *agent) accountTripComplete(',req_start)
+telemetry_start=s.find('func (a *agent) accountTelemetry(',handler_start)
+if req_start<0 or handler_start<0 or telemetry_start<0:
+    raise SystemExit('bloco de recibo 1.0.30 nao encontrado')
+
+block=r'''type gatTripCompleteRequest struct {
+	Driver                   string  `json:"driver"`
+	TripID                   string  `json:"trip_id"`
+	Cargo                    string  `json:"cargo"`
+	Source                   string  `json:"source"`
+	Destination              string  `json:"destination"`
+	Market                   string  `json:"market"`
+	WeightKg                 float64 `json:"weight_kg"`
+	PlannedDistanceKm        float64 `json:"planned_distance_km"`
+	FirstObservedRemainingKm float64 `json:"first_observed_remaining_km"`
+	StartedObservedAt        string  `json:"started_observed_at"`
+	CompletedAt              string  `json:"completed_at"`
+	SpeedFines               int     `json:"speed_fines"`
+	CargoDamagePct           float64 `json:"cargo_damage_pct"`
+	TruckDamageStartPct      float64 `json:"truck_damage_start_pct"`
+	TruckDamageMaxPct        float64 `json:"truck_damage_max_pct"`
+}
+
 func gatDamagePct(v float64) float64 {
 	if v < 0 { return v }
 	if v <= 1.01 { return v * 100.0 }
@@ -90,54 +106,96 @@ func gatApplyRulesToDelivery(d *gatDelivery, distance float64, q gatTripComplete
 	d.CargoDamagePct=gatDamagePct(q.CargoDamagePct); d.TruckDamagePct=delta
 }
 
+func gatTripRuleResponse(d *gatDelivery) map[string]any {
+	if d==nil { return map[string]any{} }
+	return map[string]any{
+		"base_xp":d.BaseXP,"penalty_xp":d.PenaltyXP,"xp_awarded":d.XPAwarded,
+		"speed_fines":d.SpeedFines,"speed_penalty_xp":d.SpeedPenaltyXP,
+		"cargo_damage_pct":d.CargoDamagePct,"cargo_penalty_xp":d.CargoPenaltyXP,
+		"truck_damage_delta_pct":d.TruckDamagePct,"truck_penalty_xp":d.TruckPenaltyXP,
+	}
+}
+
+func (a *agent) accountTripComplete(w http.ResponseWriter, r *http.Request) {
+	if gatAccountCors(w,r) { return }
+	if r.Method != http.MethodPost { jsonOut(w,405,map[string]any{"ok":false,"error":"method_not_allowed"}); return }
+	user,ok:=gatAuthUser(w,r); if !ok { return }
+	var q gatTripCompleteRequest
+	if decode(r,&q)!=nil { jsonOut(w,400,map[string]any{"ok":false,"error":"bad_request"}); return }
+	q.TripID=strings.TrimSpace(q.TripID); q.Cargo=strings.TrimSpace(q.Cargo); q.Source=strings.TrimSpace(q.Source); q.Destination=strings.TrimSpace(q.Destination)
+	if q.TripID=="" || q.Cargo=="" { jsonOut(w,400,map[string]any{"ok":false,"error":"trip_required"}); return }
+	if strings.TrimSpace(q.CompletedAt)=="" { q.CompletedAt=time.Now().UTC().Format(time.RFC3339) }
+
+	gatProgressMu.Lock(); defer gatProgressMu.Unlock()
+	gatLearnCargoName(q.Cargo)
+	all:=loadGatProgress(); p:=ensureGatProgress(all,user)
+
+	// Idempotencia forte: reenvio do mesmo recibo nunca duplica a entrega.
+	for i:=range p.Deliveries {
+		d:=&p.Deliveries[i]
+		if strings.EqualFold(strings.TrimSpace(d.ReceiptID),q.TripID) {
+			resp:=map[string]any{"ok":true,"duplicate":true,"completed_now":false,"receipt_id":q.TripID,"monthly_completed":p.MonthlyCompleted,"xp":p.XP}
+			for k,v:=range gatTripRuleResponse(d) { resp[k]=v }
+			jsonOut(w,200,resp); return
+		}
+	}
+
+	// Se a telemetria ao vivo contou primeiro, o recibo posterior anexa o ID e aplica as penalidades.
+	if p.CurrentMission==nil && len(p.Deliveries)>0 {
+		qt,qerr:=time.Parse(time.RFC3339,q.CompletedAt)
+		for i:=len(p.Deliveries)-1; i>=0 && i>=len(p.Deliveries)-5; i-- {
+			d:=&p.Deliveries[i]
+			if !strings.EqualFold(strings.TrimSpace(d.Cargo),q.Cargo) || !strings.EqualFold(strings.TrimSpace(d.Source),q.Source) || !strings.EqualFold(strings.TrimSpace(d.Destination),q.Destination) { continue }
+			dt,derr:=time.Parse(time.RFC3339,d.CompletedAt)
+			if qerr==nil && derr==nil { diff:=qt.Sub(dt); if diff<0 { diff=-diff }; if diff>15*time.Minute { continue } }
+			d.ReceiptID=q.TripID
+			distance:=d.DistanceKm; if distance<=0 { distance=q.PlannedDistanceKm; if q.FirstObservedRemainingKm>distance { distance=q.FirstObservedRemainingKm } }
+			gatApplyRulesToDelivery(d,distance,q); p.XP=gatTotalXPFromHistory(p); _=saveGatProgress(all)
+			resp:=map[string]any{"ok":true,"duplicate":true,"already_counted":true,"completed_now":false,"receipt_id":q.TripID,"monthly_completed":p.MonthlyCompleted,"xp":p.XP}
+			for k,v:=range gatTripRuleResponse(d) { resp[k]=v }
+			jsonOut(w,200,resp); return
+		}
+	}
+
+	m:=p.CurrentMission
+	if m==nil { jsonOut(w,409,map[string]any{"ok":false,"error":"mission_not_found","receipt_id":q.TripID}); return }
+	if m.CatalogID!="" { m.MinKm=250 }
+
+	if qt,err:=time.Parse(time.RFC3339,q.CompletedAt); err==nil {
+		if at,err2:=time.Parse(time.RFC3339,m.AssignedAt); err2==nil && qt.Before(at.Add(-5*time.Second)) {
+			jsonOut(w,409,map[string]any{"ok":false,"error":"trip_before_mission","receipt_id":q.TripID}); return
+		}
+	}
+	if !gatCargoMatch(m,q.Cargo) {
+		jsonOut(w,409,map[string]any{"ok":false,"error":"cargo_mismatch","receipt_id":q.TripID,"cargo":q.Cargo,"mission":m}); return
+	}
+
+	distance:=q.PlannedDistanceKm
+	if q.FirstObservedRemainingKm>distance { distance=q.FirstObservedRemainingKm }
+	required:=m.MinKm; if m.CatalogID!="" || required<=0 { required=250 }
+	if distance<required {
+		jsonOut(w,409,map[string]any{"ok":false,"error":"distance_below_minimum","required_km":required,"distance_km":distance,"receipt_id":q.TripID}); return
+	}
+
+	now:=time.Now().UTC(); completed:=q.CompletedAt
+	if _,err:=time.Parse(time.RFC3339,completed); err!=nil { completed=now.Format(time.RFC3339) }
+	m.State="completed"; m.CompletedAt=completed; m.Cargo=q.Cargo; m.Source=q.Source; m.Destination=q.Destination; m.WeightKg=q.WeightKg; m.StartKm=distance; m.LastKm=0
+	if strings.TrimSpace(m.StartedAt)=="" { m.StartedAt=strings.TrimSpace(q.StartedObservedAt); if m.StartedAt=="" { m.StartedAt=m.AssignedAt } }
+	delivery:=gatDelivery{ID:m.ID,MissionID:m.ID,Sequence:m.Sequence,CatalogID:m.CatalogID,Title:m.Title,Category:m.Category,ReceiptID:q.TripID,CompletedAt:completed,Cargo:q.Cargo,Source:q.Source,Destination:q.Destination,WeightKg:q.WeightKg,DistanceKm:distance}
+	gatApplyRulesToDelivery(&delivery,distance,q)
+	p.Deliveries=append(p.Deliveries,delivery); if len(p.Deliveries)>250 { p.Deliveries=p.Deliveries[len(p.Deliveries)-250:] }
+	p.TotalDeliveries++; p.TotalKm+=distance; p.MonthlyKm+=distance; p.MonthlyCompleted++; p.XP=gatTotalXPFromHistory(p); p.CurrentMission=nil; p.LastOnJob=false
+	if err:=saveGatProgress(all); err!=nil { jsonOut(w,500,map[string]any{"ok":false,"error":"save_error"}); return }
+	resp:=map[string]any{"ok":true,"completed_now":true,"receipt_id":q.TripID,"distance_km":distance,"monthly_completed":p.MonthlyCompleted,"monthly_goal":30,"xp":p.XP}
+	for k,v:=range gatTripRuleResponse(&delivery) { resp[k]=v }
+	jsonOut(w,200,resp)
+}
+
 '''
-if 'func gatTripRuleBreakdown(' not in s:
-    marker='func (a *agent) accountTripComplete('
-    pos=s.find(marker)
-    if pos<0: raise SystemExit('accountTripComplete nao encontrado')
-    s=s[:pos]+rules+s[pos:]
 
-# XP zero por penalidade e valido; somente historico legado sem BaseXP/PenaltyXP pode ser reconstruido.
-old='\t\tif x <= 0 { x = gatXPForDistance(p.Deliveries[i].DistanceKm); p.Deliveries[i].XPAwarded = x }\n'
-new='\t\tif x <= 0 && p.Deliveries[i].BaseXP == 0 && p.Deliveries[i].PenaltyXP == 0 { x = gatXPForDistance(p.Deliveries[i].DistanceKm); p.Deliveries[i].XPAwarded = x }\n'
-if old in s:
-    s=s.replace(old,new,1)
-elif new not in s:
-    raise SystemExit('gatTotalXPFromHistory nao encontrado')
+s=s[:req_start]+block+s[telemetry_start:]
 
-# Se a telemetria ao vivo ja contou a entrega, o recibo posterior ainda aplica as penalidades.
-old='\t\td.ReceiptID=q.TripID; _=saveGatProgress(all)\n\t\tjsonOut(w,200,map[string]any{"ok":true,"duplicate":true,"already_counted":true,"completed_now":false,"receipt_id":q.TripID,"monthly_completed":p.MonthlyCompleted,"xp":p.XP}); return\n'
-new='''\t\td.ReceiptID=q.TripID
-\t\tdistance:=d.DistanceKm; if distance<=0 { distance=q.PlannedDistanceKm; if q.FirstObservedRemainingKm>distance { distance=q.FirstObservedRemainingKm } }
-\t\tgatApplyRulesToDelivery(d,distance,q); p.XP=gatTotalXPFromHistory(p); _=saveGatProgress(all)
-\t\tjsonOut(w,200,map[string]any{"ok":true,"duplicate":true,"already_counted":true,"completed_now":false,"receipt_id":q.TripID,"base_xp":d.BaseXP,"penalty_xp":d.PenaltyXP,"xp_awarded":d.XPAwarded,"speed_fines":d.SpeedFines,"cargo_damage_pct":d.CargoDamagePct,"truck_damage_delta_pct":d.TruckDamagePct,"monthly_completed":p.MonthlyCompleted,"xp":p.XP}); return
-'''
-if old in s:
-    s=s.replace(old,new,1)
-elif 'already_counted' in s and 'gatApplyRulesToDelivery(d,distance,q)' not in s:
-    raise SystemExit('bloco already_counted nao encontrado')
-
-# Entrega normal: calcula 20 XP/100 km e subtrai multas/danos em pontos fixos.
-old='''\txpNow:=gatXPForDistance(distance)
-\tdelivery:=gatDelivery{ID:m.ID,MissionID:m.ID,Sequence:m.Sequence,CatalogID:m.CatalogID,Title:m.Title,Category:m.Category,XPAwarded:xpNow,ReceiptID:q.TripID,CompletedAt:completed,Cargo:q.Cargo,Source:q.Source,Destination:q.Destination,WeightKg:q.WeightKg,DistanceKm:distance}
-'''
-new='''\tdelivery:=gatDelivery{ID:m.ID,MissionID:m.ID,Sequence:m.Sequence,CatalogID:m.CatalogID,Title:m.Title,Category:m.Category,ReceiptID:q.TripID,CompletedAt:completed,Cargo:q.Cargo,Source:q.Source,Destination:q.Destination,WeightKg:q.WeightKg,DistanceKm:distance}
-\tgatApplyRulesToDelivery(&delivery,distance,q)
-\txpNow:=delivery.XPAwarded
-'''
-if old in s:
-    s=s.replace(old,new,1)
-elif 'gatApplyRulesToDelivery(&delivery,distance,q)' not in s:
-    raise SystemExit('criacao da delivery nao encontrada')
-
-old='\tjsonOut(w,200,map[string]any{"ok":true,"completed_now":true,"receipt_id":q.TripID,"distance_km":distance,"xp_awarded":xpNow,"monthly_completed":p.MonthlyCompleted,"monthly_goal":30,"xp":p.XP})\n'
-new='\tjsonOut(w,200,map[string]any{"ok":true,"completed_now":true,"receipt_id":q.TripID,"distance_km":distance,"base_xp":delivery.BaseXP,"penalty_xp":delivery.PenaltyXP,"xp_awarded":xpNow,"speed_fines":delivery.SpeedFines,"speed_penalty_xp":delivery.SpeedPenaltyXP,"cargo_damage_pct":delivery.CargoDamagePct,"cargo_penalty_xp":delivery.CargoPenaltyXP,"truck_damage_delta_pct":delivery.TruckDamagePct,"truck_penalty_xp":delivery.TruckPenaltyXP,"monthly_completed":p.MonthlyCompleted,"monthly_goal":30,"xp":p.XP})\n'
-if old in s:
-    s=s.replace(old,new,1)
-elif '"penalty_xp":delivery.PenaltyXP' not in s:
-    raise SystemExit('resposta final do recibo nao encontrada')
-
-checks=['InternalVersion = "1.0.32"','func gatTripRuleBreakdown(','SpeedPenaltyXP','CargoPenaltyXP','TruckPenaltyXP','gatApplyRulesToDelivery(&delivery,distance,q)','penalty_xp']
+checks=['InternalVersion = "1.0.32"','func gatTripRuleBreakdown(','SpeedPenaltyXP','CargoPenaltyXP','TruckPenaltyXP','gatApplyRulesToDelivery(&delivery,distance,q)','already_counted','gatLearnCargoName(q.Cargo)']
 for x in checks:
     target=c if x.startswith('InternalVersion') else s
     if x not in target: raise SystemExit('patch incompleto: '+x)
