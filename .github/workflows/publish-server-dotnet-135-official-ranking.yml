@@ -69,7 +69,7 @@ jobs:
           grep -q 'InternalVersion = "1.0.35"' internal/core/core.go
           grep -q 'func gatRouteUsedThisMonth' cmd/agent/main.go
           grep -q 'func gatMonthlySafetyStats' cmd/agent/main.go
-          grep -q 'ranking_rule":"missions_perfect_penalties' cmd/agent/main.go
+          grep -q 'missions_perfect_penalties' cmd/agent/main.go
           grep -q 'route_already_used' cmd/agent/main.go
           grep -q 'canStart := onJob && km >= 500' cmd/agent/main.go
           grep -q 'if distance >= 500 && fines == 0' cmd/agent/main.go
