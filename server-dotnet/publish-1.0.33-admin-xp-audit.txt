@@ -1,0 +1,1 @@
+Publicar GAT-LOG Server 1.0.33 com auditoria de XP e correção manual por entrega no Painel Admin.
