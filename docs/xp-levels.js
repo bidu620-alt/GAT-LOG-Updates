@@ -1,7 +1,15 @@
 (()=>{
   const XP_PER_100KM=20,XP_PER_LEVEL=2000;
   const fmt=n=>(Number(n)||0).toLocaleString('pt-BR');
-  const historyXp=list=>(Array.isArray(list)?list:[]).reduce((sum,d)=>{const saved=Number(d?.xp_awarded);if(Number.isFinite(saved)&&saved>0)return sum+saved;const km=Math.max(0,Number(d?.distance_km)||0);return sum+Math.floor(km/100)*XP_PER_100KM},0);
+  const historyXp=list=>(Array.isArray(list)?list:[]).reduce((sum,d)=>{
+    const hasSaved=d&&Object.prototype.hasOwnProperty.call(d,'xp_awarded')&&Number.isFinite(Number(d.xp_awarded));
+    if(hasSaved)return sum+Math.max(0,Number(d.xp_awarded));
+    const km=Math.max(0,Number(d?.distance_km)||0);
+    return sum+Math.floor(km/100)*XP_PER_100KM;
+  },0);
   function applyXp(){try{if(typeof profile==='undefined'||!profile)return;const serverXp=Number(profile.xp),derived=historyXp(profile.deliveries),xp=(profile.xp_rule_pending===false&&Number.isFinite(serverXp))?Math.max(0,serverXp):derived,level=1+Math.floor(xp/XP_PER_LEVEL),inside=xp%XP_PER_LEVEL,pct=Math.min(100,inside/XP_PER_LEVEL*100);profile.xp=xp;profile.level=level;profile.xp_rule_pending=false;const set=(id,text)=>{const e=document.getElementById(id);if(e)e.textContent=text};set('driverLevel','★ Nível '+level);set('driverXp','↗ '+fmt(xp)+' XP');set('statLevel',String(level));set('statXp',fmt(xp));set('xpLevelNow','Nível '+level);set('xpProgress',fmt(inside)+' / 2.000 XP');const bar=document.getElementById('xpBar');if(bar)bar.style.width=pct.toFixed(1)+'%'}catch(_){}}
-  document.addEventListener('DOMContentLoaded',applyXp);setInterval(applyXp,900);
+  function loadEnhancements(){if(document.getElementById('gatMotoristaEnhancements'))return;const s=document.createElement('script');s.id='gatMotoristaEnhancements';s.src='motorista-enhancements.js?v=1';s.async=false;document.body.appendChild(s);}
+  document.addEventListener('DOMContentLoaded',()=>{applyXp();loadEnhancements()});
+  if(document.readyState!=='loading')loadEnhancements();
+  setInterval(applyXp,900);
 })();
