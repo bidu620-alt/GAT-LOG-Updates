@@ -43,7 +43,10 @@
 
   markerIcon=function(d){
     const moving=typeof fresh==='function'?fresh(d.t):!!d?.t?.on_job;
-    const deg=typeof headingDeg==='function'?headingDeg(numberValue(d.t,'map_heading','truck.placement.heading')):0;
+    const rawDeg=typeof headingDeg==='function'?headingDeg(numberValue(d.t,'map_heading','truck.placement.heading')):0;
+    // O desenho lateral do caminhão aponta para o sentido oposto ao heading do ETS2.
+    // Compensação de 180° mantém a cabine apontando para o sentido real da viagem.
+    const deg=(rawDeg+180)%360;
     const color=truckColor(d);
     const label=typeof esc==='function'?esc(d.name):String(d.name||'Motorista');
     return L.divIcon({
