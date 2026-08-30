@@ -30,9 +30,10 @@ window.GAT_MAP_CONFIG = {
     tileUrl: 'https://maps.gatlogets2.com.br/rbr/Tiles/{z}/{x}/{y}.png?v=2',
     tileSize: 256,
     minZoom: 0,
-    // Usa o nível 7 como máximo nativo e amplia ele no zoom 8.
-    // Isso evita a tela preta que aparecia no último nível do export RBR.
+    // Usa o nível 7 como máximo nativo e amplia esse mesmo nível até o zoom 10.
+    // Assim ganhamos mais 2 níveis de aproximação sem pedir tiles inexistentes.
     maxZoom: 7,
+    displayMaxZoom: 10,
     gameBounds: {
       xMin: -311579.156,
       zMin: -116616.6,
