@@ -1,0 +1,1 @@
+Publicar GAT Telemetria 1.0.15 com registro de multas por excesso acima de 91 km/h, dano da carga e aumento de dano do caminhao no diario persistente.
