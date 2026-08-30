@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.15",
-  "display_version": "1.0.15 REGRAS DE CONDUCAO",
-  "notas": "O diario de viagem agora registra dano da carga, aumento de dano do caminhao e multas por excesso de velocidade. Acima de 91 km/h por 5 segundos gera uma multa; mantendo o excesso, pode gerar outra apos 5 minutos, ou depois de reduzir e ultrapassar novamente. Esses dados seguem no recibo persistente para a Central calcular os descontos fixos de XP.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.15_JOURNAL_TESTE.exe",
-  "sha256": "29cfe0ee0ecb996a24f07747a9d1edb2d41cb4c1780087152d6470dd928f051f"
+  "version": "1.0.16",
+  "display_version": "1.0.16 ESTABILIDADE",
+  "notas": "Adiciona protecao contra picos impossiveis de velocidade, dano e distancia para evitar multas falsas. Mantem as regras de 91 km/h e verifica atualizacoes automaticamente a cada 30 minutos. O atualizador continua preservando servidores, motorista, token, diario e configuracoes salvas.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.16_ESTAVEL_TESTE.exe",
+  "sha256": "04b09340ac50f3768b863edd9dd6325977a9507a3e94868d7c8dec0edf387f9c"
 }
