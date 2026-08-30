@@ -1,0 +1,1 @@
+Publicar Server 1.0.37 com validação obrigatória de integridade de mods.
