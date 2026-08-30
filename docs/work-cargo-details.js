@@ -40,7 +40,7 @@
         content+='<span class="cargo-compat-source cargo-live-source">CARGAS CONFIRMADAS • '+seen.length+'</span><div class="cargo-compat-chips">'+chips(seen,'live')+'</div>';
       }
       if(base.length){
-        content+='<details class="cargo-official-extra"><summary>VER CATÁLOGO SUGERIDO • '+base.length+' NOMES</summary><div class="cargo-compat-chips">'+officialChips(base)+'</div></details>';
+        content+='<span class="cargo-compat-source">CATÁLOGO SUGERIDO • '+base.length+' NOMES</span><div class="cargo-compat-chips">'+officialChips(base)+'</div>';
       }
       wrap.innerHTML='<button type="button" class="cargo-compat-toggle" aria-expanded="'+String(isOpen)+'" aria-controls="'+id+'"><span>'+(isOpen?'OCULTAR CARGAS COMPATÍVEIS':'VER CARGAS COMPATÍVEIS')+'</span><span class="arrow">⌄</span></button><div class="cargo-compat-panel" id="'+id+'" '+(isOpen?'':'hidden')+'><span class="cargo-compat-title">O QUE CONTA NESTE TRABALHO</span>'+content+'</div>';
       const btn=wrap.querySelector('button'),panel=wrap.querySelector('.cargo-compat-panel'),label=btn.querySelector('span:first-child');
