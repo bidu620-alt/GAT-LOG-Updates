@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.32",
-  "display_version": "1.0.32 REGRAS DE CONDUCAO",
-  "notas": "Mantem 20 XP a cada 100 km e aplica penalidades fixas por conducao: excesso acima de 91 km/h gera -3 XP por multa; dano da carga desconta de -3 a -15 XP; aumento de dano do caminhao desconta de -3 a -15 XP. O recibo grava XP base, penalidades e XP final, com minimo de zero.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.32_TESTE.exe",
-  "sha256": "aad485cb7908e572e33a8eb2ccaaa26023c812ed33b12098aafa4eaf28a10988"
+  "version": "1.0.33",
+  "display_version": "1.0.33 AUDITORIA DE XP",
+  "notas": "Adiciona correcao auditavel do XP final de uma entrega pelo Painel Admin. O Admin pode conferir XP base, multas, danos e XP final e corrigir uma entrega individual quando houver erro de telemetria. A alteracao recalcula o XP total pelo historico e fica registrada no log administrativo.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.33_TESTE.exe",
+  "sha256": "c27b0ec432f6de1fb9a0fdcb2977756cc9440be9948ba7063bd4de73b0f9e898"
 }
