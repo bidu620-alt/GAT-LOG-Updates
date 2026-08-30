@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.31",
-  "display_version": "1.0.31 CATALOGO REAL DE CARGAS",
-  "notas": "A Central aprende os nomes reais das cargas que chegam pelo GAT Telemetria e publica essas cargas dentro do card correto do catálogo. O site pode mostrar uma seta com cargas compatíveis já vistas no ETS2. Mantidos recibos persistentes de viagem, mínimo de 250 km e validação por categoria.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.31_TESTE.exe",
-  "sha256": "82520cdfc68b8972ad093f941c1c06d24c868f74b833583431ea5a3738f2b299"
+  "version": "1.0.32",
+  "display_version": "1.0.32 REGRAS DE CONDUCAO",
+  "notas": "Mantem 20 XP a cada 100 km e aplica penalidades fixas por conducao: excesso acima de 91 km/h gera -3 XP por multa; dano da carga desconta de -3 a -15 XP; aumento de dano do caminhao desconta de -3 a -15 XP. O recibo grava XP base, penalidades e XP final, com minimo de zero.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.32_TESTE.exe",
+  "sha256": "aad485cb7908e572e33a8eb2ccaaa26023c812ed33b12098aafa4eaf28a10988"
 }
