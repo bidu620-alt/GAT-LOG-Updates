@@ -21,7 +21,7 @@
     });
     return out;
   }
-  function officialChips(rows){return rows.map(x=>'<span class="cargo-compat-chip official" title="'+esc(x.dlc?('Origem/DLC: '+x.dlc):'Catálogo geral ETS2')+'">'+esc(x.name)+(x.dlc?'<small>'+esc(x.dlc)+'</small>':'')+'</span>').join('')}
+  function officialChips(rows){return rows.map(x=>'<span class="cargo-compat-chip official" title="'+esc(x.dlc?('Origem/DLC: '+x.dlc):'Catálogo ETS2')+'">'+esc(x.name)+(x.dlc?'<small>'+esc(x.dlc)+'</small>':'')+'</span>').join('')}
   function itemFor(card){const n=card.querySelector('.cargo-number')?.textContent||'';const pos=Number(n.replace(/\D/g,''));return catalog.find(x=>Number(x.position)===pos)||null}
   function cardKey(item){return String(item?.id||item?.position||'')}
   function redraw(){document.querySelectorAll('#workCatalogGrid .cargo-compat-wrap').forEach(x=>x.remove());decorate()}
@@ -35,17 +35,12 @@
       const wrap=document.createElement('div');wrap.className='cargo-compat-wrap';
       const id='cargoCompat'+String(item.position||item.id).replace(/\W/g,'');
       const key=cardKey(item),isOpen=openCards.has(key);
-      const ver=String(official?.reference_game_version||'').trim();
       let content='';
       if(seen.length){
-        content+='<span class="cargo-compat-source cargo-live-source">CONFIRMADAS PELO GAT TELEMETRIA • NOME EXATO DO JOGO • '+seen.length+'</span><div class="cargo-compat-chips">'+chips(seen,'live')+'</div>';
-      }else{
-        content+='<span class="cargo-compat-source cargo-live-source empty">AINDA SEM CARGA CONFIRMADA NESTA CATEGORIA</span><span class="cargo-compat-note important">Quando alguém pegar uma carga desta categoria, o GAT salva o nome exatamente como aparece no ETS2, inclusive em português.</span>';
+        content+='<span class="cargo-compat-source cargo-live-source">CARGAS CONFIRMADAS • '+seen.length+'</span><div class="cargo-compat-chips">'+chips(seen,'live')+'</div>';
       }
       if(base.length){
-        content+='<details class="cargo-official-extra"><summary>VER CATÁLOGO GERAL DO ETS2 • '+base.length+' NOMES</summary><span class="cargo-compat-source">REFERÊNCIA'+(ver?' • ETS2 '+esc(ver):'')+' • PODE EXIGIR DLC</span><div class="cargo-compat-chips">'+officialChips(base)+'</div><span class="cargo-compat-note warning">Estes nomes vêm do catálogo geral do ETS2. Não significa que todos aparecerão na sua pesquisa: alguns exigem DLC, empresa, reboque ou mercado específico e o nome pode estar traduzido no seu jogo.</span></details>';
-      }else if(official){
-        content+='<span class="cargo-compat-note">Não há item do catálogo geral classificado nesta categoria.</span>';
+        content+='<details class="cargo-official-extra"><summary>VER CATÁLOGO SUGERIDO • '+base.length+' NOMES</summary><div class="cargo-compat-chips">'+officialChips(base)+'</div></details>';
       }
       wrap.innerHTML='<button type="button" class="cargo-compat-toggle" aria-expanded="'+String(isOpen)+'" aria-controls="'+id+'"><span>'+(isOpen?'OCULTAR CARGAS COMPATÍVEIS':'VER CARGAS COMPATÍVEIS')+'</span><span class="arrow">⌄</span></button><div class="cargo-compat-panel" id="'+id+'" '+(isOpen?'':'hidden')+'><span class="cargo-compat-title">O QUE CONTA NESTE TRABALHO</span>'+content+'</div>';
       const btn=wrap.querySelector('button'),panel=wrap.querySelector('.cargo-compat-panel'),label=btn.querySelector('span:first-child');
