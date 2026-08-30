@@ -28,7 +28,7 @@ s=s.replace('p.Month = gatMonth(); p.MonthlyCompleted = q.MonthlyCompleted; p.To
 s=s.replace('if p.TotalDeliveries > 0 { p.TotalDeliveries-- }; p.XP = p.TotalDeliveries * 100',
             'if p.TotalDeliveries > 0 { p.TotalDeliveries-- }; p.XP = gatTotalXPFromHistory(p)')
 
-case=r'''\tcase "set_delivery_xp":
+case='''\tcase "set_delivery_xp":
 \t\tif actorRole == "moderator" { jsonOut(w,403,map[string]any{"ok":false,"error":"insufficient_role"}); return }
 \t\tid := strings.TrimSpace(q.DeliveryID)
 \t\tif id == "" { jsonOut(w,400,map[string]any{"ok":false,"error":"delivery_id_required"}); return }
