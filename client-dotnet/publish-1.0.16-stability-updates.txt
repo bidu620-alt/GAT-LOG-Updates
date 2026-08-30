@@ -1,1 +1,1 @@
-Publicar GAT Telemetria 1.0.16 com proteção contra telemetria inválida e verificação periódica de atualização.
+Publicar GAT Telemetria 1.0.16 corrigida com proteção contra telemetria inválida e verificação periódica de atualização.
