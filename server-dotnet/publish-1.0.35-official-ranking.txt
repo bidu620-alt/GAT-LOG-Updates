@@ -1,1 +1,1 @@
-Publicar GAT-LOG Server 1.0.35 com 30 trabalhos, minimo 500 km, rota unica mensal e ranking por missoes, viagens perfeitas e penalidades.
+Republicar GAT-LOG Server 1.0.35 após corrigir a validação do workflow. Regras oficiais: 30 trabalhos, mínimo 500 km, rota única mensal e ranking por missões, viagens perfeitas e penalidades.
