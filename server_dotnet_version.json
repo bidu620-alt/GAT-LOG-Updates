@@ -1,9 +1,9 @@
 {
   "app": "GAT-LOG Server CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.35",
-  "display_version": "1.0.35 REGRAS OFICIAIS",
-  "notas": "Oficializa o Ranking GAT: 30 trabalhos mensais, minimo de 500 km, proibicao de repetir o mesmo par de cidades no mes e classificacao por trabalhos concluidos, viagens perfeitas e menor penalidade. XP e quilometragem continuam como progressao e estatistica, mas nao definem a colocacao. Mantem backup, auditoria, protecao de telemetria e demais recursos da 1.0.34.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.35_TESTE.exe",
-  "sha256": "786631b624e3a6fae95b1612cf9bdf4f6bd94775ba6e44d75321db1a4623a40a"
+  "version": "1.0.36",
+  "display_version": "1.0.36 DISTANCIA REAL",
+  "notas": "Impede entrega por camera zero/teleporte: o trabalho so conclui pelo recibo autenticado do GAT Telemetria com odometro real. Exige pelo menos 500 km efetivamente dirigidos, rejeita troca de caminhao sem cancelar a carga e saltos impossiveis de odometro. Ao cancelar a carga, o Trabalho GAT continua selecionado e uma nova tentativa pode ser feita com outro caminhao.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.36_TESTE.exe",
+  "sha256": "5c573c9d6606ea0951b070a65d79eccd2bc8208e430b5f56c7c0a420b8d2415f"
 }
