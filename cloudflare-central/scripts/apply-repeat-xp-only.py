@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 p=Path('worker.js')
 s=p.read_text(encoding='utf-8')
@@ -45,7 +46,10 @@ if marker not in s:
     raise SystemExit('ponto de calculo GAT para XP-only nao encontrado')
 s=s.replace(marker,insert,1)
 
-s=s.replace("const VERSION='1.0.48-cloudflare';","const VERSION='1.0.49-cloudflare';",1)
+# Define a versao final sem depender do numero temporario deixado pelos patches anteriores.
+s,n=re.subn(r"const VERSION='[0-9.]+-cloudflare';","const VERSION='1.0.49-cloudflare';",s,count=1)
+if n!=1:
+    raise SystemExit('constante VERSION do Worker nao encontrada')
 
 required=[
     'xp_only:repeatXpOnly',
