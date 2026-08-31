@@ -6,8 +6,6 @@
   const sess=()=>{try{return JSON.parse(localStorage.getItem('gat_driver_account_v1')||sessionStorage.getItem('gat_driver_account_v1')||'null')}catch(_){return null}};
   const user=()=>{try{if(typeof key!=='undefined'&&key)return clean(key)}catch(_){}return clean(new URLSearchParams(location.search).get('u')||sess()?.user)};
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const unique=values=>[...new Set((values||[]).map(x=>String(x||'').trim()).filter(Boolean))];
-  function chips(values,kind){return values.map(x=>'<span class="cargo-compat-chip '+(kind||'')+'">'+esc(x)+'</span>').join('')}
   function officialRows(item){
     const rows=official?.categories?.[item?.id];
     if(!Array.isArray(rows))return [];
@@ -15,9 +13,11 @@
     rows.forEach(x=>{
       const name=String(typeof x==='string'?x:x?.name||'').trim();
       if(!name)return;
+      const k=name.toLowerCase();
+      if(seen.has(k))return;
+      seen.add(k);
       const dlc=String(typeof x==='string'?'':x?.dlc||'').trim();
-      const k=(name+'|'+dlc).toLowerCase();
-      if(seen.has(k))return;seen.add(k);out.push({name,dlc});
+      out.push({name,dlc});
     });
     return out;
   }
@@ -30,27 +30,21 @@
       if(card.querySelector('.cargo-compat-wrap'))return;
       const item=itemFor(card);if(!item)return;
       const body=card.querySelector('.cargo-body');if(!body)return;
-      const seen=Array.isArray(item.compatible_cargos)?unique(item.compatible_cargos):[];
       const base=officialRows(item);
+      if(!base.length)return;
       const wrap=document.createElement('div');wrap.className='cargo-compat-wrap';
       const id='cargoCompat'+String(item.position||item.id).replace(/\W/g,'');
       const key=cardKey(item),isOpen=openCards.has(key);
-      let content='';
-      if(seen.length){
-        content+='<span class="cargo-compat-source cargo-live-source">CARGAS CONFIRMADAS • '+seen.length+'</span><div class="cargo-compat-chips">'+chips(seen,'live')+'</div>';
-      }
-      if(base.length){
-        content+='<span class="cargo-compat-source">CATÁLOGO SUGERIDO • '+base.length+' NOMES</span><div class="cargo-compat-chips">'+officialChips(base)+'</div>';
-      }
-      wrap.innerHTML='<button type="button" class="cargo-compat-toggle" aria-expanded="'+String(isOpen)+'" aria-controls="'+id+'"><span>'+(isOpen?'OCULTAR CARGAS COMPATÍVEIS':'VER CARGAS COMPATÍVEIS')+'</span><span class="arrow">⌄</span></button><div class="cargo-compat-panel" id="'+id+'" '+(isOpen?'':'hidden')+'><span class="cargo-compat-title">O QUE CONTA NESTE TRABALHO</span>'+content+'</div>';
+      const content='<span class="cargo-compat-source">CATÁLOGO SUGERIDO • '+base.length+' NOMES</span><div class="cargo-compat-chips">'+officialChips(base)+'</div>';
+      wrap.innerHTML='<button type="button" class="cargo-compat-toggle" aria-expanded="'+String(isOpen)+'" aria-controls="'+id+'"><span>'+(isOpen?'OCULTAR CATÁLOGO SUGERIDO':'VER CATÁLOGO SUGERIDO')+'</span><span class="arrow">⌄</span></button><div class="cargo-compat-panel" id="'+id+'" '+(isOpen?'':'hidden')+'>'+content+'</div>';
       const btn=wrap.querySelector('button'),panel=wrap.querySelector('.cargo-compat-panel'),label=btn.querySelector('span:first-child');
-      btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const open=btn.getAttribute('aria-expanded')==='true';const next=!open;btn.setAttribute('aria-expanded',String(next));panel.hidden=!next;if(label)label.textContent=next?'OCULTAR CARGAS COMPATÍVEIS':'VER CARGAS COMPATÍVEIS';if(next)openCards.add(key);else openCards.delete(key)});
+      btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const open=btn.getAttribute('aria-expanded')==='true';const next=!open;btn.setAttribute('aria-expanded',String(next));panel.hidden=!next;if(label)label.textContent=next?'OCULTAR CATÁLOGO SUGERIDO':'VER CATÁLOGO SUGERIDO';if(next)openCards.add(key);else openCards.delete(key)});
       body.appendChild(wrap);
     });
   }
   async function loadOfficial(){
     try{
-      const r=await fetch('ets2-official-cargos.json?v=3',{cache:'no-store'}),d=await r.json();
+      const r=await fetch('ets2-official-cargos.json?v=4',{cache:'no-store'}),d=await r.json();
       if(r.ok&&d?.categories){official=d;redraw()}
     }catch(_){decorate()}
   }
