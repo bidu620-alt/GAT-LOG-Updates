@@ -1,0 +1,1 @@
+GAT Telemetria 1.0.23: registrar uma viagem quando carga e peso forem detectados, manter o registro ate evento de entrega ou cancelamento e gravar JOB STARTED/JOB DELIVERED/JOB CANCELLED no log local.
