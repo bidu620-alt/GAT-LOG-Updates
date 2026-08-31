@@ -20,7 +20,7 @@ old=""" const minKm=Math.max(1,Number(m.min_km)||MIN_KM);
  }
 """
 new=""" const minKm=Math.max(1,Number(m.min_km)||MIN_KM);
- const hasLoadedJob=f.on_job&&Boolean(f.cargo_id||f.cargo_name)&&Number(f.mass_kg)>0;
+ const hasLoadedJob=Boolean(f.cargo_id||f.cargo_name)&&Number(f.mass_kg)>0;
  if(hasLoadedJob){
    if(m.state==='suspended'){
      m={...m,state:'active',resumed_at:t};delete m.suspended_at;
@@ -41,15 +41,19 @@ old_delivery=""" if(!await cargoOK(env,m,m.cargo||f.cargo_name,m.cargo_id||f.car
 if old_delivery in s:
     s=s.replace(old_delivery,'',1)
 
-s=s.replace("const VERSION='1.0.44-cloudflare';","const VERSION='1.0.45-cloudflare';",1)
+# Nao suspende mais por uma oscilacao do flag on_job. A carga + peso sao a fonte de verdade.
+s=s.replace("if(!delivered&&!f.on_job&&m.state==='active')", "if(!delivered&&!hasLoadedJob&&m.state==='active')",1)
+s=s.replace("if(!delivered&&!f.on_job&&m.state==='suspended')", "if(!delivered&&!hasLoadedJob&&m.state==='suspended')",1)
+s=s.replace("if(!delivered)return f.on_job?{type:'mission_in_progress',mission:m,distance_km:planned}:null;", "if(!delivered)return hasLoadedJob?{type:'mission_in_progress',mission:m,distance_km:planned}:null;",1)
 
-required=["const hasLoadedJob=f.on_job", "Number(f.mass_kg)>0", "reason:'distance_below_minimum'"]
+s=s.replace("const VERSION='1.0.44-cloudflare';","const VERSION='1.0.46-cloudflare';",1)
+
+required=["const hasLoadedJob=Boolean", "Number(f.mass_kg)>0", "!hasLoadedJob&&m.state==='active'", "reason:'distance_below_minimum'"]
 for x in required:
     if x not in s: raise SystemExit('patch simples incompleto: '+x)
-# A compatibilidade do catalogo nao pode bloquear nem o inicio nem a entrega.
 segment=s[s.find('async function processMission'):]
 if "reason:'cargo_not_compatible'" in segment:
     raise SystemExit('ainda existe bloqueio por catalogo dentro de processMission')
 
 p.write_text(s,encoding='utf-8')
-print('Validacao simples aplicada: trabalho ativo + carga detectada + peso > 0 + km minimo. Catalogo apenas sugerido.')
+print('Validacao simples aplicada: carga + peso > 0 + km minimo; flag on_job nao derruba mais a missao ativa.')
