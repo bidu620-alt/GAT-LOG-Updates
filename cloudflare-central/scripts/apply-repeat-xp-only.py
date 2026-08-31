@@ -23,14 +23,14 @@ if old not in s:
 s=s.replace(old,new,1)
 
 # 2) Se o trabalho ja conta como concluido no mes, rota repetida deixa de bloquear.
-# A viagem ainda precisa passar por distancia minima, progresso real e evento de entrega.
-old=""" const routeKey=`${norm(source)}>${norm(destination)}`,mk=month(t),workId=String(m.catalog_id||'');if(await env.DB.prepare('SELECT 1 FROM routes_completed WHERE user=? AND month_key=? AND route_key=?').bind(user,mk,routeKey).first()){await resetAssigned(env,user,m,'route_already_used');return{type:'delivery_rejected',reason:'route_already_used'}}if(await env.DB.prepare('SELECT 1 FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(user,workId,mk).first()){await resetAssigned(env,user,m,'work_already_completed');return{type:'delivery_rejected',reason:'work_already_completed'}}
-"""
-new=""" const routeKey=`${norm(source)}>${norm(destination)}`,mk=month(t),workId=String(m.catalog_id||''),workAlreadyCompleted=Boolean(m.xp_only)||!!(await env.DB.prepare('SELECT 1 FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(user,workId,mk).first());if(!workAlreadyCompleted&&await env.DB.prepare('SELECT 1 FROM routes_completed WHERE user=? AND month_key=? AND route_key=?').bind(user,mk,routeKey).first()){await resetAssigned(env,user,m,'route_already_used');return{type:'delivery_rejected',reason:'route_already_used'}}
-"""
-if old not in s:
+# Fazemos a troca por limites estaveis porque patches anteriores alteram a formatacao interna.
+route_start=s.find(" const routeKey=`${norm(source)}>${norm(destination)}`")
+mission_start=s.find(" const missionId=",route_start)
+if route_start < 0 or mission_start < 0:
     raise SystemExit('bloco de rota/trabalho concluido nao encontrado')
-s=s.replace(old,new,1)
+new_route=""" const routeKey=`${norm(source)}>${norm(destination)}`,mk=month(t),workId=String(m.catalog_id||''),workAlreadyCompleted=Boolean(m.xp_only)||!!(await env.DB.prepare('SELECT 1 FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(user,workId,mk).first());if(!workAlreadyCompleted&&await env.DB.prepare('SELECT 1 FROM routes_completed WHERE user=? AND month_key=? AND route_key=?').bind(user,mk,routeKey).first()){await resetAssigned(env,user,m,'route_already_used');return{type:'delivery_rejected',reason:'route_already_used'}}
+"""
+s=s[:route_start]+new_route+s[mission_start:]
 
 # 3) Depois de calcular o XP normalmente, repeticoes alteram SOMENTE profiles.xp.
 # Nao somam x/30, Pontos GAT, entregas, km, perfeitas, multas ou penalidades do ranking.
