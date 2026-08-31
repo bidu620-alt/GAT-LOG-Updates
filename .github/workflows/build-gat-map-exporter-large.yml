@@ -1,0 +1,92 @@
+name: Build GAT Map Exporter Large
+
+on:
+  push:
+    branches: [map-exporter-large]
+    paths:
+      - 'map-exporter-large/build-trigger.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout GAT patches
+        uses: actions/checkout@v4
+        with:
+          ref: map-exporter-large
+          path: gat
+
+      - name: Checkout TsMap tile exporter base
+        uses: actions/checkout@v4
+        with:
+          repository: ETS2LA/tilemap
+          ref: 5424eced8758970c129027bfb9b3b3b23c6c5b40
+          path: upstream
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore dependencies
+        shell: pwsh
+        run: nuget restore upstream/TsMap.sln
+
+      - name: Apply GAT large-map patch
+        shell: pwsh
+        run: python gat/map-exporter-large/patch_tsmap_large.py
+
+      - name: Build x64 Release
+        shell: pwsh
+        run: msbuild upstream/TsMap.sln /m /p:Configuration=Release /p:Platform=x64
+
+      - name: Prepare portable package
+        shell: pwsh
+        run: |
+          $src = 'upstream/TsMap.Canvas/bin/x64/Release'
+          $dst = 'package/GAT_MAP_EXPORTER_LARGE'
+          if (-not (Test-Path "$src/GAT_MAP_EXPORTER_LARGE.exe")) { throw 'Executavel GAT_MAP_EXPORTER_LARGE.exe nao foi gerado.' }
+          New-Item -ItemType Directory -Force $dst | Out-Null
+          Copy-Item "$src/*" $dst -Recurse -Force
+          @'
+          GAT MAP EXPORTER LARGE - TESTE 0.1
+
+          Base tecnica: TsMap tiled web map exporter (GPL), com ajustes GAT para mapas grandes.
+
+          O que mudou nesta versao:
+          - processo x64 para aproveitar mais memoria;
+          - gera cada tile individualmente, sem montar uma imagem gigante;
+          - modo RESUMIR: se fechar/travar, execute novamente e escolha A MESMA pasta;
+          - tiles PNG existentes sao pulados automaticamente;
+          - interface atualiza o progresso a cada 25 tiles, em vez de cada arquivo;
+          - limpeza de memoria a cada 100 tiles;
+          - erro de um tile e registrado em GAT_MAP_EXPORT_ERRORS.log e a exportacao continua.
+
+          PRIMEIRO TESTE RECOMENDADO
+          1. Abra GAT_MAP_EXPORTER_LARGE.exe.
+          2. Selecione Euro Truck Simulator 2 e a pasta do jogo.
+          3. Adicione os mods do mapa na mesma ordem correta usada no ETS2.
+          4. Carregue o mapa.
+          5. Abra o gerador de Tile Map.
+          6. Para validar RBR/EAA, comece com zoom 0 ate 6.
+          7. Escolha uma pasta vazia, por exemplo C:\GAT_MAP_TESTE.
+          8. Confirme se foram criados TileMapInfo.json e a pasta Tiles.
+          9. Depois teste zoom 7. Zoom 8 gera dezenas de milhares de PNGs e deve ficar para o teste final.
+
+          IMPORTANTE
+          Compatibilidade exata com RBR/EAA na versao atual do ETS2 ainda precisa ser validada no PC real.
+          Nao apague a pasta parcial se ocorrer erro: o modo RESUMIR foi feito para continuar dela.
+          '@ | Set-Content "$dst/LEIA-ME-GAT.txt" -Encoding UTF8
+          Compress-Archive -Path "$dst/*" -DestinationPath 'GAT_MAP_EXPORTER_LARGE_TESTE_0.1.zip' -Force
+
+      - name: Upload portable build
+        uses: actions/upload-artifact@v4
+        with:
+          name: GAT_MAP_EXPORTER_LARGE_TESTE_0.1
+          path: GAT_MAP_EXPORTER_LARGE_TESTE_0.1.zip
+          retention-days: 30
