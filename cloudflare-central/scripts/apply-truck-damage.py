@@ -22,9 +22,9 @@ if 'const truckDamageParts=' not in s:
 # Registra o dano que o caminhao ja tinha quando a tentativa comeca e o maior
 # valor observado durante a viagem. Os componentes sao acompanhados separadamente
 # para detectar dano novo mesmo quando outro componente ja era o maior no inicio.
-delivered_marker = " const delivered=bool(raw,'gameplay.jobDelivered','jobDelivered');"
+delivered_marker = " const gatJobEvent=clean(str(raw,'gat_job_event','gatJobEvent'));"
 tracking = r""" const truckNow=truckDamageOf(raw),truckPartsNow=truckDamageParts(raw),trailerNow=trailerDamageOf(raw);
- if(f.on_job&&m.state==='active'){
+ if(hasLoadedJob&&m.state==='active'){
    let damageChanged=false;
    const initDamage=(key,value)=>{if(!Number.isFinite(Number(m[key]))){m[key]=Math.max(0,Number(value)||0);damageChanged=true}};
    const maxDamage=(key,value)=>{const v=Math.max(0,Number(value)||0),old=Number(m[key]);if(!Number.isFinite(old)||v>old+0.0001){m[key]=Math.max(v,Number.isFinite(old)?old:0);damageChanged=true}};
