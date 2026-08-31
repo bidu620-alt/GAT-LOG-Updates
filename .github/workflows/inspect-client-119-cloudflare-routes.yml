@@ -1,0 +1,41 @@
+name: Inspect client 1.0.19 Cloudflare routes
+on:
+  push:
+    branches: [client-dotnet-winforms]
+    paths: ['.github/workflows/inspect-client-119-cloudflare-routes.yml']
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: client-dotnet-winforms
+      - name: Apply through 1.0.19 and inspect
+        shell: bash
+        run: |
+          set -e
+          python3 client-dotnet/build103/apply_103_fixed_servers.py
+          python3 client-dotnet/build104/apply_104_steam_identity.py
+          python3 client-dotnet/build105/apply_105_robust_driver_identity.py
+          python3 client-dotnet/build106/apply_106_gat_account.py
+          python3 client-dotnet/build106/fix_106_account_labels.py
+          python3 client-dotnet/build107/apply_107_mission_progress.py
+          python3 client-dotnet/build107/fix_107_versions.py
+          python3 client-dotnet/build108/apply_108_live_map_truck.py
+          python3 client-dotnet/build109/apply_109_independent_central.py
+          python3 client-dotnet/build110/apply_110_map_mode.py
+          python3 client-dotnet/build111/apply_111_eaa_map.py
+          python3 client-dotnet/build112/apply_112_voice_work_started.py
+          python3 client-dotnet/build113/apply_113_work_status.py
+          python3 client-dotnet/build114/apply_114_trip_journal.py
+          python3 client-dotnet/build115/apply_115_driving_rules.py
+          python3 client-dotnet/build116/apply_116_stability_updates.py
+          python3 client-dotnet/build117/apply_117_odometer_anticheat.py
+          python3 client-dotnet/build118/apply_118_mod_integrity_v2.py
+          python3 client-dotnet/build119/apply_119_cloudflare_direct.py
+          echo '=== APICLIENT ROUTES ==='
+          grep -n -A14 -B3 'LoginAsync\|AccountSessionAsync\|SendAccountTelemetryAsync\|SendTelemetryAsync' client-dotnet/GatTelemetry/ApiClient.cs || true
+          echo '=== CENTRAL METHOD ==='
+          grep -n -A120 -B5 'private async Task SendCentralTelemetryAsync' client-dotnet/GatTelemetry/MainForm.cs || true
+          echo '=== ACCOUNT UI ==='
+          grep -n -A30 -B5 'lblAccount' client-dotnet/GatTelemetry/MainForm.cs | head -100 || true
