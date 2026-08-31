@@ -67,28 +67,35 @@ async function processMissionTelemetry(env,user,raw,t){
 
   const flat=telemetryFlat(user,user,t,raw);
   const cargo=flat.cargo_name,source=flat.source_city,destination=flat.destination_city,weight=flat.mass_kg;
-  const plannedKm=nval(raw,'job.plannedDistanceKm','planned_distance_km');
+  const mapMode=clean(flat.gat_map||'base');
+  const isRbr=mapMode==='rbr'||mapMode.includes('rbr');
+  const basePlannedKm=nval(raw,'job.plannedDistanceKm','planned_distance_km');
+  const telemetryRouteKm=flat.remaining_km||nval(raw,'remaining_km')||nval(raw,'distance_m','navigation.estimatedDistance')/1000;
+  const plannedKm=isRbr?(telemetryRouteKm||basePlannedKm):basePlannedKm;
 
   if(flat.on_job&&cargo){
     const changed=mission.state!=='in_progress'||mission.cargo!==cargo||mission.source!==source||mission.destination!==destination;
     if(changed){
-      mission={...mission,state:'in_progress',min_km:MISSION_MIN_KM,cargo,source,destination,weight_kg:weight,planned_distance_km:plannedKm,started_at:mission.started_at||t};
+      mission={...mission,state:'in_progress',min_km:MISSION_MIN_KM,cargo,source,destination,weight_kg:weight,planned_distance_km:plannedKm,map_mode:isRbr?'rbr':'base',distance_source:isRbr?'gat_telemetry_remaining_km':'ets2_job_planned_distance',rbr_start_remaining_km:isRbr?telemetryRouteKm:undefined,started_at:mission.started_at||t};
       await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(mission),t,user).run();
     }
   }
 
   const delivered=bval(raw,'gameplay.jobDelivered','jobDelivered');
-  if(!delivered)return flat.on_job?{type:'mission_in_progress',mission}:null;
+  if(!delivered)return flat.on_job?{type:'mission_in_progress',mission,map_mode:isRbr?'rbr':'base',distance_km:plannedKm,distance_source:isRbr?'gat_telemetry_remaining_km':'ets2_job_planned_distance'}:null;
 
   const details=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{};
-  const distanceKm=Number(details.distanceKm)||Number(mission.planned_distance_km)||plannedKm||0;
+  const missionIsRbr=clean(mission.map_mode)==='rbr'||isRbr;
+  const rbrRecordedKm=Number(mission.rbr_start_remaining_km)||Number(mission.planned_distance_km)||telemetryRouteKm||0;
+  const baseDistanceKm=Number(details.distanceKm)||Number(mission.planned_distance_km)||basePlannedKm||0;
+  const distanceKm=missionIsRbr?rbrRecordedKm:baseDistanceKm;
   const minKm=MISSION_MIN_KM;
 
   if(distanceKm<minKm){
     mission={...mission,state:'assigned',min_km:minKm,last_rejected_at:t,last_rejected_reason:'distance_below_minimum',last_distance_km:distanceKm};
-    delete mission.cargo;delete mission.source;delete mission.destination;delete mission.weight_kg;delete mission.planned_distance_km;delete mission.started_at;
+    delete mission.cargo;delete mission.source;delete mission.destination;delete mission.weight_kg;delete mission.planned_distance_km;delete mission.rbr_start_remaining_km;delete mission.map_mode;delete mission.distance_source;delete mission.started_at;
     await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(mission),t,user).run();
-    return {type:'delivery_rejected',reason:'distance_below_minimum',distance_km:distanceKm,min_km:minKm};
+    return {type:'delivery_rejected',reason:'distance_below_minimum',distance_km:distanceKm,min_km:minKm,map_mode:missionIsRbr?'rbr':'base'};
   }
 
   const earnedXp=Math.max(0,Number(details.earnedXp)||0);
@@ -98,7 +105,7 @@ async function processMissionTelemetry(env,user,raw,t){
   const finalSource=mission.source||source||'';
   const finalDestination=mission.destination||destination||'';
   const finalWeight=Number(mission.weight_kg)||weight||0;
-  const rawJson=JSON.stringify({mission,delivery_details:details,test_min_km:minKm});
+  const rawJson=JSON.stringify({mission,delivery_details:details,test_min_km:minKm,map_mode:missionIsRbr?'rbr':'base',distance_source:missionIsRbr?'gat_telemetry_remaining_km':'ets2_job_delivered_distance'});
 
   await env.DB.batch([
     env.DB.prepare('INSERT INTO deliveries(user,sequence_no,source,destination,cargo,weight_kg,distance_km,xp,perfect,penalty_xp,speed_fines,delivered_at,raw_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(user,Number(mission.sequence)||null,finalSource,finalDestination,finalCargo,finalWeight,distanceKm,earnedXp,perfect,0,0,t,rawJson),
@@ -106,7 +113,7 @@ async function processMissionTelemetry(env,user,raw,t){
     env.DB.prepare('INSERT OR IGNORE INTO work_completed(user,work_id,month_key,completed_at) VALUES(?,?,?,?)').bind(user,String(mission.catalog_id||''),t.slice(0,7),t)
   ]);
 
-  return {type:'delivery_completed',user,cargo:finalCargo,source:finalSource,destination:finalDestination,distance_km:distanceKm,xp:earnedXp,perfect:!!perfect,min_km:minKm};
+  return {type:'delivery_completed',user,cargo:finalCargo,source:finalSource,destination:finalDestination,distance_km:distanceKm,xp:earnedXp,perfect:!!perfect,min_km:minKm,map_mode:missionIsRbr?'rbr':'base'};
 }
 
 async function handle(req,env){
