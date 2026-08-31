@@ -15,7 +15,7 @@ if 'private string _lastAnnouncedCompletedMissionId' not in s:
         raise SystemExit('campo de voz da missao nao encontrado')
     s=s.replace(field,field+'        private string _lastAnnouncedCompletedMissionId = string.Empty;\n',1)
 
-# Troca o aviso antigo por uma fila simples e confiavel. Nao usamos SpeakAsyncCancelAll:
+# Troca o aviso antigo por uma fila simples e confiavel. Nao usamos cancelamento da fila:
 # chamadas repetidas podiam cancelar um aviso antes de ele sair no dispositivo de audio.
 start=s.find('        private void AnnounceWorkStarted(string missionId)')
 if start < 0:
@@ -38,8 +38,7 @@ new_voice=r'''        private SpeechSynthesizer EnsureVoice()
             try
             {
                 var voice = EnsureVoice();
-                // Nao cancelar a fila: o cancelamento assíncrono era uma causa possível
-                // para o aviso sumir em transicoes rapidas da telemetria.
+                // Mantem a fila do sintetizador; nao cancela um aviso que acabou de ser agendado.
                 voice.SpeakAsync(text);
                 ClientStore.Log("voz: " + logLabel);
                 return true;
@@ -121,11 +120,35 @@ new_check=r'''        private void CheckMissionVoice(JObject progress, bool star
 '''
 s=s[:start]+new_check+s[end:]
 
-old='''                bool startedNow = ApiClient.Bool(progress.Json["started"]);\n                CheckMissionVoice(progress.Json, startedNow);\n                UpdateWorkStatus(progress.Json);\n                if (ApiClient.Bool(progress.Json["completed_now"]))\n'''
-new='''                bool startedNow = ApiClient.Bool(progress.Json["started"]);\n                bool completedNow = ApiClient.Bool(progress.Json["completed_now"]);\n                CheckMissionVoice(progress.Json, startedNow, completedNow);\n                UpdateWorkStatus(progress.Json);\n                if (completedNow)\n'''
-if old not in s:
-    raise SystemExit('integracao da voz com resposta Central nao encontrada')
-s=s.replace(old,new,1)
+# Integra de forma tolerante com o bloco atual da Central. Patches posteriores mudaram
+# o texto de status, entao nao dependemos mais de um bloco inteiro identico ao da 1.0.12.
+start_send=s.find('        private async Task SendCentralTelemetryAsync()')
+end_send=s.find('        private void EnterClicked(', start_send)
+if start_send < 0 or end_send < 0:
+    raise SystemExit('segmento SendCentralTelemetryAsync nao encontrado')
+segment=s[start_send:end_send]
+
+started_line='                bool startedNow = ApiClient.Bool(progress.Json["started"]);\n'
+if 'bool completedNow = ApiClient.Bool(progress.Json["completed_now"]);' not in segment:
+    if started_line not in segment:
+        raise SystemExit('startedNow da resposta Central nao encontrado')
+    segment=segment.replace(started_line,started_line+'                bool completedNow = ApiClient.Bool(progress.Json["completed_now"]);\n',1)
+
+old_call='                CheckMissionVoice(progress.Json, startedNow);\n'
+new_call='                CheckMissionVoice(progress.Json, startedNow, completedNow);\n'
+if old_call in segment:
+    segment=segment.replace(old_call,new_call,1)
+elif new_call not in segment:
+    raise SystemExit('chamada CheckMissionVoice da Central nao encontrada')
+
+old_completed='                if (ApiClient.Bool(progress.Json["completed_now"]))\n'
+new_completed='                if (completedNow)\n'
+if old_completed in segment:
+    segment=segment.replace(old_completed,new_completed,1)
+elif new_completed not in segment:
+    raise SystemExit('condicao completed_now da Central nao encontrada')
+
+s=s[:start_send]+segment+s[end_send:]
 
 # Mostra tambem a conclusao no indicador verde no exato retorno de entrega.
 old_update='''            bool active = string.Equals(state, "active", StringComparison.OrdinalIgnoreCase);\n            lblWorkStatus.Text = active ? "TRABALHO EM ANDAMENTO" : string.Empty;\n            lblWorkStatus.ForeColor = Color.LimeGreen;\n            lblWorkStatus.Visible = active;\n'''
