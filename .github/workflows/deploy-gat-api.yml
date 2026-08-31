@@ -36,9 +36,10 @@ jobs:
           cache-dependency-path: cloudflare-central/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: python scripts/apply-stable-job-labels.py
+      - run: python scripts/apply-cargo-id-validation.py
       - run: pnpm run check
       - run: pnpm run migrate:remote
       - run: pnpm run sync:cargos
       - run: pnpm run deploy
 
-# Auth compatibility deployment trigger: 2026-08-31
+# Validacao de trabalho: cargoId + distancia minima; cidades apenas informativas.
