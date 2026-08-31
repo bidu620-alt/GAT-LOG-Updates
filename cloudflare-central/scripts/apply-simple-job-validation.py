@@ -41,14 +41,18 @@ old_delivery=""" if(!await cargoOK(env,m,m.cargo||f.cargo_name,m.cargo_id||f.car
 if old_delivery in s:
     s=s.replace(old_delivery,'',1)
 
-# O latch local da Telemetria e a fonte de verdade para manter a viagem ativa.
+# O latch local/carga real e a fonte de verdade para manter a viagem ativa.
 s=s.replace("if(!delivered&&!f.on_job&&m.state==='active')", "if(!delivered&&!hasLoadedJob&&m.state==='active')",1)
 s=s.replace("if(!delivered&&!f.on_job&&m.state==='suspended')", "if(!delivered&&!hasLoadedJob&&m.state==='suspended')",1)
 s=s.replace("if(!delivered)return f.on_job?{type:'mission_in_progress',mission:m,distance_km:planned}:null;", "if(!delivered)return hasLoadedJob?{type:'mission_in_progress',mission:m,distance_km:planned}:null;",1)
 
+# O TruckSim GPS pode manter gameplay.jobCancelled=true depois de um cancelamento antigo.
+# Nunca cancelar a missao se o mesmo pacote prova que existe carga real ativa.
+s=s.replace("if(!delivered&&cancelled&&(m.state==='active'||m.state==='suspended'))", "if(!delivered&&cancelled&&!hasLoadedJob&&(m.state==='active'||m.state==='suspended'))",1)
+
 s=s.replace("const VERSION='1.0.44-cloudflare';","const VERSION='1.0.47-cloudflare';",1)
 
-required=["Boolean(f.job_latched)", "job_latch_key:f.job_latch_key", "!hasLoadedJob&&m.state==='active'", "reason:'distance_below_minimum'"]
+required=["Boolean(f.job_latched)", "job_latch_key:f.job_latch_key", "!hasLoadedJob&&m.state==='active'", "cancelled&&!hasLoadedJob", "reason:'distance_below_minimum'"]
 for x in required:
     if x not in s: raise SystemExit('patch simples incompleto: '+x)
 segment=s[s.find('async function processMission'):]
@@ -56,4 +60,4 @@ if "reason:'cargo_not_compatible'" in segment:
     raise SystemExit('ainda existe bloqueio por catalogo dentro de processMission')
 
 p.write_text(s,encoding='utf-8')
-print('Validacao 1.0.47 aplicada: Worker confia no job latch da Telemetria; catalogo nao bloqueia a contagem.')
+print('Validacao aplicada: carga real mantem trabalho ativo; cancelamento antigo/sticky nao derruba a viagem.')
