@@ -1,0 +1,54 @@
+name: Fix Cloudflare Stable Job Labels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloudflare-central/fix-stable-job-labels.trigger'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Lock active mission labels
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('cloudflare-central/worker.js')
+          s=p.read_text(encoding='utf-8')
+          old=""" if(f.on_job&&f.cargo_name){if(m.state!=='active'||m.cargo!==f.cargo_name||m.source!==f.source_city||m.destination!==f.destination_city){m={...m,state:'active',min_km:MIN_KM,cargo:f.cargo_name,source:f.source_city,destination:f.destination_city,weight_kg:f.mass_kg,planned_distance_km:planned,map_mode:isRbr?'rbr':'base',distance_source:isRbr?'gat_telemetry_remaining_km':'ets2_job_planned_distance',rbr_start_remaining_km:isRbr?teleKm:undefined,started_at:m.started_at||t};await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run()}}\n"""
+          new=""" if(f.on_job&&f.cargo_name){
+   const sameCargo=norm(m.cargo)===norm(f.cargo_name);
+   if(m.state==='suspended'&&sameCargo){
+     m={...m,state:'active',resumed_at:t};delete m.suspended_at;
+     await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run();
+   }else if(m.state!=='active'||!sameCargo){
+     m={...m,state:'active',min_km:MIN_KM,cargo:f.cargo_name,source:f.source_city,destination:f.destination_city,weight_kg:f.mass_kg,planned_distance_km:planned,map_mode:isRbr?'rbr':'base',distance_source:isRbr?'gat_telemetry_remaining_km':'ets2_job_planned_distance',rbr_start_remaining_km:isRbr?teleKm:undefined,started_at:m.started_at||t};
+     await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run();
+   }
+ }\n"""
+          if old not in s:
+              raise SystemExit('Bloco ativo esperado nao encontrado')
+          s=s.replace(old,new,1)
+          s=s.replace("const VERSION='1.0.42-cloudflare';","const VERSION='1.0.43-cloudflare';",1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check cloudflare-central/worker.js
+          grep -q "const sameCargo=norm(m.cargo)" cloudflare-central/worker.js
+          grep -q "1.0.43-cloudflare" cloudflare-central/worker.js
+      - name: Commit correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cloudflare-central/worker.js
+          git commit -m "Estabiliza rota ativa entre traducoes da telemetria"
+          git push origin main
