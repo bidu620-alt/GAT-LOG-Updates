@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.18",
-  "display_version": "1.0.18 INTEGRIDADE DE MODS",
-  "notas": "Verifica o game.log atual do ETS2 para detectar mods ativos conhecidos por desativar dano da carga, caminhao ou desgaste. O status de integridade acompanha a telemetria e o recibo da viagem. Uma deteccao bloqueada impede a entrega de contar no Ranking GAT. Mantem odometro real, mapa escolhido, conta e diario de viagem.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.18_INTEGRIDADE_TESTE.exe",
-  "sha256": "0d778c1136cae95dc5858dd1c37a091dba56254dde21c452f3d2c60e16844f84"
+  "version": "1.0.19",
+  "display_version": "1.0.19 CLOUDFLARE DIRETO",
+  "notas": "Corrige o HTTP 410: Conta GAT e telemetria oficial agora usam diretamente https://api.gatlogets2.com.br. Nao altera catalogo, classificacao ou compatibilidade de cargas. Mantem mapa, odometro, integridade de mods, diario de viagem e conexao opcional ao comboio.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.19_CLOUDFLARE_TESTE.exe",
+  "sha256": "441cd236c9be76fd1b2d3b051437b5860cd3a9c91fbb6e17764ee6966f27083c"
 }
