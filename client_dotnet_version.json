@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.25",
-  "display_version": "1.0.25 JOB CONTRACT",
-  "notas": "Padroniza o contrato entre TruckSim GPS, GAT Telemetria e Cloudflare. Carga real + peso mantem a viagem ativa mesmo se o TruckSim deixar flags antigos de cancelamento/entrega em true. Envia gat_schema=job-v1, gat_job_state e eventos canonicos de fim de viagem para a Central GAT.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.25_JOB_CONTRACT_TESTE.exe",
-  "sha256": "64357c4ddee80a0f5f1e56722bce52571cbd89e0e3e4079165747dbc12fa48ac"
+  "version": "1.0.26",
+  "display_version": "1.0.26 VOZ ESTÁVEL",
+  "notas": "Melhora os avisos por voz. Trabalho iniciado agora usa o estado ativo confirmado pela Central como fallback e nao cancela mais a fila de voz. Ao concluir uma entrega valida, fala Trabalho concluido e mostra TRABALHO CONCLUÍDO no indicador. Mantem o contrato job-v1 da 1.0.25.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.26_VOZ_ESTAVEL_TESTE.exe",
+  "sha256": "0676b36b947616467f6be348e8edeb4bd999e77d6f70c81a904f46498fbbd6eb"
 }
