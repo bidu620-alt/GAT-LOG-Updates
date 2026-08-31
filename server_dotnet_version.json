@@ -1,9 +1,1 @@
-{
-  "app": "GAT-LOG Server CSharp",
-  "channel": "test-dotnet",
-  "version": "1.0.37",
-  "display_version": "1.0.37 INTEGRIDADE DE MODS",
-  "notas": "Exige a verificacao de integridade enviada pelo GAT Telemetria 1.0.18 para uma entrega oficial. Se um mod ativo conhecido por desativar dano/desgaste for detectado, ou se a verificacao nao puder ser realizada, a tentativa nao entra no ranking nem gera XP. Mantem as regras de 500 km reais, rota unica, odometro e troca de veiculo.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.37_TESTE.exe",
-  "sha256": "01fa5d8100e8f1d3af2ae161c156abb20976d7d0542c24ddc75c653c9923205a"
-}
+{"app":"GAT-LOG Server CSharp","channel":"test-dotnet","version":"1.0.38","display_version":"1.0.38 SERVIDOR PURO","notas":"GAT Server dedicado somente ao comboio ETS2: iniciar/parar, configuracoes, moderador, mods, ID da sessao, jogadores e ferramentas. Telemetria local removida; o GAT Telemetria do motorista envia direto para a Cloudflare.","setup_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe","sha256":"f369ce7ea71cc60b831856cb03f5f058ea13df658ca90c8feb38cd28ab53fdb0"}
