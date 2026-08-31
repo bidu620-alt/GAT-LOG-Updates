@@ -60,11 +60,13 @@ jobs:
           $serverExe = 'releases/TruckSimGPS_Server_GAT_DANOS_1.0.exe'
           $sha = (Get-FileHash $serverExe -Algorithm SHA256).Hash.ToLowerInvariant()
           $source = (Get-Content trucksim-gps-gat/Updater.cs -Raw).Replace('__SHA__', $sha)
-          Set-Content trucksim-gps-gat/build/UpdaterBuild.cs $source -Encoding UTF8
+          $buildSource = Join-Path $PWD 'trucksim-gps-gat/build/UpdaterBuild.cs'
+          Set-Content $buildSource $source -Encoding UTF8
           $csc = "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
-          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll /out:releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe trucksim-gps-gat/build/UpdaterBuild.cs
+          $outUpdater = Join-Path $PWD 'releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe'
+          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$outUpdater" "$buildSource"
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar atualizador' }
-          $upSha = (Get-FileHash releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          $upSha = (Get-FileHash $outUpdater -Algorithm SHA256).Hash.ToLowerInvariant()
           $manifest = [ordered]@{
             app = 'TruckSim GPS GAT'
             version = '1.0'
