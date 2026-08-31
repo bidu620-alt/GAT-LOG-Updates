@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.20",
-  "display_version": "1.0.20 VINCULO CLOUDFLARE",
-  "notas": "Corrige o HTTP 404 da 1.0.19. O cliente agora usa o fluxo seguro /api/client/login + /api/client/telemetry da Cloudflare, exibe o codigo de 8 caracteres para vincular o computador no site e guarda o token do dispositivo protegido no Windows. Corrige tambem a restauracao da sessao da Conta GAT para POST. Nao altera catalogo nem regras de cargas.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.20_VINCULO_CLOUDFLARE_TESTE.exe",
-  "sha256": "12c2288a980eabdbc87ff283683285b2ef711004cf855988e5d435d0baebcc25"
+  "version": "1.0.21",
+  "display_version": "1.0.21 MERCADO LIVRE",
+  "notas": "Contrato Externo/World of Trucks, Mercado de Fretes, Mercado de Cargas e cargas criadas sao tratados igualmente. O tipo de mercado nao bloqueia telemetria. A integridade de mods continua sendo enviada para auditoria, mas nao impede nem mascara o andamento da carga. Mantem vinculo Cloudflare, mapa, odometro, diario e regras do trabalho selecionado.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.21_MERCADO_LIVRE_TESTE.exe",
+  "sha256": "adc5d1b913e5961757341305c8e0e3fed68e9a64319a255c9ec2ef32b6deec4f"
 }
