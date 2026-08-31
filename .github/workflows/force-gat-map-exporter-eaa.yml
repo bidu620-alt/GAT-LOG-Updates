@@ -1,0 +1,19 @@
+name: Force GAT Map Exporter EAA
+
+on:
+  push:
+    paths:
+      - '.github/workflows/force-gat-map-exporter-eaa.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger exporter build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run build-gat-map-exporter.yml --ref main
