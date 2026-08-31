@@ -23,6 +23,84 @@ jobs:
           ref: master
           path: external/ts-map
 
+      - name: Aplica compatibilidade EAA no parser de cidades
+        shell: pwsh
+        run: |
+          $file = 'external/ts-map/TsMap/TsMapper.cs'
+          $text = Get-Content $file -Raw
+          $old = @'
+                  var cityFile = UberFileSystem.Instance.GetFile($"def/{cityFileName}");
+
+                  var data = cityFile.Entry.Read();
+                  var lines = Encoding.UTF8.GetString(data).Split('\n');
+                  foreach (var line in lines)
+                  {
+                      if (line.TrimStart().StartsWith("#")) continue;
+                      if (line.Contains("@include"))
+                      {
+                          var path = PathHelper.GetFilePath(line.Split('"')[1], "def");
+                          var city = new TsCity(path);
+                          if (city.Token != 0 && !_citiesLookup.ContainsKey(city.Token))
+                          {
+                              _citiesLookup.Add(city.Token, city);
+                          }
+                      }
+                  }
+          '@
+          $new = @'
+                  var cityFile = UberFileSystem.Instance.GetFile($"def/{cityFileName}");
+                  if (cityFile == null || cityFile.Entry == null)
+                  {
+                      Logger.Instance.Error($"Ignored unreadable city definition file: def/{cityFileName}");
+                      continue;
+                  }
+
+                  byte[] data;
+                  try
+                  {
+                      data = cityFile.Entry.Read();
+                  }
+                  catch (Exception ex)
+                  {
+                      Logger.Instance.Error($"Ignored city definition file 'def/{cityFileName}': {ex.Message}");
+                      continue;
+                  }
+                  if (data == null || data.Length == 0) continue;
+
+                  var lines = Encoding.UTF8.GetString(data).Split('\n');
+                  foreach (var line in lines)
+                  {
+                      if (line.TrimStart().StartsWith("#")) continue;
+                      if (line.Contains("@include"))
+                      {
+                          try
+                          {
+                              var parts = line.Split('"');
+                              if (parts.Length < 2 || String.IsNullOrWhiteSpace(parts[1]))
+                              {
+                                  Logger.Instance.Error($"Ignored malformed city include in def/{cityFileName}: {line.Trim()}");
+                                  continue;
+                              }
+                              var path = PathHelper.GetFilePath(parts[1], "def");
+                              if (String.IsNullOrWhiteSpace(path)) continue;
+                              var city = new TsCity(path);
+                              if (city != null && city.Token != 0 && !_citiesLookup.ContainsKey(city.Token))
+                              {
+                                  _citiesLookup.Add(city.Token, city);
+                              }
+                          }
+                          catch (Exception ex)
+                          {
+                              Logger.Instance.Error($"Ignored incompatible EAA city include in def/{cityFileName}: {ex.Message}");
+                          }
+                      }
+                  }
+          '@
+          if (-not $text.Contains($old)) { throw 'Trecho ParseCityFiles esperado nao foi encontrado no ts-map.' }
+          $text = $text.Replace($old, $new)
+          Set-Content -Path $file -Value $text -Encoding UTF8
+          Write-Host 'Patch EAA aplicado ao ParseCityFiles.'
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
@@ -46,20 +124,18 @@ jobs:
           Copy-Item "$out/*" package -Recurse -Force
           Copy-Item 'external/ts-map/LICENSE' 'package/LICENCA_TS_MAP.txt' -Force
           @'
-          GAT MAPA EXPORTADOR - ETS2
+          GAT MAPA EXPORTADOR - ETS2 - COMPATIBILIDADE EAA
+
+          Esta versao possui tratamento para arquivos de cidade incompatíveis do EAA.
 
           1. Execute TsMap.Canvas.exe.
           2. Em Game directory, selecione a pasta de instalacao do Euro Truck Simulator 2.
-             Padrao Steam: C:\Program Files (x86)\Steam\steamapps\common\Euro Truck Simulator 2
-          3. Para o MAPA BASE, nao marque carregamento de mods.
-          4. Clique Next e aguarde o mapa carregar.
-          5. No programa, abra a opcao de gerar/exportar Tile Map.
-          6. Marque Tiles e City Names. Recomendado: zoom inicial 0 e final 6 para o primeiro teste.
-          7. Escolha uma pasta vazia, por exemplo: C:\GAT_MAPA_BASE
-          8. Quando terminar, compacte a pasta C:\GAT_MAPA_BASE em ZIP e envie ao ChatGPT.
+          3. Para mapas com mods, marque Load mods e selecione a pasta mod correta.
+          4. Mantenha a mesma ordem de prioridade usada pelo perfil do ETS2.
+          5. Clique Continue e aguarde o mapa carregar.
+          6. Exporte Tile Map com Tiles e City Names.
 
-          O ts-map le diretamente os arquivos .scs do ETS2; nao precisa extrair base.scs manualmente.
-          Para ProMods/RBR/EAA depois, o mesmo programa pode carregar mods da pasta Documentos\Euro Truck Simulator 2\mod.
+          O parser agora ignora definicoes de cidade malformadas/incompativeis em vez de encerrar com NullReferenceException.
           '@ | Set-Content -Encoding UTF8 'package/LEIA-ME_GAT.txt'
           if (Test-Path 'releases/GAT_MAP_EXPORTADOR_ETS2.zip') { Remove-Item 'releases/GAT_MAP_EXPORTADOR_ETS2.zip' -Force }
           New-Item -ItemType Directory -Force -Path releases | Out-Null
@@ -72,5 +148,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add releases/GAT_MAP_EXPORTADOR_ETS2.zip
           if (git diff --cached --quiet) { Write-Host 'Sem alteracoes para publicar'; exit 0 }
-          git commit -m 'Publica GAT Map Exportador ETS2'
+          git commit -m 'Publica GAT Map Exportador ETS2 compativel com EAA'
           git push
