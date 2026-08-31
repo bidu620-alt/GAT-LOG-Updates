@@ -1,0 +1,194 @@
+name: Publish GAT-LOG Server DotNet 1.0.38 Server Only
+
+on:
+  push:
+    branches: [server-dotnet-winforms]
+    paths:
+      - 'server-dotnet/publish-1.0.38-server-only.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+          cache: false
+      - name: Build GAT Server agent 1.0.38 without local telemetry
+        shell: bash
+        run: |
+          set +e
+          rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
+          tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          python3 server-native-0.1/build015/apply_015.py
+          python3 server-native-0.1/build015/fix_check_update.py
+          python3 server-native-0.1/build017/apply_017.py
+          python3 server-dotnet/build101/apply_101_moderator.py
+          python3 server-dotnet/build103/apply_103_telemetry.py
+          python3 server-dotnet/build104/apply_104_speed_units.py
+          python3 server-dotnet/build105/apply_105_truck_speed_kmh.py
+          python3 server-dotnet/build107/apply_107_server_config.py
+          python3 server-dotnet/build108/apply_108_hide_server_console.py
+          python3 server-dotnet/build110/apply_110_public_live.py
+          python3 server-dotnet/build112/apply_112_driver_accounts.py
+          python3 server-dotnet/build113/apply_113_driver_history_missions.py
+          python3 server-dotnet/build114/apply_114_account_cors.py
+          python3 server-dotnet/build115/apply_115_public_version.py
+          python3 server-dotnet/build116/apply_116_site_browser_auth.py
+          python3 server-dotnet/build117/apply_117_live_map_truck.py
+          python3 server-dotnet/build118/apply_118_central_telemetry.py
+          python3 server-dotnet/build119/apply_119_simple_xp_levels.py
+          python3 server-dotnet/build120/apply_120_admin_panel.py
+          python3 server-dotnet/build121/apply_121_admin_driver_detail.py
+          python3 server-dotnet/build122/apply_122_admin_driver_route.py
+          python3 server-dotnet/build123/apply_123_short_test_mission.py
+          python3 server-dotnet/build124/apply_124_official_ready.py
+          python3 server-dotnet/build125/apply_125_catalog_500km_xp.py
+          python3 server-dotnet/build125/fix_125_escapes.py
+          python3 server-dotnet/build125/fix_125_admin_defs.py
+          python3 server-dotnet/build126/apply_126_cargo_groups.py
+          python3 server-dotnet/build127/apply_127_min_250.py
+          python3 server-dotnet/build128/apply_128_admin_confirm_mission.py
+          python3 server-dotnet/build129/apply_129_delivery_event.py
+          python3 server-dotnet/build130/apply_130_trip_receipts.py
+          python3 server-dotnet/build131/apply_131_cargo_catalog.py
+          python3 server-dotnet/build132/apply_132_driving_rules.py
+          python3 server-dotnet/build133/apply_133_admin_xp_audit.py
+          python3 server-dotnet/build134/apply_134_stability_gamification.py
+          python3 server-dotnet/build135/apply_135_official_rules.py
+          python3 server-dotnet/build136/apply_136_odometer_anticheat.py
+          python3 server-dotnet/build137/apply_137_mod_integrity.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/gat-src/cmd/agent/main.go')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('a.loadTelemetry()','// Local telemetry disabled in 1.0.38; drivers send directly to Cloudflare.')
+          s=s.replace('m.HandleFunc("/api/client/telemetry", a.clientTelemetry)','m.HandleFunc("/api/client/telemetry", a.telemetryDisabled)')
+          s=s.replace('m.HandleFunc("/api/account/telemetry", a.accountTelemetry)','m.HandleFunc("/api/account/telemetry", a.telemetryDisabled)')
+          marker='func (a *agent) clientTelemetry(w http.ResponseWriter, r *http.Request) {'
+          disabled='func (a *agent) telemetryDisabled(w http.ResponseWriter, r *http.Request) {\n\tjsonOut(w, http.StatusGone, map[string]any{"ok": false, "error": "telemetry_moved_to_cloudflare", "endpoint": "https://api.gatlogets2.com.br"})\n}\n\n'
+          if marker not in s: raise SystemExit('clientTelemetry marker not found')
+          s=s.replace(marker,disabled+marker,1)
+          s=s.replace('Telemetry: tel,','Telemetry: []core.TelemetryRecord{},')
+          p.write_text(s,encoding='utf-8')
+          c=Path('/tmp/gat-src/internal/core/core.go')
+          x=c.read_text(encoding='utf-8').replace('InternalVersion = "1.0.37"','InternalVersion = "1.0.38"')
+          c.write_text(x,encoding='utf-8')
+          PY
+          cd /tmp/gat-src
+          gofmt -w cmd/agent/main.go internal/core/core.go
+          grep -q 'InternalVersion = "1.0.38"' internal/core/core.go
+          grep -q 'telemetry_moved_to_cloudflare' cmd/agent/main.go
+          ! grep -q 'm.HandleFunc("/api/client/telemetry", a.clientTelemetry)' cmd/agent/main.go
+          ! grep -q 'm.HandleFunc("/api/account/telemetry", a.accountTelemetry)' cmd/agent/main.go
+          mkdir -p "$GITHUB_WORKSPACE/agent-out"
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-H=windowsgui -s -w' -o "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe" ./cmd/agent
+          test -s "$GITHUB_WORKSPACE/agent-out/GAT_LOG_AGENT.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-agent-138-server-only
+          path: agent-out/GAT_LOG_AGENT.exe
+          retention-days: 2
+
+  publish:
+    needs: agent
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: server-dotnet-winforms
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/download-artifact@v4
+        with:
+          name: dotnet-agent-138-server-only
+          path: server-dotnet/GatLogInstaller/payload
+
+      - name: Reuse server icon
+        shell: pwsh
+        run: |
+          $src=Join-Path $env:RUNNER_TEMP 'GAT_SERVER_ICON.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.37_TESTE.exe' -OutFile $src
+          Add-Type -AssemblyName System.Drawing
+          $icon=[System.Drawing.Icon]::ExtractAssociatedIcon($src)
+          if ($null -eq $icon) { throw 'Icone nao encontrado.' }
+          foreach($p in @('server-dotnet/GatLogServer/assets/GAT_SERVER.ico','server-dotnet/GatLogInstaller/assets/GAT_SERVER.ico')) { New-Item -ItemType Directory -Force (Split-Path $p -Parent)|Out-Null; $fs=[IO.File]::Create($p); try{$icon.Save($fs)}finally{$fs.Dispose()} }
+          $icon.Dispose()
+
+      - name: Remove telemetry UI and mark Server 1.0.38
+        shell: pwsh
+        run: |
+          python server-dotnet/build137/apply_137_ui.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('server-dotnet/GatLogServer/MainForm.cs')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('CurrentVersion = "1.0.37"','CurrentVersion = "1.0.38"')
+          s=s.replace('GAT-LOG SERVER 1.0 | ETS2 + Telemetria','GAT-LOG SERVER 1.0 | GERENCIADOR ETS2')
+          s=s.replace('private DataGridView _telemetryGrid, _bindingsGrid;','private DataGridView _bindingsGrid;')
+          s=re.sub(r'^\s*AddSideButton\(sidebar, "TELEMETRIA", "telemetry", ref y\);\s*\n','',s,flags=re.M)
+          s=re.sub(r'^\s*BuildTelemetry\(\);\s*\n','',s,flags=re.M)
+          s=re.sub(r'\n\s*private void BuildTelemetry\(\)\s*\{.*?\n\s*\}\n\s*\n\s*private void BuildSystem\(\)', '\n\n        private void BuildSystem()', s, flags=re.S)
+          s=s.replace('JOGADORES ONLINE / TELEMETRIA','JOGADORES ONLINE')
+          s=s.replace('Abra TELEMETRIA para acompanhar carga, peso, rota e velocidade de cada motorista.','Os dados de viagem agora sao enviados somente pelo GAT Telemetria do motorista direto para a Cloudflare.')
+          s=re.sub(r'^\s*UpdateTelemetryGrid\(\);\s*\n','',s,flags=re.M)
+          s=re.sub(r'\n\s*private void UpdateTelemetryGrid\(\)\s*\{.*?\n\s*\}\n\s*\n\s*private void ApplyConfigToControls\(\)', '\n\n        private void ApplyConfigToControls()', s, flags=re.S)
+          p.write_text(s,encoding='utf-8')
+          PY
+          $s=Get-Content 'server-dotnet/GatLogServer/MainForm.cs' -Raw
+          if($s -notmatch 'CurrentVersion = "1\.0\.38"'){throw 'UI 1.0.38 ausente'}
+          if($s -match 'AddSideButton\(sidebar, "TELEMETRIA"'){throw 'Menu Telemetria ainda presente'}
+          if($s -match 'private void BuildTelemetry\('){throw 'Pagina Telemetria ainda presente'}
+
+      - name: Build server and updater
+        shell: pwsh
+        run: |
+          dotnet restore server-dotnet/GatLogServer/GatLogServer.csproj
+          dotnet build server-dotnet/GatLogServer/GatLogServer.csproj -c Release --no-restore
+          $out='server-dotnet/GatLogServer/bin/Release/net48'; $pay='server-dotnet/GatLogInstaller/payload'
+          New-Item -ItemType Directory -Force "$pay/assets"|Out-Null
+          Copy-Item "$out/GAT_LOG_SERVER.exe" "$pay/GAT_LOG_SERVER.exe" -Force
+          Copy-Item "$out/GAT_LOG_SERVER.exe.config" "$pay/GAT_LOG_SERVER.exe.config" -Force
+          Copy-Item "$out/Newtonsoft.Json.dll" "$pay/Newtonsoft.Json.dll" -Force
+          Copy-Item 'server-native-0.1/assets/logo.png' "$pay/assets/logo.png" -Force
+          Copy-Item 'server-native-0.1/assets/banner.png' "$pay/assets/banner.png" -Force
+          if(-not(Test-Path "$pay/GAT_LOG_AGENT.exe")){throw 'Agente 1.0.38 ausente.'}
+          dotnet restore server-dotnet/GatLogInstaller/GatLogInstaller.csproj
+          dotnet build server-dotnet/GatLogInstaller/GatLogInstaller.csproj -c Release --no-restore
+          $u='server-dotnet/GatLogInstaller/bin/Release/net48/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe'
+          if(-not(Test-Path $u)){throw 'Atualizador 1.0.38 nao gerado.'}
+          Copy-Item $u "$env:RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe" -Force
+
+      - name: Publish updater and manifest to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main; git reset --hard HEAD; git clean -fdx; git checkout -B main origin/main
+          mkdir -p releases; cp "$RUNNER_TEMP/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe" releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe
+          SHA=$(sha256sum releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe|awk '{print $1}')
+          cat > server_dotnet_version.json <<EOF
+          {
+            "app": "GAT-LOG Server CSharp",
+            "channel": "test-dotnet",
+            "version": "1.0.38",
+            "display_version": "1.0.38 SERVIDOR PURO",
+            "notas": "O GAT Server agora fica somente como gerenciador do comboio ETS2: iniciar/parar servidor, configuracoes, moderador, mods, ID da sessao, jogadores e ferramentas do dedicado. A tela e o recebimento de telemetria local foram removidos. O GAT Telemetria de cada motorista envia os dados diretamente para a Cloudflare, evitando duplicidade e conflito de telemetria.",
+            "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe",
+            "sha256": "$SHA"
+          }
+          EOF
+          git add releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe server_dotnet_version.json
+          git commit -m "Publica Server 1.0.38 sem telemetria local"
+          git push origin main
