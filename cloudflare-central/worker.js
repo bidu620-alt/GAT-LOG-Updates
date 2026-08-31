@@ -2,7 +2,7 @@ import { pbkdf2 } from '@noble/hashes/pbkdf2.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 
-const VERSION='1.0.41-cloudflare';
+const VERSION='1.0.42-cloudflare';
 const MIN_KM=500;
 const MAX_BODY=262144;
 const ADMIN=new Set(['owner','admin','moderator']);
@@ -52,7 +52,10 @@ async function processMission(env,user,raw,t){
  const f=flat(user,user,t,raw),isRbr=clean(f.gat_map).includes('rbr'),baseKm=num(raw,'job.plannedDistanceKm','planned_distance_km'),teleKm=f.remaining_km||num(raw,'distance_m','navigation.estimatedDistance')/1000,planned=isRbr?(teleKm||baseKm):baseKm;
  if(f.on_job&&f.cargo_name){if(m.state!=='active'||m.cargo!==f.cargo_name||m.source!==f.source_city||m.destination!==f.destination_city){m={...m,state:'active',min_km:MIN_KM,cargo:f.cargo_name,source:f.source_city,destination:f.destination_city,weight_kg:f.mass_kg,planned_distance_km:planned,map_mode:isRbr?'rbr':'base',distance_source:isRbr?'gat_telemetry_remaining_km':'ets2_job_planned_distance',rbr_start_remaining_km:isRbr?teleKm:undefined,started_at:m.started_at||t};await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run()}}
  const delivered=bool(raw,'gameplay.jobDelivered','jobDelivered');
- if(!delivered&&!f.on_job&&m.state==='active'){m=await resetAssigned(env,user,m,'job_cancelled');return{type:'mission_cancelled',mission:m}}
+ const cancelled=bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled','job.cancelled','job.canceled');
+ if(!delivered&&cancelled&&(m.state==='active'||m.state==='suspended')){m=await resetAssigned(env,user,m,'job_cancelled');return{type:'mission_cancelled',mission:m}}
+ if(!delivered&&!f.on_job&&m.state==='active'){m={...m,state:'suspended',suspended_at:t};await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run();return{type:'mission_suspended',mission:m}}
+ if(!delivered&&!f.on_job&&m.state==='suspended')return{type:'mission_suspended',mission:m};
  if(!delivered)return f.on_job?{type:'mission_in_progress',mission:m,distance_km:planned}:null;
  if(m.state!=='active')return{type:'delivery_rejected',reason:'mission_not_active'};const details=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{},rbr=clean(m.map_mode).includes('rbr')||isRbr,distance=rbr?(Number(m.rbr_start_remaining_km)||Number(m.planned_distance_km)||teleKm||0):(Number(details.distanceKm)||Number(m.planned_distance_km)||baseKm||0);
  if(distance<MIN_KM){await resetAssigned(env,user,m,'distance_below_minimum',{last_distance_km:distance});return{type:'delivery_rejected',reason:'distance_below_minimum',distance_km:distance,min_km:MIN_KM}}
