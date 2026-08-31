@@ -38,6 +38,7 @@ jobs:
       - run: python scripts/apply-stable-job-labels.py
       - run: python scripts/apply-cargo-id-validation.py
       - run: python scripts/apply-base-distance-fallback.py
+      - run: python scripts/apply-telemetry-aliases.py
       - run: python scripts/apply-simple-job-validation.py
       - run: pnpm run check
       - run: pnpm run migrate:remote
@@ -45,4 +46,5 @@ jobs:
       - run: pnpm run deploy
 
 # Validacao simples: trabalho ativo + carga detectada + peso > 0 + distancia minima.
+# O Worker reconhece os mesmos aliases de peso/carga que o site usa na telemetria.
 # Catalogo, cargoId e cidades ficam para organizacao/exibicao e nao bloqueiam o trabalho.
