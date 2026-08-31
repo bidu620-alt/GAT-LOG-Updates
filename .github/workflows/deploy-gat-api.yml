@@ -37,9 +37,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: python scripts/apply-stable-job-labels.py
       - run: python scripts/apply-cargo-id-validation.py
+      - run: python scripts/apply-base-distance-fallback.py
       - run: pnpm run check
       - run: pnpm run migrate:remote
       - run: pnpm run sync:cargos
       - run: pnpm run deploy
 
 # Validacao de trabalho: cargoId + distancia minima; cidades apenas informativas.
+# Mapa base usa plannedDistanceKm e, se o TruckSim nao fornecer, restante_km como fallback.
