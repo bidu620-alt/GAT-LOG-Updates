@@ -10,6 +10,7 @@ on:
 permissions:
   contents: read
 
+# Recheck after sticky-cancel guard deploy.
 jobs:
   inspect:
     runs-on: ubuntu-latest
