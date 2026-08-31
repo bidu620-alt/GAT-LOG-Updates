@@ -1,5 +1,5 @@
-const RANKING_URL='https://douglas.tail4577e8.ts.net/api/public/ranking';
-const SAFETY_URL='https://douglas.tail4577e8.ts.net/api/public/safety-ranking';
+const RANKING_URL='https://api.gatlogets2.com.br/api/public/ranking';
+const SAFETY_URL='https://api.gatlogets2.com.br/api/public/safety-ranking';
 let gatRankingData=null,safetyRankingData=null,currentRankMode='gat';
 function escRank(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function rankLabel(user){const s=String(user||'motorista').replace(/^@/,'');return s.charAt(0).toUpperCase()+s.slice(1);}

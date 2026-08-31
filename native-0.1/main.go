@@ -597,7 +597,7 @@ func loadServers() {
 	}
 	if len(servers) == 0 {
 		servers = []Server{
-			{Name: "BIDUZAO - DOUGLAS", Endpoint: "https://douglas.tail4577e8.ts.net"},
+			{Name: "BIDUZAO - DOUGLAS", Endpoint: "https://api.gatlogets2.com.br"},
 			{Name: "JC - JEAN", Endpoint: "https://jean-jc.tailf14a00.ts.net"},
 		}
 		saveJSON(serversFile, servers)

@@ -1,4 +1,4 @@
-const CENTRAL={label:'CENTRAL GAT',url:'https://douglas.tail4577e8.ts.net'};
+const CENTRAL={label:'CENTRAL GAT',url:'https://api.gatlogets2.com.br'};
 const LIVE_PATH='/api/public/account-live',FRESH_MS=18000,REF_ZOOM=8;
 const MAP_CONFIG=window.GAT_MAP_CONFIG||{};
 const MAP_LABELS={base:'Mapa Base',promods:'ProMods',rbr:'RBR',rotas_brasil:'Rotas Brasil',eaa:'EAA',other:'Outro mapa'};
