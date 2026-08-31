@@ -1,5 +1,5 @@
 (()=>{
-  const API=(typeof DRIVER_API!=='undefined'&&DRIVER_API)||'https://douglas.tail4577e8.ts.net';
+  const API=(typeof DRIVER_API!=='undefined'&&DRIVER_API)||'https://api.gatlogets2.com.br';
   const FRESH_MS=20000;
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const n=v=>Number(v)||0;

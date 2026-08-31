@@ -1,6 +1,6 @@
 const RAW='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/';
-const SERVERS=[{label:'BIDUZAO - DOUGLAS',url:'https://douglas.tail4577e8.ts.net'},{label:'JC - JEAN',url:'https://jean-jc.tailf14a00.ts.net'}];
-const ACCOUNT='https://douglas.tail4577e8.ts.net', LIVE='/api/public/live';
+const SERVERS=[{label:'GAT CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'}];
+const ACCOUNT='https://api.gatlogets2.com.br', LIVE='/api/public/live';
 const ACCOUNT_LOGIN='/api/account/login',ACCOUNT_REGISTER='/api/account/register',ACCOUNT_SESSION='/api/account/session';
 const TOKENKEY='gat_driver_account_v1',FRESH=20000;
 let account=loadAccount(),lastDrivers=[],heroIndex=0;

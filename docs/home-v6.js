@@ -1,4 +1,4 @@
-const RANKING_URL='https://douglas.tail4577e8.ts.net/api/public/ranking';
+const RANKING_URL='https://api.gatlogets2.com.br/api/public/ranking';
 function escRank(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function rankLabel(user){const s=String(user||'motorista').replace(/^@/,'');return s.charAt(0).toUpperCase()+s.slice(1);}
 function monthlyKm(item){return Number(item?.monthly_km)||0}

@@ -1,4 +1,4 @@
-const ACCOUNT_AUTHORITY='https://douglas.tail4577e8.ts.net';
+const ACCOUNT_AUTHORITY='https://api.gatlogets2.com.br';
 const ACCOUNT_LOGIN='/api/account/login';
 const ACCOUNT_REGISTER='/api/account/register';
 const ACCOUNT_SESSION='/api/account/session';

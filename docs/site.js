@@ -1,9 +1,8 @@
 const RAW='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/';
 const GAT_SERVERS=[
-  {label:'BIDUZAO - DOUGLAS',url:'https://douglas.tail4577e8.ts.net'},
-  {label:'JC - JEAN',url:'https://jean-jc.tailf14a00.ts.net'}
+  {label:'GAT CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'},
 ];
-const ACCOUNT_AUTHORITY='https://douglas.tail4577e8.ts.net';
+const ACCOUNT_AUTHORITY='https://api.gatlogets2.com.br';
 const LIVE_PATH='/api/public/live';
 const ACCOUNT_LOGIN='/api/account/login';
 const ACCOUNT_REGISTER='/api/account/register';

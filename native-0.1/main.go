@@ -597,8 +597,7 @@ func loadServers() {
 	}
 	if len(servers) == 0 {
 		servers = []Server{
-			{Name: "BIDUZAO - DOUGLAS", Endpoint: "https://api.gatlogets2.com.br"},
-			{Name: "JC - JEAN", Endpoint: "https://jean-jc.tailf14a00.ts.net"},
+			{Name: "GAT CENTRAL CLOUD", Endpoint: "https://api.gatlogets2.com.br"},
 		}
 		saveJSON(serversFile, servers)
 	}
@@ -1554,6 +1553,16 @@ func startDetectedSession(drv string, s Server) bool {
 		code = strVal(r.JSON, "error")
 	}
 	switch code {
+	case "link_required":
+		pairingCode := ""
+		if r.JSON != nil {
+			pairingCode = strVal(r.JSON, "pairing_code")
+		}
+		if pairingCode != "" {
+			setText(hLoginMsg, "Vincule este computador em gatlogets2.com.br/motorista.html usando o codigo "+pairingCode+". Depois aguarde a conexao automatica.")
+		} else {
+			setText(hLoginMsg, "Vincule este computador na sua Conta GAT pelo site gatlogets2.com.br.")
+		}
 	case "device_mismatch":
 		setText(hLoginMsg, "Seu nome ja esta vinculado a outro PC. Use DESVINCULAR PC no GAT LOG.")
 	case "token_required":

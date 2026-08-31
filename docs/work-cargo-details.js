@@ -1,5 +1,5 @@
 (()=>{
-  const API='https://douglas.tail4577e8.ts.net';
+  const API='https://api.gatlogets2.com.br';
   let catalog=[],official=null;
   const openCards=new Set();
   const clean=v=>String(v||'').replace(/^@/,'').trim().toLowerCase();

@@ -1,7 +1,6 @@
 (()=>{
   const PORTAL_SERVERS=[
-    {label:'BIDUZAO - DOUGLAS',url:'https://douglas.tail4577e8.ts.net'},
-    {label:'JC - JEAN',url:'https://jean-jc.tailf14a00.ts.net'}
+    {label:'GAT CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'},
   ];
   const PORTAL_LIVE='/api/public/live';
   const PORTAL_FRESH=20000;
