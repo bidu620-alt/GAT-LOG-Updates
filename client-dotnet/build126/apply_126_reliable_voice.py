@@ -6,6 +6,28 @@ proj=root/'client-dotnet/GatTelemetry/GatTelemetry.csproj'
 installer=root/'client-dotnet/GatTelemetryInstaller/Program.cs'
 installer_proj=root/'client-dotnet/GatTelemetryInstaller/GatTelemetryInstaller.csproj'
 
+
+def method_bounds(src, signature):
+    start=src.find(signature)
+    if start < 0:
+        raise SystemExit('metodo nao encontrado: '+signature)
+    brace=src.find('{', start)
+    if brace < 0:
+        raise SystemExit('abertura do metodo nao encontrada: '+signature)
+    depth=0
+    i=brace
+    while i < len(src):
+        c=src[i]
+        if c=='{': depth+=1
+        elif c=='}':
+            depth-=1
+            if depth==0:
+                end=i+1
+                while end < len(src) and src[end] in '\r\n': end+=1
+                return start,end
+        i+=1
+    raise SystemExit('fechamento do metodo nao encontrado: '+signature)
+
 s=main.read_text(encoding='utf-8')
 
 # Mantem uma chave separada para conclusao. O aviso de inicio ja possui seu proprio ID.
@@ -15,14 +37,8 @@ if 'private string _lastAnnouncedCompletedMissionId' not in s:
         raise SystemExit('campo de voz da missao nao encontrado')
     s=s.replace(field,field+'        private string _lastAnnouncedCompletedMissionId = string.Empty;\n',1)
 
-# Troca o aviso antigo por uma fila simples e confiavel. Nao usamos cancelamento da fila:
-# chamadas repetidas podiam cancelar um aviso antes de ele sair no dispositivo de audio.
-start=s.find('        private void AnnounceWorkStarted(string missionId)')
-if start < 0:
-    raise SystemExit('AnnounceWorkStarted nao encontrado')
-end=s.find('        private void UpdateWorkStatus(JObject progress)', start)
-if end < 0:
-    raise SystemExit('UpdateWorkStatus nao encontrado depois da voz')
+# Troca apenas o metodo antigo de inicio, preservando diario, recibos e demais metodos.
+start,end=method_bounds(s,'        private void AnnounceWorkStarted(string missionId)')
 new_voice=r'''        private SpeechSynthesizer EnsureVoice()
         {
             if (_voice != null) return _voice;
@@ -74,12 +90,7 @@ s=s[:start]+new_voice+s[end:]
 # O inicio nao depende mais de um pulso unico 'started'. Enquanto a Central confirmar
 # state=active, o cliente tenta anunciar uma vez para aquele missionId. Assim, se o
 # primeiro pacote/resposta chegar em uma transicao ruim, o proximo pacote recupera a voz.
-start=s.find('        private void CheckMissionVoice(JObject progress, bool startedNow)')
-if start < 0:
-    raise SystemExit('CheckMissionVoice antigo nao encontrado')
-end=s.find('        private async Task SendCentralTelemetryAsync()', start)
-if end < 0:
-    raise SystemExit('SendCentralTelemetryAsync nao encontrado depois da voz')
+start,end=method_bounds(s,'        private void CheckMissionVoice(JObject progress, bool startedNow)')
 new_check=r'''        private void CheckMissionVoice(JObject progress, bool startedNow, bool completedNow)
         {
             if (progress == null) return;
@@ -120,8 +131,7 @@ new_check=r'''        private void CheckMissionVoice(JObject progress, bool star
 '''
 s=s[:start]+new_check+s[end:]
 
-# Integra de forma tolerante com o bloco atual da Central. Patches posteriores mudaram
-# o texto de status, entao nao dependemos mais de um bloco inteiro identico ao da 1.0.12.
+# Integra de forma tolerante com o bloco atual da Central.
 start_send=s.find('        private async Task SendCentralTelemetryAsync()')
 end_send=s.find('        private void EnterClicked(', start_send)
 if start_send < 0 or end_send < 0:
@@ -185,6 +195,8 @@ checks=[
     'CheckMissionVoice(progress.Json, startedNow, completedNow)',
     'startedNow || becameActive || active',
     'TRABALHO CONCLUÍDO',
+    'FlushTripReceiptsAsync',
+    'CaptureTripJournalAsync',
 ]
 for value in checks:
     if value not in text:
