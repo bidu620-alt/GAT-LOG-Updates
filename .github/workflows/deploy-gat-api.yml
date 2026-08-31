@@ -35,6 +35,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: cloudflare-central/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
+      - run: python scripts/apply-stable-job-labels.py
       - run: pnpm run check
       - run: pnpm run migrate:remote
       - run: pnpm run sync:cargos
