@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 
-# Recheck after sticky-cancel guard deploy.
+# Recheck after canonical event deploy.
 jobs:
   inspect:
     runs-on: ubuntu-latest
@@ -22,6 +22,6 @@ jobs:
           echo '=== HEALTH ==='
           curl -fsS https://api.gatlogets2.com.br/health | jq '{ok,agent_version,mission_min_km,time}'
           echo '=== BIDUZAO LIVE ==='
-          curl -fsS https://api.gatlogets2.com.br/api/public/account-live | jq '{updated_at, telemetry: [.telemetry[] | select((.account_user // "") == "biduzao") | {driver,account_user,updated_at,on_job,cargo_name,mass_kg,remaining_km, telemetry: {gat_client_version:.telemetry.gat_client_version, job_latched:.telemetry.job_latched, job_latch_key:.telemetry.job_latch_key, on_job:.telemetry.on_job, gameplay_onJob:.telemetry.gameplay.onJob, cargo_name:.telemetry.cargo_name, cargo_id:.telemetry.cargo_id, mass_kg:.telemetry.mass_kg, remaining_km:.telemetry.remaining_km, planned_distance_km:.telemetry.planned_distance_km, source_city:.telemetry.source_city, destination_city:.telemetry.destination_city, gameplay_jobDelivered:.telemetry.gameplay.jobDelivered, root_jobDelivered:.telemetry.jobDelivered, job_delivered:.telemetry.job.delivered, gameplay_jobCancelled:.telemetry.gameplay.jobCancelled, root_jobCancelled:.telemetry.jobCancelled, gameplay_jobCanceled:.telemetry.gameplay.jobCanceled, root_jobCanceled:.telemetry.jobCanceled, job_cancelled:.telemetry.job.cancelled, job_canceled:.telemetry.job.canceled}}]}'
+          curl -fsS https://api.gatlogets2.com.br/api/public/account-live | jq '{updated_at, telemetry: [.telemetry[] | select((.account_user // "") == "biduzao") | {driver,account_user,updated_at,on_job,cargo_name,mass_kg,remaining_km, telemetry: {gat_client_version:.telemetry.gat_client_version, gat_schema:.telemetry.gat_schema, gat_job_state:.telemetry.gat_job_state, gat_job_event:.telemetry.gat_job_event, job_latched:.telemetry.job_latched, job_latch_key:.telemetry.job_latch_key, on_job:.telemetry.on_job, gameplay_onJob:.telemetry.gameplay.onJob, cargo_name:.telemetry.cargo_name, cargo_id:.telemetry.cargo_id, mass_kg:.telemetry.mass_kg, remaining_km:.telemetry.remaining_km, planned_distance_km:.telemetry.planned_distance_km, source_city:.telemetry.source_city, destination_city:.telemetry.destination_city, gameplay_jobDelivered:.telemetry.gameplay.jobDelivered, gameplay_jobCancelled:.telemetry.gameplay.jobCancelled}}]}'
           echo '=== BIDUZAO PROFILE MISSION ==='
           curl -fsS 'https://api.gatlogets2.com.br/api/public/driver?user=biduzao' | jq '{ok, mission:.profile.current_mission}'
