@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rollup --config",
+    "build": "node scripts/apply-suspended-job-fix.mjs && node --check worker.js && rollup --config",
     "check": "node --check worker.js && pnpm run build && wrangler deploy --dry-run --no-bundle --outdir wrangler-dist",
     "dev": "wrangler dev",
     "migrate:local": "wrangler d1 migrations apply DB --local",
