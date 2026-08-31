@@ -41,6 +41,15 @@ jobs:
         shell: pwsh
         run: python gat/map-exporter-large/patch_tsmap_large.py
 
+      - name: Validate diagnostic build source
+        shell: pwsh
+        run: |
+          $setup = Get-Content 'upstream/TsMap.Canvas/SetupForm.cs' -Raw
+          $program = Get-Content 'upstream/TsMap.Canvas/Program.cs' -Raw
+          if ($setup -notmatch 'GAT_MAP_LOAD_ERROR\.log') { throw 'Log de carregamento ausente.' }
+          if ($setup -notmatch 'WriteLoadLog\("ERRO AO CARREGAR MAPA"') { throw 'Tratamento do Continue ausente.' }
+          if ($program -notmatch 'GAT_MAP_CRASH\.log') { throw 'Log global de crash ausente.' }
+
       - name: Build x64 Release
         shell: pwsh
         run: msbuild upstream/TsMap.sln /m /p:Configuration=Release /p:Platform=x64
@@ -54,39 +63,36 @@ jobs:
           New-Item -ItemType Directory -Force $dst | Out-Null
           Copy-Item "$src/*" $dst -Recurse -Force
           @'
-          GAT MAP EXPORTER LARGE - TESTE 0.1
+          GAT MAP EXPORTER LARGE - TESTE 0.2 DIAGNOSTICO
 
-          Base tecnica: TsMap tiled web map exporter (GPL), com ajustes GAT para mapas grandes.
+          Esta versao mantem as melhorias da 0.1 e corrige o principal problema de teste:
+          ao clicar CONTINUE, um erro durante a leitura do mapa nao pode mais simplesmente fechar o aplicativo.
 
-          O que mudou nesta versao:
-          - processo x64 para aproveitar mais memoria;
-          - gera cada tile individualmente, sem montar uma imagem gigante;
-          - modo RESUMIR: se fechar/travar, execute novamente e escolha A MESMA pasta;
-          - tiles PNG existentes sao pulados automaticamente;
-          - interface atualiza o progresso a cada 25 tiles, em vez de cada arquivo;
-          - limpeza de memoria a cada 100 tiles;
-          - erro de um tile e registrado em GAT_MAP_EXPORT_ERRORS.log e a exportacao continua.
+          Se o mapa nao carregar:
+          - a tela de configuracao permanece aberta;
+          - aparece uma mensagem com o erro;
+          - GAT_MAP_LOAD_ERROR.log e criado na mesma pasta do executavel;
+          - falhas gerais tambem sao registradas em GAT_MAP_CRASH.log.
 
-          PRIMEIRO TESTE RECOMENDADO
-          1. Abra GAT_MAP_EXPORTER_LARGE.exe.
-          2. Selecione Euro Truck Simulator 2 e a pasta do jogo.
-          3. Adicione os mods do mapa na mesma ordem correta usada no ETS2.
-          4. Carregue o mapa.
-          5. Abra o gerador de Tile Map.
-          6. Para validar RBR/EAA, comece com zoom 0 ate 6.
-          7. Escolha uma pasta vazia, por exemplo C:\GAT_MAP_TESTE.
-          8. Confirme se foram criados TileMapInfo.json e a pasta Tiles.
-          9. Depois teste zoom 7. Zoom 8 gera dezenas de milhares de PNGs e deve ficar para o teste final.
+          TESTE
+          1. Selecione a pasta raiz do Euro Truck Simulator 2 (onde existe base.scs).
+          2. Marque os mods do mapa e deixe na ordem correta.
+          3. Clique Continue.
+          4. Se abrir o mapa, seguimos para gerar Tile Map zoom 0-6.
+          5. Se der erro, envie GAT_MAP_LOAD_ERROR.log ao ChatGPT. Ele contem o motivo tecnico, a ordem dos mods e os caminhos usados.
 
-          IMPORTANTE
-          Compatibilidade exata com RBR/EAA na versao atual do ETS2 ainda precisa ser validada no PC real.
-          Nao apague a pasta parcial se ocorrer erro: o modo RESUMIR foi feito para continuar dela.
+          Exportacao grande:
+          - x64;
+          - tiles existentes sao reaproveitados;
+          - escrita .tmp -> .png;
+          - erro individual de tile vai para GAT_MAP_EXPORT_ERRORS.log;
+          - progresso menos frequente e coleta periodica de memoria.
           '@ | Set-Content "$dst/LEIA-ME-GAT.txt" -Encoding UTF8
-          Compress-Archive -Path "$dst/*" -DestinationPath 'GAT_MAP_EXPORTER_LARGE_TESTE_0.1.zip' -Force
+          Compress-Archive -Path "$dst/*" -DestinationPath 'GAT_MAP_EXPORTER_LARGE_TESTE_0.2_DIAGNOSTICO.zip' -Force
 
       - name: Upload portable build
         uses: actions/upload-artifact@v4
         with:
-          name: GAT_MAP_EXPORTER_LARGE_TESTE_0.1
-          path: GAT_MAP_EXPORTER_LARGE_TESTE_0.1.zip
+          name: GAT_MAP_EXPORTER_LARGE_TESTE_0.2_DIAGNOSTICO
+          path: GAT_MAP_EXPORTER_LARGE_TESTE_0.2_DIAGNOSTICO.zip
           retention-days: 30
