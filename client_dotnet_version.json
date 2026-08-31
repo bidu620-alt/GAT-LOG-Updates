@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.23",
-  "display_version": "1.0.23 JOB LATCH",
-  "notas": "A viagem passa a ser registrada localmente assim que o TruckSim GPS detecta carga e peso. O registro permanece travado durante a viagem e so termina em evento real de entrega ou cancelamento. Oscilacoes de on_job nao derrubam mais o trabalho. Grava JOB STARTED, JOB DELIVERED e JOB CANCELLED no log local.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.23_JOB_LATCH_TESTE.exe",
-  "sha256": "9c475b9066e860d5296362d3bb0a37f7f00f7b4cac0297b82592797f4d61c84f"
+  "version": "1.0.24",
+  "display_version": "1.0.24 CENTRAL LATCH",
+  "notas": "Corrige o envio direto para a Central Cloudflare: o job latch da 1.0.23 agora e aplicado ao pacote oficial enviado ao site. O login do comboio continua opcional e nao sobrescreve mais o status da Central. Quando a viagem estiver validada, o cliente mostra Central GAT: ONLINE • TRABALHO EM ANDAMENTO.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.24_CENTRAL_LATCH_TESTE.exe",
+  "sha256": "ad7d07ed49ec5055883dbb4a62b52f7fcc823ab66aed1a04825a0e66a05e51e5"
 }
