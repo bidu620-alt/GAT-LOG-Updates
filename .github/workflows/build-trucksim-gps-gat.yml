@@ -83,5 +83,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f releases/TruckSimGPS_Server_GAT_DANOS_1.0.exe releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe releases/TruckSimGPS_GAT_DANOS_1.0_SOURCE.zip trucksim_gps_gat_version.json
-          git commit -m "Publica TruckSim GPS GAT com danos reais" || exit 0
-          git push
+          git commit -m "Publica TruckSim GPS GAT com danos reais"
+          if ($LASTEXITCODE -eq 0) {
+            git push
+            if ($LASTEXITCODE -ne 0) { throw 'Falha ao enviar arquivos para o GitHub' }
+          } else {
+            Write-Host 'Nenhuma alteracao nova para publicar.'
+          }
