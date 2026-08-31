@@ -43,6 +43,7 @@ jobs:
       - run: python scripts/apply-gat-points.py
       - run: python scripts/apply-delivery-progress-guard.py
       - run: python scripts/apply-repeat-xp-only.py
+      - run: python scripts/apply-truck-damage.py
       - run: pnpm run check
       - run: pnpm run migrate:remote
       - run: pnpm run sync:cargos
@@ -51,5 +52,6 @@ jobs:
 # Validacao simples: trabalho ativo + carga detectada + peso > 0 + distancia minima.
 # Entrega so conclui apos o evento ser armado e haver pelo menos 1 km de progresso real.
 # Pontos GAT: cada primeira conclusao valida do trabalho comeca em 100 pontos; multas e danos descontam.
+# Dano novo do caminhao: maior aumento entre motor/cambio/cabine/chassi/rodas; nunca soma porcentagens.
 # Ranking oficial: maior total de Pontos GAT do mes, mantendo x/30 como progresso.
 # Trabalho ja concluido no mes pode ser repetido: a nova viagem soma somente XP ao nivel.
