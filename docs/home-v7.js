@@ -16,3 +16,18 @@ async function fetchJson(url){const c=new AbortController(),t=setTimeout(()=>c.a
 async function loadRanking(){const status=document.getElementById('rankingStatus');try{const data=await fetchJson(RANKING_URL);if(data?.ok){gatRankingData=data;applyMode(data);updateProgress();renderRankList();return}if(status)status.textContent='Ranking temporariamente indisponível.';}catch(_){if(status)status.textContent='Ranking aguardando conexão com a Central GAT.'}}
 async function loadSafety(){try{const data=await fetchJson(SAFETY_URL);if(data?.ok){safetyRankingData=data;if(currentRankMode==='safe')renderRankList();}}catch(_){if(currentRankMode==='safe'){const s=document.getElementById('rankingStatus');if(s)s.textContent='Direção segura aguardando conexão com a Central GAT.';}}}
 window.addEventListener('gat-account-change',updateProgress);bindTabs();loadRanking();loadSafety();setInterval(loadRanking,15000);setInterval(loadSafety,30000);
+
+(()=>{
+  function addHomeNotice(){
+    if(document.getElementById('gatHomeNotice'))return;
+    const topbar=document.querySelector('.topbar');
+    if(!topbar)return;
+    const notice=document.createElement('section');
+    notice.id='gatHomeNotice';
+    notice.setAttribute('role','status');
+    notice.style.cssText='background:linear-gradient(90deg,#ffd54a,#ffe889);color:#17120a;border-bottom:2px solid #d49b00;box-shadow:0 8px 24px rgba(0,0,0,.18);position:relative;z-index:20;';
+    notice.innerHTML='<div class="shell" style="padding:13px 18px;display:flex;gap:12px;align-items:flex-start;line-height:1.45;"><span style="font-size:22px;line-height:1;">⚠️</span><div><strong style="display:block;font-size:15px;letter-spacing:.04em;margin-bottom:3px;">AVISO IMPORTANTE</strong><span style="font-size:14px;">O site e o GAT Telemetria estão funcionando. <strong>Sempre confirme no GAT Telemetria se está aparecendo <span style="color:#087a35;">“TRABALHO EM ANDAMENTO”</span> em verde.</strong> Se não estiver em verde, a carga ainda não foi validada.</span></div></div>';
+    topbar.insertAdjacentElement('afterend',notice);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addHomeNotice);else addHomeNotice();
+})();
