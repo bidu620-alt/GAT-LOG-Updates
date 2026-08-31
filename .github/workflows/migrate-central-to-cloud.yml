@@ -1,0 +1,55 @@
+name: Migrate GAT Central to Cloudflare
+
+on:
+  push:
+    paths:
+      - '.github/workflows/migrate-central-to-cloud.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Replace old Central URL
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          old='https://douglas.tail4577e8.ts.net'
+          new='https://api.gatlogets2.com.br'
+          targets=[
+            Path('docs/official-v5.js'),
+            Path('docs/home-v7.js'),
+            Path('docs/motorista.js'),
+            Path('docs/admin.js'),
+            Path('docs/mapa.js'),
+            Path('docs/work-catalog.js'),
+            Path('native-0.1/main.go'),
+          ]
+          changed=[]
+          for p in targets:
+            if not p.exists():
+              continue
+            text=p.read_text(encoding='utf-8')
+            if old in text:
+              p.write_text(text.replace(old,new),encoding='utf-8')
+              changed.append(str(p))
+          print('Changed:', ', '.join(changed) if changed else 'none')
+          PY
+      - name: Commit migration
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes required.'
+            exit 0
+          fi
+          git config user.name 'GAT Cloud Migration'
+          git config user.email 'actions@users.noreply.github.com'
+          git add docs/official-v5.js docs/home-v7.js docs/motorista.js docs/admin.js docs/mapa.js docs/work-catalog.js native-0.1/main.go
+          git commit -m 'Switch GAT Central to api.gatlogets2.com.br'
+          git push
