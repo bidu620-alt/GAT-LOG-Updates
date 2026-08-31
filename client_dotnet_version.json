@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.19",
-  "display_version": "1.0.19 CLOUDFLARE DIRETO",
-  "notas": "Corrige o HTTP 410: Conta GAT e telemetria oficial agora usam diretamente https://api.gatlogets2.com.br. Nao altera catalogo, classificacao ou compatibilidade de cargas. Mantem mapa, odometro, integridade de mods, diario de viagem e conexao opcional ao comboio.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.19_CLOUDFLARE_TESTE.exe",
-  "sha256": "441cd236c9be76fd1b2d3b051437b5860cd3a9c91fbb6e17764ee6966f27083c"
+  "version": "1.0.20",
+  "display_version": "1.0.20 VINCULO CLOUDFLARE",
+  "notas": "Corrige o HTTP 404 da 1.0.19. O cliente agora usa o fluxo seguro /api/client/login + /api/client/telemetry da Cloudflare, exibe o codigo de 8 caracteres para vincular o computador no site e guarda o token do dispositivo protegido no Windows. Corrige tambem a restauracao da sessao da Conta GAT para POST. Nao altera catalogo nem regras de cargas.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.20_VINCULO_CLOUDFLARE_TESTE.exe",
+  "sha256": "12c2288a980eabdbc87ff283683285b2ef711004cf855988e5d435d0baebcc25"
 }
