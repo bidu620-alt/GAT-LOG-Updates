@@ -38,10 +38,11 @@ jobs:
       - run: python scripts/apply-stable-job-labels.py
       - run: python scripts/apply-cargo-id-validation.py
       - run: python scripts/apply-base-distance-fallback.py
+      - run: python scripts/apply-simple-job-validation.py
       - run: pnpm run check
       - run: pnpm run migrate:remote
       - run: pnpm run sync:cargos
       - run: pnpm run deploy
 
-# Validacao de trabalho: cargoId + distancia minima; cidades apenas informativas.
-# Mapa base usa plannedDistanceKm e, se o TruckSim nao fornecer, restante_km como fallback.
+# Validacao simples: trabalho ativo + carga detectada + peso > 0 + distancia minima.
+# Catalogo, cargoId e cidades ficam para organizacao/exibicao e nao bloqueiam o trabalho.
