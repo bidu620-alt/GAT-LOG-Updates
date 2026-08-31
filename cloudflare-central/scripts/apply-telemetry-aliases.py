@@ -14,5 +14,13 @@ s=s.replace("on_job:bool(raw,'on_job','onJob','gameplay.onJob','job.onJob','job.
 s=s.replace("cargo_name:str(raw,'cargo_name','cargo','job.cargo','job.cargoName','job.cargo.name')",
             "cargo_name:str(raw,'cargo_name','cargo','job.cargo','job.cargoName','Job.CargoName','job.cargo.name','job.name')",1)
 
+# A Telemetria 1.0.23 cria um registro local de viagem (job latch).
+# O Worker precisa enxergar esses campos explicitamente para confiar no registro do cliente.
+marker="gat_map:str(raw,'gat_map','map_mode','gatMap')||'base'"
+replacement="gat_map:str(raw,'gat_map','map_mode','gatMap')||'base',job_latched:bool(raw,'job_latched','jobLatched'),job_latch_key:str(raw,'job_latch_key','jobLatchKey')"
+if marker not in s:
+    raise SystemExit('fim do flat esperado nao encontrado')
+s=s.replace(marker,replacement,1)
+
 p.write_text(s,encoding='utf-8')
-print('Aliases de telemetria ampliados: peso/carga/trabalho reconhecidos igual ao site.')
+print('Aliases ampliados: peso/carga/trabalho + job_latched/job_latch_key reconhecidos pelo Worker.')
