@@ -1,0 +1,45 @@
+name: Fix Cloudflare Cancelled Job
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloudflare-central/fix-cancelled-job.trigger'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Reset active mission when ETS2 job is cancelled
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('cloudflare-central/worker.js')
+          s=p.read_text(encoding='utf-8')
+          old=""" if(!bool(raw,'gameplay.jobDelivered','jobDelivered'))return f.on_job?{type:'mission_in_progress',mission:m,distance_km:planned}:null;\n if(m.state!=='active')return{type:'delivery_rejected',reason:'mission_not_active'};"""
+          new=""" const delivered=bool(raw,'gameplay.jobDelivered','jobDelivered');\n if(!delivered&&!f.on_job&&m.state==='active'){m=await resetAssigned(env,user,m,'job_cancelled');return{type:'mission_cancelled',mission:m}}\n if(!delivered)return f.on_job?{type:'mission_in_progress',mission:m,distance_km:planned}:null;\n if(m.state!=='active')return{type:'delivery_rejected',reason:'mission_not_active'};"""
+          if old not in s:
+              raise SystemExit('Trecho de processMission nao encontrado; nenhuma alteracao aplicada')
+          s=s.replace(old,new,1)
+          s=s.replace("const VERSION='1.0.40-cloudflare';","const VERSION='1.0.41-cloudflare';",1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check cloudflare-central/worker.js
+          grep -q "mission_cancelled" cloudflare-central/worker.js
+          grep -q "job_cancelled" cloudflare-central/worker.js
+      - name: Commit correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cloudflare-central/worker.js
+          git commit -m "Corrige cancelamento de carga na telemetria Cloudflare"
+          git push origin main
