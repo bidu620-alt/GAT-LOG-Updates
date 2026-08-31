@@ -1,9 +1,9 @@
 {
   "app": "GAT Telemetria CSharp",
   "channel": "test-dotnet",
-  "version": "1.0.22",
-  "display_version": "1.0.22 CARGOID + KM",
-  "notas": "Envia cargoId, IDs das cidades e distancia planejada da SCS para a Cloudflare. A validacao principal usa ID estavel da carga + distancia minima. Origem e destino ficam apenas para exibicao/historico e nao bloqueiam o trabalho. Trabalho personalizado aceita cargas de mods fora do catalogo.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.22_CARGOID_KM_TESTE.exe",
-  "sha256": "081a5998937925cb4c30e28437debf29f7989e39941ab8ce24f08c32a3e765ee"
+  "version": "1.0.23",
+  "display_version": "1.0.23 JOB LATCH",
+  "notas": "A viagem passa a ser registrada localmente assim que o TruckSim GPS detecta carga e peso. O registro permanece travado durante a viagem e so termina em evento real de entrega ou cancelamento. Oscilacoes de on_job nao derrubam mais o trabalho. Grava JOB STARTED, JOB DELIVERED e JOB CANCELLED no log local.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.23_JOB_LATCH_TESTE.exe",
+  "sha256": "9c475b9066e860d5296362d3bb0a37f7f00f7b4cac0297b82592797f4d61c84f"
 }
