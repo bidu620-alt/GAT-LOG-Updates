@@ -16,9 +16,9 @@ new="const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.ra
 if old not in s: raise SystemExit('retorno profile esperado nao encontrado')
 s=s.replace(old,new,1)
 
-# Entrega: cada viagem valida vale 100 pontos; multas e danos descontam desse total.
+# Entrega: 100 pontos fixos no ranking; as mesmas penalidades tambem reduzem o XP da viagem.
 old="const damageRaw=Math.max(0,Number(details.cargoDamage)||0),damage=damageRaw<=1?damageRaw*100:damageRaw,fines=Math.max(0,Math.trunc(num(details,'speedFines','speed_fines','fines'))),baseXP=Math.floor(distance/100)*20,speedPenalty=fines*3,cargoPenalty=Math.round(damage*2),perfect=damage<=0.1&&fines===0?1:0,bonus=perfect?25:0,penalty=speedPenalty+cargoPenalty,xp=Math.max(0,baseXP-penalty+bonus),cargo=m.cargo||f.cargo_name||m.custom_cargo||m.title||'Carga',weight=Number(m.weight_kg)||f.mass_kg||0,auditData={base_xp:baseXP,speed_penalty_xp:speedPenalty,cargo_penalty_xp:cargoPenalty,truck_penalty_xp:0,perfect_bonus_xp:bonus,cargo_damage_pct:damage,truck_damage_delta_pct:0,perfect_trip:!!perfect,xp_awarded:xp};"
-new="const damageRaw=Math.max(0,Number(details.cargoDamage)||0),damage=damageRaw<=1?damageRaw*100:damageRaw,truckRaw=Math.max(0,num(details,'truckDamageDeltaPct','truck_damage_delta_pct','truckDamage')||num(raw,'truck_damage_delta_pct','truckDamageDeltaPct')),truckDamage=truckRaw<=1?truckRaw*100:truckRaw,fines=Math.max(0,Math.trunc(num(details,'speedFines','speed_fines','fines'))),baseXP=Math.floor(distance/100)*20,gatSpeedPenalty=fines*3,gatCargoPenalty=scoreTier(damage,3,7,15),gatTruckPenalty=scoreTier(truckDamage,5,10,20),penalty=Math.min(100,gatSpeedPenalty+gatCargoPenalty+gatTruckPenalty),gatPoints=Math.max(0,100-penalty),perfect=damage<=0.5&&truckDamage<=0.5&&fines===0?1:0,bonus=perfect?5:0,xp=Math.max(0,baseXP+bonus),cargo=m.cargo||f.cargo_name||m.custom_cargo||m.title||'Carga',weight=Number(m.weight_kg)||f.mass_kg||0,auditData={base_xp:baseXP,speed_penalty_xp:0,cargo_penalty_xp:0,truck_penalty_xp:0,perfect_bonus_xp:bonus,cargo_damage_pct:damage,truck_damage_delta_pct:truckDamage,perfect_trip:!!perfect,xp_awarded:xp,gat_base_points:100,gat_speed_penalty_points:gatSpeedPenalty,gat_cargo_penalty_points:gatCargoPenalty,gat_truck_penalty_points:gatTruckPenalty,gat_penalty_points:penalty,gat_points:gatPoints};"
+new="const damageRaw=Math.max(0,Number(details.cargoDamage)||0),damage=damageRaw<=1?damageRaw*100:damageRaw,truckRaw=Math.max(0,num(details,'truckDamageDeltaPct','truck_damage_delta_pct','truckDamage')||num(raw,'truck_damage_delta_pct','truckDamageDeltaPct')),truckDamage=truckRaw<=1?truckRaw*100:truckRaw,fines=Math.max(0,Math.trunc(num(details,'speedFines','speed_fines','fines'))),baseXP=Math.floor(distance/100)*20,gatSpeedPenalty=fines*3,gatCargoPenalty=scoreTier(damage,3,7,15),gatTruckPenalty=scoreTier(truckDamage,5,10,20),xpPenalty=gatSpeedPenalty+gatCargoPenalty+gatTruckPenalty,pointPenalty=Math.min(100,xpPenalty),gatPoints=Math.max(0,100-pointPenalty),perfect=damage<=0.5&&truckDamage<=0.5&&fines===0?1:0,bonus=perfect?5:0,penalty=xpPenalty,xp=Math.max(0,baseXP-penalty+bonus),cargo=m.cargo||f.cargo_name||m.custom_cargo||m.title||'Carga',weight=Number(m.weight_kg)||f.mass_kg||0,auditData={base_xp:baseXP,speed_penalty_xp:gatSpeedPenalty,cargo_penalty_xp:gatCargoPenalty,truck_penalty_xp:gatTruckPenalty,perfect_bonus_xp:bonus,cargo_damage_pct:damage,truck_damage_delta_pct:truckDamage,perfect_trip:!!perfect,xp_awarded:xp,gat_base_points:100,gat_speed_penalty_points:gatSpeedPenalty,gat_cargo_penalty_points:gatCargoPenalty,gat_truck_penalty_points:gatTruckPenalty,gat_penalty_points:pointPenalty,gat_points:gatPoints};"
 if old not in s: raise SystemExit('calculo de entrega esperado nao encontrado')
 s=s.replace(old,new,1)
 
@@ -31,9 +31,9 @@ s=s.replace(old,new,1)
 # Sobe versao final do Worker depois dos patches anteriores.
 s=s.replace("const VERSION='1.0.46-cloudflare';","const VERSION='1.0.47-cloudflare';",1)
 
-required=['gat_points:gatPoints','gat_base_points:100','ORDER BY points DESC','scoring:{base_per_delivery:100,max_monthly:3000}','const scoreTier=']
+required=['gat_points:gatPoints','gat_base_points:100','ORDER BY points DESC','scoring:{base_per_delivery:100,max_monthly:3000}','const scoreTier=', 'xp=Math.max(0,baseXP-penalty+bonus)', 'speed_penalty_xp:gatSpeedPenalty']
 for x in required:
     if x not in s: raise SystemExit('patch de pontuacao incompleto: '+x)
 
 p.write_text(s,encoding='utf-8')
-print('Pontuacao GAT aplicada: 100 por entrega, penalidades descontadas, ranking por pontos mensais.')
+print('Pontuacao GAT aplicada: 100 por entrega; penalidades reduzem pontos e XP.')
