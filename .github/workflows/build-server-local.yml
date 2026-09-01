@@ -45,7 +45,7 @@ jobs:
       - name: Package verified Node runtime and application
         shell: python
         run: |
-          import pathlib,subprocess,urllib.request,hashlib,zipfile,io,shutil
+          import pathlib,subprocess,urllib.request,hashlib,zipfile,io,shutil,os,tempfile
           root=pathlib.Path('server-local');stage=root/'package';central=stage/'central';central.mkdir(parents=True)
           version=subprocess.check_output(['node','--version'],text=True).strip()
           name=f'node-{version}-win-x64.zip'
@@ -64,6 +64,10 @@ jobs:
           shutil.copy2(root/'runtime/migrations/0004_read_efficiency.sql',central/'migrations/0004_read_efficiency.sql')
           shutil.copy2(root/'LEIA-ME.txt',central/'LEIA-ME.txt')
           shutil.copy2(root/'ui-out/GAT_LOG_SERVER.exe',stage/'GAT_LOG_SERVER.exe')
+          with tempfile.TemporaryDirectory() as localapp:
+              check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
+              assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
+          print('Packaged CLI verified: refuses startup before data import.')
           release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.39.zip')
           with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
               for p in stage.rglob('*'):
@@ -82,6 +86,7 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add releases/GAT_LOG_SERVER_UPDATE_1.0.39_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.39.zip releases/GAT_SERVER_LOCAL_1.0.39.sha256
           git commit -m 'Publish GAT Server 1.0.39 local central preparation updater'
+          git restore server-local/updater/Program.cs
           git pull --rebase
           git push
       - uses: actions/upload-artifact@v4
