@@ -6,6 +6,13 @@ import worker from './worker.js';
 import {LocalDatabase,validateDatabase,importDatabase,saveBackup} from './database.mjs';
 
 const here=dirname(fileURLToPath(import.meta.url));
+function ensureLocalCatalog(db){
+  const row=db.sql.prepare("SELECT compatible_cargos_json FROM work_catalog WHERE id='fuel'").get();
+  if(!row)return;
+  let cargos=[];try{cargos=JSON.parse(row.compatible_cargos_json||'[]')}catch{}
+  for(const name of ['Ethanol','Etanol'])if(!cargos.some(x=>String(x).toLowerCase()===name.toLowerCase()))cargos.push(name);
+  db.sql.prepare("UPDATE work_catalog SET compatible_cargos_json=? WHERE id='fuel'").run(JSON.stringify(cargos));
+}
 export function createCentral(db,{onError=()=>{}}={}){
   let queue=Promise.resolve(),queued=0;
   function exclusive(fn){const work=queue.then(fn);queue=work.catch(()=>{});return work;}
@@ -15,8 +22,6 @@ export function createCentral(db,{onError=()=>{}}={}){
     try{
       const parts=[];let size=0;
       for await(const chunk of req){size+=chunk.length;if(size>262144){res.writeHead(413);res.end();return;}parts.push(chunk);}
-      // Origin requests always have the fixed API hostname. Trust forwarded
-      // client IP only behind the loopback Cloudflare Tunnel ingress.
       const headers=new Headers();for(const[k,v]of Object.entries(req.headers))if(v!==undefined)headers.set(k,Array.isArray(v)?v.join(','):v);
       const request=new Request('https://api.gatlogets2.com.br'+req.url,{method:req.method,headers,...(!['GET','HEAD'].includes(req.method)?{body:Buffer.concat(parts)}:{})});
       const response=await exclusive(async()=>{
@@ -24,7 +29,6 @@ export function createCentral(db,{onError=()=>{}}={}){
         try{
           const result=await worker.fetch(request,{DB:db},{waitUntil:p=>tasks.push(p)});
           await Promise.all(tasks);
-          // Even the mission completion marker rolls back on an API failure.
           db.sql.exec(result.status>=500?'ROLLBACK':'COMMIT');return result;
         }catch(e){db.sql.exec('ROLLBACK');throw e;}
       });
@@ -44,7 +48,7 @@ async function main(){
   }
   const path=join(dataDir,'central.sqlite');
   if(!existsSync(path))throw Error('Importe a exportacao completa do banco antes de iniciar a central.');
-  const db=new LocalDatabase(path);validateDatabase(db.sql);
+  const db=new LocalDatabase(path);validateDatabase(db.sql);ensureLocalCatalog(db);
   if(process.argv[2]==='backup'){console.log(await saveBackup(db,dataDir));db.close();return;}
   let lastError='';
   const {server,exclusive}=createCentral(db,{onError:e=>{lastError=String(e.message);console.error(lastError);}});
