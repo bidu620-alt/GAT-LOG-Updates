@@ -1,0 +1,23 @@
+name: Connect GAT API to verified local central
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['central-cutover/connect.py', '.github/workflows/connect-local-central.yml']
+permissions:
+  contents: read
+concurrency:
+  group: gat-log-api-production
+  cancel-in-progress: false
+jobs:
+  connect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install cryptography
+      - name: Preserve routing checkpoint and connect verified central
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python central-cutover/connect.py
