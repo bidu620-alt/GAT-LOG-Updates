@@ -60,9 +60,9 @@ internal sealed class CentralPanel : UserControl
         try{
             string content=await http.GetStringAsync("http://127.0.0.1:5056/health");
             var json=JObject.Parse(content);
-            if((string)json["agent_version"]!="1.0.39-local")throw new InvalidOperationException();
+            if((string)json["agent_version"]!="1.0.40-local")throw new InvalidOperationException();
             state.Text="CENTRAL LOCAL ATIVA";state.ForeColor=Color.LightGreen;
-            detail.Text="Banco e ranking no PC. As regras de versao e dos sete danos estao ativas.\r\nEndereco local: http://127.0.0.1:5056\r\nEste status nao confirma que o dominio publico ja foi conectado.";
+            detail.Text="Banco e ranking no PC. Viagens em fila podem ser reenviadas apos manutencao.\r\nEndereco local: http://127.0.0.1:5056\r\nAs regras de versao e dos sete danos continuam ativas.";
         }catch{
             state.Text=File.Exists(Path.Combine(Data,"central.sqlite"))?"CENTRAL LOCAL PARADA":"AGUARDANDO IMPORTACAO DO BANCO";state.ForeColor=Color.Gold;
             detail.Text="Importe a exportacao completa e atual do D1 para preservar contas, senhas e historico.\r\nA instalacao nao muda o dominio nem substitui o banco da Cloudflare.";
@@ -90,7 +90,7 @@ internal sealed class CentralPanel : UserControl
         Process.Start(new ProcessStartInfo(Node,Quote(Host)){WorkingDirectory=Runtime,UseShellExecute=false,CreateNoWindow=true});
     }
     private async Task StartAsync(){
-        try{var json=JObject.Parse(await http.GetStringAsync("http://127.0.0.1:5056/health"));if((string)json["agent_version"]=="1.0.39-local")return;throw new InvalidOperationException("A porta 5056 esta ocupada por outro servico.");}
+        try{var json=JObject.Parse(await http.GetStringAsync("http://127.0.0.1:5056/health"));if((string)json["agent_version"]=="1.0.40-local")return;throw new InvalidOperationException("A porta 5056 esta ocupada por outro servico.");}
         catch(HttpRequestException){}catch(TaskCanceledException){}
         StartBackground();await Task.Delay(1500);
     }
