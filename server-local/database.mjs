@@ -71,6 +71,9 @@ export async function importDatabase(sourcePath,dataDir,schemaPath,indexPath){
       if(!/^(CREATE\s+(?:(?:UNIQUE\s+)?INDEX|TABLE)\s|INSERT\s+(?:OR\s+(?:IGNORE|REPLACE)\s+)?INTO\s|DELETE\s+FROM\s+["`]?sqlite_sequence["`]?\s*$)/i.test(statement))throw Error('Comando nao permitido na exportacao SQL.');
       db.sql.exec(statement);
     }
+    // Verify the original dump BEFORE adding optional tables. Otherwise a
+    // partial accounts-only export could silently appear to be a full backup.
+    validateDatabase(db.sql);
     // Add current indexes and optional tables, without modifying imported rows.
     db.sql.exec(readFileSync(schemaPath,'utf8'));
     db.sql.exec(readFileSync(indexPath,'utf8'));

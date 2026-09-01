@@ -19,6 +19,8 @@ test('full SQL import keeps password and profile; repeat or unsafe imports canno
   await assert.rejects(importDatabase(input,dir,schema,index),/Ja existe/);
   const other=join(dir,'bad');writeFileSync(input,dump()+"ATTACH DATABASE 'evil.sqlite' AS evil;");
   await assert.rejects(importDatabase(input,other,schema,index),/nao permitido/);assert.equal(existsSync(join(other,'central.sqlite')),false);
+  writeFileSync(input,"CREATE TABLE accounts(user TEXT); INSERT INTO accounts VALUES('owner');");
+  await assert.rejects(importDatabase(input,other,schema,index),/Exportacao incompleta/);assert.equal(existsSync(join(other,'central.sqlite')),false);
   assert.deepEqual(dumpStatements("-- hi\nINSERT INTO t VALUES('hello; -- world','it''s ok');/*bye*/"),["INSERT INTO t VALUES('hello; -- world','it''s ok')"]);
 });
 test('HTTP login accepts imported hash, rejects wrong password, survives restart and backup restores',async t=>{
