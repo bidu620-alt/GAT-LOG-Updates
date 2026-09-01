@@ -17,7 +17,7 @@ replace('async function processMission(env,user,raw,t){', 'async function proces
 replace("trip_progress_confirmed:false,started_at:m.started_at||t};", "trip_progress_confirmed:false,rank_guard:{reason:rankingReadiness(raw).reason},started_at:t};")
 marker = " const truckNow=truckDamageOf(raw),truckPartsNow=truckDamageParts(raw),trailerNow=trailerDamageOf(raw);"
 replace(marker, """ if(m.state==='active'||m.state==='suspended'){
-   const readiness=rankingReadiness(raw),next=advanceRankGuard(m.rank_guard,readiness,m.started_at===t?t:previousAt,t);
+   const readiness=rankingReadiness(raw),next=advanceRankGuard(m.rank_guard,readiness,m.started_at===t?t:previousAt,t,Boolean(m.trip_progress_confirmed));
    if(JSON.stringify(next)!==JSON.stringify(m.rank_guard)){
      m.rank_guard=next;
      await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run();
@@ -40,4 +40,4 @@ replace("return{driver,account_user:account||'',updated_at:updated,telemetry:raw
 replace('perfect_trip:!!perfect,xp_awarded:xp,gat_base_points:100', 'rank_verified:true,rank_client_version:raw.gat_client_version,perfect_trip:!!perfect,xp_awarded:xp,gat_base_points:100')
 s = re.sub(r"const VERSION='[0-9.]+-cloudflare';", "const VERSION='1.0.52-cloudflare';", s, count=1)
 p.write_text(s, encoding='utf-8')
-print('Ranking requires a supported client, seven valid damage fields and continuous verified telemetry.')
+print('Ranking requires supported telemetry and preserves server-verified trips across central updates.')
