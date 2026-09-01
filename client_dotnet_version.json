@@ -1,9 +1,9 @@
-{
-  "app": "GAT Telemetria CSharp",
-  "channel": "test-dotnet",
-  "version": "1.0.26",
-  "display_version": "1.0.26 VOZ ESTÁVEL",
-  "notas": "Melhora os avisos por voz. Trabalho iniciado agora usa o estado ativo confirmado pela Central como fallback e nao cancela mais a fila de voz. Ao concluir uma entrega valida, fala Trabalho concluido e mostra TRABALHO CONCLUÍDO no indicador. Mantem o contrato job-v1 da 1.0.25.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.26_VOZ_ESTAVEL_TESTE.exe",
-  "sha256": "0676b36b947616467f6be348e8edeb4bd999e77d6f70c81a904f46498fbbd6eb"
+﻿{
+    "app":  "GAT Telemetria CSharp",
+    "channel":  "stable-dotnet",
+    "version":  "1.0.28",
+    "display_version":  "1.0.28",
+    "notas":  "1.0.28: nova interface GAT; danos reais de Carga, Motor, Cambio, Cabine, Chassi, Rodas e Reboque; integracao com infracoes, regras e ranking. Para os cinco danos do caminhao, use o TruckSim GPS com a atualizacao GAT de danos.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.28.exe",
+    "sha256":  "fad305292441bba509c1a6b959a945624c1c0c7412d06e19bd5c8d5b4275eef9"
 }
