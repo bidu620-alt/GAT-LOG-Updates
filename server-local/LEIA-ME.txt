@@ -1,0 +1,36 @@
+GAT SERVIDOR 1.0.39 - CENTRAL LOCAL (PREPARACAO)
+
+Esta atualizacao acrescenta CENTRAL DO SITE ao GAT Servidor.
+Ela preserva o agente, os mods, o moderador e a configuracao do comboio.
+O site ainda continua apontando para a Cloudflare apos a instalacao.
+
+1. Abra o GAT Servidor, entre com seu login habitual e abra CENTRAL DO SITE.
+2. Antes da importacao definitiva, suspenda as novas gravacoes na API da
+   Cloudflare e obtenha uma exportacao COMPLETA e ATUAL do D1 (SQL).
+   Um backup antigo ou apenas dos perfis nao serve para migrar as senhas.
+3. IMPORTAR BANCO .SQL valida contas, proprietario e integridade do banco.
+   Se ja existir banco local, ele NAO sera substituido automaticamente.
+4. INICIAR CENTRAL. Confira CENTRAL LOCAL ATIVA e teste as contas e os
+   endpoints em http://127.0.0.1:5056 antes da mudanca do dominio.
+5. Para acesso externo, crie um Cloudflare Tunnel permanente e configure
+   o servico HTTP para http://127.0.0.1:5056 neste mesmo computador.
+   Siga https://developers.cloudflare.com/tunnel/setup/
+   Instale o conector como servico do Windows usando as instrucoes do painel.
+6. Somente depois dos testes e da exportacao final: remova o dominio
+   api.gatlogets2.com.br do Worker e associe-o ao tunel. Evite manter duas
+   centrais aceitando viagens ao mesmo tempo. Preserve o D1 para recuperacao.
+7. Teste login, recebimento de telemetria, danos e uma entrega pelo dominio.
+   Marque iniciar com Windows apenas depois de conferir o funcionamento.
+
+O PC e a internet precisam ficar ligados. Fechar o painel nao para a central.
+PARAR CENTRAL interrompe somente a central local; o comboio continua ativo.
+O limite do D1 deixa de afetar o ranking apenas depois da migracao completa.
+
+Dados: %LOCALAPPDATA%\GAT-LOG\Central\central.sqlite
+Backups: %LOCALAPPDATA%\GAT-LOG\Central\backups
+Backup na inicializacao e a cada 6 horas, mantendo as ultimas 14 copias.
+Guarde tambem uma copia em outro disco. As copias contem dados das contas.
+Para restaurar, pare a central e preserve o banco atual antes de substituir
+central.sqlite por uma copia validada. Nao restaure com a central em execucao.
+
+Esta atualizacao nao realiza sozinha os passos de exportacao e troca do dominio.
