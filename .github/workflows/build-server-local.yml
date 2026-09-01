@@ -1,9 +1,9 @@
-name: Build GAT Server 1.0.39 Local
+name: Build GAT Server 1.0.40 Local
 on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['server-local/**', '.github/workflows/build-server-local.yml']
+    paths: ['server-local/**', 'cloudflare-central/scripts/apply-d1-savings.py', 'cloudflare-central/ranking-telemetry.js', '.github/workflows/build-server-local.yml']
 permissions:
   contents: write
 concurrency:
@@ -32,15 +32,13 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           p=Path('server-local/runtime/tests/ranking.test.mjs')
-          # The local variant has no D1 quota. All ten other production contract
-          # tests run unchanged against the actual local handler.
           p.write_text(p.read_text().split("test('budget guard pauses")[0])
           import base64
           p=Path('server-local/ui/app.ico.base64')
           p.with_suffix('').write_bytes(base64.b64decode(p.read_text()))
           PY
           node --test server-local/runtime/tests/ranking.test.mjs
-      - name: Compile existing panel with local central tab
+      - name: Compile panel 1.0.40
         run: dotnet build server-local/ui/GAT_LOG_SERVER.csproj -c Release -o server-local/ui-out
       - name: Package verified Node runtime and application
         shell: python
@@ -48,48 +46,39 @@ jobs:
           import pathlib,subprocess,urllib.request,hashlib,zipfile,io,shutil,os,tempfile
           root=pathlib.Path('server-local');stage=root/'package';central=stage/'central';central.mkdir(parents=True)
           version=subprocess.check_output(['node','--version'],text=True).strip()
-          name=f'node-{version}-win-x64.zip'
-          base=f'https://nodejs.org/dist/{version}/'
-          sums=urllib.request.urlopen(base+'SHASUMS256.txt').read().decode()
-          expected=next(line.split()[0] for line in sums.splitlines() if line.split()[-1]==name)
-          data=urllib.request.urlopen(base+name).read()
-          assert hashlib.sha256(data).hexdigest()==expected,'Node download checksum mismatch'
+          name=f'node-{version}-win-x64.zip';base=f'https://nodejs.org/dist/{version}/'
+          sums=urllib.request.urlopen(base+'SHASUMS256.txt').read().decode();expected=next(line.split()[0] for line in sums.splitlines() if line.split()[-1]==name)
+          data=urllib.request.urlopen(base+name).read();assert hashlib.sha256(data).hexdigest()==expected,'Node download checksum mismatch'
           with zipfile.ZipFile(io.BytesIO(data)) as z:
               (central/'node.exe').write_bytes(z.read(f'node-{version}-win-x64/node.exe'))
-              for license_name in ['LICENSE','README.md']:
-                  (central/('NODE-'+license_name)).write_bytes(z.read(f'node-{version}-win-x64/{license_name}'))
-          for name in ['worker.js','host.mjs','database.mjs','ranking-telemetry.js','read-cache.js','budget-guard.js','schema.sql','package.json']:
-              shutil.copy2(root/'runtime'/name,central/name)
-          (central/'migrations').mkdir()
-          shutil.copy2(root/'runtime/migrations/0004_read_efficiency.sql',central/'migrations/0004_read_efficiency.sql')
-          shutil.copy2(root/'LEIA-ME.txt',central/'LEIA-ME.txt')
-          shutil.copy2(root/'ui-out/GAT_LOG_SERVER.exe',stage/'GAT_LOG_SERVER.exe')
+              for license_name in ['LICENSE','README.md']:(central/('NODE-'+license_name)).write_bytes(z.read(f'node-{version}-win-x64/{license_name}'))
+          for name in ['worker.js','host.mjs','database.mjs','ranking-telemetry.js','read-cache.js','budget-guard.js','schema.sql','package.json']:shutil.copy2(root/'runtime'/name,central/name)
+          (central/'migrations').mkdir();shutil.copy2(root/'runtime/migrations/0004_read_efficiency.sql',central/'migrations/0004_read_efficiency.sql')
+          shutil.copy2(root/'LEIA-ME.txt',central/'LEIA-ME.txt');shutil.copy2(root/'ui-out/GAT_LOG_SERVER.exe',stage/'GAT_LOG_SERVER.exe')
           with tempfile.TemporaryDirectory() as localapp:
               check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
               assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
-          print('Packaged CLI verified: refuses startup before data import.')
-          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.39.zip')
+          assert "1.0.40-local" in (central/'worker.js').read_text()
+          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.40.zip')
           with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
               for p in stage.rglob('*'):
                   if p.is_file():z.write(p,p.relative_to(stage))
-          digest=hashlib.sha256(release.read_bytes()).hexdigest()
-          p=root/'updater/Program.cs';p.write_text(p.read_text().replace('__PAYLOAD_SHA256__',digest))
+          digest=hashlib.sha256(release.read_bytes()).hexdigest();p=root/'updater/Program.cs';p.write_text(p.read_text().replace('__PAYLOAD_SHA256__',digest))
           release.with_suffix('.sha256').write_text(digest+'  '+release.name+'\n')
-          print('Verified runtime:',version,'Package bytes:',release.stat().st_size)
       - name: Compile updater
         run: dotnet build server-local/updater/Updater.csproj -c Release -o server-local/updater-out
-      - name: Publish preparation package without enabling automatic upgrades
+      - name: Publish GAT Server 1.0.40 updater
         shell: bash
         run: |
-          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.39_LOCAL.exe releases/
+          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.39_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add releases/GAT_LOG_SERVER_UPDATE_1.0.39_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.39.zip releases/GAT_SERVER_LOCAL_1.0.39.sha256
-          git commit -m 'Publish GAT Server 1.0.39 local central preparation updater'
+          git add releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.40.zip releases/GAT_SERVER_LOCAL_1.0.40.sha256
+          git commit -m 'Publish GAT Server 1.0.40 offline trip protection'
           git restore server-local/updater/Program.cs
           git pull --rebase -X theirs
           git push
       - uses: actions/upload-artifact@v4
         with:
-          name: GAT-Server-1.0.39-local-updater
-          path: releases/GAT_LOG_SERVER_UPDATE_1.0.39_LOCAL.exe
+          name: GAT-Server-1.0.40-local-updater
+          path: releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe
