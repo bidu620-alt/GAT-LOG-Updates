@@ -29,15 +29,25 @@ export function rankingMessage(reason) {
   if (reason === 'damage_data_incomplete') return 'Ranking bloqueado: faltam dados de danos. Atualize o TruckSim GPS com o pacote GAT de danos e reinicie o jogo.';
   if (reason === 'telemetry_disconnected') return 'Ranking bloqueado: mantenha o jogo conectado ao GAT Telemetria.';
   if (reason === 'telemetry_gap') return 'Esta viagem não pontua: houve interrupção prolongada da telemetria. Inicie outra viagem com a telemetria ativa.';
-  if (reason === 'telemetry_not_verified_from_start') return 'Esta viagem não pontua: não foi possível verificar os danos desde o início. Inicie outra viagem.';
+  if (reason === 'telemetry_not_verified_from_start') return 'Esta viagem ainda está aguardando confirmação contínua da telemetria.';
   return reason ? 'Esta viagem não pontua. Corrija a telemetria e inicie outra viagem.' : '';
 }
-// A failed sample is sticky for this attempt, including after a client/plugin update.
+// A viagem pode começar no intervalo entre dois pacotes. Nesse único caso inicial,
+// duas leituras contínuas permitem confirmar a telemetria sem condenar a viagem inteira.
+// Falhas reais detectadas depois (danos ausentes, desconexão ou gap) continuam sticky.
 export function advanceRankGuard(guard, readiness, previousAt, at) {
   const next = guard ? {...guard} : {reason: 'telemetry_not_verified_from_start'};
+  const previousTime = Date.parse(previousAt || '');
+  const currentTime = Date.parse(at || '');
+  const continuous = Number.isFinite(previousTime) && Number.isFinite(currentTime) &&
+    currentTime >= previousTime && currentTime - previousTime <= MAX_TELEMETRY_GAP_MS;
+  if (next.reason === 'telemetry_not_verified_from_start' && readiness.eligible && continuous) {
+    next.reason = null;
+    next.verified_at = at;
+  }
   if (!next.reason) {
     if (!readiness.eligible) next.reason = readiness.reason;
-    else if (!previousAt || !Number.isFinite(Date.parse(previousAt)) || Date.parse(at) - Date.parse(previousAt) > MAX_TELEMETRY_GAP_MS) next.reason = 'telemetry_gap';
+    else if (!continuous) next.reason = 'telemetry_gap';
   }
   return next;
 }
