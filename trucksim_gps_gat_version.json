@@ -1,8 +1,8 @@
 ﻿{
     "app":  "TruckSim GPS GAT",
     "version":  "1.0",
-    "notas":  "Adiciona ao REST do TruckSim GPS os desgastes reais de Motor, Cambio, Cabine, Chassi e Rodas usados pelo GAT Telemetria 1.0.28.",
-    "update_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe",
+    "notas":  "Versao GAT com danos reais de Motor, Cambio, Cabine, Chassi e Rodas para o GAT Telemetria 1.0.28. Pacote portatil substitui o atualizador automatico como download principal.",
+    "update_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0_PORTABLE.zip",
     "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0_SOURCE.zip",
-    "sha256":  "87c0dcab88f5f47c3599cf055ce18e59a50d31befa80aa634d37891fa438aa84"
+    "sha256":  "13c9b0eab769a58d402bcba032ac6da3b1be598704fc6d7ca16b7c01e24a2213"
 }
