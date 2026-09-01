@@ -1,0 +1,31 @@
+name: Prepare private GAT tunnel connector
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['tunnel-setup/**', '.github/workflows/prepare-local-tunnel.yml']
+permissions:
+  contents: read
+concurrency:
+  group: gat-local-tunnel-setup
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    env:
+      PYTHONUTF8: '1'
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: python -m pip install cryptography
+      - name: Prepare test tunnel and private setup source
+        run: python tunnel-setup/prepare.py
+      - name: Compile connector installer
+        run: dotnet build tunnel-setup/Setup.csproj -c Release -o tunnel-setup/out
+      - name: Encrypt personalized installer for its owner
+        run: python tunnel-setup/seal.py
