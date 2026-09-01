@@ -110,7 +110,7 @@ internal sealed class MainForm : Form
 		}
 	}
 
-	private const string CurrentVersion = "1.0.28";
+	private const string CurrentVersion = "1.0.30";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -167,6 +167,10 @@ internal sealed class MainForm : Form
 	private DateTime _lastTripCapture = DateTime.MinValue;
 
 	private DateTime _lastTripFlush = DateTime.MinValue;
+
+	private const int MaxQueuedTelemetryPackets = 7200;
+
+	private string CentralTelemetryQueueFile => Path.Combine(ClientStore.DataDir, "central-telemetry-queue.ndjson");
 
 	private ServerInfo _serverInfo = new ServerInfo();
 
@@ -311,7 +315,7 @@ internal sealed class MainForm : Form
 
 	public MainForm()
 	{
-		Text = "GAT Telemetria C# 1.0.28";
+		Text = "GAT Telemetria C# 1.0.30";
 		base.StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new Size(900, 700);
 		base.Size = new Size(940, 740);
@@ -615,7 +619,7 @@ internal sealed class MainForm : Form
 
 		lblVersion = new Label
 		{
-			Text = "GAT Telemetria C# 1.0.28",
+			Text = "GAT Telemetria C# 1.0.30",
 			AutoSize = true,
 			ForeColor = Color.FromArgb(105, 118, 136),
 			Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
@@ -1151,6 +1155,93 @@ internal sealed class MainForm : Form
 		}
 	}
 
+		private void StampCentralTelemetry(JObject tele)
+	{
+		if (tele == null) return;
+		if (tele["gat_collected_at"] == null) tele["gat_collected_at"] = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);
+		if (tele["gat_packet_id"] == null) tele["gat_packet_id"] = Guid.NewGuid().ToString("N");
+		string tripId = TextAny(tele, "gat_job_event_key", "job_latch_key", "gat_trip_id");
+		if (string.IsNullOrWhiteSpace(tripId) && _latchedJob != null) tripId = _latchedJobKey;
+		if (!string.IsNullOrWhiteSpace(tripId)) tele["gat_trip_id"] = tripId;
+	}
+
+	private void QueueCentralTelemetry(JObject tele)
+	{
+		if (tele == null) return;
+		try
+		{
+			ClientStore.Ensure();
+			StampCentralTelemetry(tele);
+			File.AppendAllText(CentralTelemetryQueueFile, tele.ToString(Formatting.None) + Environment.NewLine, Encoding.UTF8);
+			string[] lines = File.ReadAllLines(CentralTelemetryQueueFile, Encoding.UTF8).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+			if (lines.Length > MaxQueuedTelemetryPackets)
+			{
+				File.WriteAllLines(CentralTelemetryQueueFile, lines.Skip(lines.Length - MaxQueuedTelemetryPackets), Encoding.UTF8);
+			}
+			ClientStore.Log("telemetria salva localmente para reenvio: " + TextAny(tele, "gat_packet_id"));
+		}
+		catch (Exception ex)
+		{
+			ClientStore.Log("fila local de telemetria: " + ex.Message);
+		}
+	}
+
+	private List<JObject> LoadCentralTelemetryQueue()
+	{
+		List<JObject> result = new List<JObject>();
+		try
+		{
+			if (!File.Exists(CentralTelemetryQueueFile)) return result;
+			foreach (string line in File.ReadAllLines(CentralTelemetryQueueFile, Encoding.UTF8))
+			{
+				if (string.IsNullOrWhiteSpace(line)) continue;
+				try { result.Add(JObject.Parse(line)); } catch { }
+			}
+		}
+		catch (Exception ex) { ClientStore.Log("leitura fila local: " + ex.Message); }
+		return result;
+	}
+
+	private void SaveCentralTelemetryQueue(IEnumerable<JObject> packets)
+	{
+		try
+		{
+			JObject[] rows = (packets ?? Enumerable.Empty<JObject>()).ToArray();
+			if (rows.Length == 0)
+			{
+				if (File.Exists(CentralTelemetryQueueFile)) File.Delete(CentralTelemetryQueueFile);
+				return;
+			}
+			string temp = CentralTelemetryQueueFile + ".tmp";
+			File.WriteAllLines(temp, rows.Select(x => x.ToString(Formatting.None)), Encoding.UTF8);
+			if (File.Exists(CentralTelemetryQueueFile)) File.Delete(CentralTelemetryQueueFile);
+			File.Move(temp, CentralTelemetryQueueFile);
+		}
+		catch (Exception ex) { ClientStore.Log("gravacao fila local: " + ex.Message); }
+	}
+
+	private async Task<int> FlushCentralTelemetryQueueAsync(string driver, string clientToken)
+	{
+		List<JObject> packets = LoadCentralTelemetryQueue();
+		if (packets.Count == 0) return 0;
+		lblTelemetry.Text = "Central GAT: enviando viagem pendente...";
+		int sent = 0;
+		int limit = Math.Min(120, packets.Count);
+		for (int i = 0; i < limit; i++)
+		{
+			JObject packet = packets[i];
+			ApiResponse response = await _api.SendTelemetryAsync("https://api.gatlogets2.com.br", driver, _deviceId, clientToken, packet);
+			if (response.StatusCode != 200 || response.Json == null || !ApiClient.Bool(response.Json["ok"])) break;
+			sent++;
+		}
+		if (sent > 0)
+		{
+			packets.RemoveRange(0, sent);
+			SaveCentralTelemetryQueue(packets);
+			ClientStore.Log("telemetria pendente reenviada: " + sent + " pacote(s)");
+		}
+		return packets.Count;
+	}
 	private async Task SendCentralTelemetryAsync()
 	{
 		if (!AccountReady)
@@ -1172,7 +1263,7 @@ internal sealed class MainForm : Form
 			return;
 		}
 		tele["gat_account_user"] = _accountUser;
-		tele["gat_client_version"] = "1.0.28";
+		tele["gat_client_version"] = "1.0.30";
 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
@@ -1183,6 +1274,7 @@ internal sealed class MainForm : Form
 		}
 		tele["gat_map"] = CurrentMapModeKey;
 		tele["gat_map_label"] = CurrentMapModeLabel;
+		StampCentralTelemetry(tele);
 		lblTruck.Text = "TruckSim GPS: CONECTADO";
 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
 		string centralDriver = _accountUser;
@@ -1216,6 +1308,13 @@ internal sealed class MainForm : Form
 				lblTelemetry.Text = ((apiResponse.StatusCode == 0) ? "Central GAT: reconectando..." : ("Central GAT: falha ao vincular HTTP " + apiResponse.StatusCode));
 				return;
 			}
+		}
+		int pendingBeforeCurrent = await FlushCentralTelemetryQueueAsync(centralDriver, centralClientToken);
+		if (pendingBeforeCurrent > 0)
+		{
+			QueueCentralTelemetry(tele);
+			lblTelemetry.Text = "Central GAT: viagem salva â€¢ aguardando servidor";
+			return;
 		}
 		ApiResponse apiResponse2 = await _api.SendTelemetryAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, centralClientToken, tele);
 		if (apiResponse2.StatusCode == 200 && apiResponse2.Json != null && ApiClient.Bool(apiResponse2.Json["ok"]))
@@ -1278,7 +1377,13 @@ internal sealed class MainForm : Form
 		}
 		else if (apiResponse2.StatusCode == 0)
 		{
-			lblTelemetry.Text = "Central GAT: reconectando...";
+			QueueCentralTelemetry(tele);
+			lblTelemetry.Text = "Central GAT: viagem salva â€¢ aguardando servidor";
+		}
+		else if (apiResponse2.StatusCode == 429 || apiResponse2.StatusCode >= 500)
+		{
+			QueueCentralTelemetry(tele);
+			lblTelemetry.Text = "Central GAT: viagem salva â€¢ aguardando servidor";
 		}
 		else if (apiResponse2.StatusCode == 404)
 		{
@@ -2311,3 +2416,5 @@ internal sealed class MainForm : Form
 		return false;
 	}
 }
+
+

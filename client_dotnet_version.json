@@ -1,10 +1,10 @@
 ﻿{
     "app":  "GAT Telemetria",
     "channel":  "stable-dotnet",
-    "version":  "1.0.29",
-    "display_version":  "1.0.29",
-    "notas":  "Instalador unico: instala GAT Telemetria + TruckSim GPS GAT com danos. Limpa versoes antigas dos programas e atalhos, preserva os dados/vinculacao da Conta GAT e inicia o TruckSim automaticamente ao abrir o GAT Telemetria.",
-    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.29.exe",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.29_SOURCE.zip",
-    "sha256":  "f631376688ccd95d7707f20cecebdda5bd67afb3eecd12bff012cb6005ddb790"
+    "version":  "1.0.30",
+    "display_version":  "1.0.30",
+    "notas":  "Instalador unico com fila offline: se a Central GAT ficar indisponivel durante manutencao, a telemetria continua sendo salva no PC e e reenviada em ordem quando o servidor voltar, sem perder a viagem.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.30.exe",
+    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.30_SOURCE.zip",
+    "sha256":  "79be900d9db5a8ab1cba5b1f8291b2c1475b023c825e3b943880eb4df3ccab31"
 }
