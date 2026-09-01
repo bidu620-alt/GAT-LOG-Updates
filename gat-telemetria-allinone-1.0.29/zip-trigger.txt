@@ -1,0 +1,1 @@
+2026-09-01 19:33 BRT - gerar ZIP da Telemetria 1.0.30
