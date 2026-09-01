@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   penalty_xp INTEGER NOT NULL DEFAULT 0,
   speed_fines INTEGER NOT NULL DEFAULT 0,
   safety_score REAL NOT NULL DEFAULT 100,
+  avatar_url TEXT,
   current_mission_json TEXT,
   updated_at TEXT NOT NULL,
   FOREIGN KEY(user) REFERENCES accounts(user) ON DELETE CASCADE
