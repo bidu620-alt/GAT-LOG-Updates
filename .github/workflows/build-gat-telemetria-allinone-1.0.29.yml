@@ -1,0 +1,146 @@
+name: Build GAT Telemetria All-in-One 1.0.29
+
+on:
+  push:
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/trigger.txt'
+      - 'gat-telemetria-allinone-1.0.29/Launcher.cs'
+      - 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
+      - '.github/workflows/build-gat-telemetria-allinone-1.0.29.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Recriar e compilar GAT Telemetria 1.0.29
+        shell: powershell
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias do fonte e encontrei $($parts.Count)" }
+          $zip = Join-Path $PWD 'gat129-source.zip'
+          $out = [IO.File]::Create($zip)
+          try {
+            $out.Write($first, 0, $first.Length)
+            foreach ($part in $parts) {
+              $bytes = [IO.File]::ReadAllBytes($part.FullName)
+              $out.Write($bytes, 0, $bytes.Length)
+            }
+          } finally { $out.Dispose() }
+          if (Test-Path 'gat129-build') { Remove-Item 'gat129-build' -Recurse -Force }
+          Expand-Archive $zip 'gat129-build' -Force
+          Get-ChildItem 'gat129-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+            $txt = Get-Content $_.FullName -Raw
+            if ($txt -like '*1.0.28*') {
+              Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.29')) -Encoding UTF8
+            }
+          }
+          $project = Get-ChildItem 'gat129-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if (-not $project) { throw 'GAT_TELEMETRIA.csproj nao encontrado' }
+          msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar GAT Telemetria 1.0.29' }
+          $projectDir = Split-Path $project.FullName -Parent
+          $exe = Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado' }
+          "GAT_OUT=$($exe.Directory.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Baixar, aplicar patch e compilar TruckSim GPS GAT
+        shell: powershell
+        run: |
+          if (Test-Path 'trucksim-allinone-build') { Remove-Item 'trucksim-allinone-build' -Recurse -Force }
+          git clone --depth 1 https://github.com/TruckSim-GPS/trucksim-gps-server.git trucksim-allinone-build
+          Remove-Item 'trucksim-allinone-build/.git' -Recurse -Force
+          ./trucksim-gps-gat/apply-patch.ps1 -Root "$PWD/trucksim-allinone-build"
+          nuget restore trucksim-allinone-build/source/Funbit.Ets.Telemetry.sln -NonInteractive
+          msbuild trucksim-allinone-build/source/Funbit.Ets.Telemetry.sln /m /t:Rebuild /p:Configuration=Release /p:Platform="Mixed Platforms"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar TruckSim GPS GAT' }
+          $truckOut = Join-Path $PWD 'trucksim-allinone-build/source/Funbit.Ets.Telemetry.Server/bin/Release'
+          if (-not (Test-Path (Join-Path $truckOut 'TruckSimGPS_Server.exe'))) { throw 'TruckSimGPS_Server.exe nao foi gerado' }
+          "TRUCK_OUT=$truckOut" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Preparar staging do instalador
+        shell: powershell
+        run: |
+          $stage = Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging'
+          if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $stage, "$stage/gat", "$stage/trucksim" | Out-Null
+
+          Copy-Item "$env:GAT_OUT/*" "$stage/gat" -Recurse -Force
+          Copy-Item (Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
+          $cfg = Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe.config'
+          if (Test-Path $cfg) { Copy-Item $cfg (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force }
+          Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe') -Force -ErrorAction SilentlyContinue
+          Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe.config') -Force -ErrorAction SilentlyContinue
+
+          Copy-Item "$env:TRUCK_OUT/*" "$stage/trucksim" -Recurse -Force
+
+          $csc = "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$stage/GAT_TELEMETRIA.exe" 'gat-telemetria-allinone-1.0.29/Launcher.cs'
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar launcher integrado' }
+
+          Invoke-WebRequest 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile "$stage/vc_redist.x64.exe"
+
+      - name: Instalar Inno Setup
+        shell: powershell
+        run: |
+          choco install innosetup -y --no-progress
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao instalar Inno Setup' }
+
+      - name: Gerar instalador unico
+        shell: powershell
+        run: |
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          if (-not (Test-Path $iscc)) { throw 'ISCC.exe nao encontrado' }
+          & $iscc 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao gerar instalador All-in-One' }
+          $setup = 'gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_SETUP_1.0.29.exe'
+          if (-not (Test-Path $setup)) { throw 'Setup 1.0.29 nao foi gerado' }
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          Copy-Item $setup 'releases/GAT_TELEMETRIA_SETUP_1.0.29.exe' -Force
+
+      - name: Empacotar fonte GPL do TruckSim modificado
+        shell: powershell
+        run: |
+          $sourceZip = 'releases/TruckSimGPS_GAT_DANOS_1.0.29_SOURCE.zip'
+          if (Test-Path $sourceZip) { Remove-Item $sourceZip -Force }
+          Compress-Archive -Path 'trucksim-allinone-build/*' -DestinationPath $sourceZip -CompressionLevel Optimal
+
+      - name: Atualizar manifesto do site
+        shell: powershell
+        run: |
+          $setup = 'releases/GAT_TELEMETRIA_SETUP_1.0.29.exe'
+          $sha = (Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant()
+          $manifest = [ordered]@{
+            app = 'GAT Telemetria'
+            channel = 'stable-dotnet'
+            version = '1.0.29'
+            display_version = '1.0.29'
+            notas = 'Instalador unico: instala GAT Telemetria + TruckSim GPS GAT com danos. Limpa versoes antigas dos programas e atalhos, preserva os dados/vinculacao da Conta GAT e inicia o TruckSim automaticamente ao abrir o GAT Telemetria.'
+            setup_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.29.exe'
+            source_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.29_SOURCE.zip'
+            sha256 = $sha
+          }
+          $manifest | ConvertTo-Json | Set-Content 'client_dotnet_version.json' -Encoding UTF8
+
+      - name: Publicar instalador 1.0.29
+        shell: powershell
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f releases/GAT_TELEMETRIA_SETUP_1.0.29.exe releases/TruckSimGPS_GAT_DANOS_1.0.29_SOURCE.zip client_dotnet_version.json
+          git commit -m "Publica GAT Telemetria 1.0.29 instalador unico"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da 1.0.29' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao sincronizar antes da publicacao' }
+          git push
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar a 1.0.29' }
