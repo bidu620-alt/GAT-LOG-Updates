@@ -9,7 +9,11 @@ def cf(path,method='GET',data=None):
     req=urllib.request.Request(BASE+path,method=method,data=None if data is None else json.dumps(data).encode(),headers={'Authorization':'Bearer '+os.environ['CLOUDFLARE_API_TOKEN'],'Content-Type':'application/json'})
     try:
         with urllib.request.urlopen(req,timeout=45) as response:r=json.load(response)
-    except urllib.error.HTTPError as e:raise RuntimeError('Cloudflare HTTP '+str(e.code)) from None
+    except urllib.error.HTTPError as e:
+        try:codes=[x.get('code') for x in json.loads(e.read()).get('errors',[])]
+        except Exception:codes=[]
+        operation=path.replace(ACCOUNT,'[account]').replace(ZONE,'[zone]')
+        raise RuntimeError('Cloudflare HTTP '+str(e.code)+' during '+method+' '+operation+'; codes='+str(codes)) from None
     if not r.get('success'):raise RuntimeError('Cloudflare rejected operation: '+str([e.get('code') for e in r.get('errors',[])]))
     return r['result']
 def main():
