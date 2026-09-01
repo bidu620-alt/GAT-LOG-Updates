@@ -1,0 +1,22 @@
+name: Check local central before domain cutover
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['central-cutover/preflight.py', '.github/workflows/check-central-cutover.yml']
+permissions:
+  contents: read
+concurrency:
+  group: gat-log-api-production
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify local central and current routing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python central-cutover/preflight.py
