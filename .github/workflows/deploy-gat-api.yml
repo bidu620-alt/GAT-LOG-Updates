@@ -1,12 +1,13 @@
-name: Deploy GAT API
+name: Legacy Cloudflare API (local central is primary)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "cloudflare-central/**"
-      - ".github/workflows/deploy-gat-api.yml"
   workflow_dispatch:
+    inputs:
+      deploy_legacy_backup:
+        description: "Deploy paused D1 backup only; never restore production routing"
+        type: boolean
+        default: false
+        required: true
 
 concurrency:
   group: gat-log-api-production
@@ -14,6 +15,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ inputs.deploy_legacy_backup == true }}
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -70,7 +72,7 @@ jobs:
               assert marker in deployed, 'Missing deployed protection: '+marker
           print('Verified deployed Worker content: 1.0.52, damage validation and free-tier protection.')
           try:
-              request=urllib.request.Request('https://api.gatlogets2.com.br/health',headers={'User-Agent':'GAT-Deployment-Check/1.0'})
+              request=urllib.request.Request('https://gat-log-api.bidufilmes.workers.dev/health',headers={'User-Agent':'GAT-Deployment-Check/1.0'})
               with urllib.request.urlopen(request,timeout=30) as response:
                   data=json.load(response)
               print(json.dumps(data))

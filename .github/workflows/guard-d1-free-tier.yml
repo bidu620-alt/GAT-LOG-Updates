@@ -1,12 +1,6 @@
 name: Protect D1 free tier
 on:
-  schedule:
-    - cron: '*/5 * * * *'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/guard-d1-free-tier.yml'
 permissions:
   contents: read
 concurrency:
