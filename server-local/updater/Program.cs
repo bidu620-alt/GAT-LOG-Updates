@@ -25,7 +25,7 @@ internal class Updater : Form
         try{
             if(!File.Exists(exe)||!Directory.Exists(central))throw new InvalidOperationException("Nao encontrei a instalacao atual do GAT Servidor/Central.");
             var version=FileVersionInfo.GetVersionInfo(exe).FileVersion;
-            if(version!="1.0.39.0")throw new InvalidOperationException("Esta atualizacao foi preparada para a versao 1.0.39. Versao encontrada: "+version);
+            if(version!="1.0.39.0"&&version!="1.0.40.0")throw new InvalidOperationException("Esta atualizacao foi preparada para as versoes 1.0.39 ou 1.0.40. Versao encontrada: "+version);
             Directory.CreateDirectory(temp);status.Text="Baixando e verificando a atualizacao...";
             ServicePointManager.SecurityProtocol=SecurityProtocolType.Tls12;
             string zip=Path.Combine(temp,"package.zip");
@@ -44,7 +44,7 @@ internal class Updater : Form
             status.Text="Parando a Central por alguns segundos...\r\nOs motoristas com GAT Telemetria 1.0.30 continuam com a viagem salva.";
             foreach(var p in Process.GetProcessesByName("GAT_LOG_SERVER"))using(p){try{if(string.Equals(p.MainModule.FileName,exe,StringComparison.OrdinalIgnoreCase)){p.CloseMainWindow();await Task.Run(()=>p.WaitForExit(5000));}}catch{}}
             StopCentral(data,Path.Combine(central,"node.exe"));await Task.Delay(800);
-            previous=Path.Combine(target,"update-backups",DateTime.Now.ToString("yyyyMMdd-HHmmss")+"-1.0.39");Directory.CreateDirectory(previous);
+            previous=Path.Combine(target,"update-backups",DateTime.Now.ToString("yyyyMMdd-HHmmss")+"-"+(version??"desconhecida"));Directory.CreateDirectory(previous);
             File.Copy(exe,Path.Combine(previous,"GAT_LOG_SERVER.exe"),true);CopyDirectory(central,Path.Combine(previous,"central"));
             string db=Path.Combine(data,"central.sqlite");if(File.Exists(db)){Directory.CreateDirectory(Path.Combine(previous,"data"));File.Copy(db,Path.Combine(previous,"data","central.sqlite"),true);}
             status.Text="Instalando Central 1.0.40...";
