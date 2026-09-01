@@ -7,7 +7,8 @@ if(!token||!account)throw new Error('Cloudflare deployment credentials are requi
 
 const source=JSON.parse(await readFile(new URL('../../docs/ets2-official-cargos.json',import.meta.url),'utf8'));
 const manualSuggestions={
-  construction:['Cement','Cimento','Gravel','Cascalho','Roof Tiles','Tiles','Telha','Telhas']
+  construction:['Cement','Cimento','Gravel','Cascalho','Roof Tiles','Tiles','Telha','Telhas'],
+  fuel:['Ethanol','Etanol']
 };
 const batch=Object.entries(source.categories||{}).map(([id,rows])=>({
   sql:'UPDATE work_catalog SET compatible_cargos_json=? WHERE id=?',
