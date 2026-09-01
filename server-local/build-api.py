@@ -17,6 +17,8 @@ const pbkdf2=(_,password,salt,options)=>pbkdf2Sync(password,salt,options.c,optio
 assert "const VERSION='1.0.52-cloudflare'" in worker
 worker=worker.replace("const VERSION='1.0.52-cloudflare'","const VERSION='1.0.39-local'").replace("service:'GAT Central Cloud'","service:'GAT Central Local'")
 (out/'worker.js').write_text(worker)
+# Local ranking hotfix is copied from cloudflare-central/ranking-telemetry.js and
+# validated by the same production contract tests before packaging.
 # This file exists only in the Windows local build. The Cloudflare source and
 # its fail-closed quota protection are never edited or bypassed at runtime.
 (out/'budget-guard.js').write_text("export function budgetState(){return {paused:false,reason:null,resumes_at:null,storage:'local-sqlite'};}\n")
