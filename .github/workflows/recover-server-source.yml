@@ -16,6 +16,8 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Extract public installer payload
         run: |
+          dotnet tool install ilspycmd --tool-path /tmp/ilspy --version 9.1.0.7988
+          /tmp/ilspy/ilspycmd -p -o installer-source releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe
           python - <<'PY'
           import pathlib,zipfile,io,hashlib
           b=pathlib.Path('releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe').read_bytes()
@@ -23,7 +25,15 @@ jobs:
           starts=[i for i in range(len(b)) if b.startswith(b'PK\x03\x04',i)]
           print('ZIP candidates:',len(starts))
           found=False
+          for p in pathlib.Path('installer-source').rglob('*'):
+              if not p.is_file():continue
+              data=p.read_bytes()
+              if hashlib.sha256(data).hexdigest()=='e6d5e585fd97ed79c0c4780745a48c788ab1d6c9440a85bad1d29e798facc73a':
+                  (out/'GAT_LOG_SERVER.exe').write_bytes(data);found=True
+              if p.suffix.lower()=='.dll':(out/p.name).write_bytes(data)
+              print('Recovered installer file:',str(p),len(data))
           for start in starts:
+              if found:break
               try:
                   z=zipfile.ZipFile(io.BytesIO(b[start:]))
                   if not any(n.endswith('GAT_LOG_SERVER.exe') for n in z.namelist()):continue
@@ -40,7 +50,6 @@ jobs:
           PY
       - name: Recover CSharp project
         run: |
-          dotnet tool install ilspycmd --tool-path /tmp/ilspy --version 9.1.0.7988
           /tmp/ilspy/ilspycmd -p -o recovered-source -r recovered-bin recovered-bin/GAT_LOG_SERVER.exe
           python - <<'PY'
           import pathlib,zipfile,io,base64
