@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - 'scripts/apply-profile-avatar-site.py'
       - '.github/workflows/deploy-gat-site-pages.yml'
   workflow_dispatch:
 
@@ -26,6 +27,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Apply profile avatar UI
+        run: python scripts/apply-profile-avatar-site.py
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
