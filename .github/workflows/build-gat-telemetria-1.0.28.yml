@@ -1,0 +1,89 @@
+name: Build GAT Telemetria 1.0.28
+
+on:
+  push:
+    paths:
+      - 'gat-telemetria-dotnet-1.0.28/trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Recriar fonte oficial 1.0.28
+        shell: powershell
+        run: |
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.part.*' | Sort-Object Name
+          if (-not $parts) { throw 'Partes do fonte 1.0.28 nao encontradas' }
+          $b64 = ($parts | ForEach-Object { Get-Content $_.FullName -Raw }) -join ''
+          [IO.File]::WriteAllBytes('gat128-source.zip', [Convert]::FromBase64String($b64))
+          if (Test-Path 'gat128-build') { Remove-Item 'gat128-build' -Recurse -Force }
+          Expand-Archive 'gat128-source.zip' 'gat128-build' -Force
+          $project = Get-ChildItem 'gat128-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if (-not $project) { throw 'GAT_TELEMETRIA.csproj nao encontrado' }
+          "PROJECT=$($project.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Compilar GAT Telemetria 1.0.28
+        shell: powershell
+        run: |
+          msbuild "$env:PROJECT" /restore /t:Rebuild /p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilacao do GAT Telemetria 1.0.28' }
+          $projectDir = Split-Path $env:PROJECT -Parent
+          $exe = Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado' }
+          $outDir = $exe.Directory.FullName
+          "OUTDIR=$outDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Empacotar runtime e fonte
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          $runtime = Join-Path $PWD 'releases/GAT_TELEMETRIA_DOTNET_1.0.28_RUNTIME.zip'
+          if (Test-Path $runtime) { Remove-Item $runtime -Force }
+          Compress-Archive -Path "$env:OUTDIR/*" -DestinationPath $runtime -CompressionLevel Optimal
+          Copy-Item 'gat128-source.zip' 'releases/GAT_TELEMETRIA_DOTNET_1.0.28_SOURCE.zip' -Force
+          $runtimeSha = (Get-FileHash $runtime -Algorithm SHA256).Hash.ToLowerInvariant()
+          "RUNTIME_SHA=$runtimeSha" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Criar atualizador oficial 1.0.28
+        shell: powershell
+        run: |
+          $source = (Get-Content 'gat-telemetria-dotnet-1.0.28/Updater.cs' -Raw).Replace('__RUNTIME_SHA__', $env:RUNTIME_SHA)
+          $buildSource = Join-Path $PWD 'gat128-updater-build.cs'
+          Set-Content $buildSource $source -Encoding UTF8
+          $csc = "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+          $updater = Join-Path $PWD 'releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.28.exe'
+          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll "/out:$updater" "$buildSource"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar o atualizador 1.0.28' }
+          $updateSha = (Get-FileHash $updater -Algorithm SHA256).Hash.ToLowerInvariant()
+          $manifest = [ordered]@{
+            app = 'GAT Telemetria CSharp'
+            channel = 'stable-dotnet'
+            version = '1.0.28'
+            display_version = '1.0.28'
+            notas = '1.0.28: nova interface GAT; danos reais de Carga, Motor, Cambio, Cabine, Chassi, Rodas e Reboque; integracao com infracoes, regras e ranking. Para os cinco danos do caminhao, use o TruckSim GPS com a atualizacao GAT de danos.'
+            setup_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.28.exe'
+            sha256 = $updateSha
+          }
+          $manifest | ConvertTo-Json | Set-Content 'client_dotnet_version.json' -Encoding UTF8
+
+      - name: Publicar versao 1.0.28 e liberar atualizacao
+        shell: powershell
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f releases/GAT_TELEMETRIA_DOTNET_1.0.28_RUNTIME.zip releases/GAT_TELEMETRIA_DOTNET_1.0.28_SOURCE.zip releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.28.exe client_dotnet_version.json
+          git commit -m "Publica GAT Telemetria 1.0.28 oficial"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da 1.0.28' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao sincronizar antes da publicacao' }
+          git push
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar a 1.0.28' }
