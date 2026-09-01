@@ -13,7 +13,7 @@ def check_local(host):
     headers={k.lower():v for k,v in headers.items()}
     assert headers.get('access-control-allow-origin')=='https://gatlogets2.com.br','Missing site CORS'
     catalog,_=get(host,'/api/public/work/catalog');assert len(catalog.get('catalog',[]))==30
-    req=urllib.request.Request('https://'+host+'/api/site/login',method='OPTIONS',headers={'Origin':'https://gatlogets2.com.br','Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'content-type'})
+    req=urllib.request.Request('https://'+host+'/api/site/login',method='OPTIONS',headers={'User-Agent':'GAT-Migration-Check/1.0','Origin':'https://gatlogets2.com.br','Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'content-type'})
     with urllib.request.urlopen(req,timeout=30) as r:
         assert r.status==204 and r.headers.get('Access-Control-Allow-Origin')=='https://gatlogets2.com.br'
     return {'host':host,'version':health['agent_version'],'storage':status['storage'],'paused':status['paused'],'ranking_drivers':len(ranking['ranking']),'catalog_items':len(catalog['catalog']),'cors_verified':True}
