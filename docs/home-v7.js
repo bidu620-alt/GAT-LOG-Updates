@@ -1,5 +1,6 @@
 const RANKING_URL='https://api.gatlogets2.com.br/api/public/ranking';
 const SAFETY_URL='https://api.gatlogets2.com.br/api/public/safety-ranking';
+const NOTICE_URL='https://api.gatlogets2.com.br/api/public/notice';
 let gatRankingData=null,safetyRankingData=null,currentRankMode='gat';
 function escRank(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function rankLabel(user){const s=String(user||'motorista').replace(/^@/,'');return s.charAt(0).toUpperCase()+s.slice(1);}
@@ -15,19 +16,5 @@ function bindTabs(){document.querySelectorAll('.rank-tab').forEach(btn=>btn.addE
 async function fetchJson(url){const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);try{const r=await fetch(url,{cache:'no-store',signal:c.signal});const data=await r.json().catch(()=>null);return r.ok?data:null;}finally{clearTimeout(t)}}
 async function loadRanking(){const status=document.getElementById('rankingStatus');try{const data=await fetchJson(RANKING_URL);if(data?.ok){gatRankingData=data;applyMode(data);updateProgress();renderRankList();return}if(status)status.textContent='Ranking temporariamente indisponível.';}catch(_){if(status)status.textContent='Ranking aguardando conexão com a Central GAT.'}}
 async function loadSafety(){try{const data=await fetchJson(SAFETY_URL);if(data?.ok){safetyRankingData=data;if(currentRankMode==='safe')renderRankList();}}catch(_){if(currentRankMode==='safe'){const s=document.getElementById('rankingStatus');if(s)s.textContent='Direção segura aguardando conexão com a Central GAT.';}}}
-window.addEventListener('gat-account-change',updateProgress);bindTabs();loadRanking();loadSafety();setInterval(loadRanking,15000);setInterval(loadSafety,30000);
-
-(()=>{
-  function addHomeNotice(){
-    if(document.getElementById('gatHomeNotice'))return;
-    const topbar=document.querySelector('.topbar');
-    if(!topbar)return;
-    const notice=document.createElement('section');
-    notice.id='gatHomeNotice';
-    notice.setAttribute('role','status');
-    notice.style.cssText='background:linear-gradient(90deg,#ffd54a,#ffe889);color:#17120a;border-bottom:2px solid #d49b00;box-shadow:0 8px 24px rgba(0,0,0,.18);position:relative;z-index:20;';
-    notice.innerHTML='<div class="shell" style="padding:13px 18px;display:flex;gap:12px;align-items:flex-start;line-height:1.45;"><span style="font-size:22px;line-height:1;">⚠️</span><div><strong style="display:block;font-size:15px;letter-spacing:.04em;margin-bottom:3px;">AVISO IMPORTANTE</strong><span style="font-size:14px;">O site e o GAT Telemetria estão funcionando. <strong>Sempre confirme no GAT Telemetria se está aparecendo <span style="color:#087a35;">“TRABALHO EM ANDAMENTO”</span> em verde.</strong> Se não estiver em verde, a carga ainda não foi validada.</span></div></div>';
-    topbar.insertAdjacentElement('afterend',notice);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addHomeNotice);else addHomeNotice();
-})();
+async function loadNotice(){try{const data=await fetchJson(NOTICE_URL),old=document.getElementById('gatHomeNotice');if(!data?.ok||!data.enabled||!String(data.message||'').trim()){if(old)old.remove();return}const topbar=document.querySelector('.topbar');if(!topbar)return;const notice=old||document.createElement('section');notice.id='gatHomeNotice';notice.setAttribute('role','status');notice.style.cssText='background:linear-gradient(90deg,#ffd54a,#ffe889);color:#17120a;border-bottom:2px solid #d49b00;box-shadow:0 8px 24px rgba(0,0,0,.18);position:relative;z-index:20;';notice.innerHTML='<div class="shell" style="padding:13px 18px;display:flex;gap:12px;align-items:flex-start;line-height:1.45;"><span style="font-size:22px;line-height:1;">⚠️</span><div><strong style="display:block;font-size:15px;letter-spacing:.04em;margin-bottom:3px;">'+escRank(data.title||'AVISO GAT')+'</strong><span style="font-size:14px;">'+escRank(data.message||'')+'</span></div></div>';if(!old)topbar.insertAdjacentElement('afterend',notice)}catch(_){}}
+window.addEventListener('gat-account-change',updateProgress);bindTabs();loadRanking();loadSafety();loadNotice();setInterval(loadRanking,15000);setInterval(loadSafety,30000);setInterval(loadNotice,30000);
