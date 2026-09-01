@@ -1,0 +1,57 @@
+name: Recover GAT Server 1.0.38 source
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/recover-server-source.yml']
+permissions:
+  contents: read
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Extract public installer payload
+        run: |
+          python - <<'PY'
+          import pathlib,zipfile,io,hashlib
+          b=pathlib.Path('releases/GAT_LOG_SERVER_DOTNET_UPDATE_1.0.38_TESTE.exe').read_bytes()
+          out=pathlib.Path('recovered-bin');out.mkdir()
+          starts=[i for i in range(len(b)) if b.startswith(b'PK\x03\x04',i)]
+          print('ZIP candidates:',len(starts))
+          found=False
+          for start in starts:
+              try:
+                  z=zipfile.ZipFile(io.BytesIO(b[start:]))
+                  if not any(n.endswith('GAT_LOG_SERVER.exe') for n in z.namelist()):continue
+                  for n in z.namelist():
+                      if n.endswith('/') :continue
+                      target=out/pathlib.PurePosixPath(n.replace('\\','/')).name
+                      target.write_bytes(z.read(n))
+                  found=True;break
+              except (zipfile.BadZipFile,OSError):pass
+          assert found,'Installer payload ZIP not found'
+          actual=hashlib.sha256((out/'GAT_LOG_SERVER.exe').read_bytes()).hexdigest()
+          assert actual=='e6d5e585fd97ed79c0c4780745a48c788ab1d6c9440a85bad1d29e798facc73a',actual
+          print('Confirmed exact same public 1.0.38 UI executable as installed copy.')
+          PY
+      - name: Recover CSharp project
+        run: |
+          dotnet tool install ilspycmd --tool-path /tmp/ilspy --version 9.1.0.7988
+          /tmp/ilspy/ilspycmd -p -o recovered-source -r recovered-bin recovered-bin/GAT_LOG_SERVER.exe
+          python - <<'PY'
+          import pathlib,zipfile,io,base64
+          b=io.BytesIO()
+          with zipfile.ZipFile(b,'w',zipfile.ZIP_DEFLATED) as z:
+              for p in pathlib.Path('recovered-source').rglob('*'):
+                  if p.is_file():z.write(p,p.relative_to('recovered-source'))
+          data=base64.b64encode(b.getvalue()).decode()
+          for i in range(0,len(data),6000):print('GAT_SOURCE_CHUNK:'+data[i:i+6000])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Server-1.0.38-recovered-source
+          path: recovered-source/
