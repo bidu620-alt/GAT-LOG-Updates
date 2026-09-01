@@ -1,0 +1,45 @@
+name: Publicar Telemetria 1.0.30 ZIP no site
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/site-zip-trigger.txt'
+      - '.github/workflows/publish-telemetria-1.0.30-zip-site.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Atualizar download do site
+        shell: bash
+        run: |
+          git pull --rebase origin main
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('docs/index.html')
+          s=p.read_text(encoding='utf-8')
+          changes={
+            'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.29.exe':'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.30.zip',
+            '<strong>GAT Telemetria 1.0.29</strong>':'<strong>GAT Telemetria 1.0.30</strong>',
+            'Instalador único. Instala automaticamente o GAT Telemetria e o TruckSim GPS GAT com suporte completo aos danos. Também substitui instalações antigas.':'Arquivo ZIP com o instalador único atualizado. Inclui GAT Telemetria 1.0.30, TruckSim GPS GAT, suporte aos danos e fila offline para proteger viagens durante manutenção da Central.',
+            '<b>BAIXAR INSTALADOR</b>':'<b>BAIXAR ZIP</b>'
+          }
+          for old,new in changes.items():
+              if old not in s:
+                  raise SystemExit('Texto esperado nao encontrado: '+old)
+              s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git commit -m "Publica Telemetria 1.0.30 ZIP no site"
+          git push
