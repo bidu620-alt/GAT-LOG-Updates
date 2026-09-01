@@ -63,10 +63,14 @@ test('valid delivery awards expected points and detects a single missing mid-tri
   const audit=JSON.parse(f.sql.prepare('SELECT raw_json FROM deliveries').get().raw_json).audit;assert.equal(audit.gat_points,100);assert.equal(audit.rank_verified,true);
   const g=fixture();await g.send(sample());await g.send(sample({truck_wheels_damage_pct:null,remaining_km:500}),1000);await g.send(sample({remaining_km:400}));assert.equal((await g.send(delivery())).mission_event.type,'delivery_rejected');assert.equal(g.profile().xp,0);
 });
-test('a two-minute gap and legacy in-progress missions fail closed',async()=>{
+test('a real two-minute telemetry gap fails, while a verified legacy trip survives a central update',async()=>{
   const f=fixture();await f.send(sample());await f.send(sample({remaining_km:500}),121000);assert.equal((await f.send(delivery())).mission_event.reason,'telemetry_gap');
-  const g=fixture();g.sql.prepare('UPDATE profiles SET current_mission_json=? WHERE user=?').run(JSON.stringify({...g.mission,state:'active',started_at:'2026-09-01T00:00:00Z',trip_progress_confirmed:true}),g.user);
-  assert.equal((await g.send(delivery())).mission_event.reason,'telemetry_not_verified_from_start');
+  const g=fixture();
+  const legacy={...g.mission,state:'active',started_at:'2026-09-01T00:00:00Z',trip_progress_confirmed:true,cargo:'Tijolos',source:'A',destination:'B',weight_kg:20000,planned_distance_km:600,job_latch_key:'job-one'};
+  g.sql.prepare('UPDATE profiles SET current_mission_json=? WHERE user=?').run(JSON.stringify(legacy),g.user);
+  await g.send(sample({remaining_km:500}),121000);
+  const migrated=JSON.parse(g.profile().current_mission_json);assert.equal(migrated.rank_guard?.reason,null);assert.equal(migrated.rank_guard?.migrated_after_server_update,true);
+  assert.equal((await g.send(delivery())).mission_event.type,'delivery_completed');assert.equal(g.profile().monthly_completed,1);
 });
 test('unloaded delivery uses a recent verified trailer and final cargo reading only',async()=>{
   const f=fixture();await f.send(sample());await f.send(sample({remaining_km:500}));const end=delivery();delete end.trailer_damage_pct;delete end.cargo_damage_pct;
