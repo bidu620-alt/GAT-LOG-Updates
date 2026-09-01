@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -12,23 +11,22 @@ using System.Windows.Forms;
 
 internal class Updater : Form
 {
-    const string PackageUrl="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_SERVER_LOCAL_1.0.39.zip";
+    const string PackageUrl="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_SERVER_LOCAL_1.0.40.zip";
     const string PackageHash="__PAYLOAD_SHA256__";
     readonly Label status=new Label{Dock=DockStyle.Fill,TextAlign=ContentAlignment.MiddleCenter,Text="Preparando atualizacao do GAT Servidor..."};
     [STAThread] static void Main(){Application.EnableVisualStyles();Application.Run(new Updater());}
-    Updater(){Text="GAT Servidor 1.0.39 - Central local";ClientSize=new Size(560,150);StartPosition=FormStartPosition.CenterScreen;Controls.Add(status);Shown+=async(s,e)=>await Install();}
+    Updater(){Text="GAT Servidor 1.0.40 - viagens protegidas";ClientSize=new Size(590,160);StartPosition=FormStartPosition.CenterScreen;Controls.Add(status);Shown+=async(s,e)=>await Install();}
     static string Hash(string path){using(var sha=SHA256.Create())using(var f=File.OpenRead(path))return BitConverter.ToString(sha.ComputeHash(f)).Replace("-","").ToLowerInvariant();}
     async Task Install(){
         string temp=Path.Combine(Path.GetTempPath(),"GAT-local-"+Guid.NewGuid().ToString("N"));
         string target=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),"GAT-LOG Server");
-        string exe=Path.Combine(target,"GAT_LOG_SERVER.exe"),previous=null;
-        bool replaced=false,centralInstalled=false;
+        string exe=Path.Combine(target,"GAT_LOG_SERVER.exe"),central=Path.Combine(target,"central"),previous=null;
+        string data=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"GAT-LOG","Central");
         try{
-            if(!File.Exists(exe))throw new InvalidOperationException("Nao encontrei o GAT Servidor em C:\\ProgramData\\GAT-LOG Server. Nenhum arquivo foi alterado.");
+            if(!File.Exists(exe)||!Directory.Exists(central))throw new InvalidOperationException("Nao encontrei a instalacao atual do GAT Servidor/Central.");
             var version=FileVersionInfo.GetVersionInfo(exe).FileVersion;
-            if(version!="1.0.38.0")throw new InvalidOperationException("Esta atualizacao foi preparada para a versao 1.0.38. Versao encontrada: "+version);
-            if(Directory.Exists(Path.Combine(target,"central")))throw new InvalidOperationException("Ja existe uma central nesta instalacao. A atualizacao nao substituira seus arquivos.");
-            Directory.CreateDirectory(temp);status.Text="Baixando e verificando a atualizacao...\r\nPode levar alguns minutos.";
+            if(version!="1.0.39.0")throw new InvalidOperationException("Esta atualizacao foi preparada para a versao 1.0.39. Versao encontrada: "+version);
+            Directory.CreateDirectory(temp);status.Text="Baixando e verificando a atualizacao...";
             ServicePointManager.SecurityProtocol=SecurityProtocolType.Tls12;
             string zip=Path.Combine(temp,"package.zip");
             using(var client=new HttpClient{Timeout=TimeSpan.FromMinutes(10)})using(var response=await client.GetAsync(PackageUrl,HttpCompletionOption.ResponseHeadersRead)){
@@ -37,32 +35,30 @@ internal class Updater : Form
             if(Hash(zip)!=PackageHash)throw new InvalidOperationException("A verificacao de integridade falhou. Nada foi instalado.");
             string stage=Path.Combine(temp,"files");Directory.CreateDirectory(stage);
             using(var archive=ZipFile.OpenRead(zip))foreach(var entry in archive.Entries){
-                string name=entry.FullName.Replace('/',Path.DirectorySeparatorChar);
-                string dest=Path.GetFullPath(Path.Combine(stage,name));
+                string name=entry.FullName.Replace('/',Path.DirectorySeparatorChar),dest=Path.GetFullPath(Path.Combine(stage,name));
                 if(!dest.StartsWith(stage+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase))throw new InvalidDataException("Caminho invalido no pacote.");
                 if(string.IsNullOrEmpty(entry.Name)){Directory.CreateDirectory(dest);continue;}
                 Directory.CreateDirectory(Path.GetDirectoryName(dest));entry.ExtractToFile(dest);
             }
-            if(!File.Exists(Path.Combine(stage,"central","node.exe"))||!File.Exists(Path.Combine(stage,"GAT_LOG_SERVER.exe")))throw new InvalidDataException("Pacote incompleto.");
-            status.Text="Instalando e preservando a versao anterior...";
-            foreach(var p in Process.GetProcessesByName("GAT_LOG_SERVER"))using(p){
-                if(!string.Equals(p.MainModule.FileName,exe,StringComparison.OrdinalIgnoreCase))continue;
-                p.CloseMainWindow();if(!await Task.Run(()=>p.WaitForExit(6000)))throw new InvalidOperationException("Feche o painel do GAT Servidor e execute novamente. O comboio pode continuar ligado.");
-            }
-            previous=Path.Combine(target,"update-backups",DateTime.Now.ToString("yyyyMMdd-HHmmss"));Directory.CreateDirectory(previous);
-            File.Copy(exe,Path.Combine(previous,"GAT_LOG_SERVER.exe"));
-            string incoming=Path.Combine(target,"central-installing-"+Guid.NewGuid().ToString("N"));if(Directory.Exists(incoming))throw new InvalidOperationException("Existe uma instalacao incompleta. Seus arquivos foram preservados.");
-            CopyDirectory(Path.Combine(stage,"central"),incoming);
-            Directory.Move(incoming,Path.Combine(target,"central"));centralInstalled=true;
-            string replacement=Path.Combine(target,"GAT_LOG_SERVER.replacement");
-            File.Copy(Path.Combine(stage,"GAT_LOG_SERVER.exe"),replacement,true);File.Replace(replacement,exe,null);replaced=true;
-            MessageBox.Show(this,"GAT Servidor atualizado para 1.0.39.\r\nAbra CENTRAL DO SITE para continuar.\r\nO dominio ainda permanece na Cloudflare.","Atualizacao concluida",MessageBoxButtons.OK,MessageBoxIcon.Information);
-            Process.Start(new ProcessStartInfo(exe){WorkingDirectory=target,UseShellExecute=true});Close();
+            if(!File.Exists(Path.Combine(stage,"central","node.exe"))||!File.Exists(Path.Combine(stage,"central","worker.js"))||!File.Exists(Path.Combine(stage,"GAT_LOG_SERVER.exe")))throw new InvalidDataException("Pacote incompleto.");
+            status.Text="Parando a Central por alguns segundos...\r\nOs motoristas com GAT Telemetria 1.0.30 continuam com a viagem salva.";
+            foreach(var p in Process.GetProcessesByName("GAT_LOG_SERVER"))using(p){try{if(string.Equals(p.MainModule.FileName,exe,StringComparison.OrdinalIgnoreCase)){p.CloseMainWindow();await Task.Run(()=>p.WaitForExit(5000));}}catch{}}
+            StopCentral(data,Path.Combine(central,"node.exe"));await Task.Delay(800);
+            previous=Path.Combine(target,"update-backups",DateTime.Now.ToString("yyyyMMdd-HHmmss")+"-1.0.39");Directory.CreateDirectory(previous);
+            File.Copy(exe,Path.Combine(previous,"GAT_LOG_SERVER.exe"),true);CopyDirectory(central,Path.Combine(previous,"central"));
+            string db=Path.Combine(data,"central.sqlite");if(File.Exists(db)){Directory.CreateDirectory(Path.Combine(previous,"data"));File.Copy(db,Path.Combine(previous,"data","central.sqlite"),true);}
+            status.Text="Instalando Central 1.0.40...";
+            string oldCentral=central+"-old-"+Guid.NewGuid().ToString("N"),incoming=central+"-new-"+Guid.NewGuid().ToString("N");
+            CopyDirectory(Path.Combine(stage,"central"),incoming);Directory.Move(central,oldCentral);Directory.Move(incoming,central);
+            string replacement=Path.Combine(target,"GAT_LOG_SERVER.replacement");File.Copy(Path.Combine(stage,"GAT_LOG_SERVER.exe"),replacement,true);File.Replace(replacement,exe,null);
+            try{Directory.Delete(oldCentral,true);}catch{}
+            Process.Start(new ProcessStartInfo(exe,"--central-only"){WorkingDirectory=target,UseShellExecute=true});
+            MessageBox.Show(this,"GAT Servidor 1.0.40 instalado.\r\nO banco, contas, historico e configuracoes foram preservados.\r\nA Central foi reiniciada automaticamente.","Atualizacao concluida",MessageBoxButtons.OK,MessageBoxIcon.Information);Close();
         }catch(Exception ex){
-            if(replaced&&previous!=null)File.Copy(Path.Combine(previous,"GAT_LOG_SERVER.exe"),exe,true);
-            if(centralInstalled)Directory.Delete(Path.Combine(target,"central"),true);
+            try{if(previous!=null){StopCentral(data,Path.Combine(central,"node.exe"));if(Directory.Exists(Path.Combine(previous,"central"))){if(Directory.Exists(central))Directory.Delete(central,true);CopyDirectory(Path.Combine(previous,"central"),central);}if(File.Exists(Path.Combine(previous,"GAT_LOG_SERVER.exe")))File.Copy(Path.Combine(previous,"GAT_LOG_SERVER.exe"),exe,true);}}catch{}
             status.Text="Atualizacao nao concluida.";MessageBox.Show(this,ex.Message,"GAT Servidor",MessageBoxButtons.OK,MessageBoxIcon.Warning);
         }finally{try{Directory.Delete(temp,true);}catch{}}
     }
-    static void CopyDirectory(string source,string target){Directory.CreateDirectory(target);foreach(var f in Directory.GetFiles(source))File.Copy(f,Path.Combine(target,Path.GetFileName(f)));foreach(var d in Directory.GetDirectories(source))CopyDirectory(d,Path.Combine(target,Path.GetFileName(d)));}
+    static void StopCentral(string data,string node){try{string status=Path.Combine(data,"status.json");if(!File.Exists(status))return;string txt=File.ReadAllText(status);var m=System.Text.RegularExpressions.Regex.Match(txt,"\\\"pid\\\"\\s*:\\s*(\\d+)");if(!m.Success)return;using(var p=Process.GetProcessById(int.Parse(m.Groups[1].Value))){if(string.Equals(p.MainModule.FileName,node,StringComparison.OrdinalIgnoreCase)){p.Kill();p.WaitForExit(5000);}}}catch{}}
+    static void CopyDirectory(string source,string target){Directory.CreateDirectory(target);foreach(var f in Directory.GetFiles(source))File.Copy(f,Path.Combine(target,Path.GetFileName(f)),true);foreach(var d in Directory.GetDirectories(source))CopyDirectory(d,Path.Combine(target,Path.GetFileName(d)));}
 }
