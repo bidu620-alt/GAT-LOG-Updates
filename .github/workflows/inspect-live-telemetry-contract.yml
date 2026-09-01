@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 
-# Recheck after canonical event deploy.
+# Recheck solicitado em 2026-09-01 18:25 America/Maceio.
 jobs:
   inspect:
     runs-on: ubuntu-latest
