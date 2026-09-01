@@ -37,12 +37,18 @@ def main():
     www_before=cf('/zones/'+ZONE+'/dns_records?name=www.gatlogets2.com.br')
     if not domains and len(records)==1 and records[0].get('content')==DEST:
         print(json.dumps({'already_connected':check_local(HOST)}));return
-    assert len(domains)==1 and domains[0]['id']==DOMAIN and domains[0]['service']=='gat-log-api','Unexpected Worker domain owner'
-    assert len(records)==1 and records[0].get('type')=='AAAA' and records[0].get('content')=='100::','Unexpected existing API DNS'
-    old,_=get(HOST,'/api/public/service-status');assert old.get('paused') is True and old.get('reason')=='migration','Cloud database must stay paused'
+    if domains:
+        assert len(domains)==1 and domains[0]['id']==DOMAIN and domains[0]['service']=='gat-log-api','Unexpected Worker domain owner'
+        assert len(records)==1 and records[0].get('type')=='AAAA' and records[0].get('content')=='100::','Unexpected existing API DNS'
+        old,_=get(HOST,'/api/public/service-status')
+    else:
+        # Resume the exact migration if the successful detach returned HTTP 204.
+        assert not records or (len(records)==1 and records[0].get('id')=='8c7d8bfe2077401049fbf8c1820c5f7f' and records[0].get('content')=='100::'), 'Unexpected DNS during resume'
+        old,_=get('gat-log-api.bidufilmes.workers.dev','/api/public/service-status')
+    assert old.get('paused') is True and old.get('reason')=='migration','Cloud database must stay paused'
     seal({'captured_at':time.time(),'domains':domains,'api_dns':records,'root_dns':root_before,'www_dns':www_before,'tunnel':TUNNEL,'old_status':old})
-    cf('/accounts/'+ACCOUNT+'/workers/domains/'+DOMAIN,'DELETE')
-    print('Detached only the API Worker custom domain.',flush=True)
+    if domains:cf('/accounts/'+ACCOUNT+'/workers/domains/'+DOMAIN,'DELETE')
+    print('API Worker custom domain is detached.',flush=True)
     records=cf('/zones/'+ZONE+'/dns_records?name='+HOST)
     body={'type':'CNAME','name':HOST,'content':DEST,'proxied':True,'ttl':1}
     if records:

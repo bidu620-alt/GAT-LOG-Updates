@@ -7,7 +7,10 @@ TEST='central-teste.gatlogets2.com.br'
 def cf(path,method='GET',data=None):
     req=urllib.request.Request('https://api.cloudflare.com/client/v4'+path,method=method,data=None if data is None else json.dumps(data).encode(),headers={'Authorization':'Bearer '+os.environ['CLOUDFLARE_API_TOKEN'],'Content-Type':'application/json'})
     try:
-        with urllib.request.urlopen(req,timeout=40) as r:body=json.load(r)
+        with urllib.request.urlopen(req,timeout=40) as r:
+            raw=r.read()
+            if not raw and r.status in (200,202,204):return None
+            body=json.loads(raw)
     except urllib.error.HTTPError as e:
         try:codes=[x.get('code') for x in json.loads(e.read()).get('errors',[])]
         except Exception:codes=[]
