@@ -39,6 +39,9 @@ jobs:
           } finally { $out.Dispose() }
           if (Test-Path 'gat129-build') { Remove-Item 'gat129-build' -Recurse -Force }
           Expand-Archive $zip 'gat129-build' -Force
+          $main = Get-ChildItem 'gat129-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          if (-not $main) { throw 'MainForm.cs nao encontrado' }
+          Copy-Item $main.FullName 'gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs' -Force
           Get-ChildItem 'gat129-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
             $txt = Get-Content $_.FullName -Raw
             if ($txt -like '*1.0.28*') {
@@ -74,20 +77,16 @@ jobs:
           $stage = Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging'
           if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
           New-Item -ItemType Directory -Force -Path $stage, "$stage/gat", "$stage/trucksim" | Out-Null
-
           Copy-Item "$env:GAT_OUT/*" "$stage/gat" -Recurse -Force
           Copy-Item (Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
           $cfg = Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe.config'
           if (Test-Path $cfg) { Copy-Item $cfg (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force }
           Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe') -Force -ErrorAction SilentlyContinue
           Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe.config') -Force -ErrorAction SilentlyContinue
-
           Copy-Item "$env:TRUCK_OUT/*" "$stage/trucksim" -Recurse -Force
-
           $csc = "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
           & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$stage/GAT_TELEMETRIA.exe" 'gat-telemetria-allinone-1.0.29/Launcher.cs'
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar launcher integrado' }
-
           Invoke-WebRequest 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile "$stage/vc_redist.x64.exe"
 
       - name: Instalar Inno Setup
@@ -137,7 +136,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f releases/GAT_TELEMETRIA_SETUP_1.0.29.exe releases/TruckSimGPS_GAT_DANOS_1.0.29_SOURCE.zip client_dotnet_version.json
+          git add -f releases/GAT_TELEMETRIA_SETUP_1.0.29.exe releases/TruckSimGPS_GAT_DANOS_1.0.29_SOURCE.zip client_dotnet_version.json gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs
           git commit -m "Publica GAT Telemetria 1.0.29 instalador unico"
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da 1.0.29' }
           git pull --rebase origin main
