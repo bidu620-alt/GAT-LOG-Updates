@@ -31,7 +31,7 @@ test('HTTP login accepts imported hash, rejects wrong password, survives restart
   const login=pass=>fetch(base+'/api/account/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:'owner',password:pass})});
   assert.equal((await login('wrong')).status,401);
   const response=await login(password);assert.equal(response.status,200);const session=await response.json();assert.ok(session.token);
-  const health=await (await fetch(base+'/health')).json();assert.equal(health.agent_version,'1.0.39-local');
+  const health=await (await fetch(base+'/health')).json();assert.equal(health.agent_version,'1.0.40-local');
   const status=await (await fetch(base+'/api/public/service-status')).json();assert.equal(status.paused,false);assert.equal(status.storage,'local-sqlite');
   const large=await fetch(base+'/api/account/login',{method:'POST',body:'x'.repeat(270000)});assert.equal(large.status,413);
   const filename=await saveBackup(db,dir);const restored=new LocalDatabase(filename);
