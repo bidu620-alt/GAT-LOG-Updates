@@ -34,8 +34,13 @@ export function rankingMessage(reason) {
 }
 // A viagem pode começar no intervalo entre dois pacotes. Nesse único caso inicial,
 // duas leituras contínuas permitem confirmar a telemetria sem condenar a viagem inteira.
+// Uma viagem que já tinha progresso confirmado pelo servidor antes de uma atualização
+// também pode ser migrada uma única vez, desde que a telemetria atual esteja completa.
 // Falhas reais detectadas depois (danos ausentes, desconexão ou gap) continuam sticky.
-export function advanceRankGuard(guard, readiness, previousAt, at) {
+export function advanceRankGuard(guard, readiness, previousAt, at, legacyProgressConfirmed = false) {
+  if (!guard && legacyProgressConfirmed && readiness.eligible) {
+    return {reason: null, verified_at: at, migrated_after_server_update: true};
+  }
   const next = guard ? {...guard} : {reason: 'telemetry_not_verified_from_start'};
   const previousTime = Date.parse(previousAt || '');
   const currentTime = Date.parse(at || '');
