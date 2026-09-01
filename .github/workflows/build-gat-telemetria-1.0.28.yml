@@ -21,10 +21,18 @@ jobs:
       - name: Recriar fonte oficial 1.0.28
         shell: powershell
         run: |
-          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.part.*' | Sort-Object Name
-          if (-not $parts) { throw 'Partes do fonte 1.0.28 nao encontradas' }
-          $b64 = ($parts | ForEach-Object { Get-Content $_.FullName -Raw }) -join ''
-          [IO.File]::WriteAllBytes('gat128-source.zip', [Convert]::FromBase64String($b64))
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias do fonte e encontrei $($parts.Count)" }
+          $out = [IO.File]::Create('gat128-source.zip')
+          try {
+            $out.Write($first, 0, $first.Length)
+            foreach ($part in $parts) {
+              $bytes = [IO.File]::ReadAllBytes($part.FullName)
+              $out.Write($bytes, 0, $bytes.Length)
+            }
+          } finally { $out.Dispose() }
           if (Test-Path 'gat128-build') { Remove-Item 'gat128-build' -Recurse -Force }
           Expand-Archive 'gat128-source.zip' 'gat128-build' -Force
           $project = Get-ChildItem 'gat128-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
