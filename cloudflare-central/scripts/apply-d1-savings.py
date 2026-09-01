@@ -55,27 +55,38 @@ async function economicalRoute(req,env){
 # Persist unchanged telemetry at most every 15 seconds, but process damage changes,
 # job changes and delivery/cancellation events immediately. Read the previous row
 # by primary key; never trust an in-memory cache for rank continuity.
+# Official clients may resend packets collected during a Central maintenance window.
+# In that case mission/rank continuity uses gat_collected_at while online freshness
+# continues to use the real server receive time.
 start=s.index(" if(p==='/api/client/telemetry'&&m==='POST'){")
 end=s.index("\n if(p==='/api/public/account-live'",start)
 s=s[:start]+""" if(p==='/api/client/telemetry'&&m==='POST'){
    const b=await body(req),driver=clean(b.driver),device=String(b.device_id||''),c=await clientCredential(env,driver,device,String(b.token||''));
    if(!c.row)throw new HttpError(401,c.error);
-   const raw=b.telemetry&&typeof b.telemetry==='object'&&!Array.isArray(b.telemetry)?b.telemetry:{},t=now(),account=c.row.account_user;
+   const raw=b.telemetry&&typeof b.telemetry==='object'&&!Array.isArray(b.telemetry)?b.telemetry:{},receivedAt=now(),account=c.row.account_user;
+   const collectedRaw=str(raw,'gat_collected_at','gatCollectedAt'),collectedMs=Date.parse(collectedRaw),receiveMs=Date.parse(receivedAt);
+   const queuedTimeOK=Number.isFinite(collectedMs)&&collectedMs<=receiveMs+30000&&collectedMs>=receiveMs-6*60*60*1000;
+   const t=queuedTimeOK?new Date(collectedMs).toISOString():receivedAt;
    const previous=await env.DB.prepare('SELECT account_user,updated_at,telemetry_json FROM telemetry_live WHERE driver=?').bind(driver).first();
    let prevRaw=null;try{if(previous?.account_user===account)prevRaw=JSON.parse(previous.telemetry_json)}catch{}
+   const packetId=str(raw,'gat_packet_id','gatPacketId');
+   if(packetId&&prevRaw&&packetId===str(prevRaw,'gat_packet_id','gatPacketId'))
+     return json(req,{ok:true,driver,account_user:account,updated_at:previous.updated_at,duplicate_packet:true,next_upload_ms:15000});
+   const previousCollected=str(prevRaw||{},'gat_collected_at','gatCollectedAt'),previousCollectedMs=Date.parse(previousCollected);
+   const previousSampleAt=Number.isFinite(previousCollectedMs)?new Date(previousCollectedMs).toISOString():(prevRaw?previous.updated_at:null);
    const f=flat(driver,account,t,raw),loaded=Boolean(f.job_latched)||Boolean(f.cargo_id||f.cargo_name)&&f.mass_kg>0;
    const event=clean(str(raw,'gat_job_event','gatJobEvent'));
    const delivered=event==='delivered'||(!loaded&&bool(raw,'gameplay.jobDelivered','jobDelivered'));
    const cancelled=event==='cancelled'||(!loaded&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled'));
-   restoreDeliveredTrailer(raw,prevRaw,previous?.updated_at,t,delivered,loaded);
+   restoreDeliveredTrailer(raw,prevRaw,previousSampleAt,t,delivered,loaded);
    const readiness=rankingReadiness(raw);
    const signature=x=>{const q=flat(driver,account,t,x);return JSON.stringify([rankingReadiness(x),q.job_latched,q.on_job,q.job_latch_key,q.cargo_id,q.cargo_name,q.source_city,q.destination_city,q.mass_kg,q.gat_map,num(x,'job.plannedDistanceKm','planned_distance_km'),x.cargo_damage_pct,x.truck_engine_damage_pct,x.truck_transmission_damage_pct,x.truck_cabin_damage_pct,x.truck_chassis_damage_pct,x.truck_wheels_damage_pct,x.trailer_damage_pct,deep(x,'game.paused')])};
-   if(!delivered&&!cancelled&&prevRaw&&Date.parse(t)-Date.parse(previous.updated_at)<15000&&signature(raw)===signature(prevRaw))
+   if(!queuedTimeOK&&!delivered&&!cancelled&&prevRaw&&Date.parse(receivedAt)-Date.parse(previous.updated_at)<15000&&signature(raw)===signature(prevRaw))
      return json(req,{ok:true,driver,account_user:account,updated_at:previous.updated_at,rank_status:readiness,telemetry_deferred:true,next_upload_ms:15000});
-   const missionEvent=await processMission(env,account,raw,t,prevRaw?previous.updated_at:null);
-   await env.DB.prepare('INSERT INTO telemetry_live(driver,account_user,device_id,updated_at,telemetry_json) VALUES(?,?,?,?,?) ON CONFLICT(driver) DO UPDATE SET account_user=excluded.account_user,device_id=excluded.device_id,updated_at=excluded.updated_at,telemetry_json=excluded.telemetry_json').bind(driver,account,device,t,JSON.stringify(raw)).run();
-   return json(req,{ok:true,driver,account_user:account,updated_at:t,rank_status:readiness,mission_event:missionEvent,next_upload_ms:15000});
+   const missionEvent=await processMission(env,account,raw,t,previousSampleAt);
+   await env.DB.prepare('INSERT INTO telemetry_live(driver,account_user,device_id,updated_at,telemetry_json) VALUES(?,?,?,?,?) ON CONFLICT(driver) DO UPDATE SET account_user=excluded.account_user,device_id=excluded.device_id,updated_at=excluded.updated_at,telemetry_json=excluded.telemetry_json').bind(driver,account,device,receivedAt,JSON.stringify(raw)).run();
+   return json(req,{ok:true,driver,account_user:account,updated_at:receivedAt,collected_at:t,replayed:queuedTimeOK,rank_status:readiness,mission_event:missionEvent,next_upload_ms:15000});
  }
 """+s[end:]
 p.write_text(s,encoding='utf-8')
-print('D1 savings: scheduled cleanup, indexed reads, cached read models and fewer redundant writes.')
+print('D1 savings: scheduled cleanup, indexed reads, cached read models, queue replay timestamps and fewer redundant writes.')
