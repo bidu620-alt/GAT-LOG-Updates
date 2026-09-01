@@ -50,11 +50,16 @@ jobs:
         shell: powershell
         run: |
           msbuild trucksim-gps-gat/build/trucksim-gps-server/source/Funbit.Ets.Telemetry.sln /m /t:Rebuild /p:Configuration=Release /p:Platform="Mixed Platforms"
-          $exe = 'trucksim-gps-gat/build/trucksim-gps-server/source/Funbit.Ets.Telemetry.Server/bin/Release/TruckSimGPS_Server.exe'
+          $releaseDir = 'trucksim-gps-gat/build/trucksim-gps-server/source/Funbit.Ets.Telemetry.Server/bin/Release'
+          $exe = Join-Path $releaseDir 'TruckSimGPS_Server.exe'
           if (-not (Test-Path $exe)) { throw 'TruckSimGPS_Server.exe nao foi gerado' }
           Copy-Item $exe 'releases/TruckSimGPS_Server_GAT_DANOS_1.0.exe' -Force
 
-      - name: Criar atualizador EXE
+          $portable = 'releases/TruckSimGPS_GAT_DANOS_1.0_PORTABLE.zip'
+          if (Test-Path $portable) { Remove-Item $portable -Force }
+          Compress-Archive -Path "$releaseDir/*" -DestinationPath $portable -CompressionLevel Optimal
+
+      - name: Criar atualizador EXE legado e manifesto
         shell: powershell
         run: |
           $serverExe = 'releases/TruckSimGPS_Server_GAT_DANOS_1.0.exe'
@@ -66,14 +71,16 @@ jobs:
           $outUpdater = Join-Path $PWD 'releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe'
           & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$outUpdater" "$buildSource"
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar atualizador' }
-          $upSha = (Get-FileHash $outUpdater -Algorithm SHA256).Hash.ToLowerInvariant()
+
+          $portable = 'releases/TruckSimGPS_GAT_DANOS_1.0_PORTABLE.zip'
+          $portableSha = (Get-FileHash $portable -Algorithm SHA256).Hash.ToLowerInvariant()
           $manifest = [ordered]@{
             app = 'TruckSim GPS GAT'
             version = '1.0'
-            notas = 'Adiciona ao REST do TruckSim GPS os desgastes reais de Motor, Cambio, Cabine, Chassi e Rodas usados pelo GAT Telemetria 1.0.28.'
-            update_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe'
+            notas = 'Versao GAT com danos reais de Motor, Cambio, Cabine, Chassi e Rodas para o GAT Telemetria 1.0.28. Pacote portatil substitui o atualizador automatico como download principal.'
+            update_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0_PORTABLE.zip'
             source_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0_SOURCE.zip'
-            sha256 = $upSha
+            sha256 = $portableSha
           }
           $manifest | ConvertTo-Json | Set-Content trucksim_gps_gat_version.json -Encoding UTF8
 
@@ -82,8 +89,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f releases/TruckSimGPS_Server_GAT_DANOS_1.0.exe releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe releases/TruckSimGPS_GAT_DANOS_1.0_SOURCE.zip trucksim_gps_gat_version.json
-          git commit -m "Publica TruckSim GPS GAT com danos reais"
+          git add -f releases/TruckSimGPS_Server_GAT_DANOS_1.0.exe releases/ATUALIZAR_TRUCKSIM_GPS_GAT_DANOS_1.0.exe releases/TruckSimGPS_GAT_DANOS_1.0_PORTABLE.zip releases/TruckSimGPS_GAT_DANOS_1.0_SOURCE.zip trucksim_gps_gat_version.json
+          git commit -m "Publica TruckSim GPS GAT portátil com danos reais"
           if ($LASTEXITCODE -eq 0) {
             git push
             if ($LASTEXITCODE -ne 0) { throw 'Falha ao enviar arquivos para o GitHub' }
