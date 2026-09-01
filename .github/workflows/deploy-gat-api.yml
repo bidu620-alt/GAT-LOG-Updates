@@ -62,7 +62,7 @@ jobs:
         run: |
           python - <<'PY'
           import json, os, urllib.request, urllib.error
-          endpoint='https://api.cloudflare.com/client/v4/accounts/'+os.environ['CLOUDFLARE_ACCOUNT_ID']+'/workers/scripts/gat-log-api/content'
+          endpoint='https://api.cloudflare.com/client/v4/accounts/'+os.environ['CLOUDFLARE_ACCOUNT_ID']+'/workers/scripts/gat-log-api'
           request=urllib.request.Request(endpoint,headers={'Authorization':'Bearer '+os.environ['CLOUDFLARE_API_TOKEN']})
           with urllib.request.urlopen(request,timeout=30) as response:
               deployed=response.read().decode('utf-8')
