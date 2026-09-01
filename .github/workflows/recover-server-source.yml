@@ -50,7 +50,12 @@ jobs:
           PY
       - name: Recover CSharp project
         run: |
-          /tmp/ilspy/ilspycmd -p -o recovered-source -r recovered-bin recovered-bin/GAT_LOG_SERVER.exe
+          python - <<'PY'
+          import urllib.request,zipfile,io
+          url='https://api.nuget.org/v3-flatcontainer/microsoft.netframework.referenceassemblies.net48/1.0.3/microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg'
+          zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(url).read())).extractall('framework-refs')
+          PY
+          /tmp/ilspy/ilspycmd -p -o recovered-source -r framework-refs/build/.NETFramework/v4.8 -r recovered-bin recovered-bin/GAT_LOG_SERVER.exe
           python - <<'PY'
           import pathlib,zipfile,io,base64
           b=io.BytesIO()
