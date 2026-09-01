@@ -15,7 +15,7 @@ const bytesToHex=x=>Buffer.from(x).toString('hex');
 const pbkdf2=(_,password,salt,options)=>pbkdf2Sync(password,salt,options.c,options.dkLen,'sha256');
 """+worker
 assert "const VERSION='1.0.52-cloudflare'" in worker
-worker=worker.replace("const VERSION='1.0.52-cloudflare'","const VERSION='1.0.39-local'").replace("service:'GAT Central Cloud'","service:'GAT Central Local'")
+worker=worker.replace("const VERSION='1.0.52-cloudflare'","const VERSION='1.0.40-local'").replace("service:'GAT Central Cloud'","service:'GAT Central Local'")
 (out/'worker.js').write_text(worker)
 # Local ranking hotfix is copied from cloudflare-central/ranking-telemetry.js and
 # validated by the same production contract tests before packaging.
