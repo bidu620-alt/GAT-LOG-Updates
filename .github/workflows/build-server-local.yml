@@ -38,6 +38,8 @@ jobs:
           p.with_suffix('').write_bytes(base64.b64decode(p.read_text()))
           PY
           node --test server-local/runtime/tests/ranking.test.mjs
+      - name: Prepare panel version 1.0.40
+        run: python server-local/patch-ui-version.py
       - name: Compile panel 1.0.40
         run: dotnet build server-local/ui/GAT_LOG_SERVER.csproj -c Release -o server-local/ui-out
       - name: Package verified Node runtime and application
@@ -70,12 +72,12 @@ jobs:
       - name: Publish GAT Server 1.0.40 updater
         shell: bash
         run: |
-          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.39_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe
+          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
           git add releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.40.zip releases/GAT_SERVER_LOCAL_1.0.40.sha256
-          git commit -m 'Publish GAT Server 1.0.40 offline trip protection'
-          git restore server-local/updater/Program.cs
+          git commit -m 'Publish GAT Server 1.0.40 panel version fix'
+          git restore server-local/updater/Program.cs server-local/ui/GatLogServer/MainForm.cs
           git pull --rebase -X theirs
           git push
       - uses: actions/upload-artifact@v4
