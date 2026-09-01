@@ -87,7 +87,7 @@ jobs:
           git add releases/GAT_LOG_SERVER_UPDATE_1.0.39_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.39.zip releases/GAT_SERVER_LOCAL_1.0.39.sha256
           git commit -m 'Publish GAT Server 1.0.39 local central preparation updater'
           git restore server-local/updater/Program.cs
-          git pull --rebase
+          git pull --rebase -X theirs
           git push
       - uses: actions/upload-artifact@v4
         with:
