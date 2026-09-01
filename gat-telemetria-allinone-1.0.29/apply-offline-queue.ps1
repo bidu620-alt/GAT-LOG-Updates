@@ -127,29 +127,18 @@ int pendingBeforeCurrent = await FlushCentralTelemetryQueueAsync(centralDriver, 
 '@
 Replace-One $anchor $replacement
 
-Replace-One @'
-else if (apiResponse2.StatusCode == 0)
-		{
-			lblTelemetry.Text = "Central GAT: reconectando...";
-		}
-		else if (apiResponse2.StatusCode == 404)
-		{
-			lblTelemetry.Text = "Central GAT: atualize o servidor central";
-		}
-		else
-		{
-			lblTelemetry.Text = "Central GAT: falha HTTP " + apiResponse2.StatusCode;
-		}
-'@ @'
-else if (apiResponse2.StatusCode == 0 || apiResponse2.StatusCode == 404 || apiResponse2.StatusCode == 429 || apiResponse2.StatusCode >= 500)
+Replace-One 'lblTelemetry.Text = "Central GAT: reconectando...";' @'
+QueueCentralTelemetry(tele);
+			lblTelemetry.Text = "Central GAT: viagem salva • aguardando servidor";
+'@
+
+Replace-One 'else if (apiResponse2.StatusCode == 404)' @'
+else if (apiResponse2.StatusCode == 429 || apiResponse2.StatusCode >= 500)
 		{
 			QueueCentralTelemetry(tele);
 			lblTelemetry.Text = "Central GAT: viagem salva • aguardando servidor";
 		}
-		else
-		{
-			lblTelemetry.Text = "Central GAT: falha HTTP " + apiResponse2.StatusCode;
-		}
+		else if (apiResponse2.StatusCode == 404)
 '@
 
 Set-Content $main.FullName $s -Encoding UTF8
