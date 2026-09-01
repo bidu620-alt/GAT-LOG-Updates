@@ -5,17 +5,17 @@ $s = Get-Content $main.FullName -Raw
 
 function Replace-One([string]$old,[string]$new) {
   $count = ([regex]::Matches($script:s,[regex]::Escape($old))).Count
-  if ($count -ne 1) { throw "Esperava 1 ocorrencia e encontrei $count: $($old.Substring(0,[Math]::Min(80,$old.Length)))" }
+  if ($count -ne 1) { throw "Esperava 1 ocorrencia e encontrei ${count}: $($old.Substring(0,[Math]::Min(80,$old.Length)))" }
   $script:s = $script:s.Replace($old,$new)
 }
 
-Replace-One "\tprivate DateTime _lastTripFlush = DateTime.MinValue;" @"
-`tprivate DateTime _lastTripFlush = DateTime.MinValue;
+Replace-One 'private DateTime _lastTripFlush = DateTime.MinValue;' @'
+private DateTime _lastTripFlush = DateTime.MinValue;
 
-`tprivate const int MaxQueuedTelemetryPackets = 7200;
+	private const int MaxQueuedTelemetryPackets = 7200;
 
-`tprivate string CentralTelemetryQueueFile => Path.Combine(ClientStore.DataDir, "central-telemetry-queue.ndjson");
-"@
+	private string CentralTelemetryQueueFile => Path.Combine(ClientStore.DataDir, "central-telemetry-queue.ndjson");
+'@
 
 $helpers = @'
 	private void StampCentralTelemetry(JObject tele)
@@ -107,16 +107,16 @@ $helpers = @'
 	}
 
 '@
-Replace-One "\tprivate async Task SendCentralTelemetryAsync()" ($helpers + "`tprivate async Task SendCentralTelemetryAsync()")
+Replace-One 'private async Task SendCentralTelemetryAsync()' ($helpers + "`tprivate async Task SendCentralTelemetryAsync()")
 
-Replace-One "\t\ttele[\"gat_map_label\"] = CurrentMapModeLabel;" @"
-`t`ttele["gat_map_label"] = CurrentMapModeLabel;
-`t`tStampCentralTelemetry(tele);
-"@
+Replace-One 'tele["gat_map_label"] = CurrentMapModeLabel;' @'
+tele["gat_map_label"] = CurrentMapModeLabel;
+		StampCentralTelemetry(tele);
+'@
 
-$anchor = "\t\tApiResponse apiResponse2 = await _api.SendTelemetryAsync(\"https://api.gatlogets2.com.br\", centralDriver, _deviceId, centralClientToken, tele);"
+$anchor = 'ApiResponse apiResponse2 = await _api.SendTelemetryAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, centralClientToken, tele);'
 $replacement = @'
-		int pendingBeforeCurrent = await FlushCentralTelemetryQueueAsync(centralDriver, centralClientToken);
+int pendingBeforeCurrent = await FlushCentralTelemetryQueueAsync(centralDriver, centralClientToken);
 		if (pendingBeforeCurrent > 0)
 		{
 			QueueCentralTelemetry(tele);
@@ -128,7 +128,7 @@ $replacement = @'
 Replace-One $anchor $replacement
 
 Replace-One @'
-		else if (apiResponse2.StatusCode == 0)
+else if (apiResponse2.StatusCode == 0)
 		{
 			lblTelemetry.Text = "Central GAT: reconectando...";
 		}
@@ -141,7 +141,7 @@ Replace-One @'
 			lblTelemetry.Text = "Central GAT: falha HTTP " + apiResponse2.StatusCode;
 		}
 '@ @'
-		else if (apiResponse2.StatusCode == 0 || apiResponse2.StatusCode == 404 || apiResponse2.StatusCode == 429 || apiResponse2.StatusCode >= 500)
+else if (apiResponse2.StatusCode == 0 || apiResponse2.StatusCode == 404 || apiResponse2.StatusCode == 429 || apiResponse2.StatusCode >= 500)
 		{
 			QueueCentralTelemetry(tele);
 			lblTelemetry.Text = "Central GAT: viagem salva • aguardando servidor";
