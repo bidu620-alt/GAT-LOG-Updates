@@ -44,6 +44,7 @@ jobs:
       - run: python scripts/apply-delivery-progress-guard.py
       - run: python scripts/apply-repeat-xp-only.py
       - run: python scripts/apply-truck-damage.py
+      - run: python scripts/apply-site-notice.py
       - run: pnpm run check
       - run: pnpm run migrate:remote
       - run: pnpm run sync:cargos
@@ -55,3 +56,4 @@ jobs:
 # Dano novo do caminhao: maior aumento entre motor/cambio/cabine/chassi/rodas; nunca soma porcentagens.
 # Ranking oficial: maior total de Pontos GAT do mes, mantendo x/30 como progresso.
 # Trabalho ja concluido no mes pode ser repetido: a nova viagem soma somente XP ao nivel.
+# Avisos: admins podem publicar/desativar aviso persistente exibido na tela inicial.
