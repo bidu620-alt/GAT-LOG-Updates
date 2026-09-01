@@ -5,5 +5,5 @@
     "display_version":  "1.0.28",
     "notas":  "1.0.28: nova interface GAT; danos reais de Carga, Motor, Cambio, Cabine, Chassi, Rodas e Reboque; integracao com infracoes, regras e ranking. Para os cinco danos do caminhao, use o TruckSim GPS com a atualizacao GAT de danos.",
     "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_DOTNET_UPDATE_1.0.28.exe",
-    "sha256":  "fad305292441bba509c1a6b959a945624c1c0c7412d06e19bd5c8d5b4275eef9"
+    "sha256":  "359e67948cdd9ca33bfad8da21482354f6db2c6cbbb4ba439890fab626605cb7"
 }
