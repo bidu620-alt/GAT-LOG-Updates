@@ -5,6 +5,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
 import {DAMAGE_FIELDS,rankingReadiness,advanceRankGuard,restoreDeliveredTrailer} from '../ranking-telemetry.js';
 import {cachedRead} from '../read-cache.js';
+import {budgetState} from '../budget-guard.js';
 
 // Exercise the assembled production handler against SQLite, without npm dependencies.
 // Password hashing imports are unused by these telemetry/read-route tests.
@@ -30,6 +31,7 @@ function fixture(){
   sql.prepare('INSERT INTO client_tokens(token_hash,driver,account_user,device_id,created_at,last_seen_at) VALUES(?,?,?,?,?,?)').run(hash(token),user,user,'test-device-123456',at,at);
   const queries=[];
   const env={DB:{prepare(query){const statement={args:[],bind(...args){this.args=args;return this;},async first(){queries.push(query);return sql.prepare(query).get(...this.args)||null;},async all(){queries.push(query);return{results:sql.prepare(query).all(...this.args)};},async run(){queries.push(query);const result=sql.prepare(query).run(...this.args);return{meta:{changes:Number(result.changes)}};}};return statement;},async batch(statements){sql.exec('BEGIN');try{const r=[];for(const s of statements)r.push(await s.run());sql.exec('COMMIT');return r;}catch(e){sql.exec('ROLLBACK');throw e;}}}};
+  env.GAT_D1_BUDGET=JSON.stringify({date_utc:at.slice(0,10),checked_at:at,rows_read:0,rows_written:0});
   const waits=[];const ctx={waitUntil(p){waits.push(p);}};
   async function send(raw, advance=16000){clock+=advance;const response=await worker.fetch(new Request('https://api.gatlogets2.com.br/api/client/telemetry',{method:'POST',body:JSON.stringify({driver:user,device_id:'test-device-123456',token,telemetry:raw})}),env,ctx);assert.equal(response.status,200);return response.json();}
   return {sql,user,token,env,ctx,queries,waits,send,mission,profile:()=>sql.prepare('SELECT * FROM profiles WHERE user=?').get(user)};
@@ -100,4 +102,20 @@ test('cached reads coalesce simultaneous requests, isolate users and expire with
   const values=await Promise.all(Array.from({length:20},()=>cachedRead(key,15,loader)));assert.equal(n,1);values[0].n=900;assert.equal((await cachedRead(key,15,loader)).n,1);
   await cachedRead(key+'other',15,loader);assert.equal(n,2);clock+=16000;await cachedRead(key,15,loader);assert.equal(n,3);
   await assert.rejects(cachedRead('failure',10,async()=>{throw Error('test')}));assert.equal(await cachedRead('failure',10,async()=>42),42);
+});
+test('budget guard pauses before quota and after missing or stale checks, including at UTC rollover',async()=>{
+  const f=fixture(),at=new Date().toISOString(),snapshot={date_utc:at.slice(0,10),checked_at:at,rows_read:4000000,rows_written:0};
+  f.env.GAT_D1_BUDGET=JSON.stringify(snapshot);
+  assert.equal(budgetState(f.env).reason,'daily_budget');
+  for(const path of ['/api/public/ranking','/api/account/login','/api/client/telemetry']){
+    const r=await worker.fetch(new Request('https://example.com'+path,{method:path.includes('/public/')?'GET':'POST',body:path.includes('/public/')?undefined:'{}'}),f.env,f.ctx);
+    assert.equal(r.status,503);
+  }
+  await worker.scheduled({},f.env,f.ctx);await Promise.all(f.waits);assert.equal(f.queries.length,0);
+  const notice=await worker.fetch(new Request('https://example.com/api/public/notice'),f.env,f.ctx);assert.equal((await notice.json()).enabled,true);assert.equal(f.queries.length,0);
+  snapshot.rows_read=0;snapshot.rows_written=80000;f.env.GAT_D1_BUDGET=JSON.stringify(snapshot);assert.equal(budgetState(f.env).paused,true);
+  snapshot.rows_written=0;f.env.GAT_D1_BUDGET=JSON.stringify(snapshot);assert.equal(budgetState(f.env).paused,false);
+  clock+=20*60000;assert.equal(budgetState(f.env).reason,'budget_check_pending');
+  delete f.env.GAT_D1_BUDGET;assert.equal(budgetState(f.env).paused,true);
+  f.env.GAT_D1_BUDGET=JSON.stringify(snapshot);clock=Date.parse(snapshot.date_utc+'T00:00:00Z')+86400000;assert.equal(budgetState(f.env).paused,true);
 });

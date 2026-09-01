@@ -3,7 +3,7 @@
 const local = new Map();
 const pending = new Map();
 export async function cachedRead(key, ttlSeconds, loader) {
-  const fullKey = `gat-1.0.51:${new Date().toISOString().slice(0, 7)}:${key}`;
+  const fullKey = `gat-1.0.52:${new Date().toISOString().slice(0, 7)}:${key}`;
   const existing = local.get(fullKey);
   if (existing && existing.expires > Date.now()) return structuredClone(existing.value);
   if (pending.has(fullKey)) return structuredClone(await pending.get(fullKey));

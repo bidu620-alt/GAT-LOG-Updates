@@ -8,10 +8,11 @@ def replace(old,new):
     if s.count(old)!=1: raise SystemExit('Expected one savings anchor: '+old[:100])
     s=s.replace(old,new,1)
 
-s="import {cachedRead} from './read-cache.js';\n"+s
+s="import {cachedRead} from './read-cache.js';\nimport {budgetState} from './budget-guard.js';\n"+s
 # No full sessions scan for every telemetry packet, OPTIONS or health request.
 replace("ctx.waitUntil(env.DB.prepare('DELETE FROM sessions WHERE expires_at<?').bind(now()).run());", '')
 replace('export default{async fetch', """export default{async scheduled(event,env,ctx){
+ if(budgetState(env).paused)return;
  ctx.waitUntil(env.DB.batch([
    env.DB.prepare('DELETE FROM sessions WHERE token_hash IN (SELECT token_hash FROM sessions WHERE expires_at<? ORDER BY expires_at LIMIT 1000)').bind(now()),
    env.DB.prepare('DELETE FROM auth_attempts WHERE id IN (SELECT id FROM auth_attempts WHERE at<? ORDER BY at LIMIT 1000)').bind(new Date(Date.now()-86400000).toISOString())
@@ -26,6 +27,16 @@ replace('async function profile(env,user){', "async function profile(env,user){r
 replace("const b=await body(req),s=await requireSession(req,env,b);await ensureProfile(env,s.user);return json(req,{ok:true,profile:await profile(env,s.user)})", "const b=await body(req),s=await requireSession(req,env,b);let pr=await profile(env,s.user);if(!pr){await ensureProfile(env,s.user);pr=await readProfile(env,s.user)}return json(req,{ok:true,profile:pr})")
 # Cache only public GET responses. Recreate headers for each request's origin.
 replace('return await route(req,env)', 'return await economicalRoute(req,env)')
+replace('try{return await economicalRoute(req,env)}', """try{
+ const p=new URL(req.url).pathname,budget=budgetState(env);
+ if(req.method==='OPTIONS')return new Response(null,{status:204,headers:headers(req)});
+ if(p==='/api/public/service-status')return json(req,{ok:true,...budget});
+ if(budget.paused&&p!=='/health'&&p!=='/api/public/version'){
+   if(p==='/api/public/notice')return json(req,{ok:true,enabled:true,title:'PAUSA DO PLANO GRATUITO',message:budget.message+(budget.resumes_at?' Renovação: '+new Date(budget.resumes_at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+' (Brasília).':''),...budget});
+   if(p==='/api/public/account-live')return json(req,{ok:true,telemetry:[],service_paused:true,...budget});
+   const response=json(req,{ok:false,error:'free_tier_protection',...budget},503);response.headers.set('Retry-After','300');return response;
+ }
+ return await economicalRoute(req,env)}""")
 s+="""
 async function economicalRoute(req,env){
  const url=new URL(req.url),ttls={'/api/public/ranking':60,'/api/public/safety-ranking':60,'/api/public/work/catalog':60,'/api/public/notice':60};

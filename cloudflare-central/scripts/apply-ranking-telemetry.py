@@ -38,6 +38,6 @@ replace("for(const k of['cargo','source','destination','weight_kg','planned_dist
 # trip rejection in the mission returned to the driver.
 replace("return{driver,account_user:account||'',updated_at:updated,telemetry:raw,", "return{driver,account_user:account||'',updated_at:updated,rank_status:rankingReadiness(raw),telemetry:raw,")
 replace('perfect_trip:!!perfect,xp_awarded:xp,gat_base_points:100', 'rank_verified:true,rank_client_version:raw.gat_client_version,perfect_trip:!!perfect,xp_awarded:xp,gat_base_points:100')
-s = re.sub(r"const VERSION='[0-9.]+-cloudflare';", "const VERSION='1.0.51-cloudflare';", s, count=1)
+s = re.sub(r"const VERSION='[0-9.]+-cloudflare';", "const VERSION='1.0.52-cloudflare';", s, count=1)
 p.write_text(s, encoding='utf-8')
 print('Ranking requires a supported client, seven valid damage fields and continuous verified telemetry.')

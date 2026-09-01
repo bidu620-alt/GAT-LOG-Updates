@@ -56,14 +56,18 @@ jobs:
       - run: pnpm run migrate:remote
       - run: pnpm run sync:cargos
       - run: pnpm run deploy
+      - name: Refresh free-tier budget protection
+        run: python scripts/inspect-d1-usage.py --enforce
       - name: Verify deployed API version
         run: |
           python - <<'PY'
           import json, urllib.request
-          with urllib.request.urlopen('https://api.gatlogets2.com.br/health', timeout=30) as response:
+          with urllib.request.urlopen('https://gat-log-api.bidufilmes.workers.dev/health', timeout=30) as response:
               data=json.load(response)
           print(json.dumps(data))
-          assert data.get('agent_version') == '1.0.51-cloudflare', 'Production version differs from this release'
+          assert data.get('agent_version') == '1.0.52-cloudflare', 'Production version differs from this release'
+          with urllib.request.urlopen('https://gat-log-api.bidufilmes.workers.dev/api/public/service-status', timeout=30) as response:
+              print(json.dumps(json.load(response)))
           PY
 
 # Validacao simples: trabalho ativo + carga detectada + peso > 0 + distancia minima.
