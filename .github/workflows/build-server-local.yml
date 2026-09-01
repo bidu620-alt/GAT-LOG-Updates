@@ -8,10 +8,13 @@ permissions:
   contents: write
 concurrency:
   group: gat-server-local-build
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build:
+    timeout-minutes: 15
     runs-on: windows-latest
+    env:
+      PYTHONUTF8: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,10 +24,11 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Assemble local API and check migration, authentication, backups and deliveries
+        timeout-minutes: 5
         shell: bash
         run: |
           python server-local/build-api.py
-          node --test server-local/local.test.mjs
+          node --test --test-timeout=30000 server-local/local.test.mjs
           python - <<'PY'
           from pathlib import Path
           p=Path('server-local/runtime/tests/ranking.test.mjs')

@@ -1,4 +1,4 @@
-import test from 'node:test';
+import test,{after} from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,readFileSync,writeFileSync,existsSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -11,7 +11,8 @@ import {createCentral} from './runtime/host.mjs';
 const schema=new URL('./runtime/schema.sql',import.meta.url),index=new URL('./runtime/migrations/0004_read_efficiency.sql',import.meta.url);
 const password='test-password-only',salt='test-salt',hash=pbkdf2Sync(password,salt,140000,32,'sha256').toString('hex');
 function dump(){return readFileSync(schema,'utf8')+`\nINSERT INTO accounts(user,password_salt,password_hash,role,created_at,updated_at) VALUES('owner','${salt}','${hash}','owner','2026-09-01','2026-09-01');\nINSERT INTO profiles(user,updated_at) VALUES('owner','2026-09-01');\n`;}
-function setup(t){const dir=mkdtempSync(join(tmpdir(),'gat-local-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));const input=join(dir,'full.sql');writeFileSync(input,dump());return{dir,input};}
+const folders=[];after(()=>{for(const dir of folders)rmSync(dir,{recursive:true,force:true});});
+function setup(t){const dir=mkdtempSync(join(tmpdir(),'gat-local-'));folders.push(dir);const input=join(dir,'full.sql');writeFileSync(input,dump());return{dir,input};}
 test('full SQL import keeps password and profile; repeat or unsafe imports cannot replace data',async t=>{
   const {dir,input}=setup(t);const result=await importDatabase(input,dir,schema,index);assert.equal(result.accounts,1);
   const db=new LocalDatabase(join(dir,'central.sqlite'));assert.equal((await db.prepare("SELECT password_hash FROM accounts WHERE user='owner'").first()).password_hash,hash);db.close();
