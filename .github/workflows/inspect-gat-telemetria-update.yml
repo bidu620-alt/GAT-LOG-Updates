@@ -1,0 +1,56 @@
+name: Inspect GAT Telemetria update code
+
+on:
+  push:
+    paths:
+      - 'gat-telemetria-dotnet-1.0.28/inspect-trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recreate source
+        shell: powershell
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          $out = [IO.File]::Create('gat-source.zip')
+          try {
+            $out.Write($first, 0, $first.Length)
+            foreach ($part in $parts) {
+              $bytes = [IO.File]::ReadAllBytes($part.FullName)
+              $out.Write($bytes, 0, $bytes.Length)
+            }
+          } finally { $out.Dispose() }
+          Expand-Archive 'gat-source.zip' 'src' -Force
+      - name: Extract update-related code
+        shell: powershell
+        run: |
+          $files = Get-ChildItem 'src' -Filter '*.cs' -Recurse
+          $patterns = 'client_dotnet_version|setup_url|sha256|atualiza|update|DownloadFile|WebClient|Process.Start'
+          $lines = foreach ($f in $files) {
+            $content = Get-Content $f.FullName
+            for ($i=0; $i -lt $content.Count; $i++) {
+              if ($content[$i] -match $patterns) {
+                $start = [Math]::Max(0,$i-8); $end=[Math]::Min($content.Count-1,$i+18)
+                "=== $($f.FullName.Substring((Resolve-Path 'src').Path.Length+1)) : line $($i+1) ==="
+                for ($j=$start; $j -le $end; $j++) { '{0,5}: {1}' -f ($j+1), $content[$j] }
+                ''
+              }
+            }
+          }
+          $lines | Set-Content 'gat-telemetria-dotnet-1.0.28/update-inspect.txt' -Encoding UTF8
+      - name: Publish inspection
+        shell: powershell
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add gat-telemetria-dotnet-1.0.28/update-inspect.txt
+          git commit -m "Inspect GAT Telemetria update code" || exit 0
+          git pull --rebase origin main
+          git push
