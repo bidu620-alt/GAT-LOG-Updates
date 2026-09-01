@@ -1,4 +1,5 @@
 export function budgetState(env, at = Date.now()) {
+  if (env.GAT_MIGRATION_PAUSED === '1') return {paused:true,reason:'migration',resumes_at:null,message:'Central GAT em transferencia para o servidor local. As viagens durante a transferencia nao pontuam. Aguarde a conclusao da migracao.'};
   let snapshot;
   try { snapshot = JSON.parse(env.GAT_D1_BUDGET || 'null'); } catch (_) {}
   const date = new Date(at).toISOString().slice(0, 10);
