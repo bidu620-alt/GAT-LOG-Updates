@@ -46,10 +46,25 @@ jobs:
       - run: python scripts/apply-truck-damage.py
       - run: python scripts/apply-site-notice.py
       - run: python scripts/apply-profile-avatar.py
+      - run: python scripts/apply-ranking-telemetry.py
+      - run: python scripts/apply-d1-savings.py
+      - run: node --test tests/*.test.mjs
       - run: pnpm run check
+      - name: Inspect free-tier usage without D1 queries
+        continue-on-error: true
+        run: python scripts/inspect-d1-usage.py
       - run: pnpm run migrate:remote
       - run: pnpm run sync:cargos
       - run: pnpm run deploy
+      - name: Verify deployed API version
+        run: |
+          python - <<'PY'
+          import json, urllib.request
+          with urllib.request.urlopen('https://api.gatlogets2.com.br/health', timeout=30) as response:
+              data=json.load(response)
+          print(json.dumps(data))
+          assert data.get('agent_version') == '1.0.51-cloudflare', 'Production version differs from this release'
+          PY
 
 # Validacao simples: trabalho ativo + carga detectada + peso > 0 + distancia minima.
 # Entrega so conclui apos o evento ser armado e haver pelo menos 1 km de progresso real.
