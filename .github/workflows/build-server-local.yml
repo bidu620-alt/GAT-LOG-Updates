@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           python server-local/build-api.py
-          node --test --test-timeout=30000 server-local/local.test.mjs
+          node --test --test-timeout=30000 server-local/local.test.mjs server-local/delivery-event-regression.test.mjs
           python - <<'PY'
           from pathlib import Path
           p=Path('server-local/runtime/tests/ranking.test.mjs')
@@ -76,7 +76,7 @@ jobs:
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
           git add releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.40.zip releases/GAT_SERVER_LOCAL_1.0.40.sha256
-          git commit -m 'Publish GAT Server 1.0.40 panel version fix'
+          git commit -m 'Publish GAT Server 1.0.40 delivery event fix'
           git restore server-local/updater/Program.cs server-local/ui/GatLogServer/MainForm.cs
           git pull --rebase -X theirs
           git push
