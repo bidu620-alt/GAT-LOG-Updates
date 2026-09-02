@@ -76,7 +76,7 @@
     return [...unique.values()].sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'}));
   }
 
-  function filtered(){const qn=norm(query);if(!qn)return items;return items.filter(x=>norm(x.name+' '+x.dlc).includes(qn))}
+  function filtered(){const qn=norm(query);if(!qn)return items;return items.filter(x=>norm(x.name+' '+x.dlc+' '+x.title+' '+x.category).includes(qn))}
 
   function render(){
     const root=document.getElementById(GRID);if(!root)return;ensureToolbar();const rows=filtered(),show=rows.slice(0,visible),liveName=liveCargo(currentLive()),liveNorm=norm(liveName);root.textContent='';
