@@ -35,24 +35,26 @@ test('carga e classificada sem motorista escolher trabalho; desconhecida vai par
  const send=async telemetry=>{const r=await fetch(base+'/api/client/telemetry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({driver:'biduzao',device_id:'device-auto-123456',token:driverToken,telemetry})});assert.equal(r.status,200);return r.json();};
  const admin=async(path,body={})=>{const r=await fetch(base+path,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({token:modToken,...body})});return{r,data:await r.json()};};
  const publicProfile=async()=>{const r=await fetch(base+'/api/public/driver?user=biduzao');assert.equal(r.status,200);return (await r.json()).profile;};
+ const recordedPoints=()=>db.sql.prepare("SELECT COALESCE(SUM(CAST(json_extract(raw_json,'$.audit.gat_points') AS INTEGER)),0) points FROM deliveries WHERE user='biduzao'").get().points;
 
  // Diesel: nenhuma missao foi escolhida no site. A Central deve criar/associar Combustiveis sozinha.
  const diesel=startPayload('Diesel','Cidade A','Cidade B','diesel-1');const begin=await send(diesel);assert.equal(begin.mission_event?.mission?.catalog_id,'fuel',JSON.stringify(begin));assert.equal(begin.mission_event?.mission?.classification_mode,'automatic');
  const done=await send(endPayload(diesel));assert.equal(done.mission_event?.type,'delivery_completed',JSON.stringify(done));
- let p=db.sql.prepare("SELECT monthly_completed,total_deliveries,current_mission_json FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,1);assert.equal(p.total_deliveries,1);assert.equal(p.current_mission_json,null);assert.equal((await publicProfile()).points,100);
+ let p=db.sql.prepare("SELECT monthly_completed,total_deliveries,current_mission_json FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,1);assert.equal(p.total_deliveries,1);assert.equal(p.current_mission_json,null);assert.equal((await publicProfile()).points,100);assert.equal(recordedPoints(),100);
  let alias=db.sql.prepare("SELECT work_id,source FROM cargo_aliases WHERE cargo_key='diesel'").get();assert.equal(alias.work_id,'fuel');assert.equal(alias.source,'automatic');
  assert.ok(JSON.parse(db.sql.prepare("SELECT compatible_cargos_json FROM work_catalog WHERE id='fuel'").get().compatible_cargos_json).includes('Diesel'));
 
  // Nome sem correspondencia: viagem valida e salva, recebe pontos/XP, mas nao aumenta x/30 ainda.
  const unknown=startPayload('Objeto experimental ZX-91','Cidade C','Cidade D','unknown-1');const pendingStart=await send(unknown);assert.equal(pendingStart.mission_event?.mission?.pending_classification,true,JSON.stringify(pendingStart));
- const pendingDone=await send(endPayload(unknown));assert.equal(pendingDone.mission_event?.type,'delivery_completed_pending_classification',JSON.stringify(pendingDone));
- p=db.sql.prepare("SELECT monthly_completed,total_deliveries FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,1);assert.equal(p.total_deliveries,2);assert.equal((await publicProfile()).points,200);
+ const pendingDone=await send(endPayload(unknown));assert.equal(pendingDone.mission_event?.type,'delivery_completed_pending_classification',JSON.stringify(pendingDone));assert.equal(pendingDone.mission_event?.gat_points,100);
+ p=db.sql.prepare("SELECT monthly_completed,total_deliveries,points FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,1);assert.equal(p.total_deliveries,2);assert.equal(p.points,100);assert.equal(recordedPoints(),200);
+ const pendingRaw=JSON.parse(db.sql.prepare("SELECT raw_json FROM deliveries WHERE user='biduzao' ORDER BY id DESC LIMIT 1").get().raw_json);assert.equal(pendingRaw.audit.gat_points,100);assert.equal(pendingRaw.audit.classification_status,'pending');
  const queue=db.sql.prepare("SELECT * FROM cargo_classification_queue WHERE status='pending'").get();assert.ok(queue?.id);assert.equal(queue.cargo,'Objeto experimental ZX-91');
 
  // Moderador ve a fila e classifica. Nao duplica pontos/XP; apenas completa o trabalho e ensina o catalogo.
  const list=await admin('/api/site/admin/unclassified');assert.equal(list.r.status,200);assert.equal(list.data.viewer_role,'moderator');assert.ok(list.data.pending.some(x=>x.id===queue.id));
- const before=db.sql.prepare("SELECT xp,total_deliveries FROM profiles WHERE user='biduzao'").get(),beforePublic=await publicProfile();const classified=await admin('/api/site/admin/classify',{queue_id:queue.id,work_id:'heavy'});assert.equal(classified.r.status,200,JSON.stringify(classified.data));assert.equal(classified.data.counted,true);
- p=db.sql.prepare("SELECT monthly_completed,total_deliveries,xp FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,2);assert.equal(p.total_deliveries,before.total_deliveries);assert.equal(p.xp,before.xp);const afterPublic=await publicProfile();assert.equal(afterPublic.points,beforePublic.points);
+ const before=db.sql.prepare("SELECT points,xp,total_deliveries FROM profiles WHERE user='biduzao'").get(),pointsBefore=recordedPoints();const classified=await admin('/api/site/admin/classify',{queue_id:queue.id,work_id:'heavy'});assert.equal(classified.r.status,200,JSON.stringify(classified.data));assert.equal(classified.data.counted,true);
+ p=db.sql.prepare("SELECT monthly_completed,total_deliveries,points,xp FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,2);assert.equal(p.total_deliveries,before.total_deliveries);assert.equal(p.points,before.points);assert.equal(p.xp,before.xp);assert.equal(recordedPoints(),pointsBefore);
  assert.equal(db.sql.prepare('SELECT status,classified_work_id,classified_by FROM cargo_classification_queue WHERE id=?').get(queue.id).classified_work_id,'heavy');
  alias=db.sql.prepare("SELECT work_id,source FROM cargo_aliases WHERE cargo_key='objeto experimental zx 91'").get();assert.equal(alias.work_id,'heavy');assert.equal(alias.source,'manual');
  assert.ok(JSON.parse(db.sql.prepare("SELECT compatible_cargos_json FROM work_catalog WHERE id='heavy'").get().compatible_cargos_json).includes('Objeto experimental ZX-91'));
