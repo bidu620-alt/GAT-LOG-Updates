@@ -1,10 +1,10 @@
 ﻿{
     "app":  "GAT Telemetria",
     "channel":  "stable-dotnet",
-    "version":  "1.0.30",
-    "display_version":  "1.0.30",
-    "notas":  "Instalador unico com fila offline: se a Central GAT ficar indisponivel durante manutencao, a telemetria continua sendo salva no PC e e reenviada em ordem quando o servidor voltar, sem perder a viagem.",
-    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.30.exe",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.30_SOURCE.zip",
-    "sha256":  "79be900d9db5a8ab1cba5b1f8291b2c1475b023c825e3b943880eb4df3ccab31"
+    "version":  "1.0.31",
+    "display_version":  "1.0.31",
+    "notas":  "Protocolo de viagem v2: o GAT Telemetria atua como sensor, envia estado bruto e trip_id unico; a Central GAT decide conclusao ou cancelamento e o site apenas exibe o resultado confirmado.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.31.exe",
+    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.31_SOURCE.zip",
+    "sha256":  "2b8f5482f3da3e947135c52ae92eeb7f9d83c2d9dc27269c9207f05ef9778f20"
 }

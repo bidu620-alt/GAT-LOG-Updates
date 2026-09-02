@@ -110,7 +110,7 @@ internal sealed class MainForm : Form
 		}
 	}
 
-	private const string CurrentVersion = "1.0.30";
+	private const string CurrentVersion = "1.0.31";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -315,7 +315,7 @@ internal sealed class MainForm : Form
 
 	public MainForm()
 	{
-		Text = "GAT Telemetria C# 1.0.30";
+		Text = "GAT Telemetria C# 1.0.31";
 		base.StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new Size(900, 700);
 		base.Size = new Size(940, 740);
@@ -619,7 +619,7 @@ internal sealed class MainForm : Form
 
 		lblVersion = new Label
 		{
-			Text = "GAT Telemetria C# 1.0.30",
+			Text = "GAT Telemetria C# 1.0.31",
 			AutoSize = true,
 			ForeColor = Color.FromArgb(105, 118, 136),
 			Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
@@ -1263,7 +1263,7 @@ internal sealed class MainForm : Form
 			return;
 		}
 		tele["gat_account_user"] = _accountUser;
-		tele["gat_client_version"] = "1.0.30";
+		tele["gat_client_version"] = "1.0.31";
 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
@@ -1477,67 +1477,87 @@ internal sealed class MainForm : Form
 
 	private JObject StabilizeJobTelemetry(JObject tele)
 	{
+		// job-v2: o GAT Telemetria apenas observa o ETS2.
+		// A Central GAT e a unica autoridade que decide entregue x cancelado.
 		if (tele == null)
 		{
 			return null;
 		}
-		string text = TextAny(tele, "cargo_name", "job.cargoName", "job.cargo");
-		string text2 = TextAny(tele, "cargo_id", "job.cargoId", "Job.CargoId");
-		double num = NumberAny(tele, "mass_kg", "cargoMass", "cargo_mass", "job.cargoMass", "Job.CargoMass");
-		double num2 = NumberAny(tele, "planned_distance_km", "job.plannedDistanceKm", "Job.PlannedDistanceKm");
-		double num3 = NumberAny(tele, "remaining_km");
-		bool flag = (!string.IsNullOrWhiteSpace(text) || !string.IsNullOrWhiteSpace(text2)) && num > 0.0;
-		bool flag2 = BoolAny(tele, "gameplay.jobDelivered", "jobDelivered");
-		bool flag3 = BoolAny(tele, "gameplay.jobCancelled", "jobCancelled", "gameplay.jobCanceled", "jobCanceled");
-		if (_latchedJob != null && !flag && (flag2 | flag3))
+
+		string cargo = TextAny(tele, "cargo_name", "job.cargoName", "job.cargo");
+		string cargoId = TextAny(tele, "cargo_id", "job.cargoId", "Job.CargoId");
+		string source = TextAny(tele, "source_city", "job.sourceCity", "Job.SourceCity");
+		string destination = TextAny(tele, "destination_city", "job.destinationCity", "Job.DestinationCity");
+		double mass = NumberAny(tele, "mass_kg", "cargoMass", "cargo_mass", "job.cargoMass", "Job.CargoMass");
+		double planned = NumberAny(tele, "planned_distance_km", "job.plannedDistanceKm", "Job.PlannedDistanceKm");
+		double remaining = NumberAny(tele, "remaining_km");
+		bool rawOnJob = BoolAny(tele, "gameplay.onJob", "onJob", "job.onJob", "job.active");
+		bool rawHasJob = rawOnJob && (!string.IsNullOrWhiteSpace(cargo) || !string.IsNullOrWhiteSpace(cargoId)) && mass > 0.0;
+
+		if (rawHasJob)
 		{
-			string latchedJobKey = _latchedJobKey;
-			string text3 = (flag2 ? "delivered" : "cancelled");
-			ClientStore.Log((flag2 ? "JOB DELIVERED | " : "JOB CANCELLED | ") + JobSummary(_latchedJob));
-			tele["gat_schema"] = "job-v1";
-			tele["gat_job_state"] = "ended";
-			tele["gat_job_event"] = text3;
-			tele["gat_job_event_key"] = latchedJobKey;
+			string oldCargoId = (_latchedJob == null) ? string.Empty : TextAny(_latchedJob, "cargo_id");
+			string oldSource = (_latchedJob == null) ? string.Empty : TextAny(_latchedJob, "source_city");
+			string oldDestination = (_latchedJob == null) ? string.Empty : TextAny(_latchedJob, "destination_city");
+			bool sameRawJob = _latchedJob != null &&
+				(string.IsNullOrWhiteSpace(cargoId) || string.IsNullOrWhiteSpace(oldCargoId) || string.Equals(cargoId, oldCargoId, StringComparison.OrdinalIgnoreCase)) &&
+				(string.IsNullOrWhiteSpace(source) || string.IsNullOrWhiteSpace(oldSource) || string.Equals(source, oldSource, StringComparison.OrdinalIgnoreCase)) &&
+				(string.IsNullOrWhiteSpace(destination) || string.IsNullOrWhiteSpace(oldDestination) || string.Equals(destination, oldDestination, StringComparison.OrdinalIgnoreCase));
+
+			if (!sameRawJob)
+			{
+				_latchedJob = new JObject();
+				CopyValue(tele, _latchedJob, "cargo_name", "cargo_name", "job.cargoName", "job.cargo");
+				CopyValue(tele, _latchedJob, "cargo_id", "cargo_id", "job.cargoId", "Job.CargoId");
+				CopyValue(tele, _latchedJob, "mass_kg", "mass_kg", "cargoMass", "cargo_mass", "job.cargoMass", "Job.CargoMass");
+				CopyValue(tele, _latchedJob, "source_city", "source_city", "job.sourceCity", "Job.SourceCity");
+				CopyValue(tele, _latchedJob, "source_city_id", "source_city_id", "job.sourceCityId", "Job.SourceCityId");
+				CopyValue(tele, _latchedJob, "destination_city", "destination_city", "job.destinationCity", "Job.DestinationCity");
+				CopyValue(tele, _latchedJob, "destination_city_id", "destination_city_id", "job.destinationCityId", "Job.DestinationCityId");
+				_latchedJob["planned_distance_km"] = (planned > 0.0) ? planned : remaining;
+				_latchedJobKey = Guid.NewGuid().ToString("N");
+				ClientStore.Log("JOB OBSERVED START | trip=" + _latchedJobKey + " | " + JobSummary(_latchedJob));
+			}
+
+			tele["gat_schema"] = "job-v2";
+			tele["gat_job_state"] = "active";
+			tele["gat_job_event"] = string.Empty;
+			tele["gat_trip_id"] = _latchedJobKey;
+			tele["job_latched"] = true;
+			tele["job_latch_key"] = _latchedJobKey;
+			tele["on_job"] = true;
+			return tele;
+		}
+
+		// O ETS2 nao possui mais trabalho carregado. Nao reaproveitamos carga/rota antigas
+		// nos campos normais. Enviamos somente o trip_id anterior para a Central fechar
+		// a viagem usando os sinais brutos e o recibo jobDeliveredDetails.
+		if (_latchedJob != null)
+		{
+			string endedTrip = _latchedJobKey;
+			tele["gat_schema"] = "job-v2";
+			tele["gat_job_state"] = "idle";
+			tele["gat_job_event"] = string.Empty;
+			tele["gat_trip_id"] = endedTrip;
+			tele["gat_previous_cargo_name"] = TextAny(_latchedJob, "cargo_name");
+			tele["gat_previous_cargo_id"] = TextAny(_latchedJob, "cargo_id");
 			tele["job_latched"] = false;
+			tele["job_latch_key"] = endedTrip;
+			tele["on_job"] = false;
+			ClientStore.Log("JOB OBSERVED END | trip=" + endedTrip + " | Central decidira o resultado");
 			_latchedJob = null;
 			_latchedJobKey = string.Empty;
 			return tele;
 		}
-		if ((_latchedJob == null) & flag)
-		{
-			_latchedJob = new JObject();
-			CopyValue(tele, _latchedJob, "cargo_name", "cargo_name", "job.cargoName", "job.cargo");
-			CopyValue(tele, _latchedJob, "cargo_id", "cargo_id", "job.cargoId", "Job.CargoId");
-			CopyValue(tele, _latchedJob, "mass_kg", "mass_kg", "cargoMass", "cargo_mass", "job.cargoMass", "Job.CargoMass");
-			CopyValue(tele, _latchedJob, "source_city", "source_city", "job.sourceCity");
-			CopyValue(tele, _latchedJob, "source_city_id", "source_city_id", "job.sourceCityId", "Job.SourceCityId");
-			CopyValue(tele, _latchedJob, "destination_city", "destination_city", "job.destinationCity");
-			CopyValue(tele, _latchedJob, "destination_city_id", "destination_city_id", "job.destinationCityId", "Job.DestinationCityId");
-			_latchedJob["planned_distance_km"] = ((num2 > 0.0) ? num2 : num3);
-			_latchedJob["job_latched"] = true;
-			_latchedJobKey = ((!string.IsNullOrWhiteSpace(text2)) ? text2 : (text + "|" + num.ToString("0")));
-			ClientStore.Log("JOB STARTED | " + JobSummary(_latchedJob));
-		}
-		if (_latchedJob != null)
-		{
-			foreach (JProperty item in _latchedJob.Properties())
-			{
-				if (tele[item.Name] == null || string.IsNullOrWhiteSpace(tele[item.Name].ToString()))
-				{
-					tele[item.Name] = item.Value.DeepClone();
-				}
-			}
-			tele["on_job"] = true;
-			tele["job_latched"] = true;
-			tele["job_latch_key"] = _latchedJobKey;
-			tele["gat_schema"] = "job-v1";
-			tele["gat_job_state"] = "active";
-			tele["gat_job_event"] = "";
-		}
+
+		tele["gat_schema"] = "job-v2";
+		tele["gat_job_state"] = "idle";
+		tele["gat_job_event"] = string.Empty;
+		tele["job_latched"] = false;
+		tele["on_job"] = false;
 		return tele;
 	}
-
-	private static void CopyValue(JObject a, JObject b, string output, params string[] paths)
+private static void CopyValue(JObject a, JObject b, string output, params string[] paths)
 	{
 		foreach (string path in paths)
 		{
@@ -2416,5 +2436,6 @@ internal sealed class MainForm : Form
 		return false;
 	}
 }
+
 
 
