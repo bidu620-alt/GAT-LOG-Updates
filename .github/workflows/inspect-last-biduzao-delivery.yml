@@ -1,0 +1,22 @@
+name: Inspect last biduzao delivery
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-last-biduzao-delivery.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect public profile and live telemetry
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '=== PROFILE ==='
+          curl -fsS 'https://api.gatlogets2.com.br/api/public/driver?user=biduzao' | jq '{ok, profile: (.profile | {user,monthly_completed,total_deliveries,total_km,points,current_mission,deliveries: (.deliveries[-5:] // [])})}'
+          echo '=== CATALOG ==='
+          curl -fsS 'https://api.gatlogets2.com.br/api/public/work/catalog?user=biduzao' | jq '{ok, mission_min_km, current_mission, completed: [.catalog[] | select(.completed==true) | {id,position,title,category}]}'
+          echo '=== LIVE ==='
+          curl -fsS 'https://api.gatlogets2.com.br/api/public/account-live' | jq '{ok, telemetry: [.telemetry[]? | select((.account_user // .driver // "") | ascii_downcase == "biduzao") | {account_user,driver,updated_at,cargo_name,mass_kg,source_city,destination_city,remaining_km,job_latched,telemetry}]}'
