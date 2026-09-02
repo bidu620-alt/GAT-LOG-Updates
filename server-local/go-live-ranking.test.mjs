@@ -18,7 +18,7 @@ function packet(extra={}){
 }
 function delivered(){return packet({gat_job_event:'delivered',gat_job_state:'idle',job_latched:false,on_job:false,cargo_name:'',mass_kg:0,remaining_km:0,truck:{odometer:10002},gameplay:{jobDelivered:true,jobCancelled:false,jobDeliveredDetails:{distanceKm:2,revenue:1000,earnedXp:10,cargoDamage:0}}});}
 
-test('go-live: missao automatica confirma telemetria em duas amostras e conclui sem minimo de km',async t=>{
+test('go-live: primeiro pacote incompleto e transitorio recupera com duas amostras validas',async t=>{
  const dir=mkdtempSync(join(tmpdir(),'gat-go-live-rank-'));folders.push(dir);
  const db=new LocalDatabase(join(dir,'central.sqlite'));t.after(()=>db.close());db.sql.exec(schema);db.sql.exec(migration);
  const at=new Date().toISOString(),token='go-live-token';
@@ -28,10 +28,18 @@ test('go-live: missao automatica confirma telemetria em duas amostras e conclui 
  db.sql.prepare('INSERT INTO client_tokens(token_hash,driver,account_user,device_id,created_at,last_seen_at) VALUES(?,?,?,?,?,?)').run(sha(token),'biduzao','biduzao','device-go-live-123456',at,at);
  const {server}=createCentral(db);await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));const base='http://127.0.0.1:'+server.address().port;
  const send=async telemetry=>{const r=await fetch(base+'/api/client/telemetry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({driver:'biduzao',device_id:'device-go-live-123456',token,telemetry})});assert.equal(r.status,200);return r.json();};
- const first=await send(packet());assert.equal(first.rank_status?.eligible,true,JSON.stringify(first));
- let mission=JSON.parse(db.sql.prepare("SELECT current_mission_json FROM profiles WHERE user='biduzao'").get().current_mission_json);assert.equal(mission.rank_guard?.reason,'telemetry_not_verified_from_start',JSON.stringify(mission));assert.equal(mission.rank_guard?.valid_samples,1);
- const second=await send(packet({remaining_km:18,truck:{odometer:10002},truck_engine_damage_pct:.1}));assert.equal(second.rank_status?.eligible,true,JSON.stringify(second));
- mission=JSON.parse(db.sql.prepare("SELECT current_mission_json FROM profiles WHERE user='biduzao'").get().current_mission_json);assert.equal(mission.rank_guard?.reason,null,JSON.stringify(mission));assert.equal(mission.rank_guard?.valid_samples,2);
+
+ // Reproduz o caso real: a carga nasce enquanto um campo de dano ainda nao chegou.
+ const first=await send(packet({trailer_damage_pct:undefined}));assert.equal(first.rank_status?.reason,'damage_data_incomplete',JSON.stringify(first));
+ let mission=JSON.parse(db.sql.prepare("SELECT current_mission_json FROM profiles WHERE user='biduzao'").get().current_mission_json);
+ assert.equal(mission.rank_guard?.reason,'telemetry_not_verified_from_start',JSON.stringify(mission));assert.equal(mission.rank_guard?.valid_samples,0);assert.equal(mission.rank_guard?.last_invalid_reason,'damage_data_incomplete');
+
+ // Duas leituras completas e continuas dentro da janela inicial confirmam o ranking.
+ const second=await send(packet({remaining_km:19,truck:{odometer:10001}}));assert.equal(second.rank_status?.eligible,true,JSON.stringify(second));
+ mission=JSON.parse(db.sql.prepare("SELECT current_mission_json FROM profiles WHERE user='biduzao'").get().current_mission_json);assert.equal(mission.rank_guard?.reason,'telemetry_not_verified_from_start',JSON.stringify(mission));assert.equal(mission.rank_guard?.valid_samples,1);
+ const third=await send(packet({remaining_km:18,truck:{odometer:10002},truck_engine_damage_pct:.1}));assert.equal(third.rank_status?.eligible,true,JSON.stringify(third));
+ mission=JSON.parse(db.sql.prepare("SELECT current_mission_json FROM profiles WHERE user='biduzao'").get().current_mission_json);assert.equal(mission.rank_guard?.reason,null,JSON.stringify(mission));assert.equal(mission.rank_guard?.valid_samples,2);assert.ok(mission.rank_guard?.verified_at);
+
  const end=await send(delivered());assert.equal(end.mission_event?.type,'delivery_completed',JSON.stringify(end));
  const profile=db.sql.prepare("SELECT monthly_completed,total_deliveries FROM profiles WHERE user='biduzao'").get();assert.equal(profile.monthly_completed,1);assert.equal(profile.total_deliveries,1);
 });
