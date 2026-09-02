@@ -1,5 +1,6 @@
 export const MIN_RANK_CLIENT = '1.0.28';
 export const MAX_TELEMETRY_GAP_MS = 120000;
+export const RANK_STARTUP_GRACE_MS = 30000;
 export const DAMAGE_FIELDS = {
   cargo: 'cargo_damage_pct', engine: 'truck_engine_damage_pct',
   transmission: 'truck_transmission_damage_pct', cabin: 'truck_cabin_damage_pct',
@@ -32,15 +33,16 @@ export function rankingMessage(reason) {
   if (reason === 'telemetry_not_verified_from_start') return 'Esta viagem ainda está aguardando confirmação contínua da telemetria.';
   return reason ? 'Esta viagem não pontua. Corrija a telemetria e inicie outra viagem.' : '';
 }
-// A viagem e armada com a primeira leitura valida e confirmada pela segunda leitura
-// continua. O relogio da propria missao evita depender do pacote idle anterior, que
-// podia deixar uma viagem automatica presa em telemetry_not_verified_from_start.
-// Depois da primeira amostra valida, falha real ou gap continuam sticky.
+// O primeiro pacote de uma carga pode chegar enquanto o TruckSim GPS ainda atualiza
+// os campos de dano. Durante uma janela curta de 30 s, a Central nao condena a viagem
+// por esse pacote transitorio: exige duas leituras completas e continuas para selar
+// o rank_guard. Depois de verified_at, qualquer falta real de dados ou gap fica sticky.
 export function advanceRankGuard(guard, readiness, previousAt, at, legacyProgressConfirmed = false) {
   if (!guard && legacyProgressConfirmed && readiness.eligible) {
     return {reason: null, verified_at: at, last_sample_at: at, valid_samples: 2, migrated_after_server_update: true};
   }
-  const next = guard ? {...guard} : {reason: 'telemetry_not_verified_from_start', valid_samples: 0};
+
+  const next = guard ? {...guard} : {reason: 'telemetry_not_verified_from_start', valid_samples: 0, startup_started_at: at};
   const currentTime = Date.parse(at || '');
   const missionPrevious = Date.parse(next.last_sample_at || '');
   const fallbackPrevious = Date.parse(previousAt || '');
@@ -48,31 +50,50 @@ export function advanceRankGuard(guard, readiness, previousAt, at, legacyProgres
   const continuous = Number.isFinite(previousTime) && Number.isFinite(currentTime) &&
     currentTime >= previousTime && currentTime - previousTime <= MAX_TELEMETRY_GAP_MS;
 
-  // A ativacao antiga podia criar {reason:null} sem registrar a amostra inicial.
-  // Converta esse estado para a amostra 1 e espere a proxima leitura valida.
-  if (!next.verified_at && next.reason === null && !Number.isFinite(Number(next.valid_samples))) {
-    if (!readiness.eligible) return {...next, reason: readiness.reason, last_sample_at: at, valid_samples: 0};
-    return {...next, reason: 'telemetry_not_verified_from_start', first_sample_at: at, last_sample_at: at, valid_samples: 1};
+  // Migra uma missao iniciada na 1.0.44 que ficou presa com damage_data_incomplete
+  // no primeiro pacote. A migracao so abre uma nova janela curta; ainda exige duas
+  // amostras validas antes de liberar a viagem.
+  if (!next.verified_at && !next.startup_started_at) {
+    next.startup_started_at = at;
+    next.valid_samples = 0;
+    next.reason = 'telemetry_not_verified_from_start';
+    next.migrated_startup_guard_v145 = true;
   }
 
-  if (next.reason === 'telemetry_not_verified_from_start') {
-    const prior = Math.max(0, Number(next.valid_samples) || 0);
+  // A ativacao antiga podia criar {reason:null} sem registrar a amostra inicial.
+  if (!next.verified_at && next.reason === null && !Number.isFinite(Number(next.valid_samples))) {
+    next.reason = 'telemetry_not_verified_from_start';
+    next.valid_samples = 0;
+    if (!next.startup_started_at) next.startup_started_at = at;
+  }
+
+  if (!next.verified_at) {
+    const startupTime = Date.parse(next.startup_started_at || at);
+    const startupAge = Number.isFinite(startupTime) && Number.isFinite(currentTime) ? currentTime - startupTime : 0;
+    if (startupAge > RANK_STARTUP_GRACE_MS) {
+      next.reason = readiness.eligible ? 'telemetry_not_verified_from_start' : readiness.reason;
+      next.startup_failed_at = at;
+      next.last_sample_at = at;
+      return next;
+    }
+
     if (!readiness.eligible) {
-      next.reason = readiness.reason;
+      next.reason = 'telemetry_not_verified_from_start';
+      next.last_invalid_reason = readiness.reason;
+      next.valid_samples = 0;
       next.last_sample_at = at;
       return next;
     }
-    if (prior > 0 && !continuous) {
-      next.reason = 'telemetry_gap';
-      next.last_sample_at = at;
-      return next;
-    }
-    next.valid_samples = prior > 0 ? prior + 1 : 1;
+
+    const prior = Math.max(0, Number(next.valid_samples) || 0);
+    next.valid_samples = prior > 0 && continuous ? prior + 1 : 1;
+    next.reason = 'telemetry_not_verified_from_start';
     next.last_sample_at = at;
     if (!next.first_sample_at) next.first_sample_at = at;
     if (next.valid_samples >= 2) {
       next.reason = null;
       next.verified_at = at;
+      delete next.last_invalid_reason;
     }
     return next;
   }
