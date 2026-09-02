@@ -31,7 +31,8 @@ jobs:
           python server-local/apply-admin-work-switch.py
           python server-local/apply-auto-classification.py server-local/runtime/worker.js
           python server-local/apply-auto-classification-safety.py server-local/runtime/worker.js
-          node --test --test-timeout=30000 server-local/local.test.mjs server-local/delivery-event-regression.test.mjs server-local/auto-classification.test.mjs
+          python server-local/apply-trip-state-machine.py server-local/runtime/worker.js
+          node --test --test-timeout=30000 server-local/local.test.mjs server-local/delivery-event-regression.test.mjs server-local/auto-classification.test.mjs server-local/trip-state-machine.test.mjs
           python - <<'PY'
           from pathlib import Path
           p=Path('server-local/runtime/tests/ranking.test.mjs')
@@ -63,7 +64,7 @@ jobs:
           with tempfile.TemporaryDirectory() as localapp:
               check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
               assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
-          text=(central/'worker.js').read_text();assert '1.0.40-local' in text and 'cargo_classification_queue' in text and '/api/site/admin/classify' in text and 'first.score>=.85' in text and 'suvs?' in text
+          text=(central/'worker.js').read_text();cache=(central/'read-cache.js').read_text();assert '1.0.40-local' in text and 'cargo_classification_queue' in text and '/api/site/admin/classify' in text and 'first.score>=.85' in text and 'suvs?' in text and "observedIdle=clean(str(raw,'gat_job_state'" in text and 'tripReplaced=!!(hasLoadedJob' in text and "invalidateRead('profile:'+account)" in text and 'export function invalidateRead' in cache
           release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.40.zip')
           with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
               for p in stage.rglob('*'):
@@ -79,7 +80,7 @@ jobs:
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
           git add releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.40.zip releases/GAT_SERVER_LOCAL_1.0.40.sha256
-          git commit -m 'Publish GAT Server 1.0.40 safer automatic cargo classification'
+          git commit -m 'Publish GAT Server 1.0.40 trip-state v2'
           git restore server-local/updater/Program.cs server-local/ui/GatLogServer/MainForm.cs
           git pull --rebase -X theirs
           git push
