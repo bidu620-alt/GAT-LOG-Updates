@@ -67,15 +67,15 @@ branch_anchor = " if(workAlreadyCompleted){"
 if branch_anchor not in worker:
     raise RuntimeError('Nao encontrei branch de trabalho repetido para inserir fila pendente.')
 pending_and_learning = r''' if(m.pending_classification){
-  const pendingAudit={...auditData,classification_status:'pending',classification_confidence:Number(m.classification_confidence||0),classification_suggested_work_id:m.classification_suggested_work_id||null};
+  const pendingPoints=adminTest?100:gatPoints,pendingAudit={...auditData,gat_points:pendingPoints,classification_status:'pending',classification_confidence:Number(m.classification_confidence||0),classification_suggested_work_id:m.classification_suggested_work_id||null};
   await env.DB.batch([
    env.DB.prepare('INSERT INTO deliveries(user,sequence_no,source,destination,cargo,weight_kg,distance_km,xp,perfect,penalty_xp,speed_fines,delivered_at,raw_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(user,null,source,destination,cargo,weight,distance,xp,perfect,penalty,fines,t,JSON.stringify({mission:m,delivery_details:details,audit:pendingAudit,map_mode:rbr?'rbr':'base'})),
-   env.DB.prepare('UPDATE profiles SET total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,perfect_trips=perfect_trips+?,penalty_xp=penalty_xp+?,speed_fines=speed_fines+?,safety_score=MAX(0,100-((penalty_xp+?)*0.1)),current_mission_json=NULL,updated_at=? WHERE user=?').bind(distance,xp,gatPoints,perfect,penalty,fines,penalty,t,user),
+   env.DB.prepare('UPDATE profiles SET total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,perfect_trips=perfect_trips+?,penalty_xp=penalty_xp+?,speed_fines=speed_fines+?,safety_score=MAX(0,100-((penalty_xp+?)*0.1)),current_mission_json=NULL,updated_at=? WHERE user=?').bind(distance,xp,pendingPoints,perfect,penalty,fines,penalty,t,user),
    env.DB.prepare('INSERT OR IGNORE INTO routes_completed(user,month_key,route_key,source,destination,completed_at) VALUES(?,?,?,?,?,?)').bind(user,mk,routeKey,source,destination,t)
   ]);
   const saved=await env.DB.prepare('SELECT id FROM deliveries WHERE user=? AND delivered_at=? ORDER BY id DESC LIMIT 1').bind(user,t).first();
   if(saved?.id)await env.DB.prepare("INSERT OR IGNORE INTO cargo_classification_queue(delivery_id,user,cargo,cargo_key,source,destination,weight_kg,distance_km,delivered_at,status,suggested_work_id,suggested_confidence) VALUES(?,?,?,?,?,?,?,?,?,'pending',?,?)").bind(saved.id,user,cargo,norm(cargo),source,destination,weight,distance,t,m.classification_suggested_work_id||null,Number(m.classification_confidence||0)).run();
-  return{type:'delivery_completed_pending_classification',mission:m,distance_km:distance,xp_awarded:xp,gat_points:gatPoints,classification_status:'pending'};
+  return{type:'delivery_completed_pending_classification',mission:m,distance_km:distance,xp_awarded:xp,gat_points:pendingPoints,classification_status:'pending'};
  }
  if(m.classification_mode==='automatic'&&workId)await learnCargoAlias(env,cargo,workId,m.classification_confidence,'automatic');
 '''
@@ -104,7 +104,7 @@ admin_routes = r''' if(p==='/api/site/admin/unclassified'&&m==='POST'){
 '''
 worker = worker.replace(admin_anchor, admin_routes + admin_anchor, 1)
 
-for required in ["cargo_classification_queue","autoClassifyCargo","delivery_completed_pending_classification","/api/site/admin/classify","learnCargoAlias","classification_mode==='automatic'"]:
+for required in ["cargo_classification_queue","autoClassifyCargo","delivery_completed_pending_classification","/api/site/admin/classify","learnCargoAlias","classification_mode==='automatic'","pendingPoints=adminTest?100:gatPoints"]:
     if required not in worker:
         raise RuntimeError('Patch automatico incompleto: '+required)
 path.write_text(worker,encoding='utf-8')
