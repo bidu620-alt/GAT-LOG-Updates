@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['server-local/**', 'cloudflare-central/scripts/apply-d1-savings.py', 'cloudflare-central/ranking-telemetry.js', '.github/workflows/build-server-local.yml']
+    paths: ['server-local/**', 'cloudflare-central/schema.sql', 'cloudflare-central/scripts/apply-d1-savings.py', 'cloudflare-central/ranking-telemetry.js', '.github/workflows/build-server-local.yml']
 permissions:
   contents: write
 concurrency:
@@ -29,7 +29,8 @@ jobs:
         run: |
           python server-local/build-api.py
           python server-local/apply-admin-work-switch.py
-          node --test --test-timeout=30000 server-local/local.test.mjs server-local/delivery-event-regression.test.mjs
+          python server-local/apply-auto-classification.py server-local/runtime/worker.js
+          node --test --test-timeout=30000 server-local/local.test.mjs server-local/delivery-event-regression.test.mjs server-local/auto-classification.test.mjs
           python - <<'PY'
           from pathlib import Path
           p=Path('server-local/runtime/tests/ranking.test.mjs')
@@ -61,7 +62,7 @@ jobs:
           with tempfile.TemporaryDirectory() as localapp:
               check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
               assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
-          assert "1.0.40-local" in (central/'worker.js').read_text()
+          text=(central/'worker.js').read_text();assert '1.0.40-local' in text and 'cargo_classification_queue' in text and '/api/site/admin/classify' in text
           release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.40.zip')
           with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
               for p in stage.rglob('*'):
@@ -77,7 +78,7 @@ jobs:
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
           git add releases/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.40.zip releases/GAT_SERVER_LOCAL_1.0.40.sha256
-          git commit -m 'Publish GAT Server 1.0.40 admin work switch'
+          git commit -m 'Publish GAT Server 1.0.40 automatic cargo classification'
           git restore server-local/updater/Program.cs server-local/ui/GatLogServer/MainForm.cs
           git pull --rebase -X theirs
           git push
