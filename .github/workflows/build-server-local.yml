@@ -1,4 +1,4 @@
-name: Build GAT Server 1.0.41 Local
+name: Build GAT Server 1.0.42 Local
 on:
   workflow_dispatch:
   push:
@@ -44,9 +44,9 @@ jobs:
           node --test server-local/runtime/tests/ranking.test.mjs
       - name: Remove temporary owner test mode for go-live
         run: python server-local/normalize-go-live.py
-      - name: Prepare panel version 1.0.41
+      - name: Prepare panel version 1.0.42
         run: python server-local/patch-ui-version.py
-      - name: Compile panel 1.0.41
+      - name: Compile panel 1.0.42
         run: dotnet build server-local/ui/GAT_LOG_SERVER.csproj -c Release -o server-local/ui-out
       - name: Package verified Node runtime and application
         shell: python
@@ -66,11 +66,12 @@ jobs:
           with tempfile.TemporaryDirectory() as localapp:
               check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
               assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
-          text=(central/'worker.js').read_text();cache=(central/'read-cache.js').read_text();host=(central/'host.mjs').read_text()
-          assert '1.0.41-local' in text and 'cargo_classification_queue' in text and '/api/site/admin/classify' in text and 'first.score>=.85' in text and 'suvs?' in text and "observedIdle=clean(str(raw,'gat_job_state'" in text and 'tripReplaced=!!(hasLoadedJob' in text and "invalidateRead('profile:'+account)" in text and 'export function invalidateRead' in cache
+          text=(central/'worker.js').read_text();cache=(central/'read-cache.js').read_text();host=(central/'host.mjs').read_text();panel=(root/'ui/GatLogServer/CentralPanel.cs').read_text()
+          assert '1.0.42-local' in text and 'cargo_classification_queue' in text and '/api/site/admin/classify' in text and 'first.score>=.85' in text and 'suvs?' in text and "observedIdle=clean(str(raw,'gat_job_state'" in text and 'tripReplaced=!!(hasLoadedJob' in text and "invalidateRead('profile:'+account)" in text and 'export function invalidateRead' in cache
           assert "const adminTest=false;" in text and "clean(user)==='biduzao'" not in text and "admin_test_mode:clean(s.user)==='biduzao'" not in text
           assert 'go_live_baseline_2026_09_02' in host and 'DELETE FROM deliveries' in host and 'points=0' in host
-          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.41.zip')
+          assert 'IsLocalCentral' in panel and 'version.EndsWith("-local"' in panel and '1.0.40-local' not in panel
+          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.42.zip')
           with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
               for p in stage.rglob('*'):
                   if p.is_file():z.write(p,p.relative_to(stage))
@@ -78,18 +79,18 @@ jobs:
           release.with_suffix('.sha256').write_text(digest+'  '+release.name+'\n')
       - name: Compile updater
         run: dotnet build server-local/updater/Updater.csproj -c Release -o server-local/updater-out
-      - name: Publish GAT Server 1.0.41 updater
+      - name: Publish GAT Server 1.0.42 updater
         shell: bash
         run: |
-          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.41_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.41_LOCAL.exe
+          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.42_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.42_LOCAL.exe
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add releases/GAT_LOG_SERVER_UPDATE_1.0.41_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.41.zip releases/GAT_SERVER_LOCAL_1.0.41.sha256
-          git commit -m 'Publish GAT Server 1.0.41 go-live reset'
+          git add releases/GAT_LOG_SERVER_UPDATE_1.0.42_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.42.zip releases/GAT_SERVER_LOCAL_1.0.42.sha256
+          git commit -m 'Publish GAT Server 1.0.42 central status fix'
           git restore server-local/updater/Program.cs server-local/ui/GatLogServer/MainForm.cs
           git pull --rebase -X theirs
           git push
       - uses: actions/upload-artifact@v4
         with:
-          name: GAT-Server-1.0.41-local-updater
-          path: releases/GAT_LOG_SERVER_UPDATE_1.0.41_LOCAL.exe
+          name: GAT-Server-1.0.42-local-updater
+          path: releases/GAT_LOG_SERVER_UPDATE_1.0.42_LOCAL.exe
