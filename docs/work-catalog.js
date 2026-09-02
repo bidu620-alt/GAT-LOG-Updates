@@ -1,7 +1,7 @@
 (()=>{
   const CATALOG_URL='ets2-official-cargos.json';
   const GRID='workCatalogGrid',STATUS='workCatalogStatus';
-  let items=[],visible=80,query='';
+  let items=[],visible=80,query='',catalogTotal=0;
 
   const clean=v=>String(v||'').trim();
   const norm=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
@@ -59,6 +59,7 @@
     const h2=head?.querySelector('h2');if(h2)h2.textContent='Todas as cargas do jogo em português';
     const p=head?.querySelector('p');if(p)p.textContent='Lista única com '+total+' cargas oficiais exibidas em português. A busca aceita português e também o nome oficial original, sem alterar a Telemetria ou a Central.';
     const rule=head?.querySelector('.catalog-rule');if(rule)rule.innerHTML='<b>30</b><span>VIAGENS / MÊS</span><b>500 km</b><span>REAIS MÍN.</span>';
+    const progressTitle=document.querySelector('.monthly-progress-card h2');if(progressTitle)progressTitle.textContent='30 viagens';
     const progressLead=document.querySelector('.monthly-progress-card .lead');if(progressLead)progressLead.textContent='A meta mensal continua em 30 viagens válidas. O catálogo em português é apenas visual e não altera o nome recebido do jogo.';
   }
 
@@ -103,7 +104,7 @@
 
   function render(){
     const root=document.getElementById(GRID);if(!root)return;ensureToolbar();const rows=filtered(),show=rows.slice(0,visible),liveName=liveCargo(currentLive()),liveNorm=norm(liveName);root.textContent='';
-    const count=document.getElementById('fullCargoCount');if(count)count.textContent=(query?rows.length+' encontradas • ':'')+items.length+' cargas no catálogo';
+    const count=document.getElementById('fullCargoCount');if(count)count.textContent=(query?rows.length+' encontradas • ':'')+(catalogTotal||items.length)+' cargas no catálogo';
     if(!show.length){root.innerHTML='<div class="full-cargo-empty">Nenhuma carga encontrada com essa pesquisa.</div>';renderLive();return}
     show.forEach((item,index)=>{const current=liveNorm&&(norm(item.name)===liveNorm||norm(item.namePt)===liveNorm);const card=document.createElement('article');card.className='cargo-card full-cargo-card'+(current?' current':'');card.dataset.cargoKey=norm(item.name);card.title='Nome oficial SCS: '+item.name;card.innerHTML='<div class="cargo-visual"><span class="cargo-number">#'+String(index+1).padStart(3,'0')+'</span><span class="cargo-state">OFICIAL</span><span class="cargo-icon">🚚</span></div><div class="cargo-body"><small>'+(item.dlc?'<span class="cargo-dlc">'+esc(dlcPt(item.dlc))+'</span>':'<span class="cargo-dlc">Jogo base / oficial</span>')+(item.weight?'<span class="cargo-weight">• '+esc(item.weight)+' t</span>':'')+'</small><h3>'+esc(item.namePt)+'</h3><div class="cargo-meta"><span>CARGA REAL ETS2</span><span>CATÁLOGO EM PORTUGUÊS</span></div></div>';root.appendChild(card)});
     if(rows.length>show.length){const more=document.createElement('div');more.className='full-cargo-more';more.innerHTML='<button type="button">MOSTRAR MAIS ('+(rows.length-show.length)+')</button>';more.querySelector('button').onclick=()=>{visible+=80;render()};root.appendChild(more)}
@@ -112,11 +113,11 @@
 
   async function load(){
     injectStyle();ensureToolbar();const status=document.getElementById(STATUS);if(status)status.textContent='Carregando catálogo de cargas em português...';
-    try{const r=await fetch(CATALOG_URL+'?v=full-cargo-pt-2',{cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error('HTTP '+r.status);items=flatCatalog(data);patchCopy(items.length);render();if(status)status.textContent=items.length+' cargas oficiais • nomes em português • busca PT/EN • sem limite de categorias.'}
-    catch(_){items=[];patchCopy(0);if(status)status.textContent='Não foi possível carregar o catálogo oficial agora.';render()}
+    try{const r=await fetch(CATALOG_URL+'?v=full-cargo-pt-3',{cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error('HTTP '+r.status);items=flatCatalog(data);catalogTotal=Number(data?.total_entries)||items.length;patchCopy(catalogTotal);render();if(status)status.textContent=catalogTotal+' cargas oficiais • nomes em português • busca PT/EN • sem limite de categorias.'}
+    catch(_){items=[];catalogTotal=0;patchCopy(0);if(status)status.textContent='Não foi possível carregar o catálogo oficial agora.';render()}
   }
 
   document.addEventListener('DOMContentLoaded',load);
-  window.addEventListener('gat-account-change',()=>setTimeout(()=>{patchCopy(items.length);render()},300));
-  setInterval(()=>{if(items.length){patchCopy(items.length);renderLive()}},1000);
+  window.addEventListener('gat-account-change',()=>setTimeout(()=>{patchCopy(catalogTotal||items.length);render()},300));
+  setInterval(()=>{if(items.length){patchCopy(catalogTotal||items.length);renderLive()}},1000);
 })();
