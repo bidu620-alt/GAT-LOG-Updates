@@ -111,6 +111,43 @@ CREATE TABLE IF NOT EXISTS work_catalog (
   compatible_cargos_json TEXT NOT NULL DEFAULT '[]'
 );
 
+CREATE TABLE IF NOT EXISTS cargo_aliases (
+  cargo_key TEXT PRIMARY KEY,
+  cargo_name TEXT NOT NULL,
+  work_id TEXT NOT NULL,
+  confidence REAL NOT NULL DEFAULT 1,
+  source TEXT NOT NULL DEFAULT 'manual',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY(work_id) REFERENCES work_catalog(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_cargo_aliases_work ON cargo_aliases(work_id);
+
+CREATE TABLE IF NOT EXISTS cargo_classification_queue (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  delivery_id INTEGER NOT NULL UNIQUE,
+  user TEXT NOT NULL,
+  cargo TEXT NOT NULL,
+  cargo_key TEXT NOT NULL,
+  source TEXT,
+  destination TEXT,
+  weight_kg REAL,
+  distance_km REAL,
+  delivered_at TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  suggested_work_id TEXT,
+  suggested_confidence REAL NOT NULL DEFAULT 0,
+  classified_work_id TEXT,
+  classified_by TEXT,
+  classified_at TEXT,
+  FOREIGN KEY(delivery_id) REFERENCES deliveries(id) ON DELETE CASCADE,
+  FOREIGN KEY(user) REFERENCES accounts(user) ON DELETE CASCADE,
+  FOREIGN KEY(suggested_work_id) REFERENCES work_catalog(id) ON DELETE SET NULL,
+  FOREIGN KEY(classified_work_id) REFERENCES work_catalog(id) ON DELETE SET NULL
+);
+CREATE INDEX IF NOT EXISTS idx_cargo_queue_status ON cargo_classification_queue(status, delivered_at);
+CREATE INDEX IF NOT EXISTS idx_cargo_queue_user ON cargo_classification_queue(user, delivered_at);
+
 CREATE TABLE IF NOT EXISTS work_completed (
   user TEXT NOT NULL,
   work_id TEXT NOT NULL,
