@@ -19,6 +19,18 @@ function ensureAutomaticCargoCatalog(db){
   db.sql.prepare("INSERT OR REPLACE INTO meta(key,value) VALUES('auto_cargo_catalog_v1',?)").run(t);
 }
 
+function reconcileMonthlyTripGoal(db){
+  // A meta mensal e por VIAGENS VALIDAS, nao por classificacoes. Como toda entrega
+  // aceita pelo ranking gera uma linha em deliveries, ela e a fonte definitiva do x/30.
+  // Isso tambem corrige automaticamente a virada do mes e recupera entregas que foram
+  // salvas como pendentes de classificacao antes da 1.0.46.
+  const mk=new Date().toISOString().slice(0,7);
+  db.sql.prepare(`UPDATE profiles SET monthly_completed=MIN(monthly_goal,(
+    SELECT COUNT(*) FROM deliveries d
+    WHERE d.user=profiles.user AND substr(d.delivered_at,1,7)=?
+  ))`).run(mk);
+}
+
 async function ensureGoLiveBaseline(db,dataDir){
   const key='go_live_baseline_2026_09_02';
   if(db.sql.prepare('SELECT value FROM meta WHERE key=?').get(key))return null;
@@ -100,6 +112,7 @@ async function main(){
   if(process.argv[2]==='backup'){console.log(await saveBackup(db,dataDir));db.close();return;}
   const resetBackup=await ensureGoLiveBaseline(db,dataDir);
   if(resetBackup)console.log('GAT go-live: progresso de testes zerado. Backup: '+resetBackup);
+  reconcileMonthlyTripGoal(db);
   let lastError='';
   const {server,exclusive}=createCentral(db,{onError:e=>{lastError=String(e.message);console.error(lastError);}});
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(5056,'127.0.0.1',resolve);});
@@ -108,7 +121,7 @@ async function main(){
   status();const heartbeat=setInterval(status,5000);
   const backupNow=()=>exclusive(()=>saveBackup(db,dataDir)).catch(e=>{lastError='Backup: '+e.message;});
   await backupNow();const backups=setInterval(backupNow,6*3600000);
-  const cleanup=setInterval(()=>exclusive(async()=>{const tasks=[];await worker.scheduled({}, {DB:db},{waitUntil:p=>tasks.push(p)});await Promise.all(tasks);}).catch(e=>{lastError=e.message;}),3600000);
+  const cleanup=setInterval(()=>exclusive(async()=>{reconcileMonthlyTripGoal(db);const tasks=[];await worker.scheduled({}, {DB:db},{waitUntil:p=>tasks.push(p)});await Promise.all(tasks);}).catch(e=>{lastError=e.message;}),3600000);
   async function stop(){clearInterval(heartbeat);clearInterval(backups);clearInterval(cleanup);server.close();await exclusive(async()=>{db.sql.exec('PRAGMA wal_checkpoint(TRUNCATE)');db.close();});process.exit(0);}
   process.on('SIGTERM',stop);process.on('SIGINT',stop);
   console.log('GAT Central local ativa em 127.0.0.1:5056.');
