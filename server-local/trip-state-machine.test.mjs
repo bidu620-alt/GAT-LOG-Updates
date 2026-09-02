@@ -72,10 +72,9 @@ test('job-v2: nova trip nao fica presa na missao anterior',async t=>{
   const {db,send}=await centralFor(t,'biduzao');
   await send(loaded('trip-old-001','Barris vazios'));
   const replacement={...loaded('trip-new-002','Embalagens usadas'),gameplay:{onJob:true,jobDelivered:false,jobCancelled:false,jobDeliveredDetails:{revenue:450,earnedXp:2,cargoDamage:0,distanceKm:2,deliveryTime:8,autoParked:true,autoLoaded:true}}};
-  const closesOld=await send(replacement);
-  assert.ok(String(closesOld.mission_event?.type||'').startsWith('delivery_completed'),JSON.stringify(closesOld));
-  const beginsNew=await send(replacement);
-  assert.equal(beginsNew.mission_event?.type,'mission_in_progress',JSON.stringify(beginsNew));
+  const result=await send(replacement);
+  assert.ok(String(result.mission_event?.type||'').startsWith('delivery_completed'),JSON.stringify(result));
+  assert.equal(result.mission_event?.next_mission_event?.type,'mission_in_progress',JSON.stringify(result));
   const p=db.sql.prepare("SELECT current_mission_json,total_deliveries FROM profiles WHERE user='biduzao'").get();
   assert.equal(p.total_deliveries,1);
   const mission=JSON.parse(p.current_mission_json);
