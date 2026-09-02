@@ -47,6 +47,24 @@ if event_old not in worker:
     raise RuntimeError('Nao encontrei a classificacao entregue/cancelada para aplicar o hotfix.')
 worker=worker.replace(event_old,event_new,1)
 
+# O endpoint precisa reconhecer a entrega ANTES de validar os sete danos, para poder
+# restaurar cargo/reboque do ultimo pacote carregado. Isso corrige exatamente o pacote
+# observado: jobCancelled=true, jobDelivered=false, mas jobDeliveredDetails novo e valido.
+endpoint_old="""   const event=clean(str(raw,'gat_job_event','gatJobEvent'));
+   const delivered=event==='delivered'||(!loaded&&bool(raw,'gameplay.jobDelivered','jobDelivered'));
+   const cancelled=event==='cancelled'||(!loaded&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled'));
+   restoreDeliveredTrailer(raw,prevRaw,previousSampleAt,t,delivered,loaded);"""
+endpoint_new="""   const event=clean(str(raw,'gat_job_event','gatJobEvent'));
+   const deliveryDetailsRaw=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{},previousDeliveryDetailsRaw=pick(prevRaw||{},'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{};
+   const deliveryDetailsPositive=num(deliveryDetailsRaw,'distanceKm','distance_km')>0||num(deliveryDetailsRaw,'revenue')>0||num(deliveryDetailsRaw,'earnedXp','earned_xp')>0;
+   const deliveryDetailsChanged=!loaded&&prevRaw&&JSON.stringify(deliveryDetailsRaw)!==JSON.stringify(previousDeliveryDetailsRaw)&&deliveryDetailsPositive;
+   const delivered=event==='delivered'||deliveryDetailsChanged||(!loaded&&bool(raw,'gameplay.jobDelivered','jobDelivered'));
+   const cancelled=!delivered&&(event==='cancelled'||(!loaded&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled')));
+   restoreDeliveredTrailer(raw,prevRaw,previousSampleAt,t,delivered,loaded);"""
+if endpoint_old not in worker:
+    raise RuntimeError('Nao encontrei a classificacao do endpoint de telemetria para restaurar os danos finais.')
+worker=worker.replace(endpoint_old,endpoint_new,1)
+
 reset_old="'trip_progress_confirmed','rank_guard']"
 reset_new="'trip_progress_confirmed','rank_guard','delivery_details_start']"
 if reset_old not in worker:
@@ -61,7 +79,7 @@ const pbkdf2=(_,password,salt,options)=>pbkdf2Sync(password,salt,options.c,optio
 """+worker
 assert "const VERSION='1.0.52-cloudflare'" in worker
 assert "clean(user)==='biduzao'?1" in worker
-assert "deliveryDetailsChanged" in worker and "cancelled=!delivered" in worker
+assert worker.count("deliveryDetailsChanged")>=2 and "cancelled=!delivered" in worker
 worker=worker.replace("const VERSION='1.0.52-cloudflare'","const VERSION='1.0.40-local'").replace("service:'GAT Central Cloud'","service:'GAT Central Local'")
 (out/'worker.js').write_text(worker)
 # Local ranking hotfix is copied from cloudflare-central/ranking-telemetry.js and
