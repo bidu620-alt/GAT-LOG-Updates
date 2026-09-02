@@ -62,12 +62,6 @@ if state_old not in worker:
     raise RuntimeError('Nao encontrei a trava de missao ativa.')
 worker=worker.replace(state_old,state_new,1)
 
-route_old="if(!source||!destination||norm(source)===norm(destination)){await resetAssigned(env,user,m,'invalid_route');return{type:'delivery_rejected',reason:'invalid_route'}}"
-route_new="if(!adminTest&&(!source||!destination||norm(source)===norm(destination))){await resetAssigned(env,user,m,'invalid_route');return{type:'delivery_rejected',reason:'invalid_route'}}"
-if route_old not in worker:
-    raise RuntimeError('Nao encontrei a validacao de origem/destino.')
-worker=worker.replace(route_old,route_new,1)
-
 old_delivery="if(distance<MIN_KM){await resetAssigned(env,user,m,'distance_below_minimum',{last_distance_km:distance});return{type:'delivery_rejected',reason:'distance_below_minimum',distance_km:distance,min_km:MIN_KM}}"
 new_delivery="if(!adminTest&&distance<minKm){await resetAssigned(env,user,m,'distance_below_minimum',{last_distance_km:distance});return{type:'delivery_rejected',reason:'distance_below_minimum',distance_km:distance,min_km:minKm}}"
 if old_delivery in worker:
