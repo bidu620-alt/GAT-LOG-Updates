@@ -32,27 +32,50 @@ export function rankingMessage(reason) {
   if (reason === 'telemetry_not_verified_from_start') return 'Esta viagem ainda está aguardando confirmação contínua da telemetria.';
   return reason ? 'Esta viagem não pontua. Corrija a telemetria e inicie outra viagem.' : '';
 }
-// A viagem pode começar no intervalo entre dois pacotes. Nesse único caso inicial,
-// duas leituras contínuas permitem confirmar a telemetria sem condenar a viagem inteira.
-// Uma viagem que já tinha progresso confirmado pelo servidor antes de uma atualização
-// também pode ser migrada uma única vez, desde que a telemetria atual esteja completa.
-// Falhas reais detectadas depois (danos ausentes, desconexão ou gap) continuam sticky.
+// A viagem e armada com a primeira leitura valida e confirmada pela segunda leitura
+// continua. O relogio da propria missao evita depender do pacote idle anterior, que
+// podia deixar uma viagem automatica presa em telemetry_not_verified_from_start.
+// Depois de verificada, falhas reais de telemetria continuam sticky.
 export function advanceRankGuard(guard, readiness, previousAt, at, legacyProgressConfirmed = false) {
   if (!guard && legacyProgressConfirmed && readiness.eligible) {
-    return {reason: null, verified_at: at, migrated_after_server_update: true};
+    return {reason: null, verified_at: at, last_sample_at: at, valid_samples: 2, migrated_after_server_update: true};
   }
-  const next = guard ? {...guard} : {reason: 'telemetry_not_verified_from_start'};
-  const previousTime = Date.parse(previousAt || '');
+  const next = guard ? {...guard} : {reason: 'telemetry_not_verified_from_start', valid_samples: 0};
   const currentTime = Date.parse(at || '');
+  const missionPrevious = Date.parse(next.last_sample_at || '');
+  const fallbackPrevious = Date.parse(previousAt || '');
+  const previousTime = Number.isFinite(missionPrevious) ? missionPrevious : fallbackPrevious;
   const continuous = Number.isFinite(previousTime) && Number.isFinite(currentTime) &&
     currentTime >= previousTime && currentTime - previousTime <= MAX_TELEMETRY_GAP_MS;
-  if (next.reason === 'telemetry_not_verified_from_start' && readiness.eligible && continuous) {
-    next.reason = null;
-    next.verified_at = at;
+
+  // A ativacao antiga podia criar {reason:null} sem marcar que a primeira amostra
+  // ainda precisava de confirmacao. Transforme-a explicitamente na amostra 1.
+  if (!next.verified_at && next.reason === null && !Number.isFinite(Number(next.valid_samples))) {
+    if (!readiness.eligible) return {...next, reason: readiness.reason, last_sample_at: at, valid_samples: 0};
+    return {...next, reason: 'telemetry_not_verified_from_start', first_sample_at: at, last_sample_at: at, valid_samples: 1};
   }
+
+  if (next.reason === 'telemetry_not_verified_from_start') {
+    if (!readiness.eligible) {
+      next.last_sample_at = at;
+      next.valid_samples = 0;
+      return next;
+    }
+    const prior = Math.max(0, Number(next.valid_samples) || 0);
+    next.valid_samples = continuous ? Math.max(1, prior) + 1 : 1;
+    next.last_sample_at = at;
+    if (!next.first_sample_at) next.first_sample_at = at;
+    if (next.valid_samples >= 2) {
+      next.reason = null;
+      next.verified_at = at;
+    }
+    return next;
+  }
+
   if (!next.reason) {
     if (!readiness.eligible) next.reason = readiness.reason;
     else if (!continuous) next.reason = 'telemetry_gap';
+    next.last_sample_at = at;
   }
   return next;
 }
