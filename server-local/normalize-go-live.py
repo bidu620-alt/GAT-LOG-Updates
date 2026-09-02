@@ -10,7 +10,7 @@ replacements=[
     ("rank_status:clean(account)==='biduzao'?{eligible:true,reason:null,admin_test_mode:true}:rankingReadiness(raw),telemetry:raw","rank_status:rankingReadiness(raw),telemetry:raw"),
     ("const readiness=clean(account)==='biduzao'?{eligible:true,reason:null,admin_test_mode:true}:rankingReadiness(raw);","const readiness=rankingReadiness(raw);"),
     ("rules_enabled:clean(s.user)!=='biduzao',admin_test_mode:clean(s.user)==='biduzao'","rules_enabled:true,admin_test_mode:false"),
-    ("const VERSION='1.0.40-local'","const VERSION='1.0.42-local'")
+    ("const VERSION='1.0.40-local'","const VERSION='1.0.43-local'")
 ]
 
 for old,new in replacements:
@@ -18,8 +18,21 @@ for old,new in replacements:
         raise SystemExit('Normalizacao de go-live nao encontrou: '+old[:90])
     s=s.replace(old,new,1)
 
-# As condicionais que usam adminTest podem permanecer: agora ele e sempre false,
-# portanto distancia, danos, ranking, repeticao e estado usam as regras oficiais.
+# Ranking completo sem distancia minima durante os testes oficiais.
+# Continua sendo obrigatorio haver uma viagem real, telemetria valida e pelo menos
+# 1 km de progresso observado pelo guarda anti-entrega-instantanea.
+if "const MIN_KM=500;" not in s:
+    raise SystemExit('Nao encontrei MIN_KM=500 para desativar a distancia minima.')
+s=s.replace("const MIN_KM=500;","const MIN_KM=0;",1)
+
+old_min="const minKm=adminTest?0:Math.max(1,Number(m.min_km)||MIN_KM);"
+if old_min in s:
+    s=s.replace(old_min,"const minKm=0;",1)
+elif "const minKm=adminTest?0:" in s:
+    raise SystemExit('Expressao minKm mudou; revise antes de publicar.')
+
+# As demais condicionais que usam adminTest podem permanecer: agora ele e sempre false.
+# Somente a distancia minima foi removida para todos os motoristas.
 for forbidden in [
     "clean(user)==='biduzao'",
     "clean(s.user)==='biduzao'?false",
@@ -30,8 +43,10 @@ for forbidden in [
     if forbidden in s:
         raise SystemExit('Ainda existe excecao temporaria do proprietario: '+forbidden)
 
-if "const adminTest=false;" not in s or "const VERSION='1.0.42-local'" not in s:
-    raise SystemExit('Central normal nao foi preparada corretamente.')
+required=["const adminTest=false;","const VERSION='1.0.43-local'","const MIN_KM=0;"]
+for marker in required:
+    if marker not in s:
+        raise SystemExit('Central 1.0.43 nao foi preparada corretamente: '+marker)
 
 p.write_text(s,encoding='utf-8')
-print('Go-live: @biduzao voltou para as mesmas regras oficiais dos demais motoristas.')
+print('Go-live 1.0.43: ranking completo sem distancia minima; demais validacoes preservadas.')
