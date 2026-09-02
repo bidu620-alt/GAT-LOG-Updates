@@ -39,7 +39,7 @@ jobs:
                     'ok':data.get('ok'),'user':p.get('user'),'monthly_completed':p.get('monthly_completed'),
                     'total_deliveries':p.get('total_deliveries'),'xp':p.get('xp'),'points':p.get('points'),
                     'mission':{k:m.get(k) for k in ['id','sequence','title','state','min_km','cargo','source','destination','planned_distance_km','trip_progress_confirmed','rank_guard','last_rejected_reason','last_rejected_at','last_distance_km']},
-                    'last_deliveries':[{k:d.get(k) for k in ['id','sequence','cargo','source','destination','distance_km','xp','gat_points','delivered_at','rank_verified','rank_client_version']} for d in (p.get('deliveries') or [])[-5:]
+                    'last_deliveries':[{k:d.get(k) for k in ['id','sequence','cargo','source','destination','distance_km','xp','gat_points','delivered_at','rank_verified','rank_client_version']} for d in (p.get('deliveries') or [])[-5:]]
                   },ensure_ascii=False,indent=2))
               elif path=='/api/public/account-live':
                   rows=[]
