@@ -21,7 +21,7 @@ async function centralFor(t,user){
   db.sql.prepare('INSERT INTO client_tokens(token_hash,driver,account_user,device_id,created_at,last_seen_at) VALUES(?,?,?,?,?,?)').run(tokenHash(token),user,user,device,at,at);
   const {server}=createCentral(db);await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));
   const base='http://127.0.0.1:'+server.address().port;
-  const send=async telemetry=>{const r=await fetch(base+'/api/client/telemetry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({driver:user,device_id:device,token,telemetry})});assert.equal(r.status,200,await r.text());return r.json();};
+  const send=async telemetry=>{const r=await fetch(base+'/api/client/telemetry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({driver:user,device_id:device,token,telemetry})});const text=await r.text();assert.equal(r.status,200,text);return JSON.parse(text);};
   return{db,base,send};
 }
 
