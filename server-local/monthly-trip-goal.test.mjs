@@ -30,13 +30,14 @@ test('meta mensal conta viagens validas, repeticoes e pendentes de classificacao
  db.sql.prepare('INSERT INTO client_tokens(token_hash,driver,account_user,device_id,created_at,last_seen_at) VALUES(?,?,?,?,?,?)').run(sha(token),'biduzao','biduzao','device-monthly-123456',at,at);
  const {server}=createCentral(db);await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));const base='http://127.0.0.1:'+server.address().port;
  const send=async telemetry=>{const r=await fetch(base+'/api/client/telemetry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({driver:'biduzao',device_id:'device-monthly-123456',token,telemetry})});assert.equal(r.status,200);return r.json();};
+ const publicProfile=async()=>{const r=await fetch(base+'/api/public/driver?user=biduzao');assert.equal(r.status,200);return (await r.json()).profile;};
  const run=async opts=>{await send(packet(opts));await send(packet({...opts,remaining:18,odometer:(opts.odometer||10000)+2}));return send(delivered({...opts,odometer:(opts.odometer||10000)+2}));};
 
  assert.equal((await run({trip:'trip-1',cargo:'Empilhadeiras',source:'A',destination:'B',odometer:10000})).mission_event?.type,'delivery_completed');
- let p=db.sql.prepare("SELECT monthly_completed,total_deliveries,points FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,1);assert.equal(p.total_deliveries,1);const points1=p.points;
+ let p=db.sql.prepare("SELECT monthly_completed,total_deliveries FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,1);assert.equal(p.total_deliveries,1);const points1=(await publicProfile()).points;assert.ok(points1>0);
 
  assert.equal((await run({trip:'trip-2',cargo:'Empilhadeiras',source:'C',destination:'D',odometer:10010})).mission_event?.type,'delivery_completed');
- p=db.sql.prepare("SELECT monthly_completed,total_deliveries,points FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,2);assert.equal(p.total_deliveries,2);assert.ok(p.points>points1,'repeticao valida deve continuar somando ranking');
+ p=db.sql.prepare("SELECT monthly_completed,total_deliveries FROM profiles WHERE user='biduzao'").get();assert.equal(p.monthly_completed,2);assert.equal(p.total_deliveries,2);assert.ok((await publicProfile()).points>points1,'repeticao valida deve continuar somando ranking');
 
  const pending=await run({trip:'trip-3',cargo:'Carga Experimental QZ 9182',source:'E',destination:'F',odometer:10020});
  assert.equal(pending.mission_event?.type,'delivery_completed_pending_classification',JSON.stringify(pending));
