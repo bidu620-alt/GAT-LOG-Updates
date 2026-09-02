@@ -5,8 +5,8 @@ using System.Runtime.Versioning;
 
 [assembly: AssemblyCompany("GAT_LOG_SERVER")]
 [assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyFileVersion("1.0.40.0")]
-[assembly: AssemblyInformationalVersion("1.0.40.0+offline-trip-queue")]
+[assembly: AssemblyFileVersion("1.0.41.0")]
+[assembly: AssemblyInformationalVersion("1.0.41.0+go-live-reset")]
 [assembly: AssemblyProduct("GAT_LOG_SERVER")]
 [assembly: AssemblyTitle("GAT_LOG_SERVER")]
-[assembly: AssemblyVersion("1.0.40.0")]
+[assembly: AssemblyVersion("1.0.41.0")]
