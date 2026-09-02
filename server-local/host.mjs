@@ -1,17 +1,22 @@
 import http from 'node:http';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {existsSync,writeFileSync,mkdirSync} from 'node:fs';
+import {existsSync,writeFileSync,mkdirSync,readFileSync} from 'node:fs';
 import worker from './worker.js';
 import {LocalDatabase,validateDatabase,importDatabase,saveBackup} from './database.mjs';
 
 const here=dirname(fileURLToPath(import.meta.url));
-function ensureLocalCatalog(db){
-  const row=db.sql.prepare("SELECT compatible_cargos_json FROM work_catalog WHERE id='fuel'").get();
-  if(!row)return;
-  let cargos=[];try{cargos=JSON.parse(row.compatible_cargos_json||'[]')}catch{}
-  for(const name of ['Ethanol','Etanol'])if(!cargos.some(x=>String(x).toLowerCase()===name.toLowerCase()))cargos.push(name);
-  db.sql.prepare("UPDATE work_catalog SET compatible_cargos_json=? WHERE id='fuel'").run(JSON.stringify(cargos));
+function ensureAutomaticCargoCatalog(db){
+  // Reexecutar o schema e seguro: todas as tabelas/indices usam IF NOT EXISTS.
+  // Isso cria a fila de classificacao tambem em bancos que ja existiam antes da 1.0.40.
+  db.sql.exec(readFileSync(join(here,'schema.sql'),'utf8'));
+  const initialized=db.sql.prepare("SELECT value FROM meta WHERE key='auto_cargo_catalog_v1'").get();
+  if(initialized)return;
+  // O proprietario pediu para recomecar as sugestoes de nomes do zero. Mantemos os
+  // 30 trabalhos, historico, contas e progresso; limpamos somente os nomes sugeridos.
+  db.sql.prepare("UPDATE work_catalog SET compatible_cargos_json='[]' WHERE active=1").run();
+  const t=new Date().toISOString();
+  db.sql.prepare("INSERT OR REPLACE INTO meta(key,value) VALUES('auto_cargo_catalog_v1',?)").run(t);
 }
 export function createCentral(db,{onError=()=>{}}={}){
   let queue=Promise.resolve(),queued=0;
@@ -48,7 +53,7 @@ async function main(){
   }
   const path=join(dataDir,'central.sqlite');
   if(!existsSync(path))throw Error('Importe a exportacao completa do banco antes de iniciar a central.');
-  const db=new LocalDatabase(path);validateDatabase(db.sql);ensureLocalCatalog(db);
+  const db=new LocalDatabase(path);validateDatabase(db.sql);ensureAutomaticCargoCatalog(db);
   if(process.argv[2]==='backup'){console.log(await saveBackup(db,dataDir));db.close();return;}
   let lastError='';
   const {server,exclusive}=createCentral(db,{onError:e=>{lastError=String(e.message);console.error(lastError);}});
