@@ -66,7 +66,7 @@ worker = worker.replace(opening_old, opening_new, 1)
 branch_anchor = " if(workAlreadyCompleted){"
 if branch_anchor not in worker:
     raise RuntimeError('Nao encontrei branch de trabalho repetido para inserir fila pendente.')
-pending_branch = r''' if(m.pending_classification){
+pending_and_learning = r''' if(m.pending_classification){
   const pendingAudit={...auditData,classification_status:'pending',classification_confidence:Number(m.classification_confidence||0),classification_suggested_work_id:m.classification_suggested_work_id||null};
   await env.DB.batch([
    env.DB.prepare('INSERT INTO deliveries(user,sequence_no,source,destination,cargo,weight_kg,distance_km,xp,perfect,penalty_xp,speed_fines,delivered_at,raw_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(user,null,source,destination,cargo,weight,distance,xp,perfect,penalty,fines,t,JSON.stringify({mission:m,delivery_details:details,audit:pendingAudit,map_mode:rbr?'rbr':'base'})),
@@ -77,17 +77,9 @@ pending_branch = r''' if(m.pending_classification){
   if(saved?.id)await env.DB.prepare("INSERT OR IGNORE INTO cargo_classification_queue(delivery_id,user,cargo,cargo_key,source,destination,weight_kg,distance_km,delivered_at,status,suggested_work_id,suggested_confidence) VALUES(?,?,?,?,?,?,?,?,?,'pending',?,?)").bind(saved.id,user,cargo,norm(cargo),source,destination,weight,distance,t,m.classification_suggested_work_id||null,Number(m.classification_confidence||0)).run();
   return{type:'delivery_completed_pending_classification',mission:m,distance_km:distance,xp_awarded:xp,gat_points:gatPoints,classification_status:'pending'};
  }
+ if(m.classification_mode==='automatic'&&workId)await learnCargoAlias(env,cargo,workId,m.classification_confidence,'automatic');
 '''
-worker = worker.replace(branch_anchor, pending_branch + branch_anchor, 1)
-
-if "return{type:'delivery_completed_xp_only'" in worker:
-    worker = worker.replace("return{type:'delivery_completed_xp_only'", "if(m.classification_mode==='automatic'&&workId)await learnCargoAlias(env,cargo,workId,m.classification_confidence,'automatic');return{type:'delivery_completed_xp_only'", 1)
-else:
-    raise RuntimeError('Nao encontrei retorno XP-only para aprender nome da carga.')
-if "return{type:'delivery_completed'," in worker:
-    worker = worker.replace("return{type:'delivery_completed',", "if(m.classification_mode==='automatic'&&workId)await learnCargoAlias(env,cargo,workId,m.classification_confidence,'automatic');return{type:'delivery_completed',", 1)
-else:
-    raise RuntimeError('Nao encontrei retorno normal para aprender nome da carga.')
+worker = worker.replace(branch_anchor, pending_and_learning + branch_anchor, 1)
 
 admin_anchor = " if(p==='/api/site/admin/session'&&m==='POST')"
 if admin_anchor not in worker:
@@ -112,7 +104,7 @@ admin_routes = r''' if(p==='/api/site/admin/unclassified'&&m==='POST'){
 '''
 worker = worker.replace(admin_anchor, admin_routes + admin_anchor, 1)
 
-for required in ["cargo_classification_queue","autoClassifyCargo","delivery_completed_pending_classification","/api/site/admin/classify","learnCargoAlias"]:
+for required in ["cargo_classification_queue","autoClassifyCargo","delivery_completed_pending_classification","/api/site/admin/classify","learnCargoAlias","classification_mode==='automatic'"]:
     if required not in worker:
         raise RuntimeError('Patch automatico incompleto: '+required)
 path.write_text(worker,encoding='utf-8')
