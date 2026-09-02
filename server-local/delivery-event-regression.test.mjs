@@ -45,10 +45,9 @@ test('Biduzao admin: qualquer carga, menos de 1 km, sem danos/version guard e ro
   const end={...start,gat_job_event:'cancelled',job_latched:false,cargo_name:'',mass_kg:0,remaining_km:0,truck:{odometer:10000},gameplay:{jobDelivered:false,jobCancelled:true,jobDeliveredDetails:deliveredDetails}};
   const result=await send(end);
   assert.equal(result.mission_event?.type,'delivery_completed',JSON.stringify(result));
-  const profile=db.sql.prepare("SELECT monthly_completed,total_deliveries,points,current_mission_json FROM profiles WHERE user='biduzao'").get();
+  const profile=db.sql.prepare("SELECT monthly_completed,total_deliveries,current_mission_json FROM profiles WHERE user='biduzao'").get();
   assert.equal(profile.monthly_completed,1);
   assert.equal(profile.total_deliveries,1);
-  assert.equal(profile.points,100);
   assert.equal(profile.current_mission_json,null);
   const row=db.sql.prepare("SELECT distance_km,raw_json FROM deliveries WHERE user='biduzao'").get();
   assert.ok(row.distance_km<1,row.distance_km);
@@ -56,4 +55,7 @@ test('Biduzao admin: qualquer carga, menos de 1 km, sem danos/version guard e ro
   assert.equal(raw.audit.admin_test_mode,true);
   assert.equal(raw.audit.rank_verified,false);
   assert.equal(raw.audit.gat_points,100);
+  const publicProfile=await (await fetch(base+'/api/public/driver?user=biduzao')).json();
+  assert.equal(publicProfile.profile.monthly_completed,1);
+  assert.equal(publicProfile.profile.points,100);
 });
