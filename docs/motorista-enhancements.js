@@ -123,17 +123,17 @@
         const user=clean(item?.user);if(!user)continue;
         byUser.set(user,{...item,user});
       }
-      for(const [user] of live){if(!byUser.has(user))byUser.set(user,{user,monthly_completed:0,monthly_goal:30,total_deliveries:0,monthly_km:0});}
-      const own=clean(sessionNow()?.user);if(own&&!byUser.has(own))byUser.set(own,{user:own,monthly_completed:0,monthly_goal:30,total_deliveries:0,monthly_km:0});
+      for(const [user] of live){if(!byUser.has(user))byUser.set(user,{user,total_deliveries:0,monthly_km:0});}
+      const own=clean(sessionNow()?.user);if(own&&!byUser.has(own))byUser.set(own,{user:own,total_deliveries:0,monthly_km:0});
       directoryItems=[...byUser.values()].sort((a,b)=>pretty(a.user).localeCompare(pretty(b.user),'pt-BR',{sensitivity:'base',numeric:true}));
       count.textContent=directoryItems.length+' MOTORISTA'+(directoryItems.length===1?'':'S');
       if(!directoryItems.length){list.innerHTML='<div class="gat-directory-status">Nenhum motorista registrado na Central GAT ainda.</div>';return;}
       list.textContent='';
       for(const item of directoryItems){
-        const user=clean(item.user),name=pretty(user),on=live.get(user)?.online===true,monthly=n(item.monthly_completed),goal=n(item.monthly_goal)||30;
+        const user=clean(item.user),name=pretty(user),on=live.get(user)?.online===true,deliveries=n(item.total_deliveries);
         const a=document.createElement('a');
         a.className='gat-driver-item';a.href='motorista.html?u='+encodeURIComponent(user);a.dataset.user=user;a.dataset.name=name;
-        a.innerHTML=`<div class="gat-driver-avatar">${esc(name.charAt(0))}</div><div class="gat-driver-item-main"><b>${esc(name)}${own===user?' <span style="color:#69b6ff">• VOCÊ</span>':''}</b><small>@${esc(user)} • <span class="${on?'gat-online-dot':'gat-offline-dot'}"></span>${on?'ONLINE':'OFFLINE'}</small></div><div class="gat-driver-item-meta"><b>${monthly} / ${goal}</b><small>${fmtKm(item.monthly_km||0)}</small></div>`;
+        a.innerHTML=`<div class="gat-driver-avatar">${esc(name.charAt(0))}</div><div class="gat-driver-item-main"><b>${esc(name)}${own===user?' <span style="color:#69b6ff">• VOCÊ</span>':''}</b><small>@${esc(user)} • <span class="${on?'gat-online-dot':'gat-offline-dot'}"></span>${on?'ONLINE':'OFFLINE'}</small></div><div class="gat-driver-item-meta"><b>${deliveries} entrega${deliveries===1?'':'s'}</b><small>${fmtKm(item.monthly_km||0)}</small></div>`;
         list.appendChild(a);
       }
     }catch(_){
@@ -182,7 +182,7 @@
   }
 
   function installDeliveryRenderer(){
-    try{window.renderDeliveries=enhancedRenderDeliveries}catch(_){}
+    try{window.GATEnhancedDeliveryRenderer=enhancedRenderDeliveries}catch(_){}
     try{if(typeof profile!=='undefined'&&profile)enhancedRenderDeliveries(profile.deliveries||[])}catch(_){}
   }
 
