@@ -1,57 +1,99 @@
 (()=>{
-  const API='https://api.gatlogets2.com.br',GRID='workCatalogGrid',STATUS='workCatalogStatus';
-  let items=[];
-  const clean=v=>String(v||'').replace(/^@/,'').trim().toLowerCase();
+  const CATALOG_URL='ets2-official-cargos.json';
+  const GRID='workCatalogGrid',STATUS='workCatalogStatus';
+  let items=[],visible=80,query='';
+
+  const clean=v=>String(v||'').trim();
+  const norm=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const session=()=>{try{return JSON.parse(localStorage.getItem('gat_driver_account_v1')||sessionStorage.getItem('gat_driver_account_v1')||'null')}catch(_){return null}};
-  const pageUser=()=>{try{if(typeof key!=='undefined'&&key)return clean(key)}catch(_){}const u=new URLSearchParams(location.search).get('u');return clean(u||session()?.user)};
-  const own=()=>!!session()?.token&&clean(session().user)===pageUser();
-  const adminTest=()=>pageUser()==='biduzao';
-  const current=()=>{try{return typeof profile!=='undefined'?profile?.current_mission:null}catch(_){return null}};
-  const live=()=>{try{return typeof lastLive!=='undefined'?lastLive:null}catch(_){return null}};
-  const isFresh=t=>{try{if(typeof fresh==='function')return fresh(t)}catch(_){}const d=Date.parse(t?.updated_at||'');return Number.isFinite(d)&&Date.now()-d<20000};
-  const liveCargo=t=>{try{if(typeof cargoOf==='function')return cargoOf(t)}catch(_){}return String(t?.cargo_name||t?.cargo||t?.telemetry?.job?.cargoName||'').trim()};
-  const liveSource=t=>String(t?.source_city||t?.source||t?.telemetry?.job?.sourceCity||t?.telemetry?.job?.source?.cityName||'').trim();
-  const liveDestination=t=>String(t?.destination_city||t?.destination||t?.telemetry?.job?.destinationCity||t?.telemetry?.job?.destination?.cityName||'').trim();
-  const liveOnJob=t=>{if(!t)return false;const raw=t.telemetry||{},vals=[t.job_latched,raw.job_latched,t.on_job,raw.on_job,raw.onJob,raw.job?.onJob,raw.job?.active];return vals.some(v=>v===true||v===1||String(v).toLowerCase()==='true')||!!liveCargo(t)};
+  const currentLive=()=>{try{return typeof lastLive!=='undefined'?lastLive:null}catch(_){return null}};
+  const liveCargo=t=>{try{if(typeof cargoOf==='function')return clean(cargoOf(t))}catch(_){}return clean(t?.cargo_name||t?.cargo||t?.telemetry?.job?.cargoName)};
+  const liveSource=t=>{try{if(typeof sourceOf==='function')return clean(sourceOf(t))}catch(_){}return clean(t?.source_city||t?.source||t?.telemetry?.job?.sourceCity)};
+  const liveDestination=t=>{try{if(typeof destinationOf==='function')return clean(destinationOf(t))}catch(_){}return clean(t?.destination_city||t?.destination||t?.telemetry?.job?.destinationCity)};
+  const isFresh=t=>{try{if(typeof fresh==='function')return fresh(t)}catch(_){}const d=Date.parse(t?.updated_at||'');return Number.isFinite(d)&&Date.now()-d<45000};
+  const liveOnJob=t=>!!(t&&isFresh(t)&&liveCargo(t));
 
   function injectStyle(){
-    if(document.getElementById('gatAutoCatalogStyle'))return;
-    const s=document.createElement('style');s.id='gatAutoCatalogStyle';s.textContent=`
-.auto-cargo-state{margin:12px 0 16px;border:1px solid #245a86;border-radius:14px;background:linear-gradient(135deg,#0b1c2b,#0a131c);padding:14px 16px;display:none}
-.auto-cargo-state.show{display:block}.auto-cargo-state.ok{border-color:#237a52}.auto-cargo-state.pending{border-color:#8a6725}
-.auto-cargo-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.auto-cargo-head b{font-size:12px;color:#78c4ff;letter-spacing:.04em}.auto-cargo-live{font-size:9px;font-weight:900;color:#5fe0aa}
-.auto-cargo-name{font-size:17px;font-weight:950;color:#f2f8ff;margin-bottom:5px}.auto-cargo-route{font-size:10px;color:#8fa5ba;margin-bottom:12px}.auto-cargo-result{border-top:1px solid #18364f;padding-top:11px}.auto-cargo-result strong{display:block;font-size:12px;color:#fff}.auto-cargo-result small{display:block;margin-top:4px;color:#8fa5ba;font-size:9px;line-height:1.5}
-.cargo-card.auto-active{outline:2px solid #2b8bd0;box-shadow:0 0 0 3px rgba(43,139,208,.12)}
+    if(document.getElementById('gatFullCargoCatalogStyle'))return;
+    const s=document.createElement('style');s.id='gatFullCargoCatalogStyle';s.textContent=`
+.full-cargo-toolbar{display:flex;align-items:center;gap:10px;margin:14px 0 16px}.full-cargo-search{flex:1;min-width:0;border:1px solid #27445d;border-radius:11px;background:#09131d;color:#eef7ff;padding:11px 13px;font:700 11px/1.2 "Segoe UI",sans-serif;outline:none}.full-cargo-search:focus{border-color:#3187c2;box-shadow:0 0 0 3px rgba(49,135,194,.12)}.full-cargo-count{white-space:nowrap;color:#7893a9;font-size:10px;font-weight:800}.full-cargo-live{margin:12px 0 16px;border:1px solid #24628f;border-radius:14px;background:linear-gradient(135deg,#0a1a27,#081119);padding:14px 16px;display:none}.full-cargo-live.show{display:block}.full-cargo-live.match{border-color:#21855c}.full-cargo-live-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.full-cargo-live-head b{font-size:10px;color:#79c9ff;letter-spacing:.05em}.full-cargo-live-head span{font-size:9px;color:#62e5b0;font-weight:900}.full-cargo-live-name{font-size:18px;color:#fff;font-weight:950;margin:7px 0 4px}.full-cargo-live-route{font-size:10px;color:#8499ad}.full-cargo-live-result{margin-top:10px;padding-top:10px;border-top:1px solid #17344a;font-size:10px;color:#89a0b4}.full-cargo-live.match .full-cargo-live-result{color:#68e2ad}.full-cargo-card.current{outline:2px solid #2b9a68;box-shadow:0 0 0 3px rgba(43,154,104,.12)}.full-cargo-card .cargo-body small{display:flex;gap:6px;flex-wrap:wrap}.full-cargo-card .cargo-body h3{font-size:13px;line-height:1.3}.cargo-dlc{color:#80a9c8}.cargo-weight{color:#8298aa}.full-cargo-more{grid-column:1/-1;display:flex;justify-content:center;padding:12px}.full-cargo-more button{border:1px solid #2a5d80;border-radius:9px;background:#0d2232;color:#7fc9ff;padding:10px 16px;font-size:10px;font-weight:900;cursor:pointer}.full-cargo-empty{grid-column:1/-1;padding:22px;border:1px dashed #294052;border-radius:12px;color:#7890a6;text-align:center;font-size:11px}@media(max-width:700px){.full-cargo-toolbar{align-items:stretch;flex-direction:column}.full-cargo-count{padding-left:2px}}
 `;
     document.head.appendChild(s);
-    const legacy=document.getElementById('takeWorkButton');if(legacy)legacy.style.display='none';
-  }
-  function ensureValidation(){let box=document.getElementById('workValidationState');if(box)return box;const liveBox=document.querySelector('.work-live');if(!liveBox)return null;box=document.createElement('div');box.id='workValidationState';box.className='work-validation idle';liveBox.insertAdjacentElement('afterend',box);return box}
-  function ensureAutoState(){let box=document.getElementById('workAutoCargoState');if(box)return box;box=document.createElement('div');box.id='workAutoCargoState';box.className='auto-cargo-state';const anchor=ensureValidation()||document.querySelector('.work-live');if(anchor)anchor.insertAdjacentElement('afterend',box);return box}
-
-  function renderAutoState(){
-    const box=ensureAutoState();if(!box)return;const t=live(),cargo=liveCargo(t),freshNow=isFresh(t),m=current(),src=liveSource(t),dst=liveDestination(t);
-    if(!own()||!freshNow||!liveOnJob(t)||!cargo){box.className='auto-cargo-state';box.innerHTML='';return}
-    let cls='',title='CLASSIFICANDO AUTOMATICAMENTE...',note='A Central GAT está comparando esta carga com os 30 trabalhos do mês.';
-    if(m?.pending_classification){cls=' pending';title='CARGA A CLASSIFICAR';note='A viagem será registrada normalmente. Admin ou Moderador escolherá a categoria correta depois da entrega; você não precisa refazer a viagem.'}
-    else if(m?.classification_mode==='automatic'){cls=' ok';title='✓ '+String(m.title||m.category||'Trabalho reconhecido');note=m.xp_only?'Esta categoria já foi concluída no mês. A viagem continua válida para XP, sem duplicar o x/30.':'Categoria reconhecida automaticamente. Ao concluir uma viagem válida, este trabalho ficará verde no catálogo.'}
-    else if(m){cls=' ok';title=String(m.title||'MISSÃO GAT EM ANDAMENTO');note='Existe uma missão especial/administrativa vinculada a esta viagem.'}
-    box.className='auto-cargo-state show'+cls;box.innerHTML='<div class="auto-cargo-head"><b>CARGA DETECTADA PELO GAT TELEMETRIA</b><span class="auto-cargo-live">● AO VIVO</span></div><div class="auto-cargo-name">'+esc(cargo)+'</div><div class="auto-cargo-route">'+esc(src||'Origem detectada')+' → '+esc(dst||'Destino detectado')+'</div><div class="auto-cargo-result"><strong>'+esc(title)+'</strong><small>'+esc(note)+'</small></div>';
   }
 
-  function validation(){
-    const box=ensureValidation();if(!box)return;const m=current(),t=live(),cargo=liveCargo(t),freshNow=isFresh(t),state=String(m?.state||'').toLowerCase();let cls='idle',icon='○',title='CATÁLOGO AUTOMÁTICO',detail='Pegue qualquer carga no ETS2. Não é necessário escolher um trabalho no site.';
-    if(freshNow&&liveOnJob(t)&&cargo){cls='checking';icon='…';title='CARGA DETECTADA';detail=cargo+' • classificação automática em andamento.'}
-    if(m?.pending_classification){cls='checking';icon='…';title='AGUARDANDO CLASSIFICAÇÃO';detail=(cargo?cargo+' • ':'')+'A viagem continuará sendo registrada e ficará disponível para Admin/Moderador classificar após a entrega.'}
-    else if(m?.classification_mode==='automatic'){cls=state==='active'?'valid':'waiting';icon=state==='active'?'✓':'●';title=m.xp_only?'CATEGORIA RECONHECIDA • SOMENTE XP':'CATEGORIA RECONHECIDA AUTOMATICAMENTE';detail=(m.title||m.category||'Trabalho GAT')+(state==='active'?' • viagem em andamento.':' • aguardando a Telemetria iniciar a viagem.')}
-    else if(m){cls=state==='active'?'valid':'waiting';icon=state==='active'?'✓':'●';title='MISSÃO GAT';detail=(m.title||'Missão especial')+' • '+(state==='active'?'em andamento.':'aguardando início.')}
-    box.className='work-validation '+cls;box.innerHTML='<span class="work-validation-icon">'+icon+'</span><div><b>'+esc(title)+'</b><small>'+esc(detail)+'</small></div>';renderAutoState();
+  function patchCopy(total){
+    const workCard=document.querySelector('.work-driver-card');
+    const eyebrow=workCard?.querySelector('.card-title .eyebrow');if(eyebrow)eyebrow.textContent='CATÁLOGO COMPLETO DE CARGAS';
+    const title=document.getElementById('workTitle');if(title&&!liveOnJob(currentLive()))title.textContent='Aguardando carga do ETS2';
+    const market=document.getElementById('workMarket');if(market)market.textContent='Todos os mercados';
+    const min=document.getElementById('workMinKm');if(min)min.textContent='500 km reais';
+    const weight=document.getElementById('workWeight');if(weight)weight.textContent='Peso > 0';
+    const freedom=document.getElementById('workFreedom');if(freedom&&!liveOnJob(currentLive()))freedom.textContent='Qualquer carga oficial do ETS2';
+    const lead=workCard?.querySelector(':scope > .lead');if(lead)lead.textContent='Pegue uma carga normalmente no ETS2. O GAT Telemetria identifica o nome real da carga; não é mais necessário escolher categoria no site.';
+    const owner=document.getElementById('workOwnerMessage');if(owner)owner.textContent='A carga é reconhecida pela telemetria. A meta mensal continua sendo 30 viagens válidas, mas os tipos de carga não ficam limitados a 30 categorias.';
+    const head=document.querySelector('.work-catalog-section .catalog-head');
+    const he=head?.querySelector('.eyebrow');if(he)he.textContent='CARGAS OFICIAIS ETS2';
+    const h2=head?.querySelector('h2');if(h2)h2.textContent='Todas as cargas do jogo';
+    const p=head?.querySelector('p');if(p)p.textContent='Lista única com '+total+' cargas oficiais. Pesquise pelo nome e use qualquer carga compatível com as regras da viagem; não há divisão por categoria para o motorista.';
+    const rule=head?.querySelector('.catalog-rule');if(rule)rule.innerHTML='<b>30</b><span>VIAGENS / MÊS</span><b>500 km</b><span>REAIS MÍN.</span>';
+    const progressLead=document.querySelector('.monthly-progress-card .lead');if(progressLead)progressLead.textContent='A meta mensal continua em 30 viagens válidas. O número 30 representa a quantidade de trabalhos do mês e não limita os tipos de carga: o motorista pode usar qualquer carga oficial reconhecida pelo GAT Telemetria.';
   }
 
-  function top(){const m=current(),set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t};set('workMarket','Classificação automática');set('workMinKm',adminTest()?'MODO TESTE ADMIN':'500 km mínimos');set('workWeight','Peso > 0');set('workFreedom',m?.pending_classification?'Aguardando classificação':m?.title||'Pegue qualquer carga no ETS2');const msg=document.getElementById('workOwnerMessage');if(msg){if(!own())msg.textContent='Este é um perfil público. O catálogo é preenchido automaticamente pelas entregas válidas do motorista.';else if(adminTest())msg.textContent='Modo de teste do proprietário ativo. Pegue qualquer carga no ETS2; o GAT classifica automaticamente ou envia para Cargas a Classificar.';else msg.textContent='Não escolha trabalho. Pegue qualquer carga no ETS2 e cumpra as regras da viagem. O GAT reconhece a categoria automaticamente; nomes desconhecidos ficam salvos para classificação do Admin/Moderador.'}validation()}
-  async function getCatalog(){const user=pageUser();if(!user)return null;const c=new AbortController(),timer=setTimeout(()=>c.abort(),5500);try{const r=await fetch(API+'/api/public/work/catalog?user='+encodeURIComponent(user),{cache:'no-store',signal:c.signal});const d=await r.json().catch(()=>null);return r.ok&&d?.ok?d:null}catch(_){return null}finally{clearTimeout(timer)}}
-  function render(){const root=document.getElementById(GRID);if(!root)return;root.textContent='';const m=current(),active=String(m?.catalog_id||'');if(!items.length){root.innerHTML='<div class="catalog-hint">Catálogo aguardando a Central GAT.</div>';return}items.forEach(item=>{const selected=active===String(item.id),done=!!item.completed,card=document.createElement('article');card.dataset.workId=String(item.id||'');card.className='cargo-card'+(done?' completed':'')+(selected?' selected auto-active':'')+(item.custom?' custom-card':'');const state=done?'CONCLUÍDO':selected?(m?.xp_only?'REPETIÇÃO • XP':'EM ANDAMENTO'):'DISPONÍVEL';card.innerHTML='<div class="cargo-visual"><span class="cargo-number">#'+String(item.position||0).padStart(2,'0')+'</span><span class="cargo-state">'+state+'</span><span class="cargo-icon">'+esc(item.icon||'🚚')+'</span></div><div class="cargo-body"><small>'+esc(item.category||'Carga')+'</small><h3>'+esc(item.title||'Trabalho GAT')+'</h3><div class="cargo-meta"><span>≥ 500 KM</span><span>'+(done?'REPETIÇÃO = SÓ XP':'AUTOMÁTICO')+'</span><span>20 XP / 100 KM</span></div></div>';root.appendChild(card)})}
-  async function refresh(){top();const d=await getCatalog(),status=document.getElementById(STATUS);if(!d){if(status)status.textContent='Catálogo aguardando a Central GAT.';render();validation();return}items=Array.isArray(d.catalog)?d.catalog:[];render();validation();if(status)status.textContent=items.filter(x=>x.completed).length+' / 30 concluídos • classificação automática pelas cargas entregues • mínimo 500 km.'}
-  injectStyle();document.addEventListener('DOMContentLoaded',refresh);window.addEventListener('gat-account-change',()=>setTimeout(refresh,300));setInterval(validation,1000);setInterval(refresh,5000);
+  function ensureToolbar(){
+    const section=document.querySelector('.work-catalog-section'),grid=document.getElementById(GRID);if(!section||!grid)return;
+    let bar=document.getElementById('fullCargoToolbar');if(bar)return;
+    bar=document.createElement('div');bar.id='fullCargoToolbar';bar.className='full-cargo-toolbar';
+    bar.innerHTML='<input id="fullCargoSearch" class="full-cargo-search" type="search" autocomplete="off" placeholder="Pesquisar carga..." aria-label="Pesquisar todas as cargas do ETS2"><span id="fullCargoCount" class="full-cargo-count"></span>';
+    grid.insertAdjacentElement('beforebegin',bar);
+    const input=document.getElementById('fullCargoSearch');input.addEventListener('input',()=>{query=input.value;visible=80;render()});
+  }
+
+  function ensureLiveBox(){
+    let box=document.getElementById('fullCargoLiveBox');if(box)return box;
+    box=document.createElement('div');box.id='fullCargoLiveBox';box.className='full-cargo-live';
+    const anchor=document.querySelector('.work-live');if(anchor)anchor.insertAdjacentElement('afterend',box);
+    return box;
+  }
+
+  function exactMatch(name){const n=norm(name);if(!n)return null;return items.find(x=>norm(x.name)===n)||null}
+
+  function renderLive(){
+    const box=ensureLiveBox();if(!box)return;
+    const t=currentLive(),cargo=liveCargo(t);if(!liveOnJob(t)||!cargo){box.className='full-cargo-live';box.innerHTML='';const title=document.getElementById('workTitle');if(title)title.textContent='Aguardando carga do ETS2';return}
+    const src=liveSource(t),dst=liveDestination(t),match=exactMatch(cargo);
+    box.className='full-cargo-live show'+(match?' match':'');
+    box.innerHTML='<div class="full-cargo-live-head"><b>CARGA ATUAL • GAT TELEMETRIA</b><span>● AO VIVO</span></div><div class="full-cargo-live-name">'+esc(cargo)+'</div><div class="full-cargo-live-route">'+esc(src||'Origem detectada')+' → '+esc(dst||'Destino detectado')+'</div><div class="full-cargo-live-result">'+(match?'✓ Carga encontrada no catálogo oficial'+(match.dlc?' • '+esc(match.dlc):''):'Carga detectada pela telemetria. O nome ao vivo continua válido mesmo quando a tradução usada no jogo difere do nome do catálogo.')+'</div>';
+    const title=document.getElementById('workTitle');if(title)title.textContent='Trabalho atual • '+cargo;
+    const freedom=document.getElementById('workFreedom');if(freedom)freedom.textContent=cargo;
+    document.querySelectorAll('.full-cargo-card.current').forEach(el=>el.classList.remove('current'));
+    if(match){const card=document.querySelector('[data-cargo-key="'+CSS.escape(norm(match.name))+'"]');if(card)card.classList.add('current')}
+  }
+
+  function flatCatalog(data){
+    const out=[];const titles=data?.category_titles||{};const cats=data?.categories||{};
+    Object.entries(cats).forEach(([category,rows])=>{if(!Array.isArray(rows))return;rows.forEach((row,i)=>{const name=clean(row?.name);if(!name)return;out.push({id:category+'-'+i,name,dlc:clean(row?.dlc),weight:clean(row?.weight),category,title:clean(titles[category])})})});
+    const unique=new Map();out.forEach(x=>{const k=norm(x.name);if(k&&!unique.has(k))unique.set(k,x)});
+    return [...unique.values()].sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'}));
+  }
+
+  function filtered(){const qn=norm(query);if(!qn)return items;return items.filter(x=>norm(x.name+' '+x.dlc).includes(qn))}
+
+  function render(){
+    const root=document.getElementById(GRID);if(!root)return;ensureToolbar();const rows=filtered(),show=rows.slice(0,visible),liveName=liveCargo(currentLive()),liveNorm=norm(liveName);root.textContent='';
+    const count=document.getElementById('fullCargoCount');if(count)count.textContent=(query?rows.length+' encontradas • ':'')+items.length+' cargas no catálogo';
+    if(!show.length){root.innerHTML='<div class="full-cargo-empty">Nenhuma carga encontrada com essa pesquisa.</div>';renderLive();return}
+    show.forEach((item,index)=>{const card=document.createElement('article');card.className='cargo-card full-cargo-card'+(liveNorm&&norm(item.name)===liveNorm?' current':'');card.dataset.cargoKey=norm(item.name);card.innerHTML='<div class="cargo-visual"><span class="cargo-number">#'+String(index+1).padStart(3,'0')+'</span><span class="cargo-state">OFICIAL</span><span class="cargo-icon">🚚</span></div><div class="cargo-body"><small>'+(item.dlc?'<span class="cargo-dlc">'+esc(item.dlc)+'</span>':'<span class="cargo-dlc">Jogo base / oficial</span>')+(item.weight?'<span class="cargo-weight">• '+esc(item.weight)+' t</span>':'')+'</small><h3>'+esc(item.name)+'</h3><div class="cargo-meta"><span>CARGA REAL ETS2</span><span>SEM CATEGORIA OBRIGATÓRIA</span></div></div>';root.appendChild(card)});
+    if(rows.length>show.length){const more=document.createElement('div');more.className='full-cargo-more';more.innerHTML='<button type="button">MOSTRAR MAIS ('+(rows.length-show.length)+')</button>';more.querySelector('button').onclick=()=>{visible+=80;render()};root.appendChild(more)}
+    renderLive();
+  }
+
+  async function load(){
+    injectStyle();ensureToolbar();const status=document.getElementById(STATUS);if(status)status.textContent='Carregando catálogo oficial de cargas do ETS2...';
+    try{const r=await fetch(CATALOG_URL+'?v=full-cargo-1',{cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error('HTTP '+r.status);items=flatCatalog(data);patchCopy(items.length);render();if(status)status.textContent=items.length+' cargas oficiais disponíveis • lista única • sem limite de categorias.'}
+    catch(_){items=[];patchCopy(0);if(status)status.textContent='Não foi possível carregar o catálogo oficial agora.';render()}
+  }
+
+  document.addEventListener('DOMContentLoaded',load);
+  window.addEventListener('gat-account-change',()=>setTimeout(()=>{patchCopy(items.length);render()},300));
+  setInterval(()=>{if(items.length){patchCopy(items.length);renderLive()}},1000);
 })();
