@@ -6,6 +6,7 @@ on:
     paths: ['.github/workflows/inspect-live-gat-central.yml']
 permissions:
   contents: read
+# Recheck completo solicitado em 2026-09-02 02:08 UTC.
 jobs:
   inspect:
     runs-on: ubuntu-latest
