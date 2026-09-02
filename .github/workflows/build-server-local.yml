@@ -81,7 +81,7 @@ jobs:
       - name: Publish GAT Server 1.0.41 updater
         shell: bash
         run: |
-          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.40_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.41_LOCAL.exe
+          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.41_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.41_LOCAL.exe
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
           git add releases/GAT_LOG_SERVER_UPDATE_1.0.41_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.41.zip releases/GAT_SERVER_LOCAL_1.0.41.sha256
