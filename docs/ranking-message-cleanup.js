@@ -15,7 +15,14 @@ function renderRankEligibility(t){
   }
 
   const mission=profile?.current_mission;
-  const reason=mission?.rank_guard?.reason||(!mission?.rank_guard&&mission?.last_rejected_reason)||t?.rank_status?.reason;
+  const rejectedAt=Date.parse(mission?.last_rejected_at||'');
+  const startedAt=Date.parse(mission?.started_at||'');
+  // Um motivo de rejeição pertence apenas à tentativa em que foi gravado.
+  // Ao iniciar outra viagem, started_at fica mais novo e o aviso antigo não pode
+  // continuar aparecendo como se a viagem atual tivesse falhado.
+  const staleRejected=Number.isFinite(rejectedAt)&&Number.isFinite(startedAt)&&startedAt>rejectedAt;
+  const priorRejected=!staleRejected?mission?.last_rejected_reason:null;
+  const reason=mission?.rank_guard?.reason||(!mission?.rank_guard&&priorRejected)||t?.rank_status?.reason;
 
   // O aviso antigo de TruckSim GPS confundia motoristas mesmo com a telemetria funcionando.
   // A validação do ranking continua sendo feita pela Central GAT; apenas o aviso visual é ocultado.
@@ -39,6 +46,19 @@ function renderRankEligibility(t){
     if(mission?.rank_guard?.reason)box.textContent+=' Depois de corrigir, faça uma nova viagem; esta tentativa permanece sem pontuação.';
   }else{
     box.textContent='';
+  }
+}
+
+// Regra atual do ranking: sem distância mínima. A Central continua exigindo
+// progresso real da viagem e as demais validações de telemetria/danos.
+function applyNoMinimumKmVisual(){
+  const min=document.getElementById('workMinKm');
+  if(min)min.textContent='Sem mínimo';
+  const rule=document.querySelector('.work-catalog-section .catalog-rule');
+  if(rule){
+    const bold=rule.querySelectorAll('b'),labels=rule.querySelectorAll('span');
+    if(bold[1])bold[1].textContent='SEM MÍNIMO';
+    if(labels[1])labels[1].textContent='KM PARA O RANK';
   }
 }
 
@@ -80,6 +100,6 @@ function renderRankEligibility(t){
     });
   }
 
-  document.addEventListener('DOMContentLoaded',()=>{bindSearch();localizeVisible()});
-  setInterval(()=>{bindSearch();localizeVisible()},350);
+  document.addEventListener('DOMContentLoaded',()=>{bindSearch();localizeVisible();applyNoMinimumKmVisual()});
+  setInterval(()=>{bindSearch();localizeVisible();applyNoMinimumKmVisual()},350);
 })();
