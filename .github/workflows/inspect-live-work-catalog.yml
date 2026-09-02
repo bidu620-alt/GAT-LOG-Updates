@@ -1,0 +1,17 @@
+name: Inspect live work catalog
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-live-work-catalog.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List catalog safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS 'https://api.gatlogets2.com.br/api/public/work/catalog?user=biduzao' | jq '{ok, mission_min_km, catalog: [.catalog[] | {id,position,title,category,compatible_cargos}]}'
