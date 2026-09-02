@@ -5,8 +5,8 @@ import sys
 path = Path(sys.argv[1])
 worker = path.read_text(encoding='utf-8')
 
-helper_anchor = "async function processMission(env,user,raw,t){"
-if helper_anchor not in worker:
+helper_anchor = next((x for x in ["async function processMission(env,user,raw,t,previousAt){","async function processMission(env,user,raw,t){"] if x in worker), None)
+if not helper_anchor:
     raise RuntimeError('Nao encontrei processMission para instalar classificacao automatica.')
 
 helpers = r'''
