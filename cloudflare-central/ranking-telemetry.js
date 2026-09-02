@@ -71,7 +71,7 @@ export function advanceRankGuard(guard, readiness, previousAt, at, legacyProgres
     const startupTime = Date.parse(next.startup_started_at || at);
     const startupAge = Number.isFinite(startupTime) && Number.isFinite(currentTime) ? currentTime - startupTime : 0;
     if (startupAge > RANK_STARTUP_GRACE_MS) {
-      next.reason = readiness.eligible ? 'telemetry_not_verified_from_start' : readiness.reason;
+      next.reason = readiness.eligible ? (next.last_invalid_reason || 'telemetry_not_verified_from_start') : readiness.reason;
       next.startup_failed_at = at;
       next.last_sample_at = at;
       return next;
