@@ -1,5 +1,5 @@
 import http from 'node:http';
-import {join,dirname} from 'node:path';
+import {join,dirname,basename} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {existsSync,writeFileSync,mkdirSync,readFileSync} from 'node:fs';
 import worker from './worker.js';
@@ -18,6 +18,49 @@ function ensureAutomaticCargoCatalog(db){
   const t=new Date().toISOString();
   db.sql.prepare("INSERT OR REPLACE INTO meta(key,value) VALUES('auto_cargo_catalog_v1',?)").run(t);
 }
+
+async function ensureGoLiveBaseline(db,dataDir){
+  const key='go_live_baseline_2026_09_02';
+  if(db.sql.prepare('SELECT value FROM meta WHERE key=?').get(key))return null;
+
+  // Backup de arquivo completo antes de qualquer limpeza. Contas, senhas, tokens,
+  // dispositivos, papeis, configuracao e catalogo nao sao apagados pelo reset.
+  const backupPath=await saveBackup(db,dataDir);
+  const t=new Date().toISOString();
+  db.sql.exec('BEGIN IMMEDIATE');
+  try{
+    // Remove somente dados competitivos/de teste. A fila depende de deliveries e
+    // por isso e limpa primeiro. O catalogo e os aliases aprendidos permanecem.
+    db.sql.prepare('DELETE FROM cargo_classification_queue').run();
+    db.sql.prepare('DELETE FROM work_completed').run();
+    db.sql.prepare('DELETE FROM routes_completed').run();
+    db.sql.prepare('DELETE FROM mission_completions').run();
+    db.sql.prepare('DELETE FROM deliveries').run();
+    db.sql.prepare(`UPDATE profiles SET
+      monthly_completed=0,
+      total_deliveries=0,
+      total_km=0,
+      xp=0,
+      points=0,
+      perfect_trips=0,
+      penalty_xp=0,
+      speed_fines=0,
+      safety_score=100,
+      current_mission_json=NULL,
+      updated_at=?`).run(t);
+    db.sql.prepare('INSERT OR REPLACE INTO meta(key,value) VALUES(?,?)').run(key,t);
+    db.sql.prepare('INSERT INTO audit(at,actor,action,target,details) VALUES(?,?,?,?,?)').run(
+      t,'system','go_live_reset','all_drivers',JSON.stringify({started_at:t,backup:basename(backupPath),preserved:['accounts','sessions','client_tokens','client_pairings','work_catalog','cargo_aliases','telemetry_live']})
+    );
+    db.sql.exec('COMMIT');
+    db.sql.exec('PRAGMA wal_checkpoint(TRUNCATE)');
+    return backupPath;
+  }catch(e){
+    try{db.sql.exec('ROLLBACK')}catch{}
+    throw e;
+  }
+}
+
 export function createCentral(db,{onError=()=>{}}={}){
   let queue=Promise.resolve(),queued=0;
   function exclusive(fn){const work=queue.then(fn);queue=work.catch(()=>{});return work;}
@@ -55,6 +98,8 @@ async function main(){
   if(!existsSync(path))throw Error('Importe a exportacao completa do banco antes de iniciar a central.');
   const db=new LocalDatabase(path);validateDatabase(db.sql);ensureAutomaticCargoCatalog(db);
   if(process.argv[2]==='backup'){console.log(await saveBackup(db,dataDir));db.close();return;}
+  const resetBackup=await ensureGoLiveBaseline(db,dataDir);
+  if(resetBackup)console.log('GAT go-live: progresso de testes zerado. Backup: '+resetBackup);
   let lastError='';
   const {server,exclusive}=createCentral(db,{onError:e=>{lastError=String(e.message);console.error(lastError);}});
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(5056,'127.0.0.1',resolve);});
