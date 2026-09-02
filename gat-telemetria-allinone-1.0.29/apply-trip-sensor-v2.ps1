@@ -94,7 +94,7 @@ private JObject StabilizeJobTelemetry(JObject tele)
 		return tele;
 	}
 
-	'@
+'@
 
 $text = $text.Substring(0, $start) + $newMethod + $text.Substring($end)
 Set-Content $main.FullName $text -Encoding UTF8
