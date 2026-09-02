@@ -10,7 +10,7 @@ replacements=[
     ("rank_status:clean(account)==='biduzao'?{eligible:true,reason:null,admin_test_mode:true}:rankingReadiness(raw),telemetry:raw","rank_status:rankingReadiness(raw),telemetry:raw"),
     ("const readiness=clean(account)==='biduzao'?{eligible:true,reason:null,admin_test_mode:true}:rankingReadiness(raw);","const readiness=rankingReadiness(raw);"),
     ("rules_enabled:clean(s.user)!=='biduzao',admin_test_mode:clean(s.user)==='biduzao'","rules_enabled:true,admin_test_mode:false"),
-    ("const VERSION='1.0.40-local'","const VERSION='1.0.43-local'")
+    ("const VERSION='1.0.40-local'","const VERSION='1.0.44-local'")
 ]
 
 for old,new in replacements:
@@ -31,8 +31,6 @@ if old_min in s:
 elif "const minKm=adminTest?0:" in s:
     raise SystemExit('Expressao minKm mudou; revise antes de publicar.')
 
-# As demais condicionais que usam adminTest podem permanecer: agora ele e sempre false.
-# Somente a distancia minima foi removida para todos os motoristas.
 for forbidden in [
     "clean(user)==='biduzao'",
     "clean(s.user)==='biduzao'?false",
@@ -43,10 +41,10 @@ for forbidden in [
     if forbidden in s:
         raise SystemExit('Ainda existe excecao temporaria do proprietario: '+forbidden)
 
-required=["const adminTest=false;","const VERSION='1.0.43-local'","const MIN_KM=0;"]
+required=["const adminTest=false;","const VERSION='1.0.44-local'","const MIN_KM=0;"]
 for marker in required:
     if marker not in s:
-        raise SystemExit('Central 1.0.43 nao foi preparada corretamente: '+marker)
+        raise SystemExit('Central 1.0.44 nao foi preparada corretamente: '+marker)
 
 p.write_text(s,encoding='utf-8')
-print('Go-live 1.0.43: ranking completo sem distancia minima; demais validacoes preservadas.')
+print('Go-live 1.0.44: sem minimo de km e com verificacao continua da telemetria corrigida.')
