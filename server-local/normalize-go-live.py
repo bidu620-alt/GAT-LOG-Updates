@@ -10,7 +10,7 @@ replacements=[
     ("rank_status:clean(account)==='biduzao'?{eligible:true,reason:null,admin_test_mode:true}:rankingReadiness(raw),telemetry:raw","rank_status:rankingReadiness(raw),telemetry:raw"),
     ("const readiness=clean(account)==='biduzao'?{eligible:true,reason:null,admin_test_mode:true}:rankingReadiness(raw);","const readiness=rankingReadiness(raw);"),
     ("rules_enabled:clean(s.user)!=='biduzao',admin_test_mode:clean(s.user)==='biduzao'","rules_enabled:true,admin_test_mode:false"),
-    ("const VERSION='1.0.40-local'","const VERSION='1.0.41-local'")
+    ("const VERSION='1.0.40-local'","const VERSION='1.0.42-local'")
 ]
 
 for old,new in replacements:
@@ -30,7 +30,7 @@ for forbidden in [
     if forbidden in s:
         raise SystemExit('Ainda existe excecao temporaria do proprietario: '+forbidden)
 
-if "const adminTest=false;" not in s or "const VERSION='1.0.41-local'" not in s:
+if "const adminTest=false;" not in s or "const VERSION='1.0.42-local'" not in s:
     raise SystemExit('Central normal nao foi preparada corretamente.')
 
 p.write_text(s,encoding='utf-8')
