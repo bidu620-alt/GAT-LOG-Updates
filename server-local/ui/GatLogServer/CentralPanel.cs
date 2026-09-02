@@ -14,7 +14,7 @@ internal sealed class CentralPanel : UserControl
 {
     private readonly Label state = new Label();
     private readonly Label detail = new Label();
-    private readonly Timer timer = new Timer { Interval = 5000 };
+    private readonly Timer timer = new Timer { Interval = 3000 };
     private readonly HttpClient http = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
     private bool checking;
     private static string Runtime => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "central");
@@ -40,12 +40,12 @@ internal sealed class CentralPanel : UserControl
         auto.CheckedChanged+=(s,e)=>{
             try{
                 using(var key=Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run")){
-                    if(auto.Checked){if(!File.Exists(Path.Combine(Data,"central.sqlite")))throw new InvalidOperationException("Importe e teste o banco antes de ativar o inicio automatico.");key.SetValue("GATCentralLocal",Quote(Application.ExecutablePath)+" --central-only");}
+                    if(auto.Checked){if(!File.Exists(Path.Combine(Data,"central.sqlite")))throw new InvalidOperationException("O banco local da Central nao foi encontrado.");key.SetValue("GATCentralLocal",Quote(Application.ExecutablePath)+" --central-only");}
                     else key.DeleteValue("GATCentralLocal",false);
                 }
             }catch(Exception ex){if(auto.Checked)auto.Checked=false;MessageBox.Show(this,ex.Message,"GAT Central");}
         };Controls.Add(auto);
-        AddLabel("O site sera conectado depois da importacao e do teste local.\r\nA central continua funcionando ao fechar o painel. Para interromper, use PARAR CENTRAL.\r\nBackups automaticos a cada 6 horas: ultimas 14 copias.",20,385,10);
+        AddLabel("O dominio api.gatlogets2.com.br usa esta Central local pelo Cloudflare Tunnel.\r\nFechar o painel nao para a Central. Para interromper, use PARAR CENTRAL.\r\nBackups automaticos a cada 6 horas: ultimas 14 copias.",20,385,10);
         timer.Tick+=async(s,e)=>await RefreshAsync();timer.Start();
         Disposed+=(s,e)=>{timer.Dispose();http.Dispose();};
         _=RefreshAsync();
@@ -55,17 +55,43 @@ internal sealed class CentralPanel : UserControl
         var button=new Button {Text=text,Location=new Point(x,y),Size=new Size(220,44),BackColor=Color.FromArgb(31,111,211),FlatStyle=FlatStyle.Flat};
         button.Click+=async(s,e)=>{button.Enabled=false;try{await action();}catch(Exception ex){MessageBox.Show(this,ex.Message,"GAT Central",MessageBoxButtons.OK,MessageBoxIcon.Warning);}finally{button.Enabled=true;await RefreshAsync();}};Controls.Add(button);
     }
+    private static bool IsLocalCentral(JObject json){
+        var version=(string)json["agent_version"]??"";
+        return (bool?)json["ok"]==true
+            && string.Equals((string)json["service"],"GAT Central Local",StringComparison.OrdinalIgnoreCase)
+            && version.EndsWith("-local",StringComparison.OrdinalIgnoreCase);
+    }
+    private async Task<JObject> ProbeAsync(){
+        using(var response=await http.GetAsync("http://127.0.0.1:5056/health")){
+            var content=await response.Content.ReadAsStringAsync();
+            if(!response.IsSuccessStatusCode)throw new InvalidOperationException("HTTP "+(int)response.StatusCode);
+            return JObject.Parse(content);
+        }
+    }
+    private void ShowStopped(){
+        var hasDb=File.Exists(Path.Combine(Data,"central.sqlite"));
+        state.Text=hasDb?"CENTRAL LOCAL PARADA":"BANCO LOCAL NAO ENCONTRADO";state.ForeColor=Color.Gold;
+        detail.Text=hasDb
+            ?"A Central esta parada. O banco permanece salvo no PC.\r\nUse INICIAR CENTRAL para restaurar login, telemetria, ranking e o site.\r\nNao e necessario importar o banco novamente."
+            :"O arquivo central.sqlite nao foi encontrado. Nao importe nem substitua um banco sem antes confirmar o backup correto.";
+    }
     private async Task RefreshAsync(){
         if(checking||IsDisposed)return;checking=true;
         try{
-            string content=await http.GetStringAsync("http://127.0.0.1:5056/health");
-            var json=JObject.Parse(content);
-            if((string)json["agent_version"]!="1.0.40-local")throw new InvalidOperationException();
+            var json=await ProbeAsync();
+            if(!IsLocalCentral(json)){
+                state.Text="PORTA 5056 EM USO";state.ForeColor=Color.Orange;
+                detail.Text="Existe outro servico respondendo na porta 5056, mas ele nao foi identificado como GAT Central Local.\r\nNenhuma nova Central sera iniciada ate essa porta ser liberada.";
+                return;
+            }
+            var version=(string)json["agent_version"]??"local";
             state.Text="CENTRAL LOCAL ATIVA";state.ForeColor=Color.LightGreen;
-            detail.Text="Banco e ranking no PC. Viagens em fila podem ser reenviadas apos manutencao.\r\nEndereco local: http://127.0.0.1:5056\r\nAs regras de versao e dos sete danos continuam ativas.";
-        }catch{
-            state.Text=File.Exists(Path.Combine(Data,"central.sqlite"))?"CENTRAL LOCAL PARADA":"AGUARDANDO IMPORTACAO DO BANCO";state.ForeColor=Color.Gold;
-            detail.Text="Importe a exportacao completa e atual do D1 para preservar contas, senhas e historico.\r\nA instalacao nao muda o dominio nem substitui o banco da Cloudflare.";
+            detail.Text="Banco, login, telemetria e ranking no seu PC. Versao: "+version+".\r\nEndereco local: http://127.0.0.1:5056\r\nO Cloudflare Tunnel apenas encaminha api.gatlogets2.com.br para esta Central.";
+        }catch(HttpRequestException){ShowStopped();}
+        catch(TaskCanceledException){ShowStopped();}
+        catch{
+            state.Text="STATUS DA CENTRAL INDETERMINADO";state.ForeColor=Color.Gold;
+            detail.Text="Nao foi possivel validar a resposta da porta 5056. O banco nao foi alterado.\r\nTente atualizar o status ou reiniciar somente a Central.";
         }finally{checking=false;}
     }
     private async Task<string> Command(string args){
@@ -78,6 +104,7 @@ internal sealed class CentralPanel : UserControl
         }
     }
     private async Task ImportAsync(){
+        if(File.Exists(Path.Combine(Data,"central.sqlite")))throw new InvalidOperationException("Ja existe um banco local. A importacao inicial fica bloqueada para proteger contas, ranking e historico atuais.");
         using(var dialog=new OpenFileDialog{Title="Exportacao completa do D1 (.sql)",Filter="Banco SQL|*.sql"}){
             if(dialog.ShowDialog(this)!=DialogResult.OK)return;
             state.Text="IMPORTANDO E CONFERINDO...";
@@ -86,25 +113,36 @@ internal sealed class CentralPanel : UserControl
         }
     }
     internal static void StartBackground(){
-        if(!File.Exists(Path.Combine(Data,"central.sqlite")))throw new InvalidOperationException("Importe o banco antes de iniciar.");
+        if(!File.Exists(Path.Combine(Data,"central.sqlite")))throw new InvalidOperationException("O banco local da Central nao foi encontrado.");
         Process.Start(new ProcessStartInfo(Node,Quote(Host)){WorkingDirectory=Runtime,UseShellExecute=false,CreateNoWindow=true});
     }
     private async Task StartAsync(){
-        try{var json=JObject.Parse(await http.GetStringAsync("http://127.0.0.1:5056/health"));if((string)json["agent_version"]=="1.0.40-local")return;throw new InvalidOperationException("A porta 5056 esta ocupada por outro servico.");}
-        catch(HttpRequestException){}catch(TaskCanceledException){}
-        StartBackground();await Task.Delay(1500);
+        try{
+            var json=await ProbeAsync();
+            if(IsLocalCentral(json))return;
+            throw new InvalidOperationException("A porta 5056 esta ocupada por outro servico.");
+        }
+        catch(HttpRequestException){}
+        catch(TaskCanceledException){}
+        StartBackground();
+        for(var i=0;i<10;i++){
+            await Task.Delay(300);
+            try{if(IsLocalCentral(await ProbeAsync()))return;}catch(HttpRequestException){}catch(TaskCanceledException){}
+        }
+        throw new InvalidOperationException("A Central nao respondeu na porta 5056 apos a tentativa de inicio.");
     }
-    private Task StopAsync(){
-        if(MessageBox.Show(this,"Parar o recebimento das viagens e o ranking no PC? O comboio ETS2 continuara funcionando.","GAT Central",MessageBoxButtons.YesNo)!=DialogResult.Yes)return Task.CompletedTask;
+    private async Task StopAsync(){
+        if(MessageBox.Show(this,"Parar o recebimento das viagens e o ranking no PC? O comboio ETS2 continuara funcionando.","GAT Central",MessageBoxButtons.YesNo)!=DialogResult.Yes)return;
         var path=Path.Combine(Data,"status.json");
         if(File.Exists(path)){
             var status=JObject.Parse(File.ReadAllText(path));
             try{using(var p=Process.GetProcessById((int)status["pid"])){
                 if(!string.Equals(p.MainModule.FileName,Node,StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("Processo diferente da central; nenhuma acao realizada.");
                 p.Kill();
+                await Task.Run(()=>p.WaitForExit(3000));
             }}catch(ArgumentException){}
         }
-        return Task.CompletedTask;
+        await Task.Delay(300);
     }
     private async Task BackupAsync(){var result=await Command("backup");MessageBox.Show(this,"Backup salvo em:\r\n"+result,"GAT Central");}
 }
