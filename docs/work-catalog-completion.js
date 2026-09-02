@@ -84,7 +84,9 @@
       });
       card.remove();
     });
-    [...root.querySelectorAll('.full-cargo-card')].forEach((card,i)=>{const n=card.querySelector('.cargo-number');if(n)n.textContent='#'+String(i+1).padStart(3,'0')});
+    [...root.querySelectorAll('.full-cargo-card')].forEach((card,i)=>{
+      const n=card.querySelector('.cargo-number'),desired='#'+String(i+1).padStart(3,'0');if(n&&n.textContent!==desired)n.textContent=desired;
+    });
     const count=document.getElementById('fullCargoCount');
     if(count&&totalEntries){
       count.textContent=count.textContent.replace(/\d+ cargas no catálogo/,totalEntries+' cargas no catálogo');
@@ -125,14 +127,15 @@
         cleanMeta(card);
         const completed=done.has(card);
         card.classList.toggle('catalog-completed',completed);
-        const state=card.querySelector('.cargo-state');if(state)state.textContent=completed?'✓ CONCLUÍDA':'OFICIAL';
+        const state=card.querySelector('.cargo-state'),desired=completed?'✓ CONCLUÍDA':'OFICIAL';
+        if(state&&state.textContent!==desired)state.textContent=desired;
       });
     }finally{applying=false}
   }
 
   async function loadVariants(){
     try{
-      const r=await fetch(CATALOG_URL+'?v=variants-1',{cache:'no-store'}),data=await r.json();if(!r.ok)return;
+      const r=await fetch(CATALOG_URL+'?v=variants-2',{cache:'no-store'}),data=await r.json();if(!r.ok)return;
       const all=[];Object.values(data?.categories||{}).forEach(rows=>{if(Array.isArray(rows))rows.forEach(x=>{if(x?.name)all.push({name:String(x.name),dlc:String(x.dlc||''),weight:String(x.weight||'')})})});
       totalEntries=Number(data?.total_entries)||all.length;
       const groups=new Map();all.forEach(x=>{const k=norm(x.name);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)});
@@ -144,7 +147,7 @@
   function start(){
     ensureStyle();
     const root=document.getElementById('workCatalogGrid');
-    if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:true});
+    if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:false});
     lastSig=signature();apply();loadVariants();
     setInterval(()=>{
       const sig=signature();if(sig!==lastSig){lastSig=sig;apply();return}
