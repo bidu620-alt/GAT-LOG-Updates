@@ -1,0 +1,46 @@
+name: Check site frontend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  frontend-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check driver frontend JavaScript
+        run: |
+          node --check docs/driver-store.js
+          node --check docs/motorista-core.js
+          node --check docs/driver-state-guard.js
+          node --check docs/ranking-message-cleanup.js
+          node --check docs/xp-levels.js
+          node --check docs/motorista-enhancements.js
+          node --check docs/motorista-nav-fix.js
+          node --check docs/motorista-infractions.js
+          node --check docs/driver-gamification.js
+          node --check docs/secret-conquest.js
+          node --check docs/official-work-rules.js
+          node --check docs/delivery-refresh-lite.js
+          node --check docs/profile-edit.js
+          node --check docs/link-device.js
+          node --check docs/work-catalog.js
+          node --check docs/work-catalog-completion.js
+      - name: Check profile page uses unified controller
+        run: |
+          grep -q 'driver-store.js' docs/motorista.html
+          grep -q 'motorista-core.js' docs/motorista.html
+          grep -q 'driver-state-guard.js' docs/motorista.html
+          if grep -q 'motorista.js?v=' docs/motorista.html; then
+            echo 'Legacy motorista.js is still active.'
+            exit 1
+          fi
+          if grep -q 'ranking-no-min-km.js' docs/motorista.html; then
+            echo 'Legacy distance override is still active.'
+            exit 1
+          fi
