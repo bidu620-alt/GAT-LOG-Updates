@@ -35,7 +35,7 @@ export function rankingMessage(reason) {
 // A viagem e armada com a primeira leitura valida e confirmada pela segunda leitura
 // continua. O relogio da propria missao evita depender do pacote idle anterior, que
 // podia deixar uma viagem automatica presa em telemetry_not_verified_from_start.
-// Depois de verificada, falhas reais de telemetria continuam sticky.
+// Depois da primeira amostra valida, falha real ou gap continuam sticky.
 export function advanceRankGuard(guard, readiness, previousAt, at, legacyProgressConfirmed = false) {
   if (!guard && legacyProgressConfirmed && readiness.eligible) {
     return {reason: null, verified_at: at, last_sample_at: at, valid_samples: 2, migrated_after_server_update: true};
@@ -48,21 +48,26 @@ export function advanceRankGuard(guard, readiness, previousAt, at, legacyProgres
   const continuous = Number.isFinite(previousTime) && Number.isFinite(currentTime) &&
     currentTime >= previousTime && currentTime - previousTime <= MAX_TELEMETRY_GAP_MS;
 
-  // A ativacao antiga podia criar {reason:null} sem marcar que a primeira amostra
-  // ainda precisava de confirmacao. Transforme-a explicitamente na amostra 1.
+  // A ativacao antiga podia criar {reason:null} sem registrar a amostra inicial.
+  // Converta esse estado para a amostra 1 e espere a proxima leitura valida.
   if (!next.verified_at && next.reason === null && !Number.isFinite(Number(next.valid_samples))) {
     if (!readiness.eligible) return {...next, reason: readiness.reason, last_sample_at: at, valid_samples: 0};
     return {...next, reason: 'telemetry_not_verified_from_start', first_sample_at: at, last_sample_at: at, valid_samples: 1};
   }
 
   if (next.reason === 'telemetry_not_verified_from_start') {
+    const prior = Math.max(0, Number(next.valid_samples) || 0);
     if (!readiness.eligible) {
+      next.reason = readiness.reason;
       next.last_sample_at = at;
-      next.valid_samples = 0;
       return next;
     }
-    const prior = Math.max(0, Number(next.valid_samples) || 0);
-    next.valid_samples = continuous ? Math.max(1, prior) + 1 : 1;
+    if (prior > 0 && !continuous) {
+      next.reason = 'telemetry_gap';
+      next.last_sample_at = at;
+      return next;
+    }
+    next.valid_samples = prior > 0 ? prior + 1 : 1;
     next.last_sample_at = at;
     if (!next.first_sample_at) next.first_sample_at = at;
     if (next.valid_samples >= 2) {
