@@ -1,11 +1,10 @@
 name: Inspect Lapeal delivery
 on:
-  push:
+  pull_request:
     branches: [main]
-    paths: ['.github/workflows/inspect-lapeal-delivery.yml']
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
   inspect:
     runs-on: ubuntu-latest
@@ -15,7 +14,7 @@ jobs:
       - name: Capture Lapeal profile, catalog, live telemetry and ranking
         shell: python
         run: |
-          import json, urllib.request, urllib.parse, pathlib
+          import json, urllib.request, urllib.parse
           base='https://api.gatlogets2.com.br'
           def get(path):
               req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-Lapeal-Diagnostic/1.0','Cache-Control':'no-cache'})
@@ -28,21 +27,15 @@ jobs:
           ranking=get('/api/public/ranking')
           rows=[x for x in (live.get('telemetry') or []) if str(x.get('account_user') or x.get('driver') or '').lower()==user]
           rank=[x for x in (ranking.get('ranking') or []) if str(x.get('user') or '').lower()==user]
-          out={
-            'captured_at':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),
-            'profile':profile,
-            'catalog':catalog,
+          p=(profile or {}).get('profile') or {}
+          m=p.get('current_mission') or {}
+          report={
+            'profile':{k:p.get(k) for k in ['user','monthly_completed','monthly_goal','total_deliveries','total_km','xp','points']},
+            'current_mission':m,
+            'last_deliveries':(p.get('deliveries') or [])[-10:],
+            'catalog_current_mission':(catalog or {}).get('current_mission'),
             'live':rows,
             'ranking':rank,
           }
-          p=pathlib.Path('server-local/lapeal-delivery-diagnostic.json')
-          p.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
-      - name: Save diagnostic snapshot
-        shell: bash
-        run: |
-          git config user.name 'GAT Diagnostics'
-          git config user.email 'actions@users.noreply.github.com'
-          git add server-local/lapeal-delivery-diagnostic.json
-          git commit -m 'Diagnostico: estado da entrega do Lapeal' || exit 0
-          git pull --rebase -X theirs
-          git push
+          print('=== LAPEAL_DIAGNOSTIC ===')
+          print(json.dumps(report,ensure_ascii=False,indent=2))
