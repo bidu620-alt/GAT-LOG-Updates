@@ -8,34 +8,47 @@ permissions:
 jobs:
   inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 4
     steps:
       - uses: actions/checkout@v4
-      - name: Capture Lapeal profile, catalog, live telemetry and ranking
+      - name: Locate Lapeal account by cargo and route
         shell: python
         run: |
-          import json, urllib.request, urllib.parse
+          import json, urllib.request, urllib.parse, urllib.error
           base='https://api.gatlogets2.com.br'
           def get(path):
-              req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-Lapeal-Diagnostic/1.0','Cache-Control':'no-cache'})
-              with urllib.request.urlopen(req,timeout=20) as r:
-                  return json.load(r)
-          user='lapeal'
-          profile=get('/api/public/driver?user='+urllib.parse.quote(user))
-          catalog=get('/api/public/work/catalog?user='+urllib.parse.quote(user))
-          live=get('/api/public/account-live')
+              req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-Lapeal-Diagnostic/2.0','Cache-Control':'no-cache'})
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r: return json.load(r)
+              except urllib.error.HTTPError as e:
+                  return {'_http':e.code,'_body':e.read().decode('utf-8','replace')[:500]}
           ranking=get('/api/public/ranking')
-          rows=[x for x in (live.get('telemetry') or []) if str(x.get('account_user') or x.get('driver') or '').lower()==user]
-          rank=[x for x in (ranking.get('ranking') or []) if str(x.get('user') or '').lower()==user]
-          p=(profile or {}).get('profile') or {}
-          m=p.get('current_mission') or {}
-          report={
-            'profile':{k:p.get(k) for k in ['user','monthly_completed','monthly_goal','total_deliveries','total_km','xp','points']},
-            'current_mission':m,
-            'last_deliveries':(p.get('deliveries') or [])[-10:],
-            'catalog_current_mission':(catalog or {}).get('current_mission'),
-            'live':rows,
-            'ranking':rank,
-          }
-          print('=== LAPEAL_DIAGNOSTIC ===')
-          print(json.dumps(report,ensure_ascii=False,indent=2))
+          live=get('/api/public/account-live')
+          players=get('/api/client/players')
+          terms=['mower conditioner','krone big m 450','málaga','malaga','a coruña','a coruna']
+          matches=[]; summaries=[]
+          for row in (ranking.get('ranking') or []):
+              user=str(row.get('user') or '').strip()
+              if not user: continue
+              data=get('/api/public/driver?user='+urllib.parse.quote(user))
+              p=(data or {}).get('profile') or {}
+              mission=p.get('current_mission') or {}
+              deliveries=(p.get('deliveries') or [])[-10:]
+              blob=json.dumps({'mission':mission,'deliveries':deliveries},ensure_ascii=False).lower()
+              hit=any(x in blob for x in terms)
+              if hit:
+                  matches.append({'ranking':row,'profile':{k:p.get(k) for k in ['user','monthly_completed','monthly_goal','total_deliveries','total_km','xp','points']},'mission':mission,'last_deliveries':deliveries})
+              if mission:
+                  summaries.append({'user':user,'monthly_completed':p.get('monthly_completed'),'points':p.get('points'),'mission':{k:mission.get(k) for k in ['id','catalog_id','sequence','title','state','cargo','source','destination','weight_kg','planned_distance_km','trip_progress_confirmed','rank_guard','last_rejected_reason','last_rejected_at','last_distance_km','pending_classification','classification_mode','trip_id']}})
+          live_matches=[]
+          for x in (live.get('telemetry') or []):
+              blob=json.dumps(x,ensure_ascii=False).lower()
+              if 'lapeal' in blob or any(t in blob for t in terms): live_matches.append(x)
+          print('=== MATCHES_CARGO_ROUTE ===')
+          print(json.dumps(matches,ensure_ascii=False,indent=2))
+          print('=== CURRENT_MISSIONS_ALL_USERS ===')
+          print(json.dumps(summaries,ensure_ascii=False,indent=2))
+          print('=== LIVE_MATCHES ===')
+          print(json.dumps(live_matches,ensure_ascii=False,indent=2))
+          print('=== PLAYERS ===')
+          print(json.dumps(players,ensure_ascii=False,indent=2))
