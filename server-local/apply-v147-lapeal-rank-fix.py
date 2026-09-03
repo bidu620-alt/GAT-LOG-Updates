@@ -52,7 +52,7 @@ repair=r'''export function repairLapealMowerDelivery(db){
       const raw=JSON.stringify({mission,delivery_details:receipt,audit,repair:{reason:'missed_delivery_recovered_from_next_job_receipt',evidence:'gat_telemetry_delivery_details_start',repaired_at:repairAt,recorded_delivery_at:recordedAt}});
       db.sql.prepare('INSERT INTO deliveries(user,sequence_no,source,destination,cargo,weight_kg,distance_km,xp,perfect,penalty_xp,speed_fines,delivered_at,raw_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').run(user,null,source,destination,cargo,weight,distance,xp,0,0,0,recordedAt,raw);
       db.sql.prepare(`UPDATE profiles SET monthly_completed=MIN(monthly_goal,monthly_completed+1),total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,updated_at=? WHERE user=?`).run(distance,xp,gatPoints,repairAt,user);
-      db.sql.prepare('INSERT OR IGNORE INTO routes_completed(user,route_key,month_key,completed_at) VALUES(?,?,?,?)').run(user,'malaga>a coruna','2026-09',recordedAt);
+      db.sql.prepare('INSERT OR IGNORE INTO routes_completed(user,month_key,route_key,source,destination,completed_at) VALUES(?,?,?,?,?,?)').run(user,'2026-09','malaga>a coruna',source,destination,recordedAt);
       db.sql.prepare('INSERT INTO audit(at,actor,action,target,details) VALUES(?,?,?,?,?)').run(repairAt,'system','repair_missed_delivery',user,JSON.stringify({cargo,source,destination,distance_km:distance,weight_kg:weight,gat_points:gatPoints,xp,receipt}));
     }
     db.sql.prepare('INSERT OR REPLACE INTO meta(key,value) VALUES(?,?)').run(marker,repairAt);
