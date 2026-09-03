@@ -13,8 +13,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Assemble exact current runtime
+      - name: Apply career site and assemble exact current runtime
         run: |
+          python server-local/apply-v149-site-career.py
+          node --check docs/driver-gamification.js
+          node --check docs/motorista-enhancements.js
+          node --check docs/work-catalog-completion.js
           python server-local/build-api.py
           python server-local/apply-admin-work-switch.py
           python server-local/apply-auto-classification.py server-local/runtime/worker.js
@@ -30,10 +34,10 @@ jobs:
           node --check server-local/runtime/host.mjs
           cp server-local/runtime/worker.js server-local/debug-runtime-worker.js
           cp server-local/runtime/host.mjs server-local/debug-runtime-host.mjs
-      - name: Commit debug runtime
+      - name: Commit validated sources and debug runtime
         run: |
           git config user.name 'GAT Debug Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add server-local/debug-runtime-worker.js server-local/debug-runtime-host.mjs
-          git commit -m 'Temp: capture assembled 1.0.49 career runtime'
+          git add docs/driver-gamification.js docs/motorista-enhancements.js docs/work-catalog-completion.js server-local/debug-runtime-worker.js server-local/debug-runtime-host.mjs
+          git commit -m 'Validate GAT 1.0.49 career history sources'
           git push
