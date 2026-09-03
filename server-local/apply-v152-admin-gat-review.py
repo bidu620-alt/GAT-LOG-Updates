@@ -28,8 +28,10 @@ function gatReviewView(a={}){
 '''
 worker=once(worker,'async function adminDriver(env,target){',review_helpers+'\nasync function adminDriver(env,target){','helpers antes de adminDriver')
 
-# O perfil entrega ao painel a sugestao calculada pela Central e o estado da revisao.
-worker=once(worker,"return{...x,...raw.audit}}).reverse();","return{...x,...raw.audit,...gatReviewView(raw.audit||{})}}).reverse();",'decoracao das entregas no perfil')
+# Somente o painel administrativo precisa dos campos auxiliares de revisao.
+admin_tail="}}return{account:{...a,disabled:!!a.disabled,active_sessions:Number(sessions?.total||0)},profile:p,live:liveData}}"
+admin_tail_new="}}p.deliveries=(Array.isArray(p?.deliveries)?p.deliveries:[]).map(x=>({...x,...gatReviewView(x)}));return{account:{...a,disabled:!!a.disabled,active_sessions:Number(sessions?.total||0)},profile:p,live:liveData}}"
+worker=once(worker,admin_tail,admin_tail_new,'decoracao do historico no adminDriver')
 
 # Moderador continua sem poder alterar conta/XP/progresso, mas pode revisar Pontos GAT.
 worker=once(worker,"if(actor.role==='moderator'&&action!=='reset_mission')throw new HttpError(403,'forbidden');","if(actor.role==='moderator'&&!['reset_mission','review_gat_points'].includes(action))throw new HttpError(403,'forbidden');",'permissao do moderador')
@@ -75,6 +77,7 @@ required=[
     "points=MAX(0,points+?)",
     "await audit(env,actor.user,'review_gat_points'",
     "invalidateRead('profile:'+target)",
+    'p.deliveries=(Array.isArray(p?.deliveries)',
 ]
 for marker in required:
     if marker not in worker:raise SystemExit('Patch v1.52 incompleto: '+marker)
