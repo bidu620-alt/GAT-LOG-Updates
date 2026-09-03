@@ -25,6 +25,9 @@ jobs:
           python server-local/apply-v148-jeanjc-rank-fix.py server-local/runtime
           python server-local/normalize-go-live.py
           python server-local/apply-monthly-trip-goal.py server-local/runtime/worker.js
+          python server-local/apply-v149-career-history.py server-local/runtime
+          node --check server-local/runtime/worker.js
+          node --check server-local/runtime/host.mjs
           cp server-local/runtime/worker.js server-local/debug-runtime-worker.js
           cp server-local/runtime/host.mjs server-local/debug-runtime-host.mjs
       - name: Commit debug runtime
@@ -32,5 +35,5 @@ jobs:
           git config user.name 'GAT Debug Build'
           git config user.email 'actions@users.noreply.github.com'
           git add server-local/debug-runtime-worker.js server-local/debug-runtime-host.mjs
-          git commit -m 'Temp: capture assembled 1.0.48 runtime'
+          git commit -m 'Temp: capture assembled 1.0.49 career runtime'
           git push
