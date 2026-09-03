@@ -43,7 +43,7 @@
       {title:'Na Estrada',description:'Conclua 10 entregas GAT.',unlocked:n(p?.total_deliveries)>=10},
       {title:'Direção de Ouro',description:'Conclua 10 viagens perfeitas.',unlocked:n(st?.perfect_trips)>=10},
       {title:'Pé Leve',description:'Percorra 5.000 km em entregas sem multa.',unlocked:n(st?.no_fine_km)>=5000},
-      {title:'Meta do Mês',description:'Conclua os 30 trabalhos do mês.',unlocked:n(p?.monthly_completed)>=30},
+      {title:'30 Entregas',description:'Complete 30 entregas ao longo da sua carreira GAT.',unlocked:n(p?.total_deliveries)>=30},
       {title:'Veterano GAT',description:'Ultrapasse 50.000 km acumulados.',unlocked:n(p?.total_km)>=50000}
     ];
   }
