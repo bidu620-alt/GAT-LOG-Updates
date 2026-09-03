@@ -42,6 +42,6 @@ jobs:
         run: |
           git config user.name 'GAT Debug Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add .github/workflows/build-server-local.yml docs/motorista.html docs/work-catalog.js docs/work-rule-final.js server-local/debug-runtime-worker.js server-local/debug-runtime-host.mjs
+          git add docs/motorista.html docs/work-catalog.js docs/work-rule-final.js server-local/debug-runtime-worker.js server-local/debug-runtime-host.mjs
           git diff --cached --quiet || git commit -m 'Validate complete GAT 1.0.49 career release sources'
           git push
