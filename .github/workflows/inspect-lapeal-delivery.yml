@@ -1,0 +1,48 @@
+name: Inspect Lapeal delivery
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-lapeal-delivery.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture Lapeal profile, catalog, live telemetry and ranking
+        shell: python
+        run: |
+          import json, urllib.request, urllib.parse, pathlib
+          base='https://api.gatlogets2.com.br'
+          def get(path):
+              req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-Lapeal-Diagnostic/1.0','Cache-Control':'no-cache'})
+              with urllib.request.urlopen(req,timeout=20) as r:
+                  return json.load(r)
+          user='lapeal'
+          profile=get('/api/public/driver?user='+urllib.parse.quote(user))
+          catalog=get('/api/public/work/catalog?user='+urllib.parse.quote(user))
+          live=get('/api/public/account-live')
+          ranking=get('/api/public/ranking')
+          rows=[x for x in (live.get('telemetry') or []) if str(x.get('account_user') or x.get('driver') or '').lower()==user]
+          rank=[x for x in (ranking.get('ranking') or []) if str(x.get('user') or '').lower()==user]
+          out={
+            'captured_at':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),
+            'profile':profile,
+            'catalog':catalog,
+            'live':rows,
+            'ranking':rank,
+          }
+          p=pathlib.Path('server-local/lapeal-delivery-diagnostic.json')
+          p.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+      - name: Save diagnostic snapshot
+        shell: bash
+        run: |
+          git config user.name 'GAT Diagnostics'
+          git config user.email 'actions@users.noreply.github.com'
+          git add server-local/lapeal-delivery-diagnostic.json
+          git commit -m 'Diagnostico: estado da entrega do Lapeal' || exit 0
+          git pull --rebase -X theirs
+          git push
