@@ -1,0 +1,36 @@
+name: Fix Mower cargo catalog name
+on:
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/fix-mower-catalog-name.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Correct exact official cargo name
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('docs/ets2-official-cargos.json')
+          s=p.read_text(encoding='utf-8')
+          old='Mower Conditioner Krone BiG M 45'
+          new='Mower Conditioner Krone BiG M 450'
+          if old in s:
+              s=s.replace(old,new,1)
+              p.write_text(s,encoding='utf-8')
+          elif new not in s:
+              raise SystemExit('Cargo Mower Conditioner nao encontrado no catalogo')
+      - name: Commit catalog correction to PR branch
+        shell: bash
+        run: |
+          if git diff --quiet -- docs/ets2-official-cargos.json; then exit 0; fi
+          git config user.name 'GAT Catalog Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add docs/ets2-official-cargos.json
+          git commit -m 'Site: corrigir Mower Conditioner Krone BiG M 450'
+          git push origin HEAD:${{ github.head_ref }}
