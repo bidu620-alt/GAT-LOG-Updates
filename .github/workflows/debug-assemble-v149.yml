@@ -13,9 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Apply career site, release workflow and assemble exact current runtime
+      - name: Apply remaining site copy, release workflow and assemble exact current runtime
         run: |
-          python server-local/apply-v149-site-career.py
           python server-local/apply-v149-site-copy.py
           python server-local/prepare-v149-release.py
           node --check docs/driver-gamification.js
@@ -43,6 +42,6 @@ jobs:
         run: |
           git config user.name 'GAT Debug Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add .github/workflows/build-server-local.yml docs/driver-gamification.js docs/motorista-enhancements.js docs/work-catalog-completion.js docs/motorista.html docs/work-catalog.js docs/work-rule-final.js server-local/debug-runtime-worker.js server-local/debug-runtime-host.mjs
+          git add .github/workflows/build-server-local.yml docs/motorista.html docs/work-catalog.js docs/work-rule-final.js server-local/debug-runtime-worker.js server-local/debug-runtime-host.mjs
           git diff --cached --quiet || git commit -m 'Validate complete GAT 1.0.49 career release sources'
           git push
