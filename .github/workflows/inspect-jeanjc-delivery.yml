@@ -1,0 +1,57 @@
+name: Inspect JeanJC delivery
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-jeanjc-delivery.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture JeanJC profile, live telemetry and ranking
+        shell: python
+        run: |
+          import json, urllib.request, urllib.parse, pathlib, datetime
+          base='https://api.gatlogets2.com.br'
+          def get(path):
+              req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-JeanJC-Diagnostic/1.0','Cache-Control':'no-cache'})
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r:
+                      return {'status':r.status,'body':json.load(r)}
+              except Exception as e:
+                  return {'error':repr(e)}
+          live=get('/api/public/account-live')
+          ranking=get('/api/public/ranking')
+          version=get('/api/public/version')
+          live_rows=(live.get('body') or {}).get('telemetry') or []
+          rank_rows=(ranking.get('body') or {}).get('ranking') or []
+          candidates=[]
+          for x in live_rows+rank_rows:
+              name=str(x.get('account_user') or x.get('driver') or x.get('user') or '').lower()
+              if ('jean' in name or 'jc' in name) and name not in candidates:
+                  candidates.append(name)
+          if 'jeanjc' not in candidates:
+              candidates.insert(0,'jeanjc')
+          profiles={u:get('/api/public/driver?user='+urllib.parse.quote(u)) for u in candidates}
+          out={
+            'captured_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'version':version,
+            'candidates':candidates,
+            'profiles':profiles,
+            'live_matches':[x for x in live_rows if str(x.get('account_user') or x.get('driver') or '').lower() in candidates],
+            'ranking_matches':[x for x in rank_rows if str(x.get('user') or '').lower() in candidates],
+          }
+          p=pathlib.Path('server-local/jeanjc-delivery-diagnostic.json')
+          p.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+      - name: Save diagnostic snapshot
+        shell: bash
+        run: |
+          git config user.name 'GAT Diagnostics'
+          git config user.email 'actions@users.noreply.github.com'
+          git add server-local/jeanjc-delivery-diagnostic.json
+          git commit -m 'Diagnostico: estado da entrega do JeanJC' || exit 0
+          git pull --rebase -X theirs
+          git push
