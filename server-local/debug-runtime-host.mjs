@@ -13,8 +13,8 @@ function ensureAutomaticCargoCatalog(db){
   db.sql.exec(readFileSync(join(here,'schema.sql'),'utf8'));
   const initialized=db.sql.prepare("SELECT value FROM meta WHERE key='auto_cargo_catalog_v1'").get();
   if(initialized)return;
-  // O proprietario pediu para recomecar as sugestoes de nomes do zero. Mantemos os
-  // 30 trabalhos, historico, contas e progresso; limpamos somente os nomes sugeridos.
+  // O proprietario pediu para recomecar as sugestoes de nomes do zero. Mantemos o
+  // catalogo, historico, contas e progresso; limpamos somente os nomes sugeridos.
   db.sql.prepare("UPDATE work_catalog SET compatible_cargos_json='[]' WHERE active=1").run();
   const t=new Date().toISOString();
   db.sql.prepare("INSERT OR REPLACE INTO meta(key,value) VALUES('auto_cargo_catalog_v1',?)").run(t);
@@ -37,7 +37,7 @@ export function repairLapealMowerDelivery(db){
       const audit={base_xp:220,speed_penalty_xp:0,cargo_penalty_xp:0,truck_penalty_xp:0,perfect_bonus_xp:0,cargo_damage_pct:0,truck_damage_delta_pct:null,perfect_trip:false,xp_awarded:xp,gat_base_points:100,gat_speed_penalty_points:0,gat_cargo_penalty_points:0,gat_truck_penalty_points:0,gat_penalty_points:0,gat_points:gatPoints,rank_verified:true,repair_verified_receipt:true};
       const raw=JSON.stringify({mission,delivery_details:receipt,audit,repair:{reason:'missed_delivery_recovered_from_next_job_receipt',evidence:'gat_telemetry_delivery_details_start',repaired_at:repairAt,recorded_delivery_at:recordedAt}});
       db.sql.prepare('INSERT INTO deliveries(user,sequence_no,source,destination,cargo,weight_kg,distance_km,xp,perfect,penalty_xp,speed_fines,delivered_at,raw_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').run(user,null,source,destination,cargo,weight,distance,xp,0,0,0,recordedAt,raw);
-      db.sql.prepare(`UPDATE profiles SET monthly_completed=MIN(monthly_goal,monthly_completed+1),total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,updated_at=? WHERE user=?`).run(distance,xp,gatPoints,repairAt,user);
+      db.sql.prepare(`UPDATE profiles SET monthly_completed=monthly_completed+1,total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,updated_at=? WHERE user=?`).run(distance,xp,gatPoints,repairAt,user);
       db.sql.prepare('INSERT OR IGNORE INTO routes_completed(user,month_key,route_key,source,destination,completed_at) VALUES(?,?,?,?,?,?)').run(user,'2026-09','malaga>a coruna',source,destination,recordedAt);
       db.sql.prepare('INSERT INTO audit(at,actor,action,target,details) VALUES(?,?,?,?,?)').run(repairAt,'system','repair_missed_delivery',user,JSON.stringify({cargo,source,destination,distance_km:distance,weight_kg:weight,gat_points:gatPoints,xp,receipt}));
     }
@@ -110,7 +110,7 @@ export function repairJeanJcRejectedDelivery(db,dataDir){
   try{
     const inserted=db.sql.prepare('INSERT INTO deliveries(user,sequence_no,source,destination,cargo,weight_kg,distance_km,xp,perfect,penalty_xp,speed_fines,delivered_at,raw_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').run(user,Number(mission.sequence)||null,source,destination,cargo,weight,distance,xp,0,0,0,recordedAt,raw);
     const deliveryId=Number(inserted.lastInsertRowid);
-    db.sql.prepare('UPDATE profiles SET monthly_completed=MIN(monthly_goal,monthly_completed+1),total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,current_mission_json=CASE WHEN ? THEN NULL ELSE current_mission_json END,updated_at=? WHERE user=?').run(distance,xp,gatPoints,clearRejected?1:0,repairAt,user);
+    db.sql.prepare('UPDATE profiles SET monthly_completed=monthly_completed+1,total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,current_mission_json=CASE WHEN ? THEN NULL ELSE current_mission_json END,updated_at=? WHERE user=?').run(distance,xp,gatPoints,clearRejected?1:0,repairAt,user);
     db.sql.prepare('INSERT OR IGNORE INTO mission_completions(mission_id,user,completed_at) VALUES(?,?,?)').run(String(mission.id||('repair-'+tripId)),user,recordedAt);
     if(exact&&jeanNorm(source)&&jeanNorm(destination)&&jeanNorm(source)!==jeanNorm(destination))db.sql.prepare('INSERT OR IGNORE INTO routes_completed(user,month_key,route_key,source,destination,completed_at) VALUES(?,?,?,?,?,?)').run(user,'2026-09',jeanNorm(source)+'>'+jeanNorm(destination),source,destination,recordedAt);
     if(exact){
@@ -124,16 +124,13 @@ export function repairJeanJcRejectedDelivery(db,dataDir){
   }catch(e){try{db.sql.exec('ROLLBACK')}catch{}throw e;}
 }
 
-function reconcileMonthlyTripGoal(db){
-  // A meta mensal e por VIAGENS VALIDAS, nao por classificacoes. Como toda entrega
-  // aceita pelo ranking gera uma linha em deliveries, ela e a fonte definitiva do x/30.
-  // Isso tambem corrige automaticamente a virada do mes e recupera entregas que foram
-  // salvas como pendentes de classificacao antes da 1.0.46.
+function reconcileMonthlyTripCount(db){
+  // Contagem mensal informativa, sem meta e sem teto. A fonte e o historico real de entregas.
   const mk=new Date().toISOString().slice(0,7);
-  db.sql.prepare(`UPDATE profiles SET monthly_completed=MIN(monthly_goal,(
+  db.sql.prepare(`UPDATE profiles SET monthly_completed=(
     SELECT COUNT(*) FROM deliveries d
     WHERE d.user=profiles.user AND substr(d.delivered_at,1,7)=?
-  ))`).run(mk);
+  )`).run(mk);
 }
 
 async function ensureGoLiveBaseline(db,dataDir){
@@ -217,7 +214,7 @@ async function main(){
   if(process.argv[2]==='backup'){console.log(await saveBackup(db,dataDir));db.close();return;}
   const resetBackup=await ensureGoLiveBaseline(db,dataDir);
   if(resetBackup)console.log('GAT go-live: progresso de testes zerado. Backup: '+resetBackup);
-  reconcileMonthlyTripGoal(db);
+  reconcileMonthlyTripCount(db);
   let lastError='';
   const {server,exclusive}=createCentral(db,{onError:e=>{lastError=String(e.message);console.error(lastError);}});
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(5056,'127.0.0.1',resolve);});
@@ -226,12 +223,12 @@ async function main(){
   status();const heartbeat=setInterval(status,5000);
   const backupNow=()=>exclusive(()=>saveBackup(db,dataDir)).catch(e=>{lastError='Backup: '+e.message;});
   await backupNow();
-  const repaired=await exclusive(async()=>{const changed=repairLapealMowerDelivery(db);if(changed)reconcileMonthlyTripGoal(db);return changed;});
+  const repaired=await exclusive(async()=>{const changed=repairLapealMowerDelivery(db);if(changed)reconcileMonthlyTripCount(db);return changed;});
   if(repaired)console.log('GAT 1.0.47: entrega Mower Conditioner do lapeal67 recuperada no ranking.');
-  const jeanRepair=await exclusive(async()=>{const result=repairJeanJcRejectedDelivery(db,dataDir);if(result.changed)reconcileMonthlyTripGoal(db);return result;});
+  const jeanRepair=await exclusive(async()=>{const result=repairJeanJcRejectedDelivery(db,dataDir);if(result.changed)reconcileMonthlyTripCount(db);return result;});
   if(jeanRepair.changed)console.log('GAT 1.0.48: entrega rejeitada do jeanjc recuperada no ranking.',JSON.stringify(jeanRepair));
   const backups=setInterval(backupNow,6*3600000);
-  const cleanup=setInterval(()=>exclusive(async()=>{reconcileMonthlyTripGoal(db);const tasks=[];await worker.scheduled({}, {DB:db},{waitUntil:p=>tasks.push(p)});await Promise.all(tasks);}).catch(e=>{lastError=e.message;}),3600000);
+  const cleanup=setInterval(()=>exclusive(async()=>{reconcileMonthlyTripCount(db);const tasks=[];await worker.scheduled({}, {DB:db},{waitUntil:p=>tasks.push(p)});await Promise.all(tasks);}).catch(e=>{lastError=e.message;}),3600000);
   async function stop(){clearInterval(heartbeat);clearInterval(backups);clearInterval(cleanup);server.close();await exclusive(async()=>{db.sql.exec('PRAGMA wal_checkpoint(TRUNCATE)');db.close();});process.exit(0);}
   process.on('SIGTERM',stop);process.on('SIGINT',stop);
   console.log('GAT Central local ativa em 127.0.0.1:5056.');
