@@ -1,0 +1,59 @@
+name: Inspect v147 runtime for JeanJC fix
+on:
+  push:
+    branches: [fix-jeanjc-rank-20260903]
+    paths: ['.github/workflows/inspect-v147-runtime-jeanjc.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assemble runtime through 1.0.47
+        shell: bash
+        run: |
+          python server-local/build-api.py
+          python server-local/apply-admin-work-switch.py
+          python server-local/apply-auto-classification.py server-local/runtime/worker.js
+          python server-local/apply-auto-classification-safety.py server-local/runtime/worker.js
+          python server-local/apply-trip-state-machine.py server-local/runtime/worker.js
+          python server-local/apply-rank-startup-grace.py server-local/runtime/worker.js
+          python server-local/apply-v147-lapeal-rank-fix.py server-local/runtime
+          python server-local/normalize-go-live.py
+          python server-local/apply-monthly-trip-goal.py server-local/runtime/worker.js
+      - name: Save compact anchors
+        shell: python
+        run: |
+          from pathlib import Path
+          w=Path('server-local/runtime/worker.js').read_text(encoding='utf-8')
+          r=Path('server-local/runtime/ranking-telemetry.js').read_text(encoding='utf-8')
+          h=Path('server-local/runtime/host.mjs').read_text(encoding='utf-8')
+          def around(text,needle,before=1200,after=2600):
+              i=text.find(needle)
+              if i<0:return 'NOT FOUND: '+needle
+              return text[max(0,i-before):min(len(text),i+after)]
+          parts=[
+            '=== processMission opening ===\n'+around(w,'async function processMission'),
+            '\n=== rank guard update ===\n'+around(w,'advanceRankGuard('),
+            '\n=== telemetry endpoint ===\n'+around(w,"if(p==='/api/client/telemetry'"),
+            '\n=== activation rank_guard ===\n'+around(w,'startup_started_at:t'),
+            '\n=== ranking guard implementation ===\n'+around(r,'export function advanceRankGuard',200,5000),
+            '\n=== host repair/start ===\n'+around(h,'repairLapealMowerDelivery',300,6000),
+          ]
+          Path('server-local/v147-runtime-anchors.txt').write_text('\n'.join(parts),encoding='utf-8')
+      - name: Commit anchors
+        shell: bash
+        run: |
+          git config user.name 'GAT Diagnostics'
+          git config user.email 'actions@users.noreply.github.com'
+          git add server-local/v147-runtime-anchors.txt
+          git commit -m 'Diagnostico: anchors runtime 1.0.47 JeanJC' || exit 0
+          git pull --rebase -X theirs
+          git push
