@@ -10,7 +10,7 @@ replacements=[
     ("rank_status:clean(account)==='biduzao'?{eligible:true,reason:null,admin_test_mode:true}:rankingReadiness(raw),telemetry:raw","rank_status:rankingReadiness(raw),telemetry:raw"),
     ("const readiness=clean(account)==='biduzao'?{eligible:true,reason:null,admin_test_mode:true}:rankingReadiness(raw);","const readiness=rankingReadiness(raw);"),
     ("rules_enabled:clean(s.user)!=='biduzao',admin_test_mode:clean(s.user)==='biduzao'","rules_enabled:true,admin_test_mode:false"),
-    ("const VERSION='1.0.40-local'","const VERSION='1.0.46-local'")
+    ("const VERSION='1.0.40-local'","const VERSION='1.0.47-local'")
 ]
 
 for old,new in replacements:
@@ -41,10 +41,10 @@ for forbidden in [
     if forbidden in s:
         raise SystemExit('Ainda existe excecao temporaria do proprietario: '+forbidden)
 
-required=["const adminTest=false;","const VERSION='1.0.46-local'","const MIN_KM=0;"]
+required=["const adminTest=false;","const VERSION='1.0.47-local'","const MIN_KM=0;"]
 for marker in required:
     if marker not in s:
-        raise SystemExit('Central 1.0.46 nao foi preparada corretamente: '+marker)
+        raise SystemExit('Central 1.0.47 nao foi preparada corretamente: '+marker)
 
 p.write_text(s,encoding='utf-8')
-print('Go-live 1.0.46: sem minimo de km; telemetria segura; meta mensal por viagens validas.')
+print('Go-live 1.0.47: janela inicial ampliada; reparo Lapeal; sem minimo de km.')
