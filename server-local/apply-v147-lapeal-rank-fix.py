@@ -34,7 +34,7 @@ anchor="""function reconcileMonthlyTripGoal(db){
 """
 if anchor not in h:
     raise SystemExit('Nao encontrei reconcileMonthlyTripGoal no host local.')
-repair=r'''function repairLapealMowerDelivery(db){
+repair=r'''export function repairLapealMowerDelivery(db){
   const marker='repair_lapeal_mower_2026_09_03_v1';
   if(db.sql.prepare('SELECT value FROM meta WHERE key=?').get(marker))return false;
   const user='lapeal67',cargo='Mower Conditioner Krone BiG M 450',source='Málaga',destination='A Coruña';
@@ -51,7 +51,7 @@ repair=r'''function repairLapealMowerDelivery(db){
       const audit={base_xp:220,speed_penalty_xp:0,cargo_penalty_xp:0,truck_penalty_xp:0,perfect_bonus_xp:0,cargo_damage_pct:0,truck_damage_delta_pct:null,perfect_trip:false,xp_awarded:xp,gat_base_points:100,gat_speed_penalty_points:0,gat_cargo_penalty_points:0,gat_truck_penalty_points:0,gat_penalty_points:0,gat_points:gatPoints,rank_verified:true,repair_verified_receipt:true};
       const raw=JSON.stringify({mission,delivery_details:receipt,audit,repair:{reason:'missed_delivery_recovered_from_next_job_receipt',evidence:'gat_telemetry_delivery_details_start',repaired_at:repairAt,recorded_delivery_at:recordedAt}});
       db.sql.prepare('INSERT INTO deliveries(user,sequence_no,source,destination,cargo,weight_kg,distance_km,xp,perfect,penalty_xp,speed_fines,delivered_at,raw_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').run(user,null,source,destination,cargo,weight,distance,xp,0,0,0,recordedAt,raw);
-      db.sql.prepare(`UPDATE profiles SET total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,updated_at=? WHERE user=?`).run(distance,xp,gatPoints,repairAt,user);
+      db.sql.prepare(`UPDATE profiles SET monthly_completed=MIN(monthly_goal,monthly_completed+1),total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,points=points+?,updated_at=? WHERE user=?`).run(distance,xp,gatPoints,repairAt,user);
       db.sql.prepare('INSERT OR IGNORE INTO routes_completed(user,route_key,month_key,completed_at) VALUES(?,?,?,?)').run(user,'malaga>a coruna','2026-09',recordedAt);
       db.sql.prepare('INSERT INTO audit(at,actor,action,target,details) VALUES(?,?,?,?,?)').run(repairAt,'system','repair_missed_delivery',user,JSON.stringify({cargo,source,destination,distance_km:distance,weight_kg:weight,gat_points:gatPoints,xp,receipt}));
     }
