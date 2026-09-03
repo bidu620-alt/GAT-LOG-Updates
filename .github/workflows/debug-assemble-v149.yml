@@ -1,0 +1,36 @@
+name: Temp assemble local runtime for v1.49
+on:
+  push:
+    branches: [career-history-v149-20260903]
+    paths: ['server-local/debug-assemble-trigger.txt']
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assemble exact current runtime
+        run: |
+          python server-local/build-api.py
+          python server-local/apply-admin-work-switch.py
+          python server-local/apply-auto-classification.py server-local/runtime/worker.js
+          python server-local/apply-auto-classification-safety.py server-local/runtime/worker.js
+          python server-local/apply-trip-state-machine.py server-local/runtime/worker.js
+          python server-local/apply-rank-startup-grace.py server-local/runtime/worker.js
+          python server-local/apply-v147-lapeal-rank-fix.py server-local/runtime
+          python server-local/apply-v148-jeanjc-rank-fix.py server-local/runtime
+          python server-local/normalize-go-live.py
+          python server-local/apply-monthly-trip-goal.py server-local/runtime/worker.js
+          cp server-local/runtime/worker.js server-local/debug-runtime-worker.js
+          cp server-local/runtime/host.mjs server-local/debug-runtime-host.mjs
+      - name: Commit debug runtime
+        run: |
+          git config user.name 'GAT Debug Build'
+          git config user.email 'actions@users.noreply.github.com'
+          git add server-local/debug-runtime-worker.js server-local/debug-runtime-host.mjs
+          git commit -m 'Temp: capture assembled 1.0.48 runtime'
+          git push
