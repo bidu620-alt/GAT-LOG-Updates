@@ -5,7 +5,7 @@
     if(min&&min.textContent.trim()!=='Sem distância mínima') min.textContent='Sem distância mínima';
 
     const owner=document.getElementById('workOwnerMessage');
-    if(owner&&/30 viagens|meta mensal|500 km/i.test(owner.textContent||'')) owner.textContent='A carga é reconhecida automaticamente pela telemetria.';
+    if(owner&&/30 viagens|meta mensal|500 km/i.test(owner.textContent||'')) owner.textContent='A carga é reconhecida automaticamente pela telemetria. Cada entrega concluída fica registrada no histórico.';
 
     const rule=document.querySelector('.work-catalog-section .catalog-rule');
     if(rule){

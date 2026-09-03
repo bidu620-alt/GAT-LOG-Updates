@@ -147,6 +147,15 @@
     return raw===undefined||raw===null?fallback:Math.max(0,n(raw));
   }
 
+  function rankReasonText(reason){
+    const map={
+      client_update_required:'GAT Telemetria desatualizado',telemetry_disconnected:'Telemetria desconectada',damage_data_incomplete:'Dados de dano incompletos',
+      telemetry_gap:'Interrupção da telemetria',telemetry_not_verified_from_start:'Telemetria não confirmada desde o início',trip_progress_unverified:'Progresso da viagem não confirmado',
+      mission_not_active:'Início da viagem não validado',distance_below_minimum:'Distância fora do requisito de pontuação'
+    };
+    return map[String(reason||'')]||'Viagem sem elegibilidade para Pontos GAT';
+  }
+
   function enhancedRenderDeliveries(history){
     const count=document.getElementById('deliveriesCount'),rows=document.getElementById('deliveryRows');
     if(!rows)return;
@@ -164,19 +173,24 @@
       const truckPenalty=penaltyValue(x,'truck_penalty_xp',0);
       const totalPenalty=penaltyValue(x,'penalty_xp',speedPenalty+cargoPenalty+truckPenalty);
       const hasSavedFinal=x&&Object.prototype.hasOwnProperty.call(x,'xp_awarded')&&Number.isFinite(Number(x.xp_awarded));
-      const finalXp=hasSavedFinal?Math.max(0,Number(x.xp_awarded)):Math.max(0,base-totalPenalty);
+      const finalXp=hasSavedFinal?Math.max(0,Number(x.xp_awarded)):Math.max(0,base);
+      const rankFlag=x?.ranking_eligible??x?.rank_eligible,rankEligible=rankFlag===undefined?true:rankFlag!==false;
+      const gatPoints=(x&&Object.prototype.hasOwnProperty.call(x,'gat_points')&&Number.isFinite(Number(x.gat_points)))?Math.max(0,Number(x.gat_points)):(rankEligible?Math.max(0,100-totalPenalty):0);
       const cargoDamage=Math.max(0,n(x?.cargo_damage_pct));
       const truckDamage=Math.max(0,n(x?.truck_damage_delta_pct));
       const route=(x?.source||'?')+' → '+(x?.destination||'?');
       const row=document.createElement('div');row.className='delivery-row gat-delivery-row';
       row.innerHTML=`<span><b>${esc(route)}</b></span><span>${esc(x?.cargo||'Carga')}</span><span>${typeof kg==='function'?kg(x?.weight_kg):'—'}</span><span>${fmtKm(distance)}</span><span>#${esc(x?.sequence||'—')}</span><span class="done">CONCLUÍDA<b class="gat-delivery-xp">${fmt(finalXp)} XP</b></span>`;
       const detail=document.createElement('div');detail.className='gat-xp-breakdown';
-      let chips=`<span class="gat-xp-chip"><span>XP BASE</span><b>${fmt(base)}</b></span>`;
-      if(speedPenalty>0||fines>0)chips+=`<span class="gat-xp-chip penalty"><span>VELOCIDADE${fines?' • '+fines+' multa'+(fines===1?'':'s'):''}</span><b>-${fmt(speedPenalty)} XP</b></span>`;
-      if(cargoPenalty>0||cargoDamage>0)chips+=`<span class="gat-xp-chip ${cargoPenalty>0?'penalty':''}"><span>CARGA • ${fmtPct(cargoDamage)}</span><b>${cargoPenalty>0?'-'+fmt(cargoPenalty)+' XP':'0 XP'}</b></span>`;
-      if(truckPenalty>0||truckDamage>0)chips+=`<span class="gat-xp-chip ${truckPenalty>0?'penalty':''}"><span>CAMINHÃO • +${fmtPct(truckDamage)}</span><b>${truckPenalty>0?'-'+fmt(truckPenalty)+' XP':'0 XP'}</b></span>`;
-      if(totalPenalty===0)chips+=`<span class="gat-xp-chip clean"><b>SEM PENALIDADES</b></span>`;
-      chips+=`<span class="gat-xp-chip final"><span>XP FINAL</span><b>${fmt(finalXp)}</b></span>`;
+      let chips=`<span class="gat-xp-chip final"><span>XP DA VIAGEM</span><b>${fmt(finalXp)}</b></span>`;
+      if(rankEligible){
+        chips+=`<span class="gat-xp-chip ${gatPoints>0?'clean':'penalty'}"><span>PONTOS GAT</span><b>${fmt(gatPoints)}</b></span>`;
+        if(speedPenalty>0||fines>0)chips+=`<span class="gat-xp-chip penalty"><span>VELOCIDADE${fines?' • '+fines+' multa'+(fines===1?'':'s'):''}</span><b>-${fmt(speedPenalty)} PONTOS</b></span>`;
+        if(cargoPenalty>0||cargoDamage>0)chips+=`<span class="gat-xp-chip ${cargoPenalty>0?'penalty':''}"><span>CARGA • ${fmtPct(cargoDamage)}</span><b>${cargoPenalty>0?'-'+fmt(cargoPenalty)+' PONTOS':'OK'}</b></span>`;
+        if(truckPenalty>0||truckDamage>0)chips+=`<span class="gat-xp-chip ${truckPenalty>0?'penalty':''}"><span>CAMINHÃO • +${fmtPct(truckDamage)}</span><b>${truckPenalty>0?'-'+fmt(truckPenalty)+' PONTOS':'OK'}</b></span>`;
+      }else{
+        chips+=`<span class="gat-xp-chip penalty"><span>PONTOS GAT</span><b>0 • ${esc(rankReasonText(x?.ranking_reason))}</b></span>`;
+      }
       detail.innerHTML=chips;row.appendChild(detail);rows.appendChild(row);
     });
   }

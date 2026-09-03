@@ -31,7 +31,7 @@
 
   function currentProfile(){try{return typeof profile!=='undefined'?profile:null}catch(_){return null}}
   function history(){
-    const p=currentProfile(),rows=Array.isArray(p?.deliveries)?p.deliveries:[];
+    const p=currentProfile(),rows=Array.isArray(p?.cargo_history)?p.cargo_history:(Array.isArray(p?.deliveries)?p.deliveries:[]);
     return rows.map(x=>({name:norm(x?.cargo||x?.cargo_name||x?.name),weightT:(Number(x?.weight_kg)||0)/1000})).filter(x=>x.name);
   }
   function signature(){return history().map(x=>x.name+'@'+x.weightT.toFixed(2)).sort().join('|')}

@@ -11,11 +11,11 @@ using System.Windows.Forms;
 
 internal class Updater : Form
 {
-    const string PackageUrl="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_SERVER_LOCAL_1.0.48.zip";
+    const string PackageUrl="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_SERVER_LOCAL_1.0.49.zip";
     const string PackageHash="__PAYLOAD_SHA256__";
     readonly Label status=new Label{Dock=DockStyle.Fill,TextAlign=ContentAlignment.MiddleCenter,Text="Preparando atualizacao do GAT Servidor..."};
     [STAThread] static void Main(){Application.EnableVisualStyles();Application.Run(new Updater());}
-    Updater(){Text="GAT Servidor 1.0.48 - ranking JeanJC";ClientSize=new Size(590,160);StartPosition=FormStartPosition.CenterScreen;Controls.Add(status);Shown+=async(s,e)=>await Install();}
+    Updater(){Text="GAT Servidor 1.0.49 - historico de carreira";ClientSize=new Size(590,160);StartPosition=FormStartPosition.CenterScreen;Controls.Add(status);Shown+=async(s,e)=>await Install();}
     static string Hash(string path){using(var sha=SHA256.Create())using(var f=File.OpenRead(path))return BitConverter.ToString(sha.ComputeHash(f)).Replace("-","").ToLowerInvariant();}
     async Task Install(){
         string temp=Path.Combine(Path.GetTempPath(),"GAT-local-"+Guid.NewGuid().ToString("N"));
@@ -25,7 +25,7 @@ internal class Updater : Form
         try{
             if(!File.Exists(exe)||!Directory.Exists(central))throw new InvalidOperationException("Nao encontrei a instalacao atual do GAT Servidor/Central.");
             var version=FileVersionInfo.GetVersionInfo(exe).FileVersion;
-            if(version!="1.0.39.0"&&version!="1.0.40.0"&&version!="1.0.41.0"&&version!="1.0.42.0"&&version!="1.0.43.0"&&version!="1.0.44.0"&&version!="1.0.45.0"&&version!="1.0.46.0"&&version!="1.0.47.0"&&version!="1.0.48.0")throw new InvalidOperationException("Esta atualizacao foi preparada para as versoes 1.0.39 a 1.0.48. Versao encontrada: "+version);
+            if(version!="1.0.39.0"&&version!="1.0.40.0"&&version!="1.0.41.0"&&version!="1.0.42.0"&&version!="1.0.43.0"&&version!="1.0.44.0"&&version!="1.0.45.0"&&version!="1.0.46.0"&&version!="1.0.47.0"&&version!="1.0.48.0"&&version!="1.0.49.0")throw new InvalidOperationException("Esta atualizacao foi preparada para as versoes 1.0.39 a 1.0.49. Versao encontrada: "+version);
             Directory.CreateDirectory(temp);status.Text="Baixando e verificando a atualizacao...";
             ServicePointManager.SecurityProtocol=SecurityProtocolType.Tls12;
             string zip=Path.Combine(temp,"package.zip");
@@ -41,19 +41,19 @@ internal class Updater : Form
                 Directory.CreateDirectory(Path.GetDirectoryName(dest));entry.ExtractToFile(dest);
             }
             if(!File.Exists(Path.Combine(stage,"central","node.exe"))||!File.Exists(Path.Combine(stage,"central","worker.js"))||!File.Exists(Path.Combine(stage,"GAT_LOG_SERVER.exe")))throw new InvalidDataException("Pacote incompleto.");
-            status.Text="Parando a Central por alguns segundos...\r\nO banco, contas, ranking e vinculacoes serao preservados.";
+            status.Text="Parando a Central por alguns segundos...\r\nO banco, contas, historico e vinculacoes serao preservados.";
             foreach(var p in Process.GetProcessesByName("GAT_LOG_SERVER"))using(p){try{if(string.Equals(p.MainModule.FileName,exe,StringComparison.OrdinalIgnoreCase)){p.CloseMainWindow();await Task.Run(()=>p.WaitForExit(5000));}}catch{}}
             StopCentral(data,Path.Combine(central,"node.exe"));await Task.Delay(800);
             previous=Path.Combine(target,"update-backups",DateTime.Now.ToString("yyyyMMdd-HHmmss")+"-"+(version??"desconhecida"));Directory.CreateDirectory(previous);
             File.Copy(exe,Path.Combine(previous,"GAT_LOG_SERVER.exe"),true);CopyDirectory(central,Path.Combine(previous,"central"));
             string db=Path.Combine(data,"central.sqlite");if(File.Exists(db)){Directory.CreateDirectory(Path.Combine(previous,"data"));File.Copy(db,Path.Combine(previous,"data","central.sqlite"),true);}
-            status.Text="Instalando Central 1.0.48 e corrigindo o ranking...";
+            status.Text="Instalando Central 1.0.49 e atualizando o historico de carreira...";
             string oldCentral=central+"-old-"+Guid.NewGuid().ToString("N"),incoming=central+"-new-"+Guid.NewGuid().ToString("N");
             CopyDirectory(Path.Combine(stage,"central"),incoming);Directory.Move(central,oldCentral);Directory.Move(incoming,central);
             string replacement=Path.Combine(target,"GAT_LOG_SERVER.replacement");File.Copy(Path.Combine(stage,"GAT_LOG_SERVER.exe"),replacement,true);File.Replace(replacement,exe,null);
             try{Directory.Delete(oldCentral,true);}catch{}
             Process.Start(new ProcessStartInfo(exe,"--central-only"){WorkingDirectory=target,UseShellExecute=true});
-            MessageBox.Show(this,"GAT Servidor 1.0.48 instalado.\r\nA Central agora usa a leitura de danos feita antes da carga para nao confundir um pacote inicial transitorio com TruckSim antigo. Ainda continua bloqueado atualizar um plugin antigo no meio da viagem para tentar pontuar.\r\nA entrega rejeitada do jeanjc sera recuperada automaticamente e apenas uma vez. A Central procura primeiro os backups locais para restaurar carga, rota, peso e quilometragem reais. Se esses detalhes nao existirem mais nos backups, a viagem ainda conta no mes e recebe 100 pontos, sem inventar km ou XP.\r\nO reparo faz backup antes de alterar o banco e preserva qualquer viagem nova que o motorista tenha iniciado.\r\nBanco, pontos, entregas, contas, senhas e PCs vinculados foram preservados.","Atualizacao concluida",MessageBoxButtons.OK,MessageBoxIcon.Information);Close();
+            MessageBox.Show(this,"GAT Servidor 1.0.49 instalado.\r\n\r\nA partir desta versao, cada entrega concluida detectada pelo GAT Telemetria e registrada no historico antes da validacao dos Pontos GAT. O XP e calculado pela quilometragem registrada. Se a telemetria ou os dados de danos nao estiverem elegiveis para pontuacao, a viagem continua no historico e mantem o XP, recebendo 0 Pontos GAT com o motivo salvo.\r\n\r\nRotas e cargas podem ser repetidas sem limite. A antiga regra X/30 foi removida e a colecao de cargas passa a representar a carreira completa.\r\n\r\nBanco, historico, pontos, entregas, contas, senhas e PCs vinculados foram preservados.","Atualizacao concluida",MessageBoxButtons.OK,MessageBoxIcon.Information);Close();
         }catch(Exception ex){
             try{if(previous!=null){StopCentral(data,Path.Combine(central,"node.exe"));if(Directory.Exists(Path.Combine(previous,"central"))){if(Directory.Exists(central))Directory.Delete(central,true);CopyDirectory(Path.Combine(previous,"central"),central);}if(File.Exists(Path.Combine(previous,"GAT_LOG_SERVER.exe")))File.Copy(Path.Combine(previous,"GAT_LOG_SERVER.exe"),exe,true);}}catch{}
             status.Text="Atualizacao nao concluida.";MessageBox.Show(this,ex.Message,"GAT Servidor",MessageBoxButtons.OK,MessageBoxIcon.Warning);

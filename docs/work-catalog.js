@@ -49,18 +49,18 @@
     const eyebrow=workCard?.querySelector('.card-title .eyebrow');if(eyebrow)eyebrow.textContent='CATÁLOGO COMPLETO DE CARGAS';
     const title=document.getElementById('workTitle');if(title&&!liveOnJob(currentLive()))title.textContent='Aguardando carga do ETS2';
     const market=document.getElementById('workMarket');if(market)market.textContent='Todos os mercados';
-    const min=document.getElementById('workMinKm');if(min)min.textContent='500 km reais';
+    const min=document.getElementById('workMinKm');if(min)min.textContent='Sem distância mínima';
     const weight=document.getElementById('workWeight');if(weight)weight.textContent='Peso > 0';
     const freedom=document.getElementById('workFreedom');if(freedom&&!liveOnJob(currentLive()))freedom.textContent='Qualquer carga oficial do ETS2';
     const lead=workCard?.querySelector(':scope > .lead');if(lead)lead.textContent='Pegue uma carga normalmente no ETS2. O GAT Telemetria identifica o nome real da carga; não é mais necessário escolher categoria no site.';
-    const owner=document.getElementById('workOwnerMessage');if(owner)owner.textContent='A carga é reconhecida pela telemetria. A meta mensal continua sendo 30 viagens válidas, mas os tipos de carga não ficam limitados a 30 categorias.';
+    const owner=document.getElementById('workOwnerMessage');if(owner)owner.textContent='A carga é reconhecida pela telemetria. Cada entrega concluída entra no histórico; a Central avalia os Pontos GAT separadamente.';
     const head=document.querySelector('.work-catalog-section .catalog-head');
     const he=head?.querySelector('.eyebrow');if(he)he.textContent='CARGAS OFICIAIS ETS2';
     const h2=head?.querySelector('h2');if(h2)h2.textContent='Todas as cargas do jogo em português';
     const p=head?.querySelector('p');if(p)p.textContent='Lista única com '+total+' cargas oficiais exibidas em português. A busca aceita português e também o nome oficial original, sem alterar a Telemetria ou a Central.';
-    const rule=head?.querySelector('.catalog-rule');if(rule)rule.innerHTML='<b>30</b><span>VIAGENS / MÊS</span><b>500 km</b><span>REAIS MÍN.</span>';
-    const progressTitle=document.querySelector('.monthly-progress-card h2');if(progressTitle)progressTitle.textContent='30 viagens';
-    const progressLead=document.querySelector('.monthly-progress-card .lead');if(progressLead)progressLead.textContent='A meta mensal continua em 30 viagens válidas. O catálogo em português é apenas visual e não altera o nome recebido do jogo.';
+    const rule=head?.querySelector('.catalog-rule');if(rule)rule.innerHTML='<b>COLEÇÃO</b><span>DE CARGAS</span><b>SEM MÍN.</b><span>KM REAIS</span>';
+    const progressTitle=document.querySelector('.monthly-progress-card h2');if(progressTitle)progressTitle.textContent='Coleção de cargas';
+    const progressLead=document.querySelector('.monthly-progress-card .lead');if(progressLead)progressLead.textContent='Cada tipo de carga concluído entra uma vez na coleção. Repetir uma carga continua valendo no histórico, km, XP e Pontos GAT, mas não aumenta a coleção novamente.';
   }
 
   function ensureToolbar(){

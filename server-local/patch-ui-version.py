@@ -1,6 +1,6 @@
 from pathlib import Path
 
-TARGET_VERSION = "1.0.48"
+TARGET_VERSION = "1.0.49"
 path = Path("server-local/ui/GatLogServer/MainForm.cs")
 text = path.read_text(encoding="utf-8")
 

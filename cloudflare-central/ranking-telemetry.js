@@ -26,12 +26,15 @@ export function rankingReadiness(raw = {}) {
   return {eligible: !reason, reason, missing_damage: missing, client_version: String(raw.gat_client_version || ''), minimum_version: MIN_RANK_CLIENT};
 }
 export function rankingMessage(reason) {
-  if (reason === 'client_update_required') return 'Ranking bloqueado: atualize o GAT Telemetria para 1.0.28 ou superior.';
-  if (reason === 'damage_data_incomplete') return 'Ranking bloqueado: faltam dados de danos. Atualize o TruckSim GPS com o pacote GAT de danos e reinicie o jogo.';
-  if (reason === 'telemetry_disconnected') return 'Ranking bloqueado: mantenha o jogo conectado ao GAT Telemetria.';
-  if (reason === 'telemetry_gap') return 'Esta viagem não pontua: houve interrupção prolongada da telemetria. Inicie outra viagem com a telemetria ativa.';
-  if (reason === 'telemetry_not_verified_from_start') return 'Esta viagem ainda está aguardando confirmação contínua da telemetria.';
-  return reason ? 'Esta viagem não pontua. Corrija a telemetria e inicie outra viagem.' : '';
+  if (reason === 'client_update_required') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: atualize o GAT Telemetria para 1.0.28 ou superior.';
+  if (reason === 'damage_data_incomplete') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: faltaram dados de danos.';
+  if (reason === 'telemetry_disconnected') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: a telemetria ficou desconectada.';
+  if (reason === 'telemetry_gap') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: houve interrupção prolongada da telemetria.';
+  if (reason === 'telemetry_not_verified_from_start') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: a telemetria não foi confirmada continuamente desde o início.';
+  if (reason === 'trip_progress_unverified') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: o progresso contínuo da viagem não pôde ser confirmado.';
+  if (reason === 'mission_not_active') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: o início da viagem não foi validado para pontuação.';
+  if (reason === 'distance_below_minimum') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: a distância não atendeu ao requisito de pontuação.';
+  return reason ? 'Viagem registrada e XP mantido, mas esta entrega não recebeu Pontos GAT.' : '';
 }
 // O primeiro pacote de uma carga pode chegar enquanto o TruckSim GPS ainda atualiza
 // os campos de dano. Durante uma janela curta de 30 s, a Central nao condena a viagem
