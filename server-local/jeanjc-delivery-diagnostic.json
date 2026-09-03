@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-09-03T15:41:29.751062+00:00",
+  "captured_at": "2026-09-03T16:07:18.258771+00:00",
   "version": {
     "status": 200,
     "body": {
@@ -52,7 +52,7 @@
     {
       "driver": "jeanjc",
       "account_user": "jeanjc",
-      "updated_at": "2026-09-03T15:41:24.953Z",
+      "updated_at": "2026-09-03T16:07:13.071Z",
       "rank_status": {
         "eligible": false,
         "reason": "telemetry_disconnected",
@@ -503,8 +503,8 @@
         "gat_integrity_evidence_hash": "",
         "gat_map": "other",
         "gat_map_label": "Outro mapa",
-        "gat_collected_at": "2026-09-03T15:41:25.8136256Z",
-        "gat_packet_id": "b432befa6b78467ba6ec8c8e5d399151"
+        "gat_collected_at": "2026-09-03T16:07:14.0002135Z",
+        "gat_packet_id": "9a82306cd4d6452fa3bad98a7b0e361b"
       },
       "on_job": false,
       "cargo_name": "",
