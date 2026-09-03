@@ -21,6 +21,16 @@ worker=once(worker,
 "return{user,monthly_completed:p.monthly_completed,monthly_deliveries:p.monthly_completed,total_deliveries:p.total_deliveries",
 'perfil com monthly_goal')
 
+# Historico visual continua leve, mas a colecao de cargas usa todas as entregas da carreira.
+worker=once(worker,
+"FROM deliveries WHERE user=? ORDER BY id DESC LIMIT 100').bind(user).all();let mission=null;",
+"FROM deliveries WHERE user=? ORDER BY id DESC LIMIT 100').bind(user).all();const c=await env.DB.prepare('SELECT cargo,weight_kg FROM deliveries WHERE user=? GROUP BY cargo,weight_kg').bind(user).all();let mission=null;",
+'consulta de historico do perfil')
+worker=once(worker,
+"avatar_url:p.avatar_url||'',current_mission:mission,deliveries}}",
+"avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}}",
+'retorno do perfil com cargo_history')
+
 # Repeticao de carga/trabalho nunca muda a natureza da viagem. Cada conclusao e um novo registro.
 worker=worker.replace("xp_only:!!(item&&already&&!adminTest)","xp_only:false")
 worker=worker.replace("xp_only:repeatXpOnly,state:'assigned'","xp_only:false,state:'assigned'")
@@ -122,6 +132,7 @@ required=[
     'xp=baseXP,cargo=',
     'history_recorded:true',
     'ranking_reason:rankReason',
+    'cargo_history:c.results||[]',
     'monthly_completed=monthly_completed+1',
     "INSERT OR IGNORE INTO mission_completions",
 ]
