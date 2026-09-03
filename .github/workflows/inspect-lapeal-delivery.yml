@@ -8,47 +8,30 @@ permissions:
 jobs:
   inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
-      - name: Locate Lapeal account by cargo and route
+      - name: Confirm previous delivery receipt for Lapeal
         shell: python
         run: |
-          import json, urllib.request, urllib.parse, urllib.error
+          import json, urllib.request, urllib.parse
           base='https://api.gatlogets2.com.br'
           def get(path):
-              req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-Lapeal-Diagnostic/2.0','Cache-Control':'no-cache'})
-              try:
-                  with urllib.request.urlopen(req,timeout=20) as r: return json.load(r)
-              except urllib.error.HTTPError as e:
-                  return {'_http':e.code,'_body':e.read().decode('utf-8','replace')[:500]}
-          ranking=get('/api/public/ranking')
-          live=get('/api/public/account-live')
-          players=get('/api/client/players')
-          terms=['mower conditioner','krone big m 450','málaga','malaga','a coruña','a coruna']
-          matches=[]; summaries=[]
-          for row in (ranking.get('ranking') or []):
-              user=str(row.get('user') or '').strip()
-              if not user: continue
-              data=get('/api/public/driver?user='+urllib.parse.quote(user))
-              p=(data or {}).get('profile') or {}
-              mission=p.get('current_mission') or {}
-              deliveries=(p.get('deliveries') or [])[-10:]
-              blob=json.dumps({'mission':mission,'deliveries':deliveries},ensure_ascii=False).lower()
-              hit=any(x in blob for x in terms)
-              if hit:
-                  matches.append({'ranking':row,'profile':{k:p.get(k) for k in ['user','monthly_completed','monthly_goal','total_deliveries','total_km','xp','points']},'mission':mission,'last_deliveries':deliveries})
-              if mission:
-                  summaries.append({'user':user,'monthly_completed':p.get('monthly_completed'),'points':p.get('points'),'mission':{k:mission.get(k) for k in ['id','catalog_id','sequence','title','state','cargo','source','destination','weight_kg','planned_distance_km','trip_progress_confirmed','rank_guard','last_rejected_reason','last_rejected_at','last_distance_km','pending_classification','classification_mode','trip_id']}})
-          live_matches=[]
-          for x in (live.get('telemetry') or []):
-              blob=json.dumps(x,ensure_ascii=False).lower()
-              if 'lapeal' in blob or any(t in blob for t in terms): live_matches.append(x)
-          print('=== MATCHES_CARGO_ROUTE ===')
-          print(json.dumps(matches,ensure_ascii=False,indent=2))
-          print('=== CURRENT_MISSIONS_ALL_USERS ===')
-          print(json.dumps(summaries,ensure_ascii=False,indent=2))
-          print('=== LIVE_MATCHES ===')
-          print(json.dumps(live_matches,ensure_ascii=False,indent=2))
-          print('=== PLAYERS ===')
-          print(json.dumps(players,ensure_ascii=False,indent=2))
+              req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-Lapeal-Diagnostic/3.0','Cache-Control':'no-cache'})
+              with urllib.request.urlopen(req,timeout=20) as r: return json.load(r)
+          user='lapeal67'
+          p=get('/api/public/driver?user='+urllib.parse.quote(user)).get('profile') or {}
+          live=get('/api/public/account-live').get('telemetry') or []
+          row=next((x for x in live if str(x.get('account_user') or x.get('driver') or '').lower()==user),{})
+          raw=row.get('telemetry') or {}
+          report={
+            'profile':{k:p.get(k) for k in ['user','monthly_completed','monthly_goal','total_deliveries','total_km','xp','points','perfect_trips','penalty_xp','speed_fines']},
+            'current_mission':p.get('current_mission'),
+            'last_deliveries':(p.get('deliveries') or [])[-5:],
+            'live_summary':{k:row.get(k) for k in ['updated_at','rank_status','cargo_name','cargo_id','source_city','destination_city','mass_kg','remaining_km']},
+            'live_job':raw.get('job'),
+            'live_gameplay':raw.get('gameplay'),
+            'live_damage':{k:raw.get(k) for k in ['cargo_damage_pct','truck_engine_damage_pct','truck_transmission_damage_pct','truck_cabin_damage_pct','truck_chassis_damage_pct','truck_wheels_damage_pct','trailer_damage_pct','gat_job_state','gat_job_event','gat_trip_id']}
+          }
+          print('=== LAPEAL_RECEIPT ===')
+          print(json.dumps(report,ensure_ascii=False,indent=2))
