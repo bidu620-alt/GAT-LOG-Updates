@@ -16,6 +16,38 @@ new="export const RANK_STARTUP_GRACE_MS = 120000;"
 if old not in s:
     raise SystemExit('Nao encontrei a janela inicial de 30 s do ranking.')
 s=s.replace(old,new,1)
+
+# Uma instalacao antiga do TruckSim costuma enviar cargo/reboque, mas nao envia nenhum
+# dos cinco componentes de dano do caminhao. Isso nao e pacote transitorio: a viagem
+# deve continuar bloqueada mesmo se o motorista atualizar o plugin no meio da rota.
+# Ja um pacote de troca de carga que perde apenas um ou alguns aliases pode se recuperar
+# dentro dos 120 s e ainda precisa de duas amostras completas consecutivas.
+startup_anchor="""  if (!next.verified_at) {
+    const startupTime = Date.parse(next.startup_started_at || at);
+"""
+startup_new="""  if (!next.verified_at) {
+    const missingNow = Array.isArray(readiness?.missing_damage) ? readiness.missing_damage : [];
+    const truckMissing = ['engine','transmission','cabin','chassis','wheels'];
+    const oldTruckSimDamagePlugin = readiness?.reason === 'damage_data_incomplete' &&
+      truckMissing.every(name => missingNow.includes(name)) &&
+      !missingNow.includes('cargo') && !missingNow.includes('trailer');
+    if (oldTruckSimDamagePlugin) {
+      next.incompatible_damage_plugin = true;
+      next.last_invalid_reason = 'damage_data_incomplete';
+      if (!next.startup_failed_at) next.startup_failed_at = at;
+    }
+    if (next.incompatible_damage_plugin) {
+      next.reason = 'damage_data_incomplete';
+      next.valid_samples = 0;
+      next.last_sample_at = at;
+      return next;
+    }
+    const startupTime = Date.parse(next.startup_started_at || at);
+"""
+if startup_anchor not in s:
+    raise SystemExit('Nao encontrei o bloco inicial do rank guard.')
+s=s.replace(startup_anchor,startup_new,1)
+
 # Preserve o primeiro instante da falha para diagnostico; nao reescreva a cada pacote.
 s=s.replace("next.startup_failed_at = at;\n      next.last_sample_at = at;",
             "if (!next.startup_failed_at) next.startup_failed_at = at;\n      next.last_sample_at = at;",1)
@@ -78,7 +110,7 @@ if call not in h:
 h=h.replace(call,replace,1)
 host.write_text(h,encoding='utf-8')
 
-for marker in ['RANK_STARTUP_GRACE_MS = 120000','repairLapealMowerDelivery','repair_lapeal_mower_2026_09_03_v1','Mower Conditioner Krone BiG M 450','distance=1135','gatPoints=100']:
+for marker in ['RANK_STARTUP_GRACE_MS = 120000','incompatible_damage_plugin','repairLapealMowerDelivery','repair_lapeal_mower_2026_09_03_v1','Mower Conditioner Krone BiG M 450','distance=1135','gatPoints=100']:
     body=(rank.read_text(encoding='utf-8')+'\n'+host.read_text(encoding='utf-8'))
     if marker not in body: raise SystemExit('Patch 1.0.47 incompleto: '+marker)
-print('GAT 1.0.47 preparado: janela inicial 120 s + reparo idempotente da entrega do Lapeal.')
+print('GAT 1.0.47 preparado: startup de 120 s sem liberar TruckSim antigo + reparo do Lapeal.')
