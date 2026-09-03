@@ -40,7 +40,7 @@ old_rank=""" if(!adminTest&&(m.rank_guard?.reason||!m.rank_guard)){
  if(!adminTest&&m.state!=='active')return{type:'delivery_rejected',reason:'mission_not_active'};const details=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{},rbr=clean(m.map_mode).includes('rbr')||isRbr,distance=rbr?(Number(m.rbr_start_remaining_km)||Number(m.planned_distance_km)||teleKm||0):(Number(details.distanceKm)||Number(m.planned_distance_km)||baseKm||0);
  if(!adminTest&&distance<minKm){await resetAssigned(env,user,m,'distance_below_minimum',{last_distance_km:distance});return{type:'delivery_rejected',reason:'distance_below_minimum',distance_km:distance,min_km:minKm}}
 """
-new_rank=""" const rankGuardReason=m.rank_guard?.reason||(!m.rank_guard?'telemetry_not_verified_from_start':null),rankReason=rankGuardReason||(m.trip_progress_confirmed===true?null:'trip_progress_unverified')||(m.state==='active'?null:'mission_not_active'),rankEligible=!rankReason,details=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{},rbr=clean(m.map_mode).includes('rbr')||isRbr,distance=Math.max(0,rbr?(Number(m.rbr_start_remaining_km)||Number(m.planned_distance_km)||teleKm||0):(Number(details.distanceKm)||Number(m.planned_distance_km)||baseKm||0));
+new_rank=""" const details=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{},rbr=clean(m.map_mode).includes('rbr')||isRbr,distance=Math.max(0,rbr?(Number(m.rbr_start_remaining_km)||Number(m.planned_distance_km)||teleKm||0):(Number(details.distanceKm)||Number(m.planned_distance_km)||baseKm||0)),rankGuardReason=m.rank_guard?.reason||(!m.rank_guard?'telemetry_not_verified_from_start':null),rankReason=adminTest?null:(rankGuardReason||(m.trip_progress_confirmed===true?null:'trip_progress_unverified')||(m.state==='active'?null:'mission_not_active')||(distance<minKm?'distance_below_minimum':null)),rankEligible=!rankReason;
 """
 worker=once(worker,old_rank,new_rank,'bloqueio de ranking antes do registro')
 
@@ -52,7 +52,7 @@ worker=once(worker,old_route,new_route,'bloqueio de rota repetida')
 # XP e experiencia de estrada: sempre baseado na quilometragem registrada. Danos/multas afetam Pontos GAT e estatisticas, nao apagam nem reduzem o XP da viagem.
 worker=once(worker,
 "pointPenalty=Math.min(100,xpPenalty),gatPoints=Math.max(0,100-pointPenalty),perfect=adminTest?1:(damage<=0.5&&truckDamage<=0.5&&fines===0?1:0),bonus=perfect?5:0,penalty=xpPenalty,xp=Math.max(0,baseXP-penalty+bonus),cargo=",
-"pointPenalty=Math.min(100,xpPenalty),gatPoints=rankEligible?Math.max(0,100-pointPenalty):0,perfect=adminTest?1:(damage<=0.5&&truckDamage<=0.5&&fines===0?1:0),bonus=perfect?5:0,penalty=xpPenalty,xp=baseXP,cargo=",
+"pointPenalty=Math.min(100,xpPenalty),gatPoints=rankEligible?Math.max(0,100-pointPenalty):0,perfect=adminTest?1:(rankEligible&&damage<=0.5&&truckDamage<=0.5&&fines===0?1:0),bonus=0,penalty=xpPenalty,xp=baseXP,cargo=",
 'formula de XP/Pontos GAT')
 
 worker=once(worker,
