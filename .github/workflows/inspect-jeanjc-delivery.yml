@@ -11,18 +11,24 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
-      - name: Capture JeanJC profile, live telemetry and ranking
+      - name: Capture compact JeanJC state
         shell: python
         run: |
           import json, urllib.request, urllib.parse, pathlib, datetime
           base='https://api.gatlogets2.com.br'
           def get(path):
-              req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-JeanJC-Diagnostic/1.0','Cache-Control':'no-cache'})
+              req=urllib.request.Request(base+path,headers={'User-Agent':'GAT-JeanJC-Diagnostic/1.1','Cache-Control':'no-cache'})
               try:
                   with urllib.request.urlopen(req,timeout=20) as r:
                       return {'status':r.status,'body':json.load(r)}
               except Exception as e:
                   return {'error':repr(e)}
+          def compact(v):
+              if isinstance(v,dict):
+                  return {k:compact(x) for k,x in v.items() if k not in {'avatar_url','avatar','image','photo'} and not k.lower().endswith('_base64')}
+              if isinstance(v,list): return [compact(x) for x in v]
+              if isinstance(v,str) and len(v)>1200: return '<omitted long string>'
+              return v
           live=get('/api/public/account-live')
           ranking=get('/api/public/ranking')
           version=get('/api/public/version')
@@ -31,18 +37,24 @@ jobs:
           candidates=[]
           for x in live_rows+rank_rows:
               name=str(x.get('account_user') or x.get('driver') or x.get('user') or '').lower()
-              if ('jean' in name or 'jc' in name) and name not in candidates:
-                  candidates.append(name)
-          if 'jeanjc' not in candidates:
-              candidates.insert(0,'jeanjc')
-          profiles={u:get('/api/public/driver?user='+urllib.parse.quote(u)) for u in candidates}
+              if ('jean' in name or 'jc' in name) and name not in candidates: candidates.append(name)
+          if 'jeanjc' not in candidates: candidates.insert(0,'jeanjc')
+          profiles={}
+          for u in candidates:
+              r=get('/api/public/driver?user='+urllib.parse.quote(u))
+              p=(r.get('body') or {}).get('profile') or {}
+              profiles[u]={'status':r.get('status'),'profile':compact({
+                'user':p.get('user'),'monthly_completed':p.get('monthly_completed'),'monthly_goal':p.get('monthly_goal'),
+                'total_deliveries':p.get('total_deliveries'),'total_km':p.get('total_km'),'xp':p.get('xp'),'points':p.get('points'),
+                'updated_at':p.get('updated_at'),'current_mission':p.get('current_mission'),'recent_deliveries':p.get('recent_deliveries'),
+              })}
           out={
             'captured_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'version':version,
+            'version':compact(version),
             'candidates':candidates,
             'profiles':profiles,
-            'live_matches':[x for x in live_rows if str(x.get('account_user') or x.get('driver') or '').lower() in candidates],
-            'ranking_matches':[x for x in rank_rows if str(x.get('user') or '').lower() in candidates],
+            'live_matches':compact([x for x in live_rows if str(x.get('account_user') or x.get('driver') or '').lower() in candidates]),
+            'ranking_matches':compact([x for x in rank_rows if str(x.get('user') or '').lower() in candidates]),
           }
           p=pathlib.Path('server-local/jeanjc-delivery-diagnostic.json')
           p.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
@@ -52,6 +64,6 @@ jobs:
           git config user.name 'GAT Diagnostics'
           git config user.email 'actions@users.noreply.github.com'
           git add server-local/jeanjc-delivery-diagnostic.json
-          git commit -m 'Diagnostico: estado da entrega do JeanJC' || exit 0
+          git commit -m 'Diagnostico: estado compacto da entrega do JeanJC' || exit 0
           git pull --rebase -X theirs
           git push
