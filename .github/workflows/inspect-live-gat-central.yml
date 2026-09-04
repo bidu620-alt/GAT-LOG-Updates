@@ -6,7 +6,7 @@ on:
     paths: ['.github/workflows/inspect-live-gat-central.yml']
 permissions:
   contents: read
-# Recheck completo solicitado em 2026-09-02 02:08 UTC; inclui presença das rotas novas sem autenticar.
+# Diagnóstico 2026-09-04: status ONLINE de Xuxa/EduardoVidal/JeanJC e entrega Chocolate do JeanJC.
 jobs:
   inspect:
     runs-on: ubuntu-latest
@@ -15,8 +15,9 @@ jobs:
       - name: Inspect public live/profile/ranking safely
         shell: python
         run: |
-          import json, urllib.request, urllib.error
+          import json, urllib.request, urllib.error, datetime
           base='https://api.gatlogets2.com.br'
+          users=['xuxa','eduardovidal','jeanjc']
           def request(path,method='GET',payload=None):
               data=None if payload is None else json.dumps(payload).encode()
               req=urllib.request.Request(base+path,data=data,method=method,headers={'User-Agent':'GAT-Live-Diagnostic/1.0','Cache-Control':'no-cache','Content-Type':'text/plain;charset=UTF-8'})
@@ -29,38 +30,41 @@ jobs:
                   return e.code,body
               except Exception as e:
                   return 0,{'error':type(e).__name__+': '+str(e)}
-          for path in ['/health','/api/public/driver?user=biduzao','/api/public/account-live','/api/public/ranking']:
-              status,data=request(path)
-              print('\n===',path,'HTTP',status,'===')
-              if path=='/health':
-                  print(json.dumps(data,ensure_ascii=False,indent=2))
-              elif path.startswith('/api/public/driver'):
-                  p=(data or {}).get('profile') or {}
-                  m=p.get('current_mission') or {}
-                  print(json.dumps({
-                    'ok':data.get('ok'),'user':p.get('user'),'monthly_completed':p.get('monthly_completed'),
-                    'total_deliveries':p.get('total_deliveries'),'xp':p.get('xp'),'points':p.get('points'),
-                    'mission':{k:m.get(k) for k in ['id','sequence','title','state','min_km','cargo','source','destination','planned_distance_km','trip_progress_confirmed','rank_guard','last_rejected_reason','last_rejected_at','last_distance_km']},
-                    'last_deliveries':[{k:d.get(k) for k in ['id','sequence','cargo','source','destination','distance_km','xp','gat_points','delivered_at','rank_verified','rank_client_version']} for d in (p.get('deliveries') or [])[-5:]]
-                  },ensure_ascii=False,indent=2))
-              elif path=='/api/public/account-live':
-                  rows=[]
-                  for x in (data or {}).get('telemetry') or []:
-                      if str(x.get('account_user','')).lower()!='biduzao': continue
-                      raw=x.get('telemetry') or {}
-                      rows.append({
-                        'driver':x.get('driver'),'account_user':x.get('account_user'),'updated_at':x.get('updated_at'),'rank_status':x.get('rank_status'),
-                        'on_job':x.get('on_job'),'cargo_name':x.get('cargo_name'),'source_city':x.get('source_city'),'destination_city':x.get('destination_city'),'mass_kg':x.get('mass_kg'),'remaining_km':x.get('remaining_km'),
-                        'gat_client_version':raw.get('gat_client_version'),'gat_packet_id':raw.get('gat_packet_id'),'gat_collected_at':raw.get('gat_collected_at'),'gat_job_event':raw.get('gat_job_event'),'job_latched':raw.get('job_latched'),'job_latch_key':raw.get('job_latch_key'),
-                        'damage':{k:raw.get(k) for k in ['cargo_damage_pct','truck_engine_damage_pct','truck_transmission_damage_pct','truck_cabin_damage_pct','truck_chassis_damage_pct','truck_wheels_damage_pct','trailer_damage_pct']}
-                      })
-                  print(json.dumps({'ok':data.get('ok'),'rows':rows},ensure_ascii=False,indent=2))
-              else:
-                  rows=[x for x in (data or {}).get('ranking') or [] if str(x.get('user','')).lower()=='biduzao']
-                  print(json.dumps({'ok':data.get('ok'),'biduzao':rows},ensure_ascii=False,indent=2))
-          for path in ['/api/site/admin/unclassified','/api/site/admin/classify']:
-              status,data=request(path,'POST',{})
-              print('\n=== ROUTE CHECK',path,'HTTP',status,'===')
-              print(json.dumps(data,ensure_ascii=False,indent=2))
-              if status==404:
-                  raise SystemExit('latest classification route is missing: '+path)
+
+          status,health=request('/health')
+          print('\n=== HEALTH HTTP',status,'===')
+          print(json.dumps(health,ensure_ascii=False,indent=2))
+
+          status,live=request('/api/public/account-live')
+          print('\n=== ACCOUNT LIVE HTTP',status,'===')
+          rows=[]
+          for x in (live or {}).get('telemetry') or []:
+              u=str(x.get('account_user') or x.get('driver') or '').lower()
+              if u not in users: continue
+              raw=x.get('telemetry') or {}
+              rows.append({
+                'driver':x.get('driver'),'account_user':x.get('account_user'),'updated_at':x.get('updated_at'),'rank_status':x.get('rank_status'),
+                'on_job':x.get('on_job'),'cargo_name':x.get('cargo_name'),'source_city':x.get('source_city'),'destination_city':x.get('destination_city'),
+                'mass_kg':x.get('mass_kg'),'remaining_km':x.get('remaining_km'),'speed_kmh':x.get('speed_kmh'),
+                'gat_client_version':raw.get('gat_client_version'),'gat_packet_id':raw.get('gat_packet_id'),'gat_collected_at':raw.get('gat_collected_at'),
+                'gat_trip_id':raw.get('gat_trip_id'),'gat_map':raw.get('gat_map'),'game_name':raw.get('game_name') or raw.get('gameName')
+              })
+          print(json.dumps({'ok':(live or {}).get('ok'),'server_now_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'rows':rows},ensure_ascii=False,indent=2))
+
+          for user in users:
+              status,data=request('/api/public/driver?user='+user)
+              print('\n=== DRIVER',user,'HTTP',status,'===')
+              p=(data or {}).get('profile') or {}
+              deliveries=p.get('deliveries') or []
+              print(json.dumps({
+                'ok':(data or {}).get('ok'),'user':p.get('user'),'last_telemetry_at':p.get('last_telemetry_at'),
+                'total_deliveries':p.get('total_deliveries'),'total_km':p.get('total_km'),'xp':p.get('xp'),'points':p.get('points'),
+                'current_mission':p.get('current_mission'),
+                'last_deliveries':[{k:d.get(k) for k in ['id','sequence','cargo','source','destination','distance_km','xp_awarded','gat_points','completed_at','delivered_at','ranking_reason','automatic_ranking_reason']} for d in deliveries[-8:]],
+                'chocolate_matches':[{k:d.get(k) for k in ['id','sequence','cargo','source','destination','distance_km','xp_awarded','gat_points','completed_at','delivered_at','ranking_reason']} for d in deliveries if 'chocol' in str(d.get('cargo','')).lower()]
+              },ensure_ascii=False,indent=2))
+
+          status,ranking=request('/api/public/ranking')
+          print('\n=== RANKING HTTP',status,'===')
+          r=[x for x in (ranking or {}).get('ranking') or [] if str(x.get('user','')).lower() in users]
+          print(json.dumps(r,ensure_ascii=False,indent=2))
