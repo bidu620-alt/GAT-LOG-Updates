@@ -11,11 +11,11 @@ using System.Windows.Forms;
 
 internal class Updater : Form
 {
-    const string PackageUrl="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_SERVER_LOCAL_1.0.54.zip";
+    const string PackageUrl="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_SERVER_LOCAL_1.0.55.zip";
     const string PackageHash="__PAYLOAD_SHA256__";
     readonly Label status=new Label{Dock=DockStyle.Fill,TextAlign=ContentAlignment.MiddleCenter,Text="Preparando atualizacao do GAT Servidor..."};
     [STAThread] static void Main(){Application.EnableVisualStyles();Application.Run(new Updater());}
-    Updater(){Text="GAT Servidor 1.0.54 - caixa-preta de viagens";ClientSize=new Size(620,170);StartPosition=FormStartPosition.CenterScreen;Controls.Add(status);Shown+=async(s,e)=>await Install();}
+    Updater(){Text="GAT Servidor 1.0.55 - carga livre";ClientSize=new Size(620,170);StartPosition=FormStartPosition.CenterScreen;Controls.Add(status);Shown+=async(s,e)=>await Install();}
     static string Hash(string path){using(var sha=SHA256.Create())using(var f=File.OpenRead(path))return BitConverter.ToString(sha.ComputeHash(f)).Replace("-","").ToLowerInvariant();}
     async Task Install(){
         string temp=Path.Combine(Path.GetTempPath(),"GAT-local-"+Guid.NewGuid().ToString("N"));
@@ -47,13 +47,13 @@ internal class Updater : Form
             previous=Path.Combine(target,"update-backups",DateTime.Now.ToString("yyyyMMdd-HHmmss")+"-"+(version??"desconhecida"));Directory.CreateDirectory(previous);
             File.Copy(exe,Path.Combine(previous,"GAT_LOG_SERVER.exe"),true);CopyDirectory(central,Path.Combine(previous,"central"));
             string db=Path.Combine(data,"central.sqlite");if(File.Exists(db)){Directory.CreateDirectory(Path.Combine(previous,"data"));File.Copy(db,Path.Combine(previous,"data","central.sqlite"),true);}
-            status.Text="Instalando Central 1.0.54 e ativando recibos/checkpoints de viagem...";
+            status.Text="Instalando Central 1.0.55 e ativando a politica de carga livre...";
             string oldCentral=central+"-old-"+Guid.NewGuid().ToString("N"),incoming=central+"-new-"+Guid.NewGuid().ToString("N");
             CopyDirectory(Path.Combine(stage,"central"),incoming);Directory.Move(central,oldCentral);Directory.Move(incoming,central);
             string replacement=Path.Combine(target,"GAT_LOG_SERVER.replacement");File.Copy(Path.Combine(stage,"GAT_LOG_SERVER.exe"),replacement,true);File.Replace(replacement,exe,null);
             try{Directory.Delete(oldCentral,true);}catch{}
             Process.Start(new ProcessStartInfo(exe,"--central-only"){WorkingDirectory=target,UseShellExecute=true});
-            MessageBox.Show(this,"GAT Servidor 1.0.54 instalado.\r\n\r\nA Central agora grava recibo idempotente de cada pacote, mantem checkpoints recuperaveis da viagem e valida a cadeia assinada enviada pelo GAT Telemetria 1.0.32. Pacote local adulterado continua podendo preservar historico/XP, mas nao libera Pontos GAT automaticamente.\r\n\r\nA correcao 1.0.53 que impedia motoristas em viagem de ficarem OFFLINE por erro de chave estrangeira continua incluida. Banco, historico, pontos, entregas, contas, senhas, PCs vinculados e viagens abertas foram preservados.","Atualizacao concluida",MessageBoxButtons.OK,MessageBoxIcon.Information);Close();
+            MessageBox.Show(this,"GAT Servidor 1.0.55 instalado.\r\n\r\nAgora o nome/tipo da carga e apenas informacao visual: qualquer carga detectada e entregue pode contar, inclusive cargas novas, de DLC ou mods. Nao existe mais fila de 'Cargas a classificar' e a compatibilidade da carga nao recusa a viagem.\r\n\r\nAs protecoes e correcoes das versoes anteriores, incluindo caixa-preta da Telemetria 1.0.32, recibos, checkpoints, banco, historico, pontos, contas, senhas, PCs vinculados e viagens abertas, foram preservadas.","Atualizacao concluida",MessageBoxButtons.OK,MessageBoxIcon.Information);Close();
         }catch(Exception ex){
             try{if(previous!=null){StopCentral(data,Path.Combine(central,"node.exe"));if(Directory.Exists(Path.Combine(previous,"central"))){if(Directory.Exists(central))Directory.Delete(central,true);CopyDirectory(Path.Combine(previous,"central"),central);}if(File.Exists(Path.Combine(previous,"GAT_LOG_SERVER.exe")))File.Copy(Path.Combine(previous,"GAT_LOG_SERVER.exe"),exe,true);}}catch{}
             status.Text="Atualizacao nao concluida.";MessageBox.Show(this,ex.Message,"GAT Servidor",MessageBoxButtons.OK,MessageBoxIcon.Warning);
