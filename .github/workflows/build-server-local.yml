@@ -1,4 +1,4 @@
-name: Build GAT Server 1.0.55 Local
+name: Build GAT Server 1.0.56 Local
 on:
   workflow_dispatch:
   push:
@@ -90,9 +90,14 @@ jobs:
       - name: Verify GAT Server 1.0.55 open cargo
         shell: bash
         run: node --test --test-timeout=30000 server-local/open-cargo-v155.test.mjs
-      - name: Prepare panel version 1.0.55
+      - name: Apply GAT Server 1.0.56 damage evidence points
+        run: python server-local/apply-v156-damage-evidence-points.py server-local/runtime
+      - name: Verify GAT Server 1.0.56 damage evidence and manual review
+        shell: bash
+        run: node --test --test-timeout=30000 server-local/damage-evidence-points-v156.test.mjs
+      - name: Prepare panel version 1.0.56
         run: python server-local/patch-ui-version.py
-      - name: Compile panel 1.0.55
+      - name: Compile panel 1.0.56
         run: dotnet build server-local/ui/GAT_LOG_SERVER.csproj -c Release -o server-local/ui-out
       - name: Package verified Node runtime and application
         shell: python
@@ -113,7 +118,7 @@ jobs:
               check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
               assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
           text=(central/'worker.js').read_text();rank=(central/'ranking-telemetry.js').read_text();cache=(central/'read-cache.js').read_text();host=(central/'host.mjs').read_text();schema=(central/'schema.sql').read_text();panel=(root/'ui/GatLogServer/CentralPanel.cs').read_text()
-          assert '1.0.55-local' in text and 'const MIN_KM=0;' in text and "catalog_id:'__open_cargo__'" in text and 'open_cargo:true' in text and "cargo_mode:'open'" in text and "cargo_rule:'none'" in text and "observedIdle=clean(str(raw,'gat_job_state'" in text and 'tripReplaced=!!(hasLoadedJob' in text and "invalidateRead('profile:'+account)" in text and 'export function invalidateRead' in cache
+          assert '1.0.56-local' in text and 'const MIN_KM=0;' in text and "catalog_id:'__open_cargo__'" in text and 'open_cargo:true' in text and "cargo_mode:'open'" in text and "cargo_rule:'none'" in text and "observedIdle=clean(str(raw,'gat_job_state'" in text and 'tripReplaced=!!(hasLoadedJob' in text and "invalidateRead('profile:'+account)" in text and 'export function invalidateRead' in cache
           assert "reason:'cargo_not_compatible'" not in text and 'cargo_classification_queue' not in text and '/api/site/admin/classify' not in text and '/api/site/admin/unclassified' not in text and 'delivery_completed_pending_classification' not in text and 'autoClassifyCargo' not in text and 'learnCargoAlias' not in text
           assert 'RANK_STARTUP_GRACE_MS = 120000' in rank and 'migrated_startup_guard_v145' in rank and 'startup_started_at:t' in text and "last_rejected_reason:undefined" in text
           assert 'preflightTruckDamageReady=false' in text and 'preflight_truck_damage_ready' in text and '!next.preflight_truck_damage_ready' in rank
@@ -126,6 +131,7 @@ jobs:
           assert 'DAMAGE_TRANSIENT_GRACE_MS = 30000' in rank and 'RESUME_VALID_SAMPLES = 2' in rank and 'telemetry_resume_pending' in rank
           assert "observedIdle||tripReplaced||gatJobEvent==='cancelled'" not in text
           assert 'function gatReviewSuggestion' in text and "'review_gat_points'" in text and 'gat_review_suggested_points' in text and 'gat_manual_review' in text and 'gat_review_already_done' in text and 'automatic_ranking_reason' in text and 'points=MAX(0,points+?)' in text
+          assert 'function damageRankCanAutoScore' in text and 'rankDamageAutoRecovered=damageRankCanAutoScore' in text and 'ranking_recovered_from_damage_evidence:rankDamageAutoRecovered' in text and "trigger==='damage_data_incomplete'" in text and "trigger==='migrated_damage_data_incomplete'" in text
           assert 'CREATE TABLE IF NOT EXISTS telemetry_packet_receipts' in schema and 'CREATE TABLE IF NOT EXISTS telemetry_journal_state' in schema and 'CREATE TABLE IF NOT EXISTS trip_checkpoints' in schema
           assert 'inspectClientPacket' in text and 'persistClientPacket' in text and 'journal_signature_invalid' in text and 'journal_chain_gap' in text and 'gat_journal_invalid' in text and 'local_journal_invalid' in rank and 'createHmac' in text
           assert 'go_live_baseline_2026_09_02' in host and 'DELETE FROM deliveries' in host and 'points=0' in host and 'reconcileMonthlyTripCount' in host and 'substr(d.delivered_at,1,7)' in host and 'MIN(monthly_goal' not in host
@@ -133,7 +139,7 @@ jobs:
           assert 'repairJeanJcRejectedDelivery' in host and 'recoverJeanJcEvidence' in host and 'repair_jeanjc_2026_09_03_v1' in host and '90be671a94074e8e900ef83e892b6a41' in host and 'repair_fallback_no_backup' in host
           assert 'repair_eduardovidal_loader_2026_09_03_v151' in host and 'transient_final_damage_packet' in host
           assert 'IsLocalCentral' in panel and 'version.EndsWith("-local"' in panel and '1.0.40-local' not in panel
-          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.55.zip')
+          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.56.zip')
           with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
               for p in stage.rglob('*'):
                   if p.is_file():z.write(p,p.relative_to(stage))
@@ -141,19 +147,19 @@ jobs:
           release.with_suffix('.sha256').write_text(digest+'  '+release.name+'\n')
       - name: Compile updater
         run: dotnet build server-local/updater/Updater.csproj -c Release -o server-local/updater-out
-      - name: Publish GAT Server 1.0.55 updater
+      - name: Publish GAT Server 1.0.56 updater
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
-          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.55_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.55_LOCAL.exe
+          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.56_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.56_LOCAL.exe
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add releases/GAT_LOG_SERVER_UPDATE_1.0.55_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.55.zip releases/GAT_SERVER_LOCAL_1.0.55.sha256
-          git commit -m 'Publish GAT Server 1.0.55 open cargo'
+          git add releases/GAT_LOG_SERVER_UPDATE_1.0.56_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.56.zip releases/GAT_SERVER_LOCAL_1.0.56.sha256
+          git commit -m 'Publish GAT Server 1.0.56 damage evidence points'
           git restore server-local/updater/Program.cs server-local/ui/GatLogServer/MainForm.cs server-local/ui/Properties/AssemblyInfo.cs
           git pull --rebase -X theirs
           git push
       - uses: actions/upload-artifact@v4
         with:
-          name: GAT-Server-1.0.55-local-updater
-          path: server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.55_LOCAL.exe
+          name: GAT-Server-1.0.56-local-updater
+          path: server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.56_LOCAL.exe
