@@ -33,7 +33,7 @@
 </header>
 <main class="map-live-page">
   <section class="map-toolbar">
-    <div class="map-title"><span class="map-icon">⌖</span><div><h1>Mapa ao Vivo</h1><p>GAT LOG • ETS2 • múltiplos mapas</p></div></div>
+    <div class="map-title"><span class="map-icon">⌖</span><div><h1>Mapa ao Vivo</h1><p>GAT LOG • ETS2 + ATS • múltiplos mapas</p></div></div>
     <div class="map-stats"><div><small>ONLINE</small><b id="mapOnline">0</b></div><div><small>EM VIAGEM</small><b id="mapTrips">0</b></div><div><small>COM POSIÇÃO</small><b id="mapTelemetry">0</b></div><div><small>ATUALIZAÇÃO</small><b id="mapClock">--:--:--</b></div></div>
     <span id="mapLiveState" class="map-live-badge">● CONECTANDO</span>
   </section>
@@ -41,6 +41,7 @@
   <section class="map-mapbar">
     <div class="map-world-tabs" aria-label="Mapa em uso">
       <button class="active" type="button" data-map="base">MAPA BASE <b id="mapCountBase">0</b></button>
+      <button type="button" data-map="ats">ATS <b id="mapCountAts">0</b></button>
       <button type="button" data-map="promods">PROMODS <b id="mapCountPromods">0</b></button>
       <button type="button" data-map="rbr">RBR <b id="mapCountRbr">0</b></button>
       <button type="button" data-map="rotas_brasil">ROTAS BRASIL <b id="mapCountRotas">0</b></button>
@@ -57,7 +58,7 @@
       <div id="mapDrivers" class="map-driver-list"><div class="map-loading">Consultando Central GAT...</div></div>
     </aside>
     <section id="mapStage" class="ets2-map-stage map-look-dark">
-      <div id="ets2Map" aria-label="Mapa do Euro Truck Simulator 2 com motoristas GAT ao vivo"></div>
+      <div id="ets2Map" aria-label="Mapa do ETS2 e ATS com motoristas GAT ao vivo"></div>
       <div id="coordinateNotice" class="coordinate-notice"><b>AGUARDANDO POSIÇÃO DO MOTORISTA</b><span>Com o GAT Telemetria conectado, o caminhão aparece automaticamente na aba correspondente ao mapa escolhido.</span></div>
       <div id="mapBaseNote" class="map-base-note">MAPA BASE • CARREGANDO TILES ORIGINAIS DO ETS2...</div>
       <div class="map-legend"><span><i class="green-dot"></i> Em viagem</span><span><i class="amber-dot"></i> Online / parado</span><span><i class="gray-dot"></i> Sem posição recente</span></div>
@@ -66,11 +67,11 @@
 </main>
 <script src="official-v5.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="map-config.js?v=9"></script>
+<script src="map-config.js?v=10"></script>
 <script src="mapa.js?v=7"></script>
 <script src="map-driver-stable.js?v=1"></script>
 <script src="map-driver-identity.js?v=1"></script>
 <script src="map-marker-truck.js?v=7"></script>
-<script src="map-direct-tiles.js?v=4"></script>
+<script src="map-direct-tiles.js?v=5"></script>
 </body>
 </html>
