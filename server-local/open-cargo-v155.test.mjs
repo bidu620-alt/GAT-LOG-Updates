@@ -20,3 +20,12 @@ test('1.0.55 aceita qualquer carga e remove classificacao obrigatoria',()=>{
   assert.doesNotMatch(worker,/learnCargoAlias/);
   assert.doesNotMatch(worker,/cargo_classification_queue/);
 });
+
+test('1.0.55 preserva processamento da viagem e caixa-preta 1.0.54',()=>{
+  assert.match(worker,/async function processMission\(/);
+  assert.match(worker,/inspectClientPacket/);
+  assert.match(worker,/persistClientPacket/);
+  assert.match(worker,/createHmac/);
+  assert.match(worker,/journal_signature_invalid/);
+  assert.match(worker,/journal_chain_gap/);
+});
