@@ -1,4 +1,4 @@
-name: Build GAT Server 1.0.52 Local
+name: Build GAT Server 1.0.53 Local
 on:
   workflow_dispatch:
   push:
@@ -75,9 +75,14 @@ jobs:
       - name: Verify GAT Server 1.0.52 points review
         shell: bash
         run: node --test --test-timeout=30000 server-local/admin-gat-review-v152.test.mjs
-      - name: Prepare panel version 1.0.52
+      - name: Apply GAT Server 1.0.53 live telemetry FK hotfix
+        run: python server-local/apply-v153-live-telemetry-fk-fix.py server-local/runtime
+      - name: Verify GAT Server 1.0.53 live telemetry regression
+        shell: bash
+        run: node --test --test-timeout=30000 server-local/live-telemetry-v153.test.mjs
+      - name: Prepare panel version 1.0.53
         run: python server-local/patch-ui-version.py
-      - name: Compile panel 1.0.52
+      - name: Compile panel 1.0.53
         run: dotnet build server-local/ui/GAT_LOG_SERVER.csproj -c Release -o server-local/ui-out
       - name: Package verified Node runtime and application
         shell: python
@@ -98,13 +103,15 @@ jobs:
               check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
               assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
           text=(central/'worker.js').read_text();rank=(central/'ranking-telemetry.js').read_text();cache=(central/'read-cache.js').read_text();host=(central/'host.mjs').read_text();schema=(central/'schema.sql').read_text();panel=(root/'ui/GatLogServer/CentralPanel.cs').read_text()
-          assert '1.0.52-local' in text and 'const MIN_KM=0;' in text and 'cargo_classification_queue' in text and '/api/site/admin/classify' in text and 'first.score>=.85' in text and 'suvs?' in text and "observedIdle=clean(str(raw,'gat_job_state'" in text and 'tripReplaced=!!(hasLoadedJob' in text and "invalidateRead('profile:'+account)" in text and 'export function invalidateRead' in cache
+          assert '1.0.53-local' in text and 'const MIN_KM=0;' in text and 'cargo_classification_queue' in text and '/api/site/admin/classify' in text and 'first.score>=.85' in text and 'suvs?' in text and "observedIdle=clean(str(raw,'gat_job_state'" in text and 'tripReplaced=!!(hasLoadedJob' in text and "invalidateRead('profile:'+account)" in text and 'export function invalidateRead' in cache
           assert 'RANK_STARTUP_GRACE_MS = 120000' in rank and 'migrated_startup_guard_v145' in rank and 'startup_started_at:t' in text and "last_rejected_reason:undefined" in text
           assert 'preflightTruckDamageReady=false' in text and 'preflight_truck_damage_ready' in text and '!next.preflight_truck_damage_ready' in rank
           assert 'monthly_completed=monthly_completed+1' in text and 'history_recorded:true' in text and 'ranking_reason:rankReason' in text and "reason:'route_already_used'" not in text and "classification_status:'pending',monthly_increment:1" in text
           assert 'SELECT p.user,p.monthly_completed,p.total_deliveries' in text and 'scoring:{base_per_delivery:100}' in text and 'max_monthly:3000' not in text
           assert "const adminTest=false;" in text and "clean(user)==='biduzao'" not in text and "admin_test_mode:clean(s.user)==='biduzao'" not in text
           assert 'CREATE TABLE IF NOT EXISTS open_trips' in schema and 'CREATE TABLE IF NOT EXISTS open_trip_aliases' in schema and 'prepareOpenJourney' in text and 'finishOpenJourney' in text and 'canonical_trip_id' in text
+          assert "canonical=await saveOpenJourney(env,user,current,raw,t,'active')||canonical;" in text and 'if(observed&&canonical)await openJourneyAlias(env,user,observed,canonical,t);' in text
+          assert "if(observed){current.trip_id=observed;current.job_latch_key=observed;await openJourneyAlias(env,user,observed,canonical,t)}" not in text
           assert 'DAMAGE_TRANSIENT_GRACE_MS = 30000' in rank and 'RESUME_VALID_SAMPLES = 2' in rank and 'telemetry_resume_pending' in rank
           assert "observedIdle||tripReplaced||gatJobEvent==='cancelled'" not in text
           assert 'function gatReviewSuggestion' in text and "'review_gat_points'" in text and 'gat_review_suggested_points' in text and 'gat_manual_review' in text and 'gat_review_already_done' in text and 'automatic_ranking_reason' in text and 'points=MAX(0,points+?)' in text
@@ -113,7 +120,7 @@ jobs:
           assert 'repairJeanJcRejectedDelivery' in host and 'recoverJeanJcEvidence' in host and 'repair_jeanjc_2026_09_03_v1' in host and '90be671a94074e8e900ef83e892b6a41' in host and 'repair_fallback_no_backup' in host
           assert 'repair_eduardovidal_loader_2026_09_03_v151' in host and 'transient_final_damage_packet' in host
           assert 'IsLocalCentral' in panel and 'version.EndsWith("-local"' in panel and '1.0.40-local' not in panel
-          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.52.zip')
+          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.53.zip')
           with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
               for p in stage.rglob('*'):
                   if p.is_file():z.write(p,p.relative_to(stage))
@@ -121,19 +128,19 @@ jobs:
           release.with_suffix('.sha256').write_text(digest+'  '+release.name+'\n')
       - name: Compile updater
         run: dotnet build server-local/updater/Updater.csproj -c Release -o server-local/updater-out
-      - name: Publish GAT Server 1.0.52 updater
+      - name: Publish GAT Server 1.0.53 updater
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
-          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.52_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.52_LOCAL.exe
+          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.53_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.53_LOCAL.exe
           git config user.name 'GAT Server Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add releases/GAT_LOG_SERVER_UPDATE_1.0.52_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.52.zip releases/GAT_SERVER_LOCAL_1.0.52.sha256
-          git commit -m 'Publish GAT Server 1.0.52 Admin and Moderator points review'
+          git add releases/GAT_LOG_SERVER_UPDATE_1.0.53_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.53.zip releases/GAT_SERVER_LOCAL_1.0.53.sha256
+          git commit -m 'Publish GAT Server 1.0.53 live telemetry FK hotfix'
           git restore server-local/updater/Program.cs server-local/ui/GatLogServer/MainForm.cs
           git pull --rebase -X theirs
           git push
       - uses: actions/upload-artifact@v4
         with:
-          name: GAT-Server-1.0.52-local-updater
-          path: server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.52_LOCAL.exe
+          name: GAT-Server-1.0.53-local-updater
+          path: server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.53_LOCAL.exe
