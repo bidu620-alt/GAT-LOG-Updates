@@ -3,8 +3,8 @@
     "channel":  "stable-dotnet",
     "version":  "1.0.32",
     "display_version":  "1.0.32",
-    "notas":  "Caixa-preta local de viagem: cada pacote recebe ID, sequencia e assinatura; a fila offline e criptografada no PC com chave protegida pelo Windows. Entregas feitas sem Central/internet ficam aguardando e sao reenviadas em ordem quando a conexao voltar.",
+    "notas":  "1.0.32: corrige a validacao do registro do PC logo ao abrir e elimina travamentos progressivos da caixa-preta/fila offline, mantendo viagens offline, assinatura e criptografia local.",
     "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.32.exe",
     "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip",
-    "sha256":  "1d4a0900d6fc7407aca73def8c573a4930e02968b00eacfeead0f0d1533b899f"
+    "sha256":  "6739f9e970d9fd65e2fcb58487f0ef45cc447a0df80172e52774595eb66a0bf4"
 }

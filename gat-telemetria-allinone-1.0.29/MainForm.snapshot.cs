@@ -350,6 +350,7 @@ internal sealed class MainForm : Form
 		base.Shown += async delegate
 		{
 			await RestoreAccountAsync();
+			await ValidatePcRegistrationAsync();
 			await RefreshServerInfoAsync(force: true);
 			await CheckUpdateAsync(showNoUpdate: false);
 			if (_settings.AutoConnect && AccountReady && cmbServers.SelectedItem is ServerEntry)
@@ -992,6 +993,54 @@ internal sealed class MainForm : Form
 		}
 	}
 
+	private async Task ValidatePcRegistrationAsync()
+	{
+		if (!AccountReady)
+		{
+			return;
+		}
+		try
+		{
+			string driver = _accountUser;
+			CredentialEntry credential = ClientStore.FindCredential(AccountAuthority, driver);
+			string savedClientToken = ClientStore.GetPlainToken(credential);
+			ApiResponse response = await _api.LoginAsync(AccountAuthority, driver, _deviceId, savedClientToken, _accountUser, _accountToken);
+			if (response.StatusCode == 200 && response.Json != null && ApiClient.Bool(response.Json["ok"]))
+			{
+				string returnedToken = ApiClient.Str(response.Json["token"]);
+				if (!string.IsNullOrWhiteSpace(returnedToken))
+				{
+					ClientStore.SaveCredential(AccountAuthority, driver, returnedToken);
+				}
+				lblAccount.Text = "Conta: @" + _accountUser + " â€¢ PC vinculado";
+				lblAccount.ForeColor = Color.FromArgb(130, 224, 69);
+				SetPcRegistrationState(true, string.Empty);
+				return;
+			}
+			if (response.StatusCode == 428 && response.Json != null)
+			{
+				string pairingCode = ApiClient.Str(response.Json["pairing_code"]);
+				SetPcRegistrationState(false, pairingCode);
+				return;
+			}
+			lblPcRegister.Text = "Validando registro do PC";
+			lblPcRegister.ForeColor = Color.Gold;
+			lblPcRegisterDetail.Text = "A Central GAT vai tentar novamente automaticamente.";
+		}
+		catch (Exception ex)
+		{
+			ClientStore.Log("validacao inicial do PC: " + ex.Message);
+			if (lblPcRegister != null)
+			{
+				lblPcRegister.Text = "Validando registro do PC";
+				lblPcRegister.ForeColor = Color.Gold;
+			}
+			if (lblPcRegisterDetail != null)
+			{
+				lblPcRegisterDetail.Text = "A Central GAT vai tentar novamente automaticamente.";
+			}
+		}
+	}
 	private SpeechSynthesizer EnsureVoice()
 	{
 		if (_voice != null)
@@ -1314,9 +1363,14 @@ internal sealed class MainForm : Form
 		try
 		{
 			ClientStore.Ensure();
+			const long RotateAtBytes = 128L * 1024L * 1024L;
+			if (File.Exists(CentralTripBlackBoxFile) && new FileInfo(CentralTripBlackBoxFile).Length >= RotateAtBytes)
+			{
+				string archive = CentralTripBlackBoxFile + ".previous";
+				try { if (File.Exists(archive)) File.Delete(archive); } catch { }
+				try { File.Move(CentralTripBlackBoxFile, archive); } catch { }
+			}
 			File.AppendAllText(CentralTripBlackBoxFile, EncryptJournalPacket(tele) + Environment.NewLine, Encoding.ASCII);
-			string[] lines = File.ReadAllLines(CentralTripBlackBoxFile, Encoding.ASCII).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-			if (lines.Length > MaxBlackBoxPackets) File.WriteAllLines(CentralTripBlackBoxFile, lines.Skip(lines.Length - MaxBlackBoxPackets), Encoding.ASCII);
 		}
 		catch (Exception ex) { ClientStore.Log("caixa-preta local: " + ex.Message); }
 	}
@@ -1329,8 +1383,6 @@ internal sealed class MainForm : Form
 			ClientStore.Ensure();
 			StampCentralTelemetry(tele);
 			File.AppendAllText(CentralTelemetryQueueFile, EncryptJournalPacket(tele) + Environment.NewLine, Encoding.ASCII);
-			string[] lines = File.ReadAllLines(CentralTelemetryQueueFile, Encoding.ASCII).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-			if (lines.Length > MaxQueuedTelemetryPackets) File.WriteAllLines(CentralTelemetryQueueFile, lines.Skip(lines.Length - MaxQueuedTelemetryPackets), Encoding.ASCII);
 			ClientStore.Log("telemetria criptografada salva para reenvio: " + TextAny(tele, "gat_packet_id"));
 		}
 		catch (Exception ex) { ClientStore.Log("fila local segura: " + ex.Message); }
@@ -2610,6 +2662,7 @@ private static void CopyValue(JObject a, JObject b, string output, params string
 		return false;
 	}
 }
+
 
 
 
