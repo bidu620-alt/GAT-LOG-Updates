@@ -8,6 +8,7 @@ on:
       - 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
       - 'gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1'
       - 'gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1'
       - '.github/workflows/build-gat-telemetria-allinone-1.0.29.yml'
 
 permissions:
@@ -49,19 +50,22 @@ jobs:
           }
           ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root "$PWD/gat132-build"
           ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root "$PWD/gat132-build"
+          ./gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1 -Root "$PWD/gat132-build"
           $main = Get-ChildItem 'gat132-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
           if (-not $main) { throw 'MainForm.cs nao encontrado' }
           $mainText = Get-Content $main.FullName -Raw
           if ($mainText -notlike '*gat_schema"] = "job-v2"*') { throw 'Contrato job-v2 ausente do GAT Telemetria' }
           if ($mainText -like '*string text3 = (flag2 ? "delivered" : "cancelled")*') { throw 'Cliente ainda decide entregue/cancelado' }
-          foreach($marker in @('central-trip-blackbox.sec','central-telemetry-queue.sec','ProtectedData.Protect','ProtectedData.Unprotect','gat_journal_payload_sha256','gat_journal_chain','MigrateLegacyCentralTelemetryQueue')) {
-            if ($mainText -notlike "*$marker*") { throw "Caixa-preta 1.0.32 incompleta: $marker" }
+          foreach($marker in @('central-trip-blackbox.sec','central-telemetry-queue.sec','ProtectedData.Protect','ProtectedData.Unprotect','gat_journal_payload_sha256','gat_journal_chain','MigrateLegacyCentralTelemetryQueue','ValidatePcRegistrationAsync')) {
+            if ($mainText -notlike "*$marker*") { throw "GAT Telemetria 1.0.32 incompleta: $marker" }
           }
+          if ($mainText -like '*File.ReadAllLines(CentralTripBlackBoxFile*') { throw 'Hotfix de congelamento nao aplicado na caixa-preta' }
+          if ($mainText -like '*File.ReadAllLines(CentralTelemetryQueueFile*') { throw 'Hotfix de congelamento nao aplicado na fila offline' }
           Copy-Item $main.FullName 'gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs' -Force
           $project = Get-ChildItem 'gat132-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
           if (-not $project) { throw 'GAT_TELEMETRIA.csproj nao encontrado' }
           msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
-          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar GAT Telemetria 1.0.32' }
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilacao do GAT Telemetria 1.0.32' }
           $projectDir = Split-Path $project.FullName -Parent
           $exe = Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
           if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado' }
@@ -138,7 +142,7 @@ jobs:
             channel = 'stable-dotnet'
             version = '1.0.32'
             display_version = '1.0.32'
-            notas = 'Caixa-preta local de viagem: cada pacote recebe ID, sequencia e assinatura; a fila offline e criptografada no PC com chave protegida pelo Windows. Entregas feitas sem Central/internet ficam aguardando e sao reenviadas em ordem quando a conexao voltar.'
+            notas = '1.0.32: corrige a validacao do registro do PC logo ao abrir e elimina travamentos progressivos da caixa-preta/fila offline, mantendo viagens offline, assinatura e criptografia local.'
             setup_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.32.exe'
             source_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip'
             sha256 = $sha
@@ -152,7 +156,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -- gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss
           git add -f releases/GAT_TELEMETRIA_SETUP_1.0.32.exe releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip client_dotnet_version.json gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs
-          git commit -m "Publica GAT Telemetria 1.0.32 com caixa-preta segura"
+          git commit -m "Republica GAT Telemetria 1.0.32 com hotfix de estabilidade"
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da 1.0.32' }
           git pull --rebase origin main
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao sincronizar antes da publicacao' }
