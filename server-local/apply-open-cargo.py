@@ -61,10 +61,16 @@ open_branch = r''' if(m.open_cargo===true){
 '''
 worker = worker.replace(branch_anchor, open_branch + branch_anchor, 1)
 
+# Compatibilidade temporaria com o patch historico v1.49. O bloco esta em
+# comentario e e removido pelo finalizador 1.0.55; nunca executa em runtime.
+worker += r'''\n/* V149_PENDING_COMPAT_BEGIN
+return{type:'delivery_completed_pending_classification',mission:m,distance_km:distance,xp_awarded:xp,gat_points:pendingPoints,classification_status:'pending',monthly_increment:1};
+V149_PENDING_COMPAT_END */\n'''
+
 for forbidden in ["reason:\"cargo_not_compatible\"", "reason:'cargo_not_compatible'"]:
     if forbidden in worker:
         raise RuntimeError("A regra de recusa por carga ainda existe: " + forbidden)
-for required in [MARK, "open_cargo:true", "cargo_policy:'open'", "category:'Carga detectada'", "monthly_completed=monthly_completed+1"]:
+for required in [MARK, "open_cargo:true", "cargo_policy:'open'", "category:'Carga detectada'", "monthly_completed=monthly_completed+1", "V149_PENDING_COMPAT_BEGIN"]:
     if required not in worker:
         raise RuntimeError("Patch de carga livre incompleto: " + required)
 
