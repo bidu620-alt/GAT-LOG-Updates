@@ -11,20 +11,52 @@ def replace_once(text, old, new, label):
         raise SystemExit('Nao encontrei '+label)
     return text.replace(old,new,1)
 
+
+def remove_js_function(text, signature):
+    start=text.find(signature)
+    if start<0:
+        raise SystemExit('Nao encontrei helper antigo: '+signature)
+    brace=text.find('{',start)
+    if brace<0:
+        raise SystemExit('Helper sem corpo: '+signature)
+    depth=0
+    i=brace
+    quote=None
+    escaped=False
+    while i<len(text):
+        ch=text[i]
+        if quote:
+            if escaped:
+                escaped=False
+            elif ch=='\\':
+                escaped=True
+            elif ch==quote:
+                quote=None
+        else:
+            if ch in ("'",'"','`'):
+                quote=ch
+            elif ch=='{':
+                depth+=1
+            elif ch=='}':
+                depth-=1
+                if depth==0:
+                    end=i+1
+                    while end<len(text) and text[end] in '\r\n':
+                        end+=1
+                    return text[:start]+text[end:]
+        i+=1
+    raise SystemExit('Nao consegui fechar helper: '+signature)
+
 # GAT Server 1.0.55 - carga aberta.
 # A carga observada pela telemetria e dado da viagem, nunca uma regra de aceitacao.
-# Qualquer nome novo (inclusive mods/mapas) abre uma viagem automatica, entra no
-# historico/cargo_history e pode contar normalmente. Nao existe fila de classificacao.
 worker=replace_once(worker,"const VERSION='1.0.54-local';","const VERSION='1.0.55-local';",'versao 1.0.54')
 
-# Remove definitivamente a rejeicao por compatibilidade entre nome da carga e catalogo.
-# Em algumas builds o normalize-go-live ja remove esta trava antes da 1.0.55; nesse
-# caso seguimos normalmente e a verificacao final garante que ela nao voltou.
+# A carga nunca e rejeitada por compatibilidade com catalogo/categoria.
 cargo_guard="if(!await cargoOK(env,m,m.cargo||f.cargo_name)){await resetAssigned(env,user,m,'cargo_not_compatible',{last_cargo:m.cargo||f.cargo_name});return{type:'delivery_rejected',reason:'cargo_not_compatible'}}"
 if cargo_guard in worker:
     worker=worker.replace(cargo_guard,'',1)
 
-# Troca o nascimento de missao por classificacao por uma missao automatica de carga aberta.
+# Qualquer carga detectada abre uma viagem automaticamente, inclusive nomes de mods.
 start=worker.find(" const observed=flat(user,user,t,raw);\n if(!m&&observed.cargo_name&&Number(observed.mass_kg)>0){")
 end=worker.find("\n if(!m)return null;",start)
 if start<0 or end<0:
@@ -45,7 +77,7 @@ open_start=""" const observed=flat(user,user,t,raw);
  if(!m)return null;"""
 worker=worker[:start]+open_start+worker[end:]
 
-# Substitui o antigo ramo "pendente de classificacao" por conclusao normal de carga aberta.
+# Uma carga aberta conclui como entrega normal e entra no historico/ranking normal.
 pending_start=worker.find(" if(m.pending_classification){")
 learn_start=worker.find(" if(m.classification_mode==='automatic'&&workId)await learnCargoAlias",pending_start)
 if pending_start<0 or learn_start<0:
@@ -64,24 +96,30 @@ open_finish=r''' if(m.open_cargo){
 '''
 worker=worker[:pending_start]+open_finish+worker[learn_end+1:]
 
-# A moderacao de carga deixa de existir: nenhum endpoint lista ou classifica carga.
+# Remove as rotas visuais/administrativas da antiga fila de classificacao.
 admin_start=worker.find(" if(p==='/api/site/admin/unclassified'&&m==='POST'){")
 admin_end=worker.find(" if(p==='/api/site/admin/session'&&m==='POST')",admin_start)
 if admin_start<0 or admin_end<0:
     raise SystemExit('Nao encontrei endpoints antigos de classificacao')
 worker=worker[:admin_start]+worker[admin_end:]
 
-# Remove somente os helpers adicionados pelo classificador. O limite e o proprio
-# processMission, para preservar integralmente helpers de viagem, retomada e o
-# journal assinado da 1.0.54.
-helper_start=worker.find('function cargoWordSet(v){')
-helper_end=worker.find('async function processMission(',helper_start)
-if helper_start<0 or helper_end<0:
-    raise SystemExit('Nao encontrei bloco helper antigo de classificacao')
-worker=worker[:helper_start]+worker[helper_end:]
+# Remove cirurgicamente SOMENTE os helpers do classificador. Nao usa intervalo entre
+# funcoes para nao atingir processMission, retomada de viagem ou journal assinado.
+rules_start=worker.find('const AUTO_CARGO_RULES=[')
+rules_end=worker.find('function catalogCargoScore',rules_start)
+if rules_start<0 or rules_end<0:
+    raise SystemExit('Nao encontrei regras antigas de classificacao')
+worker=worker[:rules_start]+worker[rules_end:]
+for signature in [
+    'function cargoWordSet(v){',
+    'function cargoTextScore(a,b){',
+    'function catalogCargoScore(item,cargo){',
+    'async function autoClassifyCargo(env,cargo){',
+    'async function learnCargoAlias(env,cargo,workId,confidence=1,source=',
+]:
+    worker=remove_js_function(worker,signature)
 
-# Patches antigos de viagem ainda conhecem o nome do evento pendente. Como a 1.0.55
-# nunca mais produz esse evento, removemos tambem essas referencias residuais.
+# Patches antigos podem conhecer o nome do evento pendente; a 1.0.55 nunca o produz.
 worker=worker.replace(",'delivery_completed_pending_classification'",'')
 worker=worker.replace("'delivery_completed_pending_classification',",'')
 worker=worker.replace(',"delivery_completed_pending_classification"','')
@@ -96,8 +134,8 @@ required=[
     "cargo_history:c.results||[]",
     "history_recorded:true",
     "async function processMission(",
-    "inspectClientPacket",
-    "persistClientPacket",
+    "async function inspectClientPacket(",
+    "async function persistClientPacket(",
     "createHmac",
     "journal_signature_invalid",
     "journal_chain_gap",
@@ -114,9 +152,11 @@ for forbidden in [
     "autoClassifyCargo",
     "learnCargoAlias",
     "cargo_classification_queue",
+    "AUTO_CARGO_RULES",
+    "cargoTextScore",
 ]:
     if forbidden in worker:
         raise SystemExit('Classificacao antiga ainda ativa no runtime: '+forbidden)
 
 worker_path.write_text(worker,encoding='utf-8')
-print('GAT Server 1.0.55: carga aberta ativada; classificacao removida sem afetar journal/viagens.')
+print('GAT Server 1.0.55: carga aberta ativada; somente o classificador foi removido.')
