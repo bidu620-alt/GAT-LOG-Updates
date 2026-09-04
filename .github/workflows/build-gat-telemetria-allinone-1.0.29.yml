@@ -59,8 +59,8 @@ jobs:
           foreach($marker in @('central-trip-blackbox.sec','central-telemetry-queue.sec','ProtectedData.Protect','ProtectedData.Unprotect','gat_journal_payload_sha256','gat_journal_chain','MigrateLegacyCentralTelemetryQueue','ValidatePcRegistrationAsync')) {
             if ($mainText -notlike "*$marker*") { throw "GAT Telemetria 1.0.32 incompleta: $marker" }
           }
-          if ($mainText -like '*File.ReadAllLines(CentralTripBlackBoxFile*') { throw 'Hotfix de congelamento nao aplicado na caixa-preta' }
-          if ($mainText -like '*File.ReadAllLines(CentralTelemetryQueueFile*') { throw 'Hotfix de congelamento nao aplicado na fila offline' }
+          if ($mainText.Contains('File.ReadAllLines(CentralTripBlackBoxFile')) { throw 'Hotfix de congelamento nao aplicado na caixa-preta' }
+          if ($mainText.Contains('string[] lines = File.ReadAllLines(CentralTelemetryQueueFile')) { throw 'Hotfix de congelamento nao aplicado na fila offline' }
           Copy-Item $main.FullName 'gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs' -Force
           $project = Get-ChildItem 'gat132-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
           if (-not $project) { throw 'GAT_TELEMETRIA.csproj nao encontrado' }
