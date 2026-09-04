@@ -1,4 +1,4 @@
-name: Build GAT Telemetria All-in-One 1.0.31
+name: Build GAT Telemetria All-in-One 1.0.32
 
 on:
   push:
@@ -23,14 +23,14 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Recriar e compilar GAT Telemetria 1.0.31
+      - name: Recriar e compilar GAT Telemetria 1.0.32
         shell: powershell
         run: |
           $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
           $first = [Convert]::FromBase64String($firstText.Trim())
           $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
           if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias do fonte e encontrei $($parts.Count)" }
-          $zip = Join-Path $PWD 'gat131-source.zip'
+          $zip = Join-Path $PWD 'gat132-source.zip'
           $out = [IO.File]::Create($zip)
           try {
             $out.Write($first, 0, $first.Length)
@@ -39,26 +39,29 @@ jobs:
               $out.Write($bytes, 0, $bytes.Length)
             }
           } finally { $out.Dispose() }
-          if (Test-Path 'gat131-build') { Remove-Item 'gat131-build' -Recurse -Force }
-          Expand-Archive $zip 'gat131-build' -Force
-          Get-ChildItem 'gat131-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+          if (Test-Path 'gat132-build') { Remove-Item 'gat132-build' -Recurse -Force }
+          Expand-Archive $zip 'gat132-build' -Force
+          Get-ChildItem 'gat132-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
             $txt = Get-Content $_.FullName -Raw
             if ($txt -like '*1.0.28*') {
-              Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.31')) -Encoding UTF8
+              Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8
             }
           }
-          ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root "$PWD/gat131-build"
-          ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root "$PWD/gat131-build"
-          $main = Get-ChildItem 'gat131-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root "$PWD/gat132-build"
+          ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root "$PWD/gat132-build"
+          $main = Get-ChildItem 'gat132-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
           if (-not $main) { throw 'MainForm.cs nao encontrado' }
           $mainText = Get-Content $main.FullName -Raw
           if ($mainText -notlike '*gat_schema"] = "job-v2"*') { throw 'Contrato job-v2 ausente do GAT Telemetria' }
           if ($mainText -like '*string text3 = (flag2 ? "delivered" : "cancelled")*') { throw 'Cliente ainda decide entregue/cancelado' }
+          foreach($marker in @('central-trip-blackbox.sec','central-telemetry-queue.sec','ProtectedData.Protect','ProtectedData.Unprotect','gat_journal_payload_sha256','gat_journal_chain','MigrateLegacyCentralTelemetryQueue')) {
+            if ($mainText -notlike "*$marker*") { throw "Caixa-preta 1.0.32 incompleta: $marker" }
+          }
           Copy-Item $main.FullName 'gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs' -Force
-          $project = Get-ChildItem 'gat131-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          $project = Get-ChildItem 'gat132-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
           if (-not $project) { throw 'GAT_TELEMETRIA.csproj nao encontrado' }
           msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
-          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar GAT Telemetria 1.0.31' }
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar GAT Telemetria 1.0.32' }
           $projectDir = Split-Path $project.FullName -Parent
           $exe = Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
           if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado' }
@@ -107,51 +110,51 @@ jobs:
         run: |
           $iss = 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
           $issText = Get-Content $iss -Raw
-          $issText = $issText.Replace('1.0.29','1.0.31')
+          $issText = $issText.Replace('1.0.29','1.0.32')
           Set-Content $iss $issText -Encoding UTF8
           $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
           if (-not (Test-Path $iscc)) { throw 'ISCC.exe nao encontrado' }
           & $iscc $iss
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao gerar instalador All-in-One' }
-          $setup = 'gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_SETUP_1.0.31.exe'
-          if (-not (Test-Path $setup)) { throw 'Setup 1.0.31 nao foi gerado' }
+          $setup = 'gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_SETUP_1.0.32.exe'
+          if (-not (Test-Path $setup)) { throw 'Setup 1.0.32 nao foi gerado' }
           New-Item -ItemType Directory -Force -Path releases | Out-Null
-          Copy-Item $setup 'releases/GAT_TELEMETRIA_SETUP_1.0.31.exe' -Force
+          Copy-Item $setup 'releases/GAT_TELEMETRIA_SETUP_1.0.32.exe' -Force
 
       - name: Empacotar fonte GPL do TruckSim modificado
         shell: powershell
         run: |
-          $sourceZip = 'releases/TruckSimGPS_GAT_DANOS_1.0.31_SOURCE.zip'
+          $sourceZip = 'releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip'
           if (Test-Path $sourceZip) { Remove-Item $sourceZip -Force }
           Compress-Archive -Path 'trucksim-allinone-build/*' -DestinationPath $sourceZip -CompressionLevel Optimal
 
       - name: Atualizar manifesto do site
         shell: powershell
         run: |
-          $setup = 'releases/GAT_TELEMETRIA_SETUP_1.0.31.exe'
+          $setup = 'releases/GAT_TELEMETRIA_SETUP_1.0.32.exe'
           $sha = (Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant()
           $manifest = [ordered]@{
             app = 'GAT Telemetria'
             channel = 'stable-dotnet'
-            version = '1.0.31'
-            display_version = '1.0.31'
-            notas = 'Protocolo de viagem v2: o GAT Telemetria atua como sensor, envia estado bruto e trip_id unico; a Central GAT decide conclusao ou cancelamento e o site apenas exibe o resultado confirmado.'
-            setup_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.31.exe'
-            source_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.31_SOURCE.zip'
+            version = '1.0.32'
+            display_version = '1.0.32'
+            notas = 'Caixa-preta local de viagem: cada pacote recebe ID, sequencia e assinatura; a fila offline e criptografada no PC com chave protegida pelo Windows. Entregas feitas sem Central/internet ficam aguardando e sao reenviadas em ordem quando a conexao voltar.'
+            setup_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.32.exe'
+            source_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip'
             sha256 = $sha
           }
           $manifest | ConvertTo-Json | Set-Content 'client_dotnet_version.json' -Encoding UTF8
 
-      - name: Publicar instalador 1.0.31
+      - name: Publicar instalador 1.0.32
         shell: powershell
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -- gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss
-          git add -f releases/GAT_TELEMETRIA_SETUP_1.0.31.exe releases/TruckSimGPS_GAT_DANOS_1.0.31_SOURCE.zip client_dotnet_version.json gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs
-          git commit -m "Publica GAT Telemetria 1.0.31 com protocolo de viagem v2"
-          if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da 1.0.31' }
+          git add -f releases/GAT_TELEMETRIA_SETUP_1.0.32.exe releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip client_dotnet_version.json gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs
+          git commit -m "Publica GAT Telemetria 1.0.32 com caixa-preta segura"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da 1.0.32' }
           git pull --rebase origin main
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao sincronizar antes da publicacao' }
           git push
-          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar a 1.0.31' }
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar a 1.0.32' }
