@@ -18,10 +18,11 @@ def replace_once(text, old, new, label):
 worker=replace_once(worker,"const VERSION='1.0.54-local';","const VERSION='1.0.55-local';",'versao 1.0.54')
 
 # Remove definitivamente a rejeicao por compatibilidade entre nome da carga e catalogo.
+# Em algumas builds o normalize-go-live ja remove esta trava antes da 1.0.55; nesse
+# caso seguimos normalmente e a verificacao final garante que ela nao voltou.
 cargo_guard="if(!await cargoOK(env,m,m.cargo||f.cargo_name)){await resetAssigned(env,user,m,'cargo_not_compatible',{last_cargo:m.cargo||f.cargo_name});return{type:'delivery_rejected',reason:'cargo_not_compatible'}}"
-if cargo_guard not in worker:
-    raise SystemExit('Nao encontrei a trava cargo_not_compatible')
-worker=worker.replace(cargo_guard,'',1)
+if cargo_guard in worker:
+    worker=worker.replace(cargo_guard,'',1)
 
 # Troca o nascimento de missao por classificacao por uma missao automatica de carga aberta.
 start=worker.find(" const observed=flat(user,user,t,raw);\n if(!m&&observed.cargo_name&&Number(observed.mass_kg)>0){")
