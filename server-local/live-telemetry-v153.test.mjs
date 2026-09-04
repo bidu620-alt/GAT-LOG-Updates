@@ -29,8 +29,8 @@ test('schema e startup garantem tabelas de viagens em banco existente',()=>{
 
 test('pacote de viagem ja ativa nao cai em FK e atualiza telemetry_live',async t=>{
   const dir=mkdtempSync(join(tmpdir(),'gat-v153-'));
-  t.after(()=>rmSync(dir,{recursive:true,force:true}));
-  const db=new LocalDatabase(join(dir,'central.sqlite'));t.after(()=>db.close());
+  const db=new LocalDatabase(join(dir,'central.sqlite'));
+  t.after(()=>{try{db.close()}finally{rmSync(dir,{recursive:true,force:true})}});
   db.sql.exec(schema);
   const stamp='2026-09-04T01:00:00.000Z';
   db.sql.prepare("INSERT INTO accounts(user,role,disabled,created_at,updated_at) VALUES(?,?,?,?,?)").run('xuxa','driver',0,stamp,stamp);
