@@ -14,8 +14,6 @@ if MARK in worker:
     print("Open cargo policy already applied:", path)
     raise SystemExit(0)
 
-# A compatibilidade de carga deixa de ser uma regra de validacao. Mantemos as
-# demais validacoes de viagem intactas.
 guard = "if(!await cargoOK(env,m,o,work)){"
 start = worker.find(guard)
 if start < 0:
@@ -36,16 +34,12 @@ if end is None:
     raise RuntimeError("Nao consegui delimitar o bloco cargoOK.")
 worker = worker[:start] + f"/* {MARK}: cargo compatibility is informational only; never reject a trip by cargo name. */" + worker[end:]
 
-# Quando o motorista pega uma carga sem ter escolhido uma missao no site,
-# criamos uma missao tecnica livre usando o nome real recebido da telemetria.
 opening_old = "const row=await env.DB.prepare('SELECT current_mission_json FROM profiles WHERE user=?').bind(user).first();if(!row?.current_mission_json)return null;let m;try{m=JSON.parse(row.current_mission_json)}catch{return null}\n const adminTest=clean(user)==='biduzao';"
 opening_new = f"""const row=await env.DB.prepare('SELECT current_mission_json FROM profiles WHERE user=?').bind(user).first();let m=null;if(row?.current_mission_json){{try{{m=JSON.parse(row.current_mission_json)}}catch{{m=null}}}}\n const adminTest=clean(user)==='biduzao';\n const observed=flat(user,user,t,raw);\n if(!m&&observed.cargo_name&&Number(observed.mass_kg)>0){{\n  const cargoName=String(observed.cargo_name||'').trim(),openKey=norm(cargoName).replace(/\\s+/g,'-').slice(0,48)||'cargo';\n  m={{id:`${{month(t)}}-${{user}}-open-${{randomHex(6)}}`,catalog_id:'__open_cargo__',sequence:null,title:cargoName,category:'Carga detectada',state:'assigned',min_km:adminTest?0:MIN_KM,open_cargo:true,cargo_key:openKey,custom_mode:true,custom_cargo:cargoName,created_at:t,assigned_at:t}};\n  await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run();\n }}\n if(!m)return null;"""
 if opening_old not in worker:
     raise RuntimeError("Nao encontrei a abertura de processMission para habilitar carga livre.")
 worker = worker.replace(opening_old, opening_new, 1)
 
-# A missao tecnica livre e registrada como uma entrega normal. Nao existe fila,
-# categoria obrigatoria, alias obrigatorio ou passo de moderacao.
 branch_anchor = " if(workAlreadyCompleted){"
 if branch_anchor not in worker:
     raise RuntimeError("Nao encontrei o ponto de conclusao da entrega.")
@@ -61,11 +55,11 @@ open_branch = r''' if(m.open_cargo===true){
 '''
 worker = worker.replace(branch_anchor, open_branch + branch_anchor, 1)
 
-# Compatibilidade temporaria com o patch historico v1.49. O bloco esta em
-# comentario e e removido pelo finalizador 1.0.55; nunca executa em runtime.
-worker += r'''\n/* V149_PENDING_COMPAT_BEGIN
+worker += """
+/* V149_PENDING_COMPAT_BEGIN
 return{type:'delivery_completed_pending_classification',mission:m,distance_km:distance,xp_awarded:xp,gat_points:pendingPoints,classification_status:'pending',monthly_increment:1};
-V149_PENDING_COMPAT_END */\n'''
+V149_PENDING_COMPAT_END */
+"""
 
 for forbidden in ["reason:\"cargo_not_compatible\"", "reason:'cargo_not_compatible'"]:
     if forbidden in worker:
