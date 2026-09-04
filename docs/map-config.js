@@ -21,7 +21,7 @@ window.GAT_MAP_CONFIG = {
     label: 'American Truck Simulator',
     type: 'gat-zip-tiles',
     source: 'GAT Map Exportador ATS',
-    zipUrl: 'maps/GAT_MAPA_ATS.zip?v=1',
+    zipUrl: 'maps/base/GAT_MAPA_ATS.zip?v=2',
     zipRoot: 'GAT_MAPA_ATS',
     zipTileSize: 256,
     minZoom: 0,
