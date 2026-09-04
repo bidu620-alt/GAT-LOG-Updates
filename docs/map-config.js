@@ -1,5 +1,5 @@
 // GAT-LOG: configuração visual dos mapas.
-// Mapas exportados pelo GAT Map Exportador usam pirâmides PNG diretas.
+// Mapas exportados pelo GAT Map Exportador usam pirâmides PNG diretas ou ZIP único.
 window.GAT_MAP_CONFIG = {
   base: {
     label: 'Mapa Base',
@@ -15,6 +15,23 @@ window.GAT_MAP_CONFIG = {
       zMin: -122648.086,
       xMax: 97925.625,
       zMax: 88454.85
+    }
+  },
+  ats: {
+    label: 'American Truck Simulator',
+    type: 'gat-zip-tiles',
+    source: 'GAT Map Exportador ATS',
+    zipUrl: 'maps/GAT_MAPA_ATS.zip?v=1',
+    zipRoot: 'GAT_MAPA_ATS',
+    zipTileSize: 256,
+    minZoom: 0,
+    maxZoom: 6,
+    displayMaxZoom: 8,
+    gameBounds: {
+      xMin: -120098.891,
+      zMin: -86368.1953,
+      xMax: 33443.375,
+      zMax: 67174.07
     }
   },
   promods: {
