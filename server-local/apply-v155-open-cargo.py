@@ -71,10 +71,11 @@ if admin_start<0 or admin_end<0:
     raise SystemExit('Nao encontrei endpoints antigos de classificacao')
 worker=worker[:admin_start]+worker[admin_end:]
 
-# Remove os classificadores/aliases do runtime. O banco legado pode manter as tabelas
-# para compatibilidade de backup, mas o fluxo 1.0.55 nao consulta nem alimenta a fila.
+# Remove somente os helpers adicionados pelo classificador. O limite e o proprio
+# processMission, para preservar integralmente helpers de viagem, retomada e o
+# journal assinado da 1.0.54.
 helper_start=worker.find('function cargoWordSet(v){')
-helper_end=worker.find('function journeyGame(raw){',helper_start)
+helper_end=worker.find('async function processMission(',helper_start)
 if helper_start<0 or helper_end<0:
     raise SystemExit('Nao encontrei bloco helper antigo de classificacao')
 worker=worker[:helper_start]+worker[helper_end:]
@@ -94,10 +95,16 @@ required=[
     "cargo_rule:'none'",
     "cargo_history:c.results||[]",
     "history_recorded:true",
+    "async function processMission(",
+    "inspectClientPacket",
+    "persistClientPacket",
+    "createHmac",
+    "journal_signature_invalid",
+    "journal_chain_gap",
 ]
 for marker in required:
     if marker not in worker:
-        raise SystemExit('Patch 1.0.55 incompleto: '+marker)
+        raise SystemExit('Patch 1.0.55 removeu funcionalidade necessaria: '+marker)
 for forbidden in [
     "reason:'cargo_not_compatible'",
     "delivery_completed_pending_classification",
@@ -112,4 +119,4 @@ for forbidden in [
         raise SystemExit('Classificacao antiga ainda ativa no runtime: '+forbidden)
 
 worker_path.write_text(worker,encoding='utf-8')
-print('GAT Server 1.0.55: carga aberta ativada; nenhuma carga e recusada ou enviada para classificacao.')
+print('GAT Server 1.0.55: carga aberta ativada; classificacao removida sem afetar journal/viagens.')
