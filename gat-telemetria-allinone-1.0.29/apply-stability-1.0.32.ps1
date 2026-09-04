@@ -11,14 +11,7 @@ function Replace-One([string]$old,[string]$new) {
 }
 
 # Valida o registro do PC assim que a conta e restaurada, sem depender do ETS2/telemetria estar conectado.
-Replace-One @'
-			await RestoreAccountAsync();
-			await RefreshServerInfoAsync(force: true);
-'@ @'
-			await RestoreAccountAsync();
-			await ValidatePcRegistrationAsync();
-			await RefreshServerInfoAsync(force: true);
-'@
+Replace-One 'await RestoreAccountAsync();' "await RestoreAccountAsync();`r`n`t`t`tawait ValidatePcRegistrationAsync();"
 
 $pcValidation = @'
 	private async Task ValidatePcRegistrationAsync()
