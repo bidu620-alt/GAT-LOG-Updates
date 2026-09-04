@@ -78,6 +78,13 @@ if helper_start<0 or helper_end<0:
     raise SystemExit('Nao encontrei bloco helper antigo de classificacao')
 worker=worker[:helper_start]+worker[helper_end:]
 
+# Patches antigos de viagem ainda conhecem o nome do evento pendente. Como a 1.0.55
+# nunca mais produz esse evento, removemos tambem essas referencias residuais.
+worker=worker.replace(",'delivery_completed_pending_classification'",'')
+worker=worker.replace("'delivery_completed_pending_classification',",'')
+worker=worker.replace(',"delivery_completed_pending_classification"','')
+worker=worker.replace('"delivery_completed_pending_classification",','')
+
 required=[
     "const VERSION='1.0.55-local'",
     "catalog_id:'__open_cargo__'",
