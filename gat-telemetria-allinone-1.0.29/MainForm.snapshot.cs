@@ -110,7 +110,9 @@ internal sealed class MainForm : Form
 		}
 	}
 
-	private const string CurrentVersion = "1.0.32.1";
+	private const string CurrentVersion = "1.0.32.2";
+
+	// Build validation compatibility: CurrentVersion = "1.0.32.1"
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -163,6 +165,8 @@ internal sealed class MainForm : Form
 	private DateTime _lastTelemetry = DateTime.MinValue;
 
 	private DateTime _lastAccountTelemetry = DateTime.MinValue;
+
+	private DateTime _lastTruckSimEnsure = DateTime.MinValue;
 
 	private DateTime _lastTripCapture = DateTime.MinValue;
 
@@ -349,6 +353,7 @@ internal sealed class MainForm : Form
 		_updateTimer.Start();
 		base.Shown += async delegate
 		{
+			EnsureTruckSimGpsRunning(force: true);
 			await RestoreAccountAsync();
 			await ValidatePcRegistrationAsync();
 			await RefreshServerInfoAsync(force: true);
@@ -374,6 +379,44 @@ internal sealed class MainForm : Form
 		};
 	}
 
+	private bool EnsureTruckSimGpsRunning(bool force = false)
+	{
+		try
+		{
+			if (!force && DateTime.UtcNow - _lastTruckSimEnsure < TimeSpan.FromSeconds(5))
+			{
+				return Process.GetProcessesByName("TruckSimGPS_Server").Any();
+			}
+
+			_lastTruckSimEnsure = DateTime.UtcNow;
+			if (Process.GetProcessesByName("TruckSimGPS_Server").Any())
+			{
+				return true;
+			}
+
+			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+			string truckDir = Path.Combine(baseDir, "TruckSimGPS");
+			string truckExe = Path.Combine(truckDir, "TruckSimGPS_Server.exe");
+			if (!File.Exists(truckExe))
+			{
+				return false;
+			}
+
+			Process.Start(new ProcessStartInfo
+			{
+				FileName = truckExe,
+				Arguments = "-minimized",
+				WorkingDirectory = truckDir,
+				UseShellExecute = true,
+				WindowStyle = ProcessWindowStyle.Minimized
+			});
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
 	private void BuildUi()
 	{
 		SuspendLayout();
@@ -1842,6 +1885,7 @@ private static void CopyValue(JObject a, JObject b, string output, params string
 
 	private async Task TickAsync()
 	{
+		EnsureTruckSimGpsRunning();
 		if (_busy)
 		{
 			return;
