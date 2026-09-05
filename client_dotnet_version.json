@@ -1,10 +1,10 @@
-﻿{
-    "app":  "GAT Telemetria BETA",
-    "channel":  "stable-dotnet",
-    "version":  "1.0.32.1",
-    "display_version":  "BETA",
-    "notas":  "GAT Telemetria BETA: mantem o Cliente 1.0.32 e passa a garantir a abertura automatica do TruckSim GPS junto com a Telemetria, sem duplicar o processo. Mantem tambem os hotfixes de estabilidade, registro do PC, viagens offline, assinatura e criptografia local.",
-    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.32.exe",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip",
-    "sha256":  "30579df956274e9eaa38a0e49867cb5653c91fe8f8800b37a845d99f0d37d69d"
+{
+    "app": "GAT Telemetria BETA",
+    "channel": "stable-dotnet",
+    "version": "1.0.32.2",
+    "display_version": "BETA",
+    "notas": "Cliente 1.0.32: corrige a abertura automatica do TruckSim GPS mesmo quando o GAT Telemetria e aberto diretamente. Se o TruckSim for fechado ou cair, o GAT tenta inicia-lo novamente sem duplicar o processo. Mantem os recursos de dano, estabilidade, registro do PC, viagens offline, assinatura e criptografia local.",
+    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.32.exe",
+    "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip",
+    "sha256": "30579df956274e9eaa38a0e49867cb5653c91fe8f8800b37a845d99f0d37d69d"
 }
