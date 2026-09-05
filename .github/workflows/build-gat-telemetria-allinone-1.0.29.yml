@@ -1,4 +1,4 @@
-name: Build GAT Telemetria All-in-One 1.0.32
+name: Build GAT Telemetria BETA 1.0.32
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
       - 'gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1'
       - 'gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1'
       - 'gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-beta-brand-1.0.32.ps1'
       - '.github/workflows/build-gat-telemetria-allinone-1.0.29.yml'
 
 permissions:
@@ -24,7 +25,7 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Recriar e compilar GAT Telemetria 1.0.32
+      - name: Recriar e compilar GAT Telemetria BETA 1.0.32
         shell: powershell
         run: |
           $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
@@ -51,13 +52,14 @@ jobs:
           ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root "$PWD/gat132-build"
           ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root "$PWD/gat132-build"
           ./gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1 -Root "$PWD/gat132-build"
+          ./gat-telemetria-allinone-1.0.29/apply-beta-brand-1.0.32.ps1 -Root "$PWD/gat132-build"
           $main = Get-ChildItem 'gat132-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
           if (-not $main) { throw 'MainForm.cs nao encontrado' }
           $mainText = Get-Content $main.FullName -Raw
           if ($mainText -notlike '*gat_schema"] = "job-v2"*') { throw 'Contrato job-v2 ausente do GAT Telemetria' }
           if ($mainText -like '*string text3 = (flag2 ? "delivered" : "cancelled")*') { throw 'Cliente ainda decide entregue/cancelado' }
-          foreach($marker in @('central-trip-blackbox.sec','central-telemetry-queue.sec','ProtectedData.Protect','ProtectedData.Unprotect','gat_journal_payload_sha256','gat_journal_chain','MigrateLegacyCentralTelemetryQueue','ValidatePcRegistrationAsync')) {
-            if ($mainText -notlike "*$marker*") { throw "GAT Telemetria 1.0.32 incompleta: $marker" }
+          foreach($marker in @('central-trip-blackbox.sec','central-telemetry-queue.sec','ProtectedData.Protect','ProtectedData.Unprotect','gat_journal_payload_sha256','gat_journal_chain','MigrateLegacyCentralTelemetryQueue','ValidatePcRegistrationAsync','CurrentVersion = "1.0.32.1"','GAT Telemetria BETA','GAT TELEMETRIA BETA','Cliente 1.0.32')) {
+            if ($mainText -notlike "*$marker*") { throw "GAT Telemetria BETA 1.0.32 incompleta: $marker" }
           }
           if ($mainText.Contains('File.ReadAllLines(CentralTripBlackBoxFile')) { throw 'Hotfix de congelamento nao aplicado na caixa-preta' }
           if ($mainText.Contains('string[] lines = File.ReadAllLines(CentralTelemetryQueueFile')) { throw 'Hotfix de congelamento nao aplicado na fila offline' }
@@ -65,7 +67,7 @@ jobs:
           $project = Get-ChildItem 'gat132-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
           if (-not $project) { throw 'GAT_TELEMETRIA.csproj nao encontrado' }
           msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
-          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilacao do GAT Telemetria 1.0.32' }
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilacao do GAT Telemetria BETA 1.0.32' }
           $projectDir = Split-Path $project.FullName -Parent
           $exe = Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
           if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado' }
@@ -98,8 +100,20 @@ jobs:
           Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe') -Force -ErrorAction SilentlyContinue
           Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe.config') -Force -ErrorAction SilentlyContinue
           Copy-Item "$env:TRUCK_OUT/*" "$stage/trucksim" -Recurse -Force
+
+          # O launcher integrado sempre garante o TruckSim GPS: se nao estiver
+          # rodando, abre {app}\TruckSimGPS\TruckSimGPS_Server.exe minimizado;
+          # se ja estiver aberto, nao cria uma segunda instancia.
+          $launcher = 'gat-telemetria-allinone-1.0.29/Launcher.cs'
+          $launcherText = Get-Content $launcher -Raw
+          foreach($marker in @('TruckSimGPS_Server.exe','Process.GetProcessesByName("TruckSimGPS_Server")','Arguments = "-minimized"','GAT_TELEMETRIA_APP.exe')) {
+            if ($launcherText -notlike "*$marker*") { throw "Launcher sem garantia do TruckSim GPS: $marker" }
+          }
+          $launcherText = $launcherText.Replace('"GAT Telemetria"', '"GAT Telemetria BETA"')
+          Set-Content $launcher $launcherText -Encoding UTF8
+
           $csc = "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
-          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$stage/GAT_TELEMETRIA.exe" 'gat-telemetria-allinone-1.0.29/Launcher.cs'
+          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$stage/GAT_TELEMETRIA.exe" $launcher
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar launcher integrado' }
           Invoke-WebRequest 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile "$stage/vc_redist.x64.exe"
 
@@ -115,6 +129,12 @@ jobs:
           $iss = 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
           $issText = Get-Content $iss -Raw
           $issText = $issText.Replace('1.0.29','1.0.32')
+          $issText = $issText.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA')
+          $issText = $issText.Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
+          $issText = $issText.Replace('Name: "{group}\GAT Telemetria";','Name: "{group}\GAT Telemetria BETA";')
+          $issText = $issText.Replace('Name: "{group}\Desinstalar GAT Telemetria";','Name: "{group}\Desinstalar GAT Telemetria BETA";')
+          $issText = $issText.Replace('Name: "{autodesktop}\GAT Telemetria";','Name: "{autodesktop}\GAT Telemetria BETA";')
+          $issText = $issText.Replace('Description: "Abrir GAT Telemetria";','Description: "Abrir GAT Telemetria BETA";')
           Set-Content $iss $issText -Encoding UTF8
           $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
           if (-not (Test-Path $iscc)) { throw 'ISCC.exe nao encontrado' }
@@ -132,33 +152,33 @@ jobs:
           if (Test-Path $sourceZip) { Remove-Item $sourceZip -Force }
           Compress-Archive -Path 'trucksim-allinone-build/*' -DestinationPath $sourceZip -CompressionLevel Optimal
 
-      - name: Atualizar manifesto do site
+      - name: Atualizar manifesto do site e do cliente
         shell: powershell
         run: |
           $setup = 'releases/GAT_TELEMETRIA_SETUP_1.0.32.exe'
           $sha = (Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant()
           $manifest = [ordered]@{
-            app = 'GAT Telemetria'
+            app = 'GAT Telemetria BETA'
             channel = 'stable-dotnet'
-            version = '1.0.32'
-            display_version = '1.0.32'
-            notas = '1.0.32: corrige a validacao do registro do PC logo ao abrir e elimina travamentos progressivos da caixa-preta/fila offline, mantendo viagens offline, assinatura e criptografia local.'
+            version = '1.0.32.1'
+            display_version = 'BETA'
+            notas = 'GAT Telemetria BETA: mantem o Cliente 1.0.32 e passa a garantir a abertura automatica do TruckSim GPS junto com a Telemetria, sem duplicar o processo. Mantem tambem os hotfixes de estabilidade, registro do PC, viagens offline, assinatura e criptografia local.'
             setup_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.32.exe'
             source_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip'
             sha256 = $sha
           }
           $manifest | ConvertTo-Json | Set-Content 'client_dotnet_version.json' -Encoding UTF8
 
-      - name: Publicar instalador 1.0.32
+      - name: Publicar GAT Telemetria BETA 1.0.32
         shell: powershell
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -- gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss
+          git checkout -- gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss gat-telemetria-allinone-1.0.29/Launcher.cs
           git add -f releases/GAT_TELEMETRIA_SETUP_1.0.32.exe releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip client_dotnet_version.json gat-telemetria-allinone-1.0.29/MainForm.snapshot.cs
-          git commit -m "Republica GAT Telemetria 1.0.32 com hotfix de estabilidade"
-          if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da 1.0.32' }
+          git commit -m "Publica GAT Telemetria BETA no cliente 1.0.32"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da GAT Telemetria BETA 1.0.32' }
           git pull --rebase origin main
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao sincronizar antes da publicacao' }
           git push
-          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar a 1.0.32' }
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar a GAT Telemetria BETA 1.0.32' }
