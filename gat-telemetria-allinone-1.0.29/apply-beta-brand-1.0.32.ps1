@@ -59,8 +59,8 @@ $text = Replace-Required $text `
     'btnUpdate.Text = "ATUALIZAR CLIENTE 1.0.32";' `
     'texto do botao de atualizacao'
 
-# Nao exibe a revisao tecnica no dialogo. O fonte reconstruido pode variar
-# nos escapes de quebra de linha; por isso trocamos somente o prefixo estavel.
+# Nao exibe a revisao tecnica no dialogo. Mantemos estas novas strings em
+# ASCII para nao depender da codificacao do fonte reconstruido.
 $promptPattern = 'MessageBox\.Show\("Instalar GAT Telemetria " \+ _availableUpdate\.Version \+ "\?'
 if (-not [regex]::IsMatch($text, $promptPattern)) {
     throw 'Marcador ausente no branding BETA: dialogo de atualizacao'
@@ -68,10 +68,11 @@ if (-not [regex]::IsMatch($text, $promptPattern)) {
 $text = [regex]::Replace(
     $text,
     $promptPattern,
-    'MessageBox.Show("Instalar atualização do GAT Telemetria BETA?',
+    'MessageBox.Show("Instalar atualizacao do GAT Telemetria BETA?',
     1
 )
-$text = $text.Replace('"Atualização GAT Telemetria"', '"Atualização GAT Telemetria BETA"')
+$titlePattern = '"Atualiza[^\"]* GAT Telemetria"'
+$text = [regex]::Replace($text, $titlePattern, '"Atualizacao GAT Telemetria BETA"', 1)
 
 Set-Content -LiteralPath $main.FullName -Value $text -Encoding UTF8
 
@@ -82,8 +83,8 @@ foreach ($marker in @(
     'Text = "GAT TELEMETRIA BETA",',
     'Text = "Cliente 1.0.32",',
     'ATUALIZAR CLIENTE 1.0.32',
-    'Instalar atualização do GAT Telemetria BETA?',
-    'Atualização GAT Telemetria BETA'
+    'Instalar atualizacao do GAT Telemetria BETA?',
+    'Atualizacao GAT Telemetria BETA'
 )) {
     if (-not $check.Contains($marker)) {
         throw "Branding BETA incompleto: $marker"
