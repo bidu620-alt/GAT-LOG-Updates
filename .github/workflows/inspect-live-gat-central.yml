@@ -6,7 +6,7 @@ on:
     paths: ['.github/workflows/inspect-live-gat-central.yml']
 permissions:
   contents: read
-# Diagnóstico 2026-09-04: status ONLINE de Xuxa/EduardoVidal/JeanJC e entrega Chocolate do JeanJC.
+# Diagnóstico 2026-09-05: inclui xuxa01 para verificar motivo da última entrega sem pontos automáticos.
 jobs:
   inspect:
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
         run: |
           import json, urllib.request, urllib.error, datetime
           base='https://api.gatlogets2.com.br'
-          users=['xuxa','eduardovidal','jeanjc']
+          users=['xuxa','xuxa01','eduardovidal','jeanjc']
           def request(path,method='GET',payload=None):
               data=None if payload is None else json.dumps(payload).encode()
               req=urllib.request.Request(base+path,data=data,method=method,headers={'User-Agent':'GAT-Live-Diagnostic/1.0','Cache-Control':'no-cache','Content-Type':'text/plain;charset=UTF-8'})
@@ -60,8 +60,7 @@ jobs:
                 'ok':(data or {}).get('ok'),'user':p.get('user'),'last_telemetry_at':p.get('last_telemetry_at'),
                 'total_deliveries':p.get('total_deliveries'),'total_km':p.get('total_km'),'xp':p.get('xp'),'points':p.get('points'),
                 'current_mission':p.get('current_mission'),
-                'last_deliveries':[{k:d.get(k) for k in ['id','sequence','cargo','source','destination','distance_km','xp_awarded','gat_points','completed_at','delivered_at','ranking_reason','automatic_ranking_reason']} for d in deliveries[-8:]],
-                'chocolate_matches':[{k:d.get(k) for k in ['id','sequence','cargo','source','destination','distance_km','xp_awarded','gat_points','completed_at','delivered_at','ranking_reason']} for d in deliveries if 'chocol' in str(d.get('cargo','')).lower()]
+                'last_deliveries':[{k:d.get(k) for k in ['id','sequence','cargo','source','destination','distance_km','xp_awarded','gat_points','completed_at','delivered_at','ranking_reason','automatic_ranking_reason']} for d in deliveries[-8:]]
               },ensure_ascii=False,indent=2))
 
           status,ranking=request('/api/public/ranking')
