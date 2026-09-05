@@ -44,11 +44,14 @@ $text = Replace-Required $text `
     'Text = "GAT TELEMETRIA BETA",' `
     'cabecalho principal'
 
-# A numeracao fica somente no indicador do cliente.
-$text = Replace-Required $text `
-    "lblVersion = new Label`r`n`t`t{`r`n`t`t`tText = \"GAT Telemetria C# 1.0.32\"," `
-    "lblVersion = new Label`r`n`t`t{`r`n`t`t`tText = \"Cliente 1.0.32\"," `
-    'rotulo da versao do cliente'
+# A numeracao fica somente no indicador do cliente. Usa regex para aceitar
+# tanto CRLF quanto LF no fonte reconstruido pelo GitHub Actions.
+$labelPattern = 'lblVersion = new Label\s*\{\s*Text = "GAT Telemetria C# 1\.0\.32",'
+if (-not [regex]::IsMatch($text, $labelPattern)) {
+    throw 'Marcador ausente no branding BETA: rotulo da versao do cliente'
+}
+$labelReplacement = "lblVersion = new Label`r`n`t`t{`r`n`t`t`tText = `"Cliente 1.0.32`","
+$text = [regex]::Replace($text, $labelPattern, $labelReplacement, 1)
 
 # Nao exibe a revisao tecnica 1.0.32.1 no botao de atualizacao.
 $text = Replace-Required $text `
