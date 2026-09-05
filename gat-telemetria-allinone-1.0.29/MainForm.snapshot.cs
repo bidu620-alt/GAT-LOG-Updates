@@ -110,7 +110,7 @@ internal sealed class MainForm : Form
 		}
 	}
 
-	private const string CurrentVersion = "1.0.32";
+	private const string CurrentVersion = "1.0.32.1";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -320,7 +320,7 @@ internal sealed class MainForm : Form
 
 	public MainForm()
 	{
-		Text = "GAT Telemetria C# 1.0.32";
+		Text = "GAT Telemetria BETA";
 		base.StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new Size(900, 700);
 		base.Size = new Size(940, 740);
@@ -394,7 +394,7 @@ internal sealed class MainForm : Form
 
 		Label title = new Label
 		{
-			Text = "GAT TELEMETRIA",
+			Text = "GAT TELEMETRIA BETA",
 			Font = new Font("Segoe UI Semibold", 19f, FontStyle.Bold),
 			AutoSize = true,
 			ForeColor = Color.White,
@@ -625,7 +625,7 @@ internal sealed class MainForm : Form
 
 		lblVersion = new Label
 		{
-			Text = "GAT Telemetria C# 1.0.32",
+			Text = "Cliente 1.0.32",
 			AutoSize = true,
 			ForeColor = Color.FromArgb(105, 118, 136),
 			Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
@@ -2581,7 +2581,7 @@ private static void CopyValue(JObject a, JObject b, string output, params string
 				if (remoteVersion != null && IsNewer(remoteVersion.Version, CurrentVersion) && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
 				{
 					_availableUpdate = remoteVersion;
-					btnUpdate.Text = "ATUALIZAR PARA " + remoteVersion.Version;
+					btnUpdate.Text = "ATUALIZAR CLIENTE 1.0.32";
 					btnUpdate.BackColor = Color.FromArgb(32, 132, 91);
 					return;
 				}
@@ -2610,7 +2610,7 @@ private static void CopyValue(JObject a, JObject b, string output, params string
 		}
 		else
 		{
-			if (MessageBox.Show("Instalar GAT Telemetria " + _availableUpdate.Version + "?\r\n\r\n" + (_availableUpdate.Notes ?? string.Empty), "Atualização GAT Telemetria", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) != DialogResult.Yes)
+			if (MessageBox.Show("Instalar atualizacao do GAT Telemetria BETA?\r\n\r\n" + (_availableUpdate.Notes ?? string.Empty), "Atualizacao GAT Telemetria BETA", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) != DialogResult.Yes)
 			{
 				return;
 			}
@@ -2662,6 +2662,7 @@ private static void CopyValue(JObject a, JObject b, string output, params string
 		return false;
 	}
 }
+
 
 
 
