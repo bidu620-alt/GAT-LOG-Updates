@@ -19,8 +19,11 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf /tmp/gat-src && mkdir -p /tmp/gat-src
+          set +e
           cat server-native-0.1/source.part.* | base64 -d | gzip -dc > /tmp/gat-source.tar
           tar -xf /tmp/gat-source.tar -C /tmp/gat-src
+          set -e
+          test -f /tmp/gat-src/internal/core/core.go
           {
             echo '=== local journal / gat_journal validation ==='
             grep -RIn -C 50 -E 'local_journal_invalid|gat_journal_|journal.*invalid|journal.*verified|verify.*journal|journal.*chain' /tmp/gat-src 2>/dev/null || true
