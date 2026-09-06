@@ -1,4 +1,4 @@
-name: Inspect GAT Telemetria update code
+name: Inspect GAT Telemetria journal validation
 
 on:
   push:
@@ -28,29 +28,29 @@ jobs:
             }
           } finally { $out.Dispose() }
           Expand-Archive 'gat-source.zip' 'src' -Force
-      - name: Extract update-related code
+      - name: Extract journal and ranking validation code
         shell: powershell
         run: |
           $files = Get-ChildItem 'src' -Filter '*.cs' -Recurse
-          $patterns = 'client_dotnet_version|setup_url|sha256|atualiza|update|DownloadFile|WebClient|Process.Start'
+          $patterns = 'journal|rank_status|automatic_ranking|ranking|integrity|integridade|tamper|adulter|invalid|delivery|entrega'
           $lines = foreach ($f in $files) {
             $content = Get-Content $f.FullName
             for ($i=0; $i -lt $content.Count; $i++) {
               if ($content[$i] -match $patterns) {
-                $start = [Math]::Max(0,$i-8); $end=[Math]::Min($content.Count-1,$i+18)
+                $start = [Math]::Max(0,$i-12); $end=[Math]::Min($content.Count-1,$i+25)
                 "=== $($f.FullName.Substring((Resolve-Path 'src').Path.Length+1)) : line $($i+1) ==="
                 for ($j=$start; $j -le $end; $j++) { '{0,5}: {1}' -f ($j+1), $content[$j] }
                 ''
               }
             }
           }
-          $lines | Set-Content 'gat-telemetria-dotnet-1.0.28/update-inspect.txt' -Encoding UTF8
+          $lines | Set-Content 'gat-telemetria-dotnet-1.0.28/journal-inspect.txt' -Encoding UTF8
       - name: Publish inspection
         shell: powershell
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add gat-telemetria-dotnet-1.0.28/update-inspect.txt
-          git commit -m "Inspect GAT Telemetria update code" || exit 0
+          git add gat-telemetria-dotnet-1.0.28/journal-inspect.txt
+          git commit -m "Inspect GAT Telemetria journal validation" || exit 0
           git pull --rebase origin main
           git push
