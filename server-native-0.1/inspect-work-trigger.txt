@@ -1,1 +1,1 @@
-inspect server local 1.0.56 journal ordering 2026-09-06 13:12
+inspect XP and GAT points rules 2026-09-06 13:41
