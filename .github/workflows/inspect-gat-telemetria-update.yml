@@ -51,6 +51,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add gat-telemetria-dotnet-1.0.28/journal-inspect.txt
-          git commit -m "Inspect GAT Telemetria journal validation" || exit 0
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) { Write-Host 'Sem alteracoes no relatorio'; exit 0 }
+          git commit -m "Inspect GAT Telemetria journal validation"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit da inspecao' }
           git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao sincronizar inspecao' }
           git push
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar inspecao' }
