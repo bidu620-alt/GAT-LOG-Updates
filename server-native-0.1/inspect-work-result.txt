@@ -1,463 +1,97 @@
-=== recovered files ===
-/tmp/gat-src/cmd/agent/main.go
-/tmp/gat-src/cmd/ui/main.go
-/tmp/gat-src/go.mod
-/tmp/gat-src/internal/core/core.go
-=== work/catalog / mission / cargo validation ===
-=== distance / fuel / agriculture / food terms ===
-/tmp/gat-src/internal/core/core.go-52-	User      string `json:"user"`
-/tmp/gat-src/internal/core/core.go-53-	Salt      string `json:"salt"`
-/tmp/gat-src/internal/core/core.go-54-	Hash      string `json:"hash"`
-/tmp/gat-src/internal/core/core.go-55-	UpdatedAt string `json:"updated_at"`
-/tmp/gat-src/internal/core/core.go-56-}
-/tmp/gat-src/internal/core/core.go-57-
-/tmp/gat-src/internal/core/core.go-58-type Binding struct {
-/tmp/gat-src/internal/core/core.go-59-	Driver       string `json:"driver"`
-/tmp/gat-src/internal/core/core.go-60-	DeviceID     string `json:"device_id"`
-/tmp/gat-src/internal/core/core.go-61-	Token        string `json:"token"`
-/tmp/gat-src/internal/core/core.go-62-	Blocked      bool   `json:"blocked"`
-/tmp/gat-src/internal/core/core.go-63-	Disconnected bool   `json:"disconnected"`
-/tmp/gat-src/internal/core/core.go-64-	LastSeen     string `json:"last_seen"`
-/tmp/gat-src/internal/core/core.go-65-}
-/tmp/gat-src/internal/core/core.go-66-
-/tmp/gat-src/internal/core/core.go-67-type TelemetryRecord struct {
-/tmp/gat-src/internal/core/core.go-68-	Driver      string         `json:"driver"`
-/tmp/gat-src/internal/core/core.go-69-	DeviceID    string         `json:"device_id"`
-/tmp/gat-src/internal/core/core.go-70-	UpdatedAt   string         `json:"updated_at"`
-/tmp/gat-src/internal/core/core.go-71-	Status      string         `json:"status"`
-/tmp/gat-src/internal/core/core.go:72:	Cargo       string         `json:"cargo"`
-/tmp/gat-src/internal/core/core.go:73:	CargoMassKg float64        `json:"cargo_mass_kg"`
-/tmp/gat-src/internal/core/core.go-74-	Source      string         `json:"source"`
-/tmp/gat-src/internal/core/core.go-75-	Destination string         `json:"destination"`
-/tmp/gat-src/internal/core/core.go-76-	RemainingKm float64        `json:"remaining_km"`
-/tmp/gat-src/internal/core/core.go-77-	SpeedKmh    float64        `json:"speed_kmh"`
-/tmp/gat-src/internal/core/core.go-78-	OnJob       bool           `json:"on_job"`
-/tmp/gat-src/internal/core/core.go-79-	Raw         map[string]any `json:"telemetry,omitempty"`
-/tmp/gat-src/internal/core/core.go-80-}
-/tmp/gat-src/internal/core/core.go-81-
-/tmp/gat-src/internal/core/core.go-82-type Status struct {
-/tmp/gat-src/internal/core/core.go-83-	OK               bool              `json:"ok"`
-/tmp/gat-src/internal/core/core.go-84-	AgentVersion     string            `json:"agent_version"`
-/tmp/gat-src/internal/core/core.go-85-	AgentUptimeSec   int64             `json:"agent_uptime_sec"`
-/tmp/gat-src/internal/core/core.go-86-	ServerOnline     bool              `json:"server_online"`
-/tmp/gat-src/internal/core/core.go-87-	ServerName       string            `json:"server_name"`
-/tmp/gat-src/internal/core/core.go-88-	SessionID        string            `json:"session_id"`
-/tmp/gat-src/internal/core/core.go-89-	Ports            string            `json:"ports"`
-/tmp/gat-src/internal/core/core.go-90-	Players          []string          `json:"players"`
-/tmp/gat-src/internal/core/core.go-91-	PlayerCount      int               `json:"player_count"`
-/tmp/gat-src/internal/core/core.go-92-	MaxPlayers       int               `json:"max_players"`
-/tmp/gat-src/internal/core/core.go-93-	ServerExe        string            `json:"server_exe"`
---
-/tmp/gat-src/internal/core/core.go-732-				return f
-/tmp/gat-src/internal/core/core.go-733-			}
-/tmp/gat-src/internal/core/core.go-734-		}
-/tmp/gat-src/internal/core/core.go-735-	}
-/tmp/gat-src/internal/core/core.go-736-	return 0
-/tmp/gat-src/internal/core/core.go-737-}
-/tmp/gat-src/internal/core/core.go-738-func BoolAny(m map[string]any, paths ...string) bool {
-/tmp/gat-src/internal/core/core.go-739-	for _, p := range paths {
-/tmp/gat-src/internal/core/core.go-740-		v := DeepGet(m, p)
-/tmp/gat-src/internal/core/core.go-741-		switch x := v.(type) {
-/tmp/gat-src/internal/core/core.go-742-		case bool:
-/tmp/gat-src/internal/core/core.go-743-			return x
-/tmp/gat-src/internal/core/core.go-744-		case string:
-/tmp/gat-src/internal/core/core.go-745-			b, _ := strconv.ParseBool(x)
-/tmp/gat-src/internal/core/core.go-746-			return b
-/tmp/gat-src/internal/core/core.go-747-		}
-/tmp/gat-src/internal/core/core.go-748-	}
-/tmp/gat-src/internal/core/core.go-749-	return false
-/tmp/gat-src/internal/core/core.go-750-}
-/tmp/gat-src/internal/core/core.go-751-func NormalizeTelemetry(driver, device string, t map[string]any) TelemetryRecord {
-/tmp/gat-src/internal/core/core.go:752:	cargo := StrAny(t, "job.cargo", "job.cargoName", "cargo", "cargo_name")
-/tmp/gat-src/internal/core/core.go:753:	mass := FloatAny(t, "job.cargoMass", "job.cargo_mass", "cargoMass", "cargo_mass", "mass_kg")
-/tmp/gat-src/internal/core/core.go-754-	src := StrAny(t, "job.sourceCity", "job.source_city", "sourceCity", "source")
-/tmp/gat-src/internal/core/core.go-755-	dst := StrAny(t, "job.destinationCity", "job.destination_city", "destinationCity", "destination")
-/tmp/gat-src/internal/core/core.go-756-	rem := FloatAny(t, "navigation.estimatedDistance", "navigation.estimated_distance", "remaining_distance", "remaining_km")
-/tmp/gat-src/internal/core/core.go-757-	if rem > 10000 {
-/tmp/gat-src/internal/core/core.go-758-		rem /= 1000
-/tmp/gat-src/internal/core/core.go-759-	}
-/tmp/gat-src/internal/core/core.go-760-	speed := FloatAny(t, "truck.speedKmh", "truck.speed_kmh", "speed_kmh", "truck.speed")
-/tmp/gat-src/internal/core/core.go-761-	if speed > 0 && speed < 45 {
-/tmp/gat-src/internal/core/core.go-762-		speed *= 3.6
-/tmp/gat-src/internal/core/core.go-763-	}
-/tmp/gat-src/internal/core/core.go-764-	onjob := BoolAny(t, "gameplay.onJob", "gameplay.on_job", "on_job")
-/tmp/gat-src/internal/core/core.go:765:	if !onjob && cargo != "" {
-/tmp/gat-src/internal/core/core.go-766-		onjob = true
-/tmp/gat-src/internal/core/core.go-767-	}
-/tmp/gat-src/internal/core/core.go-768-	status := "FORA DA SESSAO"
-/tmp/gat-src/internal/core/core.go-769-	if onjob {
-/tmp/gat-src/internal/core/core.go-770-		status = "EM ROTA"
-/tmp/gat-src/internal/core/core.go:771:	} else if cargo != "" {
-/tmp/gat-src/internal/core/core.go-772-		status = "CARGA DETECTADA"
-/tmp/gat-src/internal/core/core.go-773-	}
-/tmp/gat-src/internal/core/core.go:774:	return TelemetryRecord{Driver: driver, DeviceID: device, UpdatedAt: time.Now().UTC().Format(time.RFC3339Nano), Status: status, Cargo: cargo, CargoMassKg: mass, Source: src, Destination: dst, RemainingKm: rem, SpeedKmh: speed, OnJob: onjob, Raw: t}
-/tmp/gat-src/internal/core/core.go-775-}
-/tmp/gat-src/internal/core/core.go-776-
-/tmp/gat-src/internal/core/core.go-777-func HTTPJSON(method, url string, body any, timeout time.Duration) (int, map[string]any, []byte, error) {
-/tmp/gat-src/internal/core/core.go-778-	var r io.Reader
-/tmp/gat-src/internal/core/core.go-779-	if body != nil {
-/tmp/gat-src/internal/core/core.go-780-		b, _ := json.Marshal(body)
-/tmp/gat-src/internal/core/core.go-781-		r = bytes.NewReader(b)
-/tmp/gat-src/internal/core/core.go-782-	}
-/tmp/gat-src/internal/core/core.go-783-	req, e := http.NewRequest(method, url, r)
-/tmp/gat-src/internal/core/core.go-784-	if e != nil {
-/tmp/gat-src/internal/core/core.go-785-		return 0, nil, nil, e
-/tmp/gat-src/internal/core/core.go-786-	}
-/tmp/gat-src/internal/core/core.go-787-	if body != nil {
-/tmp/gat-src/internal/core/core.go-788-		req.Header.Set("Content-Type", "application/json")
-/tmp/gat-src/internal/core/core.go-789-	}
-/tmp/gat-src/internal/core/core.go-790-	cl := &http.Client{Timeout: timeout}
-/tmp/gat-src/internal/core/core.go-791-	resp, e := cl.Do(req)
-/tmp/gat-src/internal/core/core.go-792-	if e != nil {
-/tmp/gat-src/internal/core/core.go-793-		return 0, nil, nil, e
-/tmp/gat-src/internal/core/core.go-794-	}
---
-/tmp/gat-src/cmd/ui/main.go-326-		}
-/tmp/gat-src/cmd/ui/main.go-327-		pTranslateMessage.Call(uintptr(unsafe.Pointer(&m)))
-/tmp/gat-src/cmd/ui/main.go-328-		pDispatchMessage.Call(uintptr(unsafe.Pointer(&m)))
-/tmp/gat-src/cmd/ui/main.go-329-	}
-/tmp/gat-src/cmd/ui/main.go-330-}
-/tmp/gat-src/cmd/ui/main.go-331-
-/tmp/gat-src/cmd/ui/main.go-332-func createEdit(name string, x, y, w, h int32, password bool) syscall.Handle {
-/tmp/gat-src/cmd/ui/main.go-333-	style := uintptr(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL)
-/tmp/gat-src/cmd/ui/main.go-334-	if password {
-/tmp/gat-src/cmd/ui/main.go-335-		style |= ES_PASSWORD
-/tmp/gat-src/cmd/ui/main.go-336-	}
-/tmp/gat-src/cmd/ui/main.go-337-	hw, _, _ := pCreateWindowEx.Call(0, uintptr(unsafe.Pointer(u16("EDIT"))), uintptr(unsafe.Pointer(u16(""))), style, uintptr(x), uintptr(y), uintptr(w), uintptr(h), uintptr(app.hwnd), 0, 0, 0)
-/tmp/gat-src/cmd/ui/main.go-338-	hnd := syscall.Handle(hw)
-/tmp/gat-src/cmd/ui/main.go-339-	pSendMessage.Call(hw, WM_SETFONT, uintptr(app.fontNormal), 1)
-/tmp/gat-src/cmd/ui/main.go-340-	app.edits[name] = hnd
-/tmp/gat-src/cmd/ui/main.go-341-	return hnd
-/tmp/gat-src/cmd/ui/main.go-342-}
-/tmp/gat-src/cmd/ui/main.go-343-func createEdits() {
-/tmp/gat-src/cmd/ui/main.go-344-	createEdit("login_user", 520, 345, 260, 34, false)
-/tmp/gat-src/cmd/ui/main.go-345-	createEdit("login_pass", 520, 402, 260, 34, true)
-/tmp/gat-src/cmd/ui/main.go:346:	createEdit("cfg_name", 465, 215, 500, 34, false)
-/tmp/gat-src/cmd/ui/main.go:347:	createEdit("cfg_desc", 465, 275, 500, 34, false)
-/tmp/gat-src/cmd/ui/main.go:348:	createEdit("cfg_pass", 465, 335, 500, 34, false)
-/tmp/gat-src/cmd/ui/main.go-349-	createEdit("cfg_max", 465, 395, 160, 34, false)
-/tmp/gat-src/cmd/ui/main.go:350:	createEdit("cfg_funnel", 465, 455, 500, 34, false)
-/tmp/gat-src/cmd/ui/main.go-351-	createEdit("mod_steam", 465, 250, 430, 34, false)
-/tmp/gat-src/cmd/ui/main.go-352-	createEdit("acc_user", 465, 245, 350, 34, false)
-/tmp/gat-src/cmd/ui/main.go-353-	createEdit("acc_old", 465, 305, 350, 34, true)
-/tmp/gat-src/cmd/ui/main.go-354-	createEdit("acc_new", 465, 365, 350, 34, true)
-/tmp/gat-src/cmd/ui/main.go-355-	createEdit("acc_confirm", 465, 425, 350, 34, true)
-/tmp/gat-src/cmd/ui/main.go-356-	updateEditVisibility()
-/tmp/gat-src/cmd/ui/main.go-357-}
-/tmp/gat-src/cmd/ui/main.go-358-func updateEditVisibility() {
-/tmp/gat-src/cmd/ui/main.go-359-	for n, h := range app.edits {
-/tmp/gat-src/cmd/ui/main.go-360-		v := false
-/tmp/gat-src/cmd/ui/main.go-361-		switch app.page {
-/tmp/gat-src/cmd/ui/main.go-362-		case "login":
-/tmp/gat-src/cmd/ui/main.go-363-			v = strings.HasPrefix(n, "login_")
-/tmp/gat-src/cmd/ui/main.go-364-		case "config":
-/tmp/gat-src/cmd/ui/main.go-365-			v = strings.HasPrefix(n, "cfg_")
-/tmp/gat-src/cmd/ui/main.go-366-		case "moderator":
-/tmp/gat-src/cmd/ui/main.go-367-			v = n == "mod_steam"
-/tmp/gat-src/cmd/ui/main.go-368-		case "account":
-/tmp/gat-src/cmd/ui/main.go-369-			v = strings.HasPrefix(n, "acc_")
-/tmp/gat-src/cmd/ui/main.go-370-		}
---
-/tmp/gat-src/cmd/ui/main.go-732-		roundFill(dc, Rect{x, 155, h1.w, 36}, rgb(13, 61, 91), 4)
-/tmp/gat-src/cmd/ui/main.go-733-		text(dc, h1.s, Rect{x + 5, 155, h1.w - 10, 36}, app.fontBold, rgb(220, 235, 246), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-734-		x += h1.w + 4
-/tmp/gat-src/cmd/ui/main.go-735-	}
-/tmp/gat-src/cmd/ui/main.go-736-	y := int32(200)
-/tmp/gat-src/cmd/ui/main.go-737-	if len(s.Telemetry) == 0 {
-/tmp/gat-src/cmd/ui/main.go-738-		text(dc, "Aguardando telemetria dos motoristas...", Rect{270, 245, 800, 40}, app.fontH1, rgb(160, 190, 215), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-739-	}
-/tmp/gat-src/cmd/ui/main.go-740-	for i, t := range s.Telemetry {
-/tmp/gat-src/cmd/ui/main.go-741-		if i >= 12 {
-/tmp/gat-src/cmd/ui/main.go-742-			break
-/tmp/gat-src/cmd/ui/main.go-743-		}
-/tmp/gat-src/cmd/ui/main.go-744-		x = 255
-/tmp/gat-src/cmd/ui/main.go-745-		bg := rgb(8, 43, 67)
-/tmp/gat-src/cmd/ui/main.go-746-		if i%2 == 1 {
-/tmp/gat-src/cmd/ui/main.go-747-			bg = rgb(7, 37, 59)
-/tmp/gat-src/cmd/ui/main.go-748-		}
-/tmp/gat-src/cmd/ui/main.go-749-		vals := []struct {
-/tmp/gat-src/cmd/ui/main.go-750-			s string
-/tmp/gat-src/cmd/ui/main.go-751-			w int32
-/tmp/gat-src/cmd/ui/main.go:752:		}{{t.Driver, 150}, {t.Status, 110}, {nz(t.Cargo, "Sem carga"), 205}, {fmt.Sprintf("%.0f kg", t.CargoMassKg), 95}, {nz(t.Source, "-"), 120}, {nz(t.Destination, "-"), 120}, {fmt.Sprintf("%.1f km", t.RemainingKm), 95}, {fmt.Sprintf("%.0f", t.SpeedKmh), 75}}
-/tmp/gat-src/cmd/ui/main.go-753-		for _, v := range vals {
-/tmp/gat-src/cmd/ui/main.go-754-			fill(dc, Rect{x, y, v.w, 40}, bg)
-/tmp/gat-src/cmd/ui/main.go-755-			text(dc, v.s, Rect{x + 5, y, v.w - 10, 40}, app.fontSmall, rgb(235, 242, 248), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-756-			x += v.w + 4
-/tmp/gat-src/cmd/ui/main.go-757-		}
-/tmp/gat-src/cmd/ui/main.go-758-		y += 44
-/tmp/gat-src/cmd/ui/main.go-759-	}
-/tmp/gat-src/cmd/ui/main.go-760-	text(dc, fmt.Sprintf("Motoristas na sala: %d | Telemetrias conhecidas: %d", s.PlayerCount, len(s.Telemetry)), Rect{255, h - 110, 600, 30}, app.fontNormal, rgb(92, 176, 237), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-761-}
-/tmp/gat-src/cmd/ui/main.go-762-
-/tmp/gat-src/cmd/ui/main.go-763-var sysRects = map[string]Rect{"backup": {270, 180, 210, 48}, "open": {495, 180, 210, 48}, "api": {720, 180, 210, 48}, "funnel": {945, 180, 210, 48}, "mods": {270, 250, 210, 48}, "firewall": {495, 250, 210, 48}, "redetect": {720, 250, 210, 48}, "restart": {945, 250, 210, 48}, "reg": {270, 320, 300, 48}}
-/tmp/gat-src/cmd/ui/main.go-764-
-/tmp/gat-src/cmd/ui/main.go-765-func drawSystem(dc syscall.Handle, w, h int32) {
-/tmp/gat-src/cmd/ui/main.go-766-	s, _, mods, binds := appSnapshot()
-/tmp/gat-src/cmd/ui/main.go-767-	card(dc, Rect{225, 35, w - 250, h - 70})
-/tmp/gat-src/cmd/ui/main.go-768-	text(dc, "SISTEMA", Rect{255, 65, 450, 45}, app.fontTitle, rgb(255, 255, 255), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-769-	drawButton(dc, sysRects["backup"], "CRIAR BACKUP", rgb(20, 107, 160), false)
-/tmp/gat-src/cmd/ui/main.go-770-	drawButton(dc, sysRects["open"], "ABRIR PASTA DE DADOS", rgb(12, 67, 101), false)
-/tmp/gat-src/cmd/ui/main.go-771-	drawButton(dc, sysRects["api"], "TESTAR API 5055", rgb(12, 67, 101), false)
-/tmp/gat-src/cmd/ui/main.go-772-	drawButton(dc, sysRects["funnel"], "ATIVAR FUNNEL", rgb(12, 67, 101), false)
-/tmp/gat-src/cmd/ui/main.go-773-	drawButton(dc, sysRects["mods"], "ATUALIZAR MODS / PACOTES", rgb(20, 107, 207), false)
-/tmp/gat-src/cmd/ui/main.go-774-	drawButton(dc, sysRects["firewall"], "CONFIGURAR FIREWALL", rgb(12, 67, 101), false)
-/tmp/gat-src/cmd/ui/main.go-775-	drawButton(dc, sysRects["redetect"], "REDETECTAR ETS2", rgb(12, 67, 101), false)
-/tmp/gat-src/cmd/ui/main.go-776-	drawButton(dc, sysRects["restart"], "REINICIAR AGENTE", rgb(12, 67, 101), false)
-/tmp/gat-src/cmd/ui/main.go-777-	regLabel := "BLOQUEAR NOVOS VÍNCULOS"
-/tmp/gat-src/cmd/ui/main.go-778-	if !s.RegistrationOpen {
-/tmp/gat-src/cmd/ui/main.go-779-		regLabel = "LIBERAR NOVOS VÍNCULOS"
-/tmp/gat-src/cmd/ui/main.go-780-	}
-/tmp/gat-src/cmd/ui/main.go-781-	drawButton(dc, sysRects["reg"], regLabel, rgb(83, 58, 163), false)
-/tmp/gat-src/cmd/ui/main.go-782-	text(dc, fmt.Sprintf("Agente: %s | Uptime: %s | API: %s", s.AgentVersion, fmtDuration(s.AgentUptimeSec), tern(app.agentReachable, "ATIVA", "OFFLINE")), Rect{270, 390, 850, 30}, app.fontBold, rgb(60, 230, 130), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-783-	text(dc, "PACOTES / MODS", Rect{270, 445, 360, 32}, app.fontH1, rgb(255, 255, 255), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-784-	text(dc, s.PackagesText, Rect{270, 480, 850, 30}, app.fontNormal, ternColor(s.PackagesOK), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-785-	y := int32(520)
-/tmp/gat-src/cmd/ui/main.go-786-	for i, m := range mods {
-/tmp/gat-src/cmd/ui/main.go-787-		if i >= 6 {
-/tmp/gat-src/cmd/ui/main.go-788-			break
-/tmp/gat-src/cmd/ui/main.go-789-		}
-/tmp/gat-src/cmd/ui/main.go-790-		text(dc, "• "+m, Rect{285, y, 800, 25}, app.fontSmall, rgb(190, 213, 230), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-791-		y += 25
-/tmp/gat-src/cmd/ui/main.go-792-	}
-/tmp/gat-src/cmd/ui/main.go:793:	text(dc, fmt.Sprintf("Vínculos de motoristas: %d", len(binds)), Rect{270, 690, 500, 30}, app.fontBold, rgb(92, 176, 237), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-794-	text(dc, "Dados e backups permanecem em "+core.DataDir(), Rect{270, 735, 850, 30}, app.fontSmall, rgb(155, 192, 218), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
-/tmp/gat-src/cmd/ui/main.go-795-}
-/tmp/gat-src/cmd/ui/main.go-796-func tern(b bool, a, c string) string {
-/tmp/gat-src/cmd/ui/main.go-797-	if b {
-/tmp/gat-src/cmd/ui/main.go-798-		return a
-/tmp/gat-src/cmd/ui/main.go-799-	}
-/tmp/gat-src/cmd/ui/main.go-800-	return c
-/tmp/gat-src/cmd/ui/main.go-801-}
-/tmp/gat-src/cmd/ui/main.go-802-func ternColor(b bool) uintptr {
-/tmp/gat-src/cmd/ui/main.go-803-	if b {
-/tmp/gat-src/cmd/ui/main.go-804-		return rgb(60, 230, 130)
-/tmp/gat-src/cmd/ui/main.go-805-	}
-/tmp/gat-src/cmd/ui/main.go-806-	return rgb(255, 180, 60)
-/tmp/gat-src/cmd/ui/main.go-807-}
-/tmp/gat-src/cmd/ui/main.go-808-
-/tmp/gat-src/cmd/ui/main.go-809-var accountSave = Rect{465, 490, 250, 48}
-/tmp/gat-src/cmd/ui/main.go-810-
-/tmp/gat-src/cmd/ui/main.go-811-func drawAccount(dc syscall.Handle, w, h int32) {
-/tmp/gat-src/cmd/ui/main.go-812-	card(dc, Rect{225, 35, w - 250, h - 70})
-/tmp/gat-src/cmd/ui/main.go-813-	text(dc, "CONTA / SENHA", Rect{255, 65, 550, 45}, app.fontTitle, rgb(255, 255, 255), DT_LEFT|DT_VCENTER|DT_SINGLELINE)
---
-/tmp/gat-src/cmd/agent/main.go-130-	m.HandleFunc("/api/ui/action", a.admin(a.uiAction))
-/tmp/gat-src/cmd/agent/main.go-131-	m.HandleFunc("/api/ui/bindings", a.admin(a.uiBindings))
-/tmp/gat-src/cmd/agent/main.go-132-	m.HandleFunc("/api/ui/mods", a.admin(a.uiMods))
-/tmp/gat-src/cmd/agent/main.go-133-}
-/tmp/gat-src/cmd/agent/main.go-134-
-/tmp/gat-src/cmd/agent/main.go-135-func (a *agent) pollLoop() {
-/tmp/gat-src/cmd/agent/main.go-136-	t := time.NewTicker(2 * time.Second)
-/tmp/gat-src/cmd/agent/main.go-137-	defer t.Stop()
-/tmp/gat-src/cmd/agent/main.go-138-	for range t.C {
-/tmp/gat-src/cmd/agent/main.go-139-		a.refreshStatus()
-/tmp/gat-src/cmd/agent/main.go-140-	}
-/tmp/gat-src/cmd/agent/main.go-141-}
-/tmp/gat-src/cmd/agent/main.go-142-func (a *agent) refreshStatus() {
-/tmp/gat-src/cmd/agent/main.go-143-	a.mu.Lock()
-/tmp/gat-src/cmd/agent/main.go-144-	cfg := a.cfg
-/tmp/gat-src/cmd/agent/main.go-145-	a.mu.Unlock()
-/tmp/gat-src/cmd/agent/main.go-146-	online := core.IsProcessRunning("eurotrucks2_server.exe")
-/tmp/gat-src/cmd/agent/main.go-147-	ss := core.ParseSession(cfg)
-/tmp/gat-src/cmd/agent/main.go-148-	pkgOK, pkgText := core.PackagesStatus(cfg)
-/tmp/gat-src/cmd/agent/main.go-149-	a.mu.Lock()
-/tmp/gat-src/cmd/agent/main.go:150:	// Mark telemetry as outside session if the driver is no longer present, but keep the last cargo visible.
-/tmp/gat-src/cmd/agent/main.go-151-	for k, v := range a.telemetry {
-/tmp/gat-src/cmd/agent/main.go-152-		if _, ok := core.ContainsPlayer(ss.Players, v.Driver); !ok && online {
-/tmp/gat-src/cmd/agent/main.go-153-			v.Status = "FORA DA SESSAO"
-/tmp/gat-src/cmd/agent/main.go-154-			v.OnJob = false
-/tmp/gat-src/cmd/agent/main.go-155-			a.telemetry[k] = v
-/tmp/gat-src/cmd/agent/main.go-156-		}
-/tmp/gat-src/cmd/agent/main.go-157-	}
-/tmp/gat-src/cmd/agent/main.go-158-	tel := make([]core.TelemetryRecord, 0, len(a.telemetry))
-/tmp/gat-src/cmd/agent/main.go-159-	for _, v := range a.telemetry {
-/tmp/gat-src/cmd/agent/main.go-160-		tel = append(tel, v)
-/tmp/gat-src/cmd/agent/main.go-161-	}
-/tmp/gat-src/cmd/agent/main.go-162-	sortTelemetry(tel)
-/tmp/gat-src/cmd/agent/main.go-163-	a.status = core.Status{OK: true, AgentVersion: core.InternalVersion, AgentUptimeSec: int64(time.Since(a.started).Seconds()), ServerOnline: online, ServerName: ss.Name, SessionID: ss.ID, Ports: ss.Ports, Players: ss.Players, PlayerCount: ss.Count, MaxPlayers: ss.Max, ServerExe: cfg.ServerExe, ServerLog: core.ServerLogPath(cfg), PackagesOK: pkgOK, PackagesText: pkgText, FunnelURL: cfg.FunnelURL, DataDir: core.DataDir(), Telemetry: tel, RegistrationOpen: cfg.RegistrationOpen, LastRefresh: time.Now().Format(time.RFC3339)}
-/tmp/gat-src/cmd/agent/main.go-164-	a.mu.Unlock()
-/tmp/gat-src/cmd/agent/main.go-165-}
-/tmp/gat-src/cmd/agent/main.go-166-func sortTelemetry(t []core.TelemetryRecord) {
-/tmp/gat-src/cmd/agent/main.go-167-	for i := 0; i < len(t); i++ {
-/tmp/gat-src/cmd/agent/main.go-168-		for j := i + 1; j < len(t); j++ {
-/tmp/gat-src/cmd/agent/main.go-169-			if strings.ToLower(t[j].Driver) < strings.ToLower(t[i].Driver) {
-/tmp/gat-src/cmd/agent/main.go-170-				t[i], t[j] = t[j], t[i]
---
-/tmp/gat-src/cmd/agent/main.go-321-		return
-/tmp/gat-src/cmd/agent/main.go-322-	}
-/tmp/gat-src/cmd/agent/main.go-323-	b, code, st, ok := a.validateClient(q)
-/tmp/gat-src/cmd/agent/main.go-324-	if !ok {
-/tmp/gat-src/cmd/agent/main.go-325-		jsonOut(w, st, map[string]any{"ok": false, "error": code})
-/tmp/gat-src/cmd/agent/main.go-326-		return
-/tmp/gat-src/cmd/agent/main.go-327-	}
-/tmp/gat-src/cmd/agent/main.go-328-	if q.Telemetry == nil {
-/tmp/gat-src/cmd/agent/main.go-329-		q.Telemetry = map[string]any{}
-/tmp/gat-src/cmd/agent/main.go-330-	}
-/tmp/gat-src/cmd/agent/main.go-331-	rec := core.NormalizeTelemetry(b.Driver, b.DeviceID, q.Telemetry)
-/tmp/gat-src/cmd/agent/main.go-332-	rec.Status = "ONLINE"
-/tmp/gat-src/cmd/agent/main.go-333-	if rec.OnJob {
-/tmp/gat-src/cmd/agent/main.go-334-		rec.Status = "EM ROTA"
-/tmp/gat-src/cmd/agent/main.go-335-	}
-/tmp/gat-src/cmd/agent/main.go-336-	key := bindKey(b.Driver)
-/tmp/gat-src/cmd/agent/main.go-337-	a.mu.Lock()
-/tmp/gat-src/cmd/agent/main.go-338-	prev := a.telemetry[key]
-/tmp/gat-src/cmd/agent/main.go-339-	a.prevTelemetry[key] = prev
-/tmp/gat-src/cmd/agent/main.go-340-	a.telemetry[key] = rec
-/tmp/gat-src/cmd/agent/main.go:341:	persist := time.Since(a.lastPersist) > 1500*time.Millisecond
-/tmp/gat-src/cmd/agent/main.go-342-	if persist {
-/tmp/gat-src/cmd/agent/main.go-343-		a.lastPersist = time.Now()
-/tmp/gat-src/cmd/agent/main.go-344-	}
-/tmp/gat-src/cmd/agent/main.go-345-	a.mu.Unlock()
-/tmp/gat-src/cmd/agent/main.go-346-	if persist {
-/tmp/gat-src/cmd/agent/main.go-347-		a.saveTelemetry()
-/tmp/gat-src/cmd/agent/main.go-348-	}
-/tmp/gat-src/cmd/agent/main.go-349-	a.detectEvents(prev, rec)
-/tmp/gat-src/cmd/agent/main.go-350-	jsonOut(w, 200, map[string]any{"ok": true, "driver": b.Driver, "received_at": rec.UpdatedAt})
-/tmp/gat-src/cmd/agent/main.go-351-}
-/tmp/gat-src/cmd/agent/main.go-352-func (a *agent) detectEvents(prev, cur core.TelemetryRecord) {
-/tmp/gat-src/cmd/agent/main.go-353-	if cur.Driver == "" {
-/tmp/gat-src/cmd/agent/main.go-354-		return
-/tmp/gat-src/cmd/agent/main.go-355-	}
-/tmp/gat-src/cmd/agent/main.go-356-	if !prev.OnJob && cur.OnJob {
-/tmp/gat-src/cmd/agent/main.go:357:		core.AppendEvent(map[string]any{"type": "cargo_started", "at": cur.UpdatedAt, "driver": cur.Driver, "cargo": cur.Cargo, "mass_kg": cur.CargoMassKg, "source": cur.Source, "destination": cur.Destination})
-/tmp/gat-src/cmd/agent/main.go-358-	}
-/tmp/gat-src/cmd/agent/main.go-359-	if prev.OnJob && !cur.OnJob {
-/tmp/gat-src/cmd/agent/main.go:360:		core.AppendEvent(map[string]any{"type": "cargo_ended", "at": cur.UpdatedAt, "driver": cur.Driver, "cargo": prev.Cargo, "mass_kg": prev.CargoMassKg, "source": prev.Source, "destination": prev.Destination})
-/tmp/gat-src/cmd/agent/main.go-361-	}
-/tmp/gat-src/cmd/agent/main.go-362-}
-/tmp/gat-src/cmd/agent/main.go-363-
-/tmp/gat-src/cmd/agent/main.go-364-func (a *agent) uiStatus(w http.ResponseWriter, r *http.Request) {
-/tmp/gat-src/cmd/agent/main.go-365-	a.refreshStatus()
-/tmp/gat-src/cmd/agent/main.go-366-	a.mu.RLock()
-/tmp/gat-src/cmd/agent/main.go-367-	s := a.status
-/tmp/gat-src/cmd/agent/main.go-368-	a.mu.RUnlock()
-/tmp/gat-src/cmd/agent/main.go-369-	jsonOut(w, 200, s)
-/tmp/gat-src/cmd/agent/main.go-370-}
-/tmp/gat-src/cmd/agent/main.go-371-func (a *agent) uiConfig(w http.ResponseWriter, r *http.Request) {
-/tmp/gat-src/cmd/agent/main.go-372-	if r.Method == "GET" {
-/tmp/gat-src/cmd/agent/main.go-373-		a.mu.RLock()
-/tmp/gat-src/cmd/agent/main.go-374-		c := a.cfg
-/tmp/gat-src/cmd/agent/main.go-375-		a.mu.RUnlock()
-/tmp/gat-src/cmd/agent/main.go-376-		jsonOut(w, 200, map[string]any{"ok": true, "config": c})
-/tmp/gat-src/cmd/agent/main.go-377-		return
-/tmp/gat-src/cmd/agent/main.go-378-	}
-/tmp/gat-src/cmd/agent/main.go-379-	if r.Method != "POST" {
-/tmp/gat-src/cmd/agent/main.go-380-		jsonOut(w, 405, map[string]any{"ok": false})
-/tmp/gat-src/cmd/agent/main.go-381-		return
-/tmp/gat-src/cmd/agent/main.go-382-	}
-/tmp/gat-src/cmd/agent/main.go-383-	var c core.Config
-/tmp/gat-src/cmd/agent/main.go-384-	if decode(r, &c) != nil {
-/tmp/gat-src/cmd/agent/main.go-385-		jsonOut(w, 400, map[string]any{"ok": false, "error": "bad_config"})
-/tmp/gat-src/cmd/agent/main.go-386-		return
-/tmp/gat-src/cmd/agent/main.go-387-	}
-/tmp/gat-src/cmd/agent/main.go-388-	if c.MaxPlayers < 1 {
-/tmp/gat-src/cmd/agent/main.go-389-		c.MaxPlayers = 128
-/tmp/gat-src/cmd/agent/main.go-390-	}
-/tmp/gat-src/cmd/agent/main.go-391-	if c.ServerExe == "" {
-/tmp/gat-src/cmd/agent/main.go-392-		c.ServerExe = core.DetectServerExe()
-/tmp/gat-src/cmd/agent/main.go-393-	}
-/tmp/gat-src/cmd/agent/main.go-394-	if c.DocumentsHome == "" {
-/tmp/gat-src/cmd/agent/main.go-395-		c.DocumentsHome = core.DetectDocumentsHome()
-/tmp/gat-src/cmd/agent/main.go-396-	}
-/tmp/gat-src/cmd/agent/main.go-397-	if err := core.SaveConfig(c); err != nil {
-/tmp/gat-src/cmd/agent/main.go:398:		jsonOut(w, 500, map[string]any{"ok": false, "error": err.Error()})
-/tmp/gat-src/cmd/agent/main.go-399-		return
-/tmp/gat-src/cmd/agent/main.go-400-	}
-/tmp/gat-src/cmd/agent/main.go-401-	a.mu.Lock()
-/tmp/gat-src/cmd/agent/main.go-402-	a.cfg = c
-/tmp/gat-src/cmd/agent/main.go-403-	a.mu.Unlock()
-/tmp/gat-src/cmd/agent/main.go-404-	err := core.PatchServerConfig(c)
-/tmp/gat-src/cmd/agent/main.go-405-	if err != nil {
-/tmp/gat-src/cmd/agent/main.go-406-		core.AppendLog("Configuracao salva, mas nao foi possivel aplicar server_config.sii: %v", err)
-/tmp/gat-src/cmd/agent/main.go-407-		jsonOut(w, 200, map[string]any{"ok": true, "warning": err.Error()})
-/tmp/gat-src/cmd/agent/main.go-408-		return
-/tmp/gat-src/cmd/agent/main.go-409-	}
-/tmp/gat-src/cmd/agent/main.go-410-	a.refreshStatus()
-/tmp/gat-src/cmd/agent/main.go-411-	jsonOut(w, 200, map[string]any{"ok": true})
-/tmp/gat-src/cmd/agent/main.go-412-}
-/tmp/gat-src/cmd/agent/main.go-413-func (a *agent) uiBindings(w http.ResponseWriter, r *http.Request) {
-/tmp/gat-src/cmd/agent/main.go-414-	a.mu.RLock()
-/tmp/gat-src/cmd/agent/main.go-415-	list := make([]core.Binding, 0, len(a.bindings))
-/tmp/gat-src/cmd/agent/main.go-416-	for _, b := range a.bindings {
-/tmp/gat-src/cmd/agent/main.go-417-		b.Token = ""
-/tmp/gat-src/cmd/agent/main.go-418-		list = append(list, b)
---
-/tmp/gat-src/cmd/agent/main.go-485-		err = a.bindingAction(q.Driver, "unblock")
-/tmp/gat-src/cmd/agent/main.go-486-		msg = "Motorista liberado"
-/tmp/gat-src/cmd/agent/main.go-487-	case "unlink_driver":
-/tmp/gat-src/cmd/agent/main.go-488-		err = a.bindingAction(q.Driver, "unlink")
-/tmp/gat-src/cmd/agent/main.go-489-		msg = "PC desvinculado"
-/tmp/gat-src/cmd/agent/main.go-490-	case "disconnect_driver":
-/tmp/gat-src/cmd/agent/main.go-491-		err = a.bindingAction(q.Driver, "disconnect")
-/tmp/gat-src/cmd/agent/main.go-492-		msg = "Motorista desconectado"
-/tmp/gat-src/cmd/agent/main.go-493-	case "backup":
-/tmp/gat-src/cmd/agent/main.go-494-		var p string
-/tmp/gat-src/cmd/agent/main.go-495-		p, err = a.backup()
-/tmp/gat-src/cmd/agent/main.go-496-		msg = p
-/tmp/gat-src/cmd/agent/main.go-497-	case "shutdown_agent":
-/tmp/gat-src/cmd/agent/main.go-498-		jsonOut(w, 200, map[string]any{"ok": true})
-/tmp/gat-src/cmd/agent/main.go-499-		go func() { time.Sleep(150 * time.Millisecond); _ = a.httpSrv.Close() }()
-/tmp/gat-src/cmd/agent/main.go-500-		return
-/tmp/gat-src/cmd/agent/main.go-501-	default:
-/tmp/gat-src/cmd/agent/main.go-502-		err = fmt.Errorf("acao desconhecida: %s", q.Action)
-/tmp/gat-src/cmd/agent/main.go-503-	}
-/tmp/gat-src/cmd/agent/main.go-504-	if err != nil {
-/tmp/gat-src/cmd/agent/main.go:505:		jsonOut(w, 500, map[string]any{"ok": false, "error": err.Error()})
-/tmp/gat-src/cmd/agent/main.go-506-		return
-/tmp/gat-src/cmd/agent/main.go-507-	}
-/tmp/gat-src/cmd/agent/main.go-508-	a.refreshStatus()
-/tmp/gat-src/cmd/agent/main.go-509-	jsonOut(w, 200, map[string]any{"ok": true, "message": msg})
-/tmp/gat-src/cmd/agent/main.go-510-}
-/tmp/gat-src/cmd/agent/main.go-511-func (a *agent) startServer() error {
-/tmp/gat-src/cmd/agent/main.go-512-	a.mu.RLock()
-/tmp/gat-src/cmd/agent/main.go-513-	c := a.cfg
-/tmp/gat-src/cmd/agent/main.go-514-	a.mu.RUnlock()
-/tmp/gat-src/cmd/agent/main.go-515-	if core.IsProcessRunning("eurotrucks2_server.exe") {
-/tmp/gat-src/cmd/agent/main.go-516-		return nil
-/tmp/gat-src/cmd/agent/main.go-517-	}
-/tmp/gat-src/cmd/agent/main.go-518-	if _, e := os.Stat(c.ServerExe); e != nil {
-/tmp/gat-src/cmd/agent/main.go-519-		c.ServerExe = core.DetectServerExe()
-/tmp/gat-src/cmd/agent/main.go-520-		a.mu.Lock()
-/tmp/gat-src/cmd/agent/main.go-521-		a.cfg.ServerExe = c.ServerExe
-/tmp/gat-src/cmd/agent/main.go-522-		a.mu.Unlock()
-/tmp/gat-src/cmd/agent/main.go-523-		_ = core.SaveConfig(c)
-/tmp/gat-src/cmd/agent/main.go-524-	}
-/tmp/gat-src/cmd/agent/main.go-525-	if _, e := os.Stat(c.ServerExe); e != nil {
-/tmp/gat-src/cmd/agent/main.go-526-		return fmt.Errorf("eurotrucks2_server.exe nao encontrado")
-/tmp/gat-src/cmd/agent/main.go-527-	}
-/tmp/gat-src/cmd/agent/main.go-528-	_ = core.PatchServerConfig(c)
-/tmp/gat-src/cmd/agent/main.go-529-	cmd := exec.Command(c.ServerExe)
-/tmp/gat-src/cmd/agent/main.go-530-	cmd.Dir = filepath.Dir(c.ServerExe)
-/tmp/gat-src/cmd/agent/main.go-531-	if e := cmd.Start(); e != nil {
-/tmp/gat-src/cmd/agent/main.go-532-		return e
-/tmp/gat-src/cmd/agent/main.go-533-	}
-/tmp/gat-src/cmd/agent/main.go-534-	core.AppendLog("Dedicated Server iniciado PID %d", cmd.Process.Pid)
-/tmp/gat-src/cmd/agent/main.go-535-	return nil
-/tmp/gat-src/cmd/agent/main.go-536-}
-/tmp/gat-src/cmd/agent/main.go-537-func (a *agent) prepareMods() error {
-/tmp/gat-src/cmd/agent/main.go-538-	a.mu.RLock()
-/tmp/gat-src/cmd/agent/main.go-539-	c := a.cfg
-/tmp/gat-src/cmd/agent/main.go-540-	a.mu.RUnlock()
-/tmp/gat-src/cmd/agent/main.go-541-	if core.IsProcessRunning("eurotrucks2_server.exe") {
-/tmp/gat-src/cmd/agent/main.go-542-		_ = core.KillProcess("eurotrucks2_server.exe")
-/tmp/gat-src/cmd/agent/main.go:543:		time.Sleep(500 * time.Millisecond)
-/tmp/gat-src/cmd/agent/main.go-544-	}
-/tmp/gat-src/cmd/agent/main.go-545-	_ = core.EnableETS2Console(c)
-/tmp/gat-src/cmd/agent/main.go-546-	game := core.DetectETS2Exe()
-/tmp/gat-src/cmd/agent/main.go-547-	if _, e := os.Stat(game); e == nil {
-/tmp/gat-src/cmd/agent/main.go-548-		cmd := exec.Command(game)
-/tmp/gat-src/cmd/agent/main.go-549-		cmd.Dir = filepath.Dir(game)
-/tmp/gat-src/cmd/agent/main.go-550-		return cmd.Start()
-/tmp/gat-src/cmd/agent/main.go-551-	}
-/tmp/gat-src/cmd/agent/main.go-552-	return exec.Command("cmd.exe", "/c", "start", "", "steam://rungameid/227300").Start()
-/tmp/gat-src/cmd/agent/main.go-553-}
-/tmp/gat-src/cmd/agent/main.go-554-func (a *agent) bindingAction(driver, action string) error {
-/tmp/gat-src/cmd/agent/main.go-555-	key := bindKey(driver)
-/tmp/gat-src/cmd/agent/main.go-556-	a.mu.Lock()
-/tmp/gat-src/cmd/agent/main.go-557-	defer a.mu.Unlock()
-/tmp/gat-src/cmd/agent/main.go-558-	b, ok := a.bindings[key]
-/tmp/gat-src/cmd/agent/main.go-559-	if !ok {
-/tmp/gat-src/cmd/agent/main.go-560-		return fmt.Errorf("motorista nao encontrado")
-/tmp/gat-src/cmd/agent/main.go-561-	}
-/tmp/gat-src/cmd/agent/main.go-562-	switch action {
-/tmp/gat-src/cmd/agent/main.go-563-	case "block":
+=== local journal / gat_journal validation ===
+=== ranking decision around journal ===
+15-const randomHex=n=>{const a=new Uint8Array(n);crypto.getRandomValues(a);return hex(a)};
+16-const sha=async v=>hex(await crypto.subtle.digest('SHA-256',enc.encode(String(v))));
+17-const month=v=>String(v||now()).slice(0,7);
+18-const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+19-const deep=(o,p)=>String(p).split('.').reduce((v,k)=>v&&typeof v==='object'?v[k]:undefined,o);
+20-const pick=(o,...ps)=>{for(const p of ps){const v=deep(o,p);if(v!==undefined&&v!==null)return v}};
+21-const num=(o,...ps)=>{const v=Number(pick(o,...ps));return Number.isFinite(v)?v:0};
+22-const str=(o,...ps)=>String(pick(o,...ps)||'').trim();
+23-const bool=(o,...ps)=>{const v=pick(o,...ps);return v===true||v===1||String(v).toLowerCase()==='true'};
+24-const level=x=>Math.max(1,Math.floor((Number(x)||0)/2000)+1);
+25-
+26-class HttpError extends Error{constructor(status,code){super(code);this.status=status;this.code=code}}
+27-function headers(req){const o=req.headers.get('Origin');return{'Access-Control-Allow-Origin':o&&ORIGINS.has(o)?o:'https://gatlogets2.com.br','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type,Authorization','Cache-Control':'no-store','Vary':'Origin','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}}
+28-function json(req,data,status=200){return new Response(JSON.stringify(data),{status,headers:{...headers(req),'Content-Type':'application/json; charset=utf-8'}})}
+29-async function body(req){const declared=Number(req.headers.get('Content-Length')||0);if(declared>MAX_BODY)throw new HttpError(413,'payload_too_large');const text=await req.text();if(enc.encode(text).byteLength>MAX_BODY)throw new HttpError(413,'payload_too_large');try{const v=JSON.parse(text||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{throw new HttpError(400,'invalid_json')}}
+30-async function equal(a,b){const[x,y]=await Promise.all([crypto.subtle.digest('SHA-256',enc.encode(String(a))),crypto.subtle.digest('SHA-256',enc.encode(String(b)))]),xa=new Uint8Array(x),ya=new Uint8Array(y);let diff=xa.length^ya.length;for(let i=0;i<xa.length;i++)diff|=xa[i]^ya[i%ya.length];return diff===0}
+31-// Keep the established cost so existing Cloudflare account hashes remain valid.
+32-async function passHash(password,salt){return bytesToHex(pbkdf2(sha256,enc.encode(String(password)),enc.encode(String(salt)),{c:140000,dkLen:32}))}
+33-// Legacy GAT Server accounts used 120,000 consecutive SHA-256 rounds over salt + NUL + password.
+34-function legacyPassHash(password,salt){let x=enc.encode(String(salt)+'\x00'+String(password));for(let i=0;i<120000;i++)x=sha256(x);return bytesToHex(x)}
+35-async function verifyPassword(env,account,password){if(!account?.password_hash||!account?.password_salt)return false;const current=await passHash(password,account.password_salt);if(await equal(current,account.password_hash))return true;const legacy=legacyPassHash(password,account.password_salt);if(!(await equal(legacy,account.password_hash)))return false;const salt=randomHex(16),hash=await passHash(password,salt);await env.DB.prepare('UPDATE accounts SET password_salt=?,password_hash=?,updated_at=? WHERE user=?').bind(salt,hash,now(),account.user).run();return true}
+36-function bearer(req){const v=req.headers.get('Authorization')||'';return v.toLowerCase().startsWith('bearer ')?v.slice(7).trim():''}
+37-async function makeSession(env,user){const token=randomHex(32),t=Date.now();await env.DB.prepare('INSERT INTO sessions(token_hash,user,created_at,expires_at) VALUES(?,?,?,?)').bind(await sha(token),user,new Date(t).toISOString(),new Date(t+30*86400000).toISOString()).run();return token}
+38-async function sessionUser(env,token){if(!token)return null;const r=await env.DB.prepare('SELECT a.user,a.role,a.disabled,s.expires_at FROM sessions s JOIN accounts a ON a.user=s.user WHERE s.token_hash=?').bind(await sha(token)).first();return!r||r.disabled||Date.parse(r.expires_at)<=Date.now()?null:r}
+39-async function requireSession(req,env,b){const s=await sessionUser(env,String(b.token||bearer(req)));if(!s)throw new HttpError(401,'invalid_session');return s}
+40-async function requireAdmin(req,env,b,power=false){const s=await requireSession(req,env,b);if(!(power?POWER:ADMIN).has(s.role))throw new HttpError(403,'forbidden');return s}
+41-async function ensureProfile(env,user){await env.DB.prepare('INSERT OR IGNORE INTO profiles(user,updated_at) VALUES(?,?)').bind(user,now()).run()}
+42-async function audit(env,actor,action,target,details={}){await env.DB.prepare('INSERT INTO audit(at,actor,action,target,details) VALUES(?,?,?,?,?)').bind(now(),actor,action,target,JSON.stringify(details)).run()}
+43-
+44-function flat(driver,account,updated,raw){return{driver,account_user:account||'',updated_at:updated,telemetry:raw,on_job:bool(raw,'on_job','onJob','gameplay.onJob','job.onJob','job.active'),cargo_name:str(raw,'cargo_name','cargo','job.cargo','job.cargoName','job.cargo.name'),source_city:str(raw,'source_city','source','job.sourceCity','job.source.cityName'),destination_city:str(raw,'destination_city','destination','job.destinationCity','job.destination.cityName'),mass_kg:num(raw,'mass_kg','cargo_mass','cargoMass','job.cargoMass','job.mass_kg'),remaining_km:num(raw,'remaining_km')||num(raw,'distance_m','navigation.estimatedDistance')/1000,speed_kmh:Math.abs(num(raw,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed')),truck_make:str(raw,'truck_make','truck.make'),truck_model:str(raw,'truck_model','truck.model'),job_market:str(raw,'job_market','job.market'),map_x:num(raw,'map_x','truck.placement.x'),map_z:num(raw,'map_z','truck.placement.z'),map_heading:num(raw,'map_heading','truck.placement.heading'),gat_map:str(raw,'gat_map','map_mode','gatMap')||'base'}}
+45-async function live(env){const r=await env.DB.prepare('SELECT driver,account_user,updated_at,telemetry_json FROM telemetry_live WHERE updated_at>=? ORDER BY updated_at DESC').bind(new Date(Date.now()-45000).toISOString()).all();return(r.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.telemetry_json||'{}')}catch{}return flat(x.driver,x.account_user,x.updated_at,raw)})}
+46-async function profile(env,user){const p=await env.DB.prepare('SELECT * FROM profiles WHERE user=?').bind(user).first();if(!p)return null;const d=await env.DB.prepare('SELECT id,sequence_no AS sequence,source,destination,cargo,weight_kg,distance_km,xp,xp AS xp_awarded,perfect,perfect AS perfect_trip,penalty_xp,speed_fines,delivered_at,delivered_at AS completed_at,raw_json FROM deliveries WHERE user=? ORDER BY id DESC LIMIT 100').bind(user).all();let mission=null;try{mission=p.current_mission_json?JSON.parse(p.current_mission_json):null}catch{}const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.raw_json||'{}')}catch{}return{...x,...raw.audit}}).reverse();return{user,monthly_completed:p.monthly_completed,monthly_goal:p.monthly_goal,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points:p.points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,current_mission:mission,deliveries}}
+47-
+48-async function resetAssigned(env,user,mission,reason,extra={}){const m={...mission,state:'assigned',min_km:MIN_KM,last_rejected_at:now(),last_rejected_reason:reason,...extra};for(const k of['cargo','source','destination','weight_kg','planned_distance_km','rbr_start_remaining_km','map_mode','distance_source','started_at'])delete m[k];await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),now(),user).run();return m}
+49-async function cargoOK(env,mission,cargo){const actual=norm(cargo);if(!actual)return false;if(mission.catalog_id==='custom'){const expected=norm(mission.custom_cargo);return expected.length>=2&&(actual===expected||actual.includes(expected)||expected.includes(actual))}const r=await env.DB.prepare('SELECT compatible_cargos_json FROM work_catalog WHERE id=?').bind(String(mission.catalog_id||'')).first();let names=[];try{names=JSON.parse(r?.compatible_cargos_json||'[]')}catch{}return names.map(norm).some(n=>n&&(actual===n||actual.includes(n)||n.includes(actual)))}
+50-async function processMission(env,user,raw,t){
+51- const row=await env.DB.prepare('SELECT current_mission_json FROM profiles WHERE user=?').bind(user).first();if(!row?.current_mission_json)return null;let m;try{m=JSON.parse(row.current_mission_json)}catch{return null}
+52- const f=flat(user,user,t,raw),isRbr=clean(f.gat_map).includes('rbr'),baseKm=num(raw,'job.plannedDistanceKm','planned_distance_km'),teleKm=f.remaining_km||num(raw,'distance_m','navigation.estimatedDistance')/1000,planned=isRbr?(teleKm||baseKm):baseKm;
+53- if(f.on_job&&f.cargo_name){if(m.state!=='active'||m.cargo!==f.cargo_name||m.source!==f.source_city||m.destination!==f.destination_city){m={...m,state:'active',min_km:MIN_KM,cargo:f.cargo_name,source:f.source_city,destination:f.destination_city,weight_kg:f.mass_kg,planned_distance_km:planned,map_mode:isRbr?'rbr':'base',distance_source:isRbr?'gat_telemetry_remaining_km':'ets2_job_planned_distance',rbr_start_remaining_km:isRbr?teleKm:undefined,started_at:m.started_at||t};await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run()}}
+54- const delivered=bool(raw,'gameplay.jobDelivered','jobDelivered');
+55- const cancelled=bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled','job.cancelled','job.canceled');
+56- if(!delivered&&cancelled&&(m.state==='active'||m.state==='suspended')){m=await resetAssigned(env,user,m,'job_cancelled');return{type:'mission_cancelled',mission:m}}
+57- if(!delivered&&!f.on_job&&m.state==='active'){m={...m,state:'suspended',suspended_at:t};await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),t,user).run();return{type:'mission_suspended',mission:m}}
+58- if(!delivered&&!f.on_job&&m.state==='suspended')return{type:'mission_suspended',mission:m};
+59- if(!delivered)return f.on_job?{type:'mission_in_progress',mission:m,distance_km:planned}:null;
+60: if(m.state!=='active')return{type:'delivery_rejected',reason:'mission_not_active'};const details=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{},rbr=clean(m.map_mode).includes('rbr')||isRbr,distance=rbr?(Number(m.rbr_start_remaining_km)||Number(m.planned_distance_km)||teleKm||0):(Number(details.distanceKm)||Number(m.planned_distance_km)||baseKm||0);
+61: if(distance<MIN_KM){await resetAssigned(env,user,m,'distance_below_minimum',{last_distance_km:distance});return{type:'delivery_rejected',reason:'distance_below_minimum',distance_km:distance,min_km:MIN_KM}}
+62: if(!await cargoOK(env,m,m.cargo||f.cargo_name)){await resetAssigned(env,user,m,'cargo_not_compatible',{last_cargo:m.cargo||f.cargo_name});return{type:'delivery_rejected',reason:'cargo_not_compatible'}}
+63: const source=String(m.source||f.source_city||'').trim(),destination=String(m.destination||f.destination_city||'').trim();if(!source||!destination||norm(source)===norm(destination)){await resetAssigned(env,user,m,'invalid_route');return{type:'delivery_rejected',reason:'invalid_route'}}
+64: const routeKey=`${norm(source)}>${norm(destination)}`,mk=month(t),workId=String(m.catalog_id||'');if(await env.DB.prepare('SELECT 1 FROM routes_completed WHERE user=? AND month_key=? AND route_key=?').bind(user,mk,routeKey).first()){await resetAssigned(env,user,m,'route_already_used');return{type:'delivery_rejected',reason:'route_already_used'}}if(await env.DB.prepare('SELECT 1 FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(user,workId,mk).first()){await resetAssigned(env,user,m,'work_already_completed');return{type:'delivery_rejected',reason:'work_already_completed'}}
+65- const missionId=String(m.id||`${mk}-${user}-${workId}-${m.created_at||m.assigned_at||''}`),guard=await env.DB.prepare('INSERT OR IGNORE INTO mission_completions(mission_id,user,completed_at) VALUES(?,?,?)').bind(missionId,user,t).run();if(!guard.meta?.changes)return{type:'delivery_ignored',reason:'duplicate_event'};
+66- const damageRaw=Math.max(0,Number(details.cargoDamage)||0),damage=damageRaw<=1?damageRaw*100:damageRaw,fines=Math.max(0,Math.trunc(num(details,'speedFines','speed_fines','fines'))),baseXP=Math.floor(distance/100)*20,speedPenalty=fines*3,cargoPenalty=Math.round(damage*2),perfect=damage<=0.1&&fines===0?1:0,bonus=perfect?25:0,penalty=speedPenalty+cargoPenalty,xp=Math.max(0,baseXP-penalty+bonus),cargo=m.cargo||f.cargo_name||m.custom_cargo||m.title||'Carga',weight=Number(m.weight_kg)||f.mass_kg||0,auditData={base_xp:baseXP,speed_penalty_xp:speedPenalty,cargo_penalty_xp:cargoPenalty,truck_penalty_xp:0,perfect_bonus_xp:bonus,cargo_damage_pct:damage,truck_damage_delta_pct:0,perfect_trip:!!perfect,xp_awarded:xp};
+67- await env.DB.batch([env.DB.prepare('INSERT INTO deliveries(user,sequence_no,source,destination,cargo,weight_kg,distance_km,xp,perfect,penalty_xp,speed_fines,delivered_at,raw_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(user,Number(m.sequence)||null,source,destination,cargo,weight,distance,xp,perfect,penalty,fines,t,JSON.stringify({mission:m,delivery_details:details,audit:auditData,map_mode:rbr?'rbr':'base'})),env.DB.prepare('UPDATE profiles SET monthly_completed=monthly_completed+1,total_deliveries=total_deliveries+1,total_km=total_km+?,xp=xp+?,perfect_trips=perfect_trips+?,penalty_xp=penalty_xp+?,speed_fines=speed_fines+?,safety_score=MAX(0,100-((penalty_xp+?)*0.1)),current_mission_json=NULL,updated_at=? WHERE user=?').bind(distance,xp,perfect,penalty,fines,penalty,t,user),env.DB.prepare('INSERT INTO work_completed(user,work_id,month_key,completed_at) VALUES(?,?,?,?)').bind(user,workId,mk,t),env.DB.prepare('INSERT INTO routes_completed(user,month_key,route_key,source,destination,completed_at) VALUES(?,?,?,?,?,?)').bind(user,mk,routeKey,source,destination,t)]);
+68- return{type:'delivery_completed',user,cargo,source,destination,distance_km:distance,xp,perfect:!!perfect,min_km:MIN_KM}
+69-}
+70-
+71-async function clientCredential(env,driver,device,token){if(!token)return{error:'token_required'};const hash=await sha(token),r=await env.DB.prepare('SELECT ct.token_hash,ct.driver,ct.account_user,ct.device_id,ct.revoked_at,a.disabled FROM client_tokens ct LEFT JOIN accounts a ON a.user=ct.account_user WHERE ct.token_hash=?').bind(hash).first();if(!r||r.revoked_at||!r.account_user||r.disabled)return{error:'link_required'};if(clean(r.driver)!==clean(driver))return{error:'driver_mismatch'};if(r.device_id&&device&&r.device_id!==device)return{error:'device_mismatch'};await env.DB.prepare('UPDATE client_tokens SET last_seen_at=? WHERE token_hash=?').bind(now(),hash).run();return{row:r}}
+72-async function pairing(env,driver,device){const old=await env.DB.prepare('SELECT code_plain,expires_at FROM client_pairings WHERE driver=? AND device_id=? AND claimed_user IS NULL').bind(driver,device).first();if(old&&Date.parse(old.expires_at)>Date.now())return old;const code=randomHex(4).toUpperCase(),expires=new Date(Date.now()+15*60000).toISOString();await env.DB.prepare('INSERT INTO client_pairings(code_hash,code_plain,driver,device_id,created_at,expires_at,claimed_user) VALUES(?,?,?,?,?,?,NULL) ON CONFLICT(driver,device_id) DO UPDATE SET code_hash=excluded.code_hash,code_plain=excluded.code_plain,created_at=excluded.created_at,expires_at=excluded.expires_at,claimed_user=NULL').bind(await sha(code),code,driver,device,now(),expires).run();return{code_plain:code,expires_at:expires}}
+73-async function finishPair(env,driver,device){const p=await env.DB.prepare('SELECT code_hash,claimed_user,expires_at FROM client_pairings WHERE driver=? AND device_id=?').bind(driver,device).first();if(!p?.claimed_user||Date.parse(p.expires_at)<=Date.now())return null;const token=randomHex(32);await env.DB.batch([env.DB.prepare('UPDATE client_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL').bind(now(),device),env.DB.prepare('INSERT INTO client_tokens(token_hash,driver,account_user,device_id,created_at,last_seen_at,revoked_at) VALUES(?,?,?,?,?,?,NULL)').bind(await sha(token),driver,p.claimed_user,device,now(),now()),env.DB.prepare('DELETE FROM client_pairings WHERE code_hash=?').bind(p.code_hash)]);return{token,account_user:p.claimed_user}}
+74-
+75-async function adminDriver(env,target){const a=await env.DB.prepare('SELECT user,role,disabled,created_at,updated_at FROM accounts WHERE user=?').bind(target).first();if(!a)return null;const p=await profile(env,target),sessions=await env.DB.prepare('SELECT COUNT(*) total FROM sessions WHERE user=? AND expires_at>?').bind(target,now()).first(),tel=await env.DB.prepare('SELECT driver,account_user,updated_at,telemetry_json FROM telemetry_live WHERE account_user=? ORDER BY updated_at DESC LIMIT 1').bind(target).first();let liveData={online:false};if(tel){let raw={};try{raw=JSON.parse(tel.telemetry_json||'{}')}catch{}liveData={...flat(tel.driver,tel.account_user,tel.updated_at,raw),online:Date.now()-Date.parse(tel.updated_at)<30000}}return{account:{...a,disabled:!!a.disabled,active_sessions:Number(sessions?.total||0)},profile:p,live:liveData}}
+76-async function recalc(env,user){const s=await env.DB.prepare('SELECT COUNT(*) total,COALESCE(SUM(distance_km),0) km,COALESCE(SUM(xp),0) xp,COALESCE(SUM(perfect),0) perfect,COALESCE(SUM(penalty_xp),0) penalties,COALESCE(SUM(speed_fines),0) fines FROM deliveries WHERE user=?').bind(user).first(),m=await env.DB.prepare('SELECT COUNT(*) total FROM deliveries WHERE user=? AND substr(delivered_at,1,7)=?').bind(user,month()).first();await env.DB.prepare('UPDATE profiles SET monthly_completed=?,total_deliveries=?,total_km=?,xp=?,perfect_trips=?,penalty_xp=?,speed_fines=?,safety_score=MAX(0,100-(?*0.1)),updated_at=? WHERE user=?').bind(Number(m?.total||0),Number(s?.total||0),Number(s?.km||0),Number(s?.xp||0),Number(s?.perfect||0),Number(s?.penalties||0),Number(s?.fines||0),Number(s?.penalties||0),now(),user).run()}
+77-async function adminAction(req,env,b,actor){const action=String(b.action||''),target=clean(b.target);if(!target)throw new HttpError(400,'target_required');const a=await env.DB.prepare('SELECT user,role,disabled FROM accounts WHERE user=?').bind(target).first();if(!a)throw new HttpError(404,'not_found');if(a.role==='owner'&&actor.role!=='owner')throw new HttpError(403,'owner_protected');if(actor.role==='moderator'&&action!=='reset_mission')throw new HttpError(403,'forbidden');
+78- if(action==='reset_mission')await env.DB.prepare('UPDATE profiles SET current_mission_json=NULL,updated_at=? WHERE user=?').bind(now(),target).run();
+79- else if(action==='block'||action==='unblock'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const disabled=action==='block'?1:0;await env.DB.batch([env.DB.prepare('UPDATE accounts SET disabled=?,updated_at=? WHERE user=?').bind(disabled,now(),target),...(disabled?[env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(target),env.DB.prepare('UPDATE client_tokens SET revoked_at=? WHERE account_user=? AND revoked_at IS NULL').bind(now(),target)]:[])])}
+80- else if(action==='reset_password'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const password=String(b.password||'');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');const salt=randomHex(16);await env.DB.batch([env.DB.prepare('UPDATE accounts SET password_salt=?,password_hash=?,updated_at=? WHERE user=?').bind(salt,await passHash(password,salt),now(),target),env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(target)])}
+81- else if(action==='role'){if(actor.role!=='owner'||a.role==='owner')throw new HttpError(403,'forbidden');const role=String(b.role||'');if(!['driver','moderator','admin'].includes(role))throw new HttpError(400,'invalid_role');await env.DB.prepare('UPDATE accounts SET role=?,updated_at=? WHERE user=?').bind(role,now(),target).run()}
+82- else if(action==='delete'){if(actor.role!=='owner'||a.role==='owner'||actor.user===target)throw new HttpError(403,'forbidden');await env.DB.prepare('DELETE FROM accounts WHERE user=?').bind(target).run()}
+83- else if(action==='set_progress'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const monthly=Math.trunc(Number(b.monthly_completed)),total=Math.trunc(Number(b.total_deliveries)),km=Number(b.total_km);if(!Number.isFinite(monthly)||!Number.isFinite(total)||!Number.isFinite(km)||monthly<0||monthly>40||total<monthly||km<0)throw new HttpError(400,'invalid_progress');await env.DB.prepare('UPDATE profiles SET monthly_completed=?,total_deliveries=?,total_km=?,updated_at=? WHERE user=?').bind(monthly,total,km,now(),target).run()}
+84- else if(action==='delete_delivery'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const id=Math.trunc(Number(b.delivery_id)),d=await env.DB.prepare('SELECT id,raw_json,delivered_at FROM deliveries WHERE id=? AND user=?').bind(id,target).first();if(!d)throw new HttpError(404,'delivery_not_found');let raw={};try{raw=JSON.parse(d.raw_json||'{}')}catch{}const work=String(raw?.mission?.catalog_id||'');await env.DB.batch([env.DB.prepare('DELETE FROM deliveries WHERE id=? AND user=?').bind(id,target),...(work?[env.DB.prepare('DELETE FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(target,work,month(d.delivered_at))]:[])]);await recalc(env,target)}
+85- else if(action==='set_delivery_xp'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const id=Math.trunc(Number(b.delivery_id)),xp=Math.trunc(Number(b.delivery_xp));if(!Number.isFinite(xp)||xp<0||xp>100000)throw new HttpError(400,'invalid_xp');const r=await env.DB.prepare('UPDATE deliveries SET xp=? WHERE id=? AND user=?').bind(xp,id,target).run();if(!r.meta?.changes)throw new HttpError(404,'delivery_not_found');await recalc(env,target)}else throw new HttpError(400,'invalid_action');await audit(env,actor.user,action,target,{role:b.role,delivery_id:b.delivery_id});return json(req,{ok:true,action,target})}
+86-
+87-async function route(req,env){const u=new URL(req.url),p=u.pathname,m=req.method;if(m==='OPTIONS')return new Response(null,{status:204,headers:headers(req)});if(!['GET','POST'].includes(m))throw new HttpError(405,'method_not_allowed');
+88- if(p==='/health')return json(req,{ok:true,service:'GAT Central Cloud',agent_version:VERSION,time:now(),mission_min_km:MIN_KM,test_mode:false});
+89- if(p==='/api/public/version')return json(req,{ok:true,agent_version:VERSION,platform:'cloudflare-workers-d1',mission_min_km:MIN_KM,test_mode:false});
+90- if(p==='/api/client/server-info')return json(req,{ok:true,online:true,server_name:'GAT CENTRAL CLOUD',session_id:'CLOUD',players:(await live(env)).length,max_players:999});if(p==='/api/client/players')return json(req,{ok:true,players:(await live(env)).map(x=>x.driver)});
+91- if(p==='/api/account/register'&&m==='POST'){const b=await body(req),user=clean(b.user),password=String(b.password||'');if(!/^[a-z0-9._-]{3,32}$/.test(user))throw new HttpError(400,'invalid_user');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');if(await env.DB.prepare('SELECT 1 FROM accounts WHERE user=?').bind(user).first())throw new HttpError(409,'user_exists');const salt=randomHex(16),t=now();await env.DB.prepare('INSERT INTO accounts(user,password_salt,password_hash,role,created_at,updated_at) VALUES(?,?,?,?,?,?)').bind(user,salt,await passHash(password,salt),'driver',t,t).run();await ensureProfile(env,user);return json(req,{ok:true,user,role:'driver',token:await makeSession(env,user)},201)}
+92- if(p==='/api/account/login'&&m==='POST'){const b=await body(req),user=clean(b.user),key=`${req.headers.get('CF-Connecting-IP')||'unknown'}:${user}`,cutoff=new Date(Date.now()-15*60000).toISOString(),attempts=await env.DB.prepare('SELECT COUNT(*) total FROM auth_attempts WHERE attempt_key=? AND succeeded=0 AND at>=?').bind(key,cutoff).first();if(Number(attempts?.total||0)>=10)throw new HttpError(429,'too_many_attempts');const a=await env.DB.prepare('SELECT * FROM accounts WHERE user=?').bind(user).first(),valid=!!a&&!a.disabled&&!!a.password_hash&&await verifyPassword(env,a,String(b.password||''));await env.DB.prepare('INSERT INTO auth_attempts(at,attempt_key,succeeded) VALUES(?,?,?)').bind(now(),key,valid?1:0).run();if(!valid)throw new HttpError(401,'invalid_credentials');return json(req,{ok:true,user:a.user,role:a.role,token:await makeSession(env,a.user)})}
+93- if((p==='/api/account/session'||p==='/api/site/session')&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);return json(req,{ok:true,user:s.user,role:s.role})}
+94- if(p==='/api/account/password'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b),password=String(b.password||'');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');const salt=randomHex(16);await env.DB.batch([env.DB.prepare('UPDATE accounts SET password_salt=?,password_hash=?,updated_at=? WHERE user=?').bind(salt,await passHash(password,salt),now(),s.user),env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(s.user)]);return json(req,{ok:true})}
+95- if(p==='/api/client/login'&&m==='POST'){const b=await body(req),driver=clean(b.driver),device=String(b.device_id||'').trim();if(!driver||device.length<16)throw new HttpError(400,'driver_and_device_required');if(b.token){const c=await clientCredential(env,driver,device,String(b.token));if(c.row)return json(req,{ok:true,driver,account_user:c.row.account_user,token:b.token})}const done=await finishPair(env,driver,device);if(done)return json(req,{ok:true,driver,...done});const pair=await pairing(env,driver,device);return json(req,{ok:false,error:'link_required',pairing_code:pair.code_plain,expires_at:pair.expires_at,link_url:'https://gatlogets2.com.br/motorista.html?tab=account'},428)}
+96- if(p==='/api/site/client/link'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b),code=String(b.pairing_code||'').trim().toUpperCase();if(!/^[A-F0-9]{8}$/.test(code))throw new HttpError(400,'invalid_pairing_code');const pair=await env.DB.prepare('SELECT code_hash,driver,device_id,expires_at,claimed_user FROM client_pairings WHERE code_hash=?').bind(await sha(code)).first();if(!pair||pair.claimed_user||Date.parse(pair.expires_at)<=Date.now())throw new HttpError(404,'pairing_not_found');const old=await env.DB.prepare('SELECT account_user FROM client_tokens WHERE device_id=? AND revoked_at IS NULL LIMIT 1').bind(pair.device_id).first();if(old?.account_user&&old.account_user!==s.user)throw new HttpError(409,'device_already_linked');await env.DB.prepare('UPDATE client_pairings SET claimed_user=? WHERE code_hash=?').bind(s.user,pair.code_hash).run();await audit(env,s.user,'link_device',s.user,{driver:pair.driver,device_id_suffix:String(pair.device_id).slice(-8)});return json(req,{ok:true,user:s.user,driver:pair.driver})}
+97- if(p==='/api/client/heartbeat'&&m==='POST'){const b=await body(req),c=await clientCredential(env,clean(b.driver),String(b.device_id||''),String(b.token||''));if(!c.row)throw new HttpError(401,c.error);return json(req,{ok:true,driver:c.row.driver,account_user:c.row.account_user,time:now()})}
+98- if(p==='/api/client/telemetry'&&m==='POST'){const b=await body(req),driver=clean(b.driver),device=String(b.device_id||''),c=await clientCredential(env,driver,device,String(b.token||''));if(!c.row)throw new HttpError(401,c.error);const raw=b.telemetry&&typeof b.telemetry==='object'&&!Array.isArray(b.telemetry)?b.telemetry:{},t=now(),account=c.row.account_user;await env.DB.prepare('INSERT INTO telemetry_live(driver,account_user,device_id,updated_at,telemetry_json) VALUES(?,?,?,?,?) ON CONFLICT(driver) DO UPDATE SET account_user=excluded.account_user,device_id=excluded.device_id,updated_at=excluded.updated_at,telemetry_json=excluded.telemetry_json').bind(driver,account,device,t,JSON.stringify(raw)).run();return json(req,{ok:true,driver,account_user:account,updated_at:t,mission_event:await processMission(env,account,raw,t)})}
+99- if(p==='/api/public/account-live'&&m==='GET')return json(req,{ok:true,telemetry:await live(env),updated_at:now()});
+100- if(p==='/api/public/ranking'&&m==='GET'){const r=await env.DB.prepare('SELECT p.user,p.monthly_completed,p.monthly_goal,p.xp,p.perfect_trips,p.penalty_xp,p.speed_fines,p.total_km FROM profiles p JOIN accounts a ON a.user=p.user WHERE a.disabled=0 ORDER BY p.monthly_completed DESC,p.perfect_trips DESC,p.penalty_xp ASC,p.speed_fines ASC,p.user ASC').all(),season=(await env.DB.prepare("SELECT value FROM meta WHERE key='season'").first())?.value||month(),mode=(await env.DB.prepare("SELECT value FROM meta WHERE key='operation_mode'").first())?.value||'official';return json(req,{ok:true,operation_mode:mode,season,ranking:r.results||[]})}
+101- if(p==='/api/public/safety-ranking'&&m==='GET'){const r=await env.DB.prepare('SELECT p.user,p.safety_score AS score,p.perfect_trips,p.speed_fines,p.penalty_xp FROM profiles p JOIN accounts a ON a.user=p.user WHERE a.disabled=0 ORDER BY p.safety_score DESC,p.perfect_trips DESC,p.speed_fines ASC,p.user ASC').all();return json(req,{ok:true,ranking:r.results||[]})}
+102- if(p==='/api/public/driver'&&m==='GET'){const d=await profile(env,clean(u.searchParams.get('user')));if(!d)throw new HttpError(404,'not_found');return json(req,{ok:true,profile:d})}
+103- if(p==='/api/site/profile'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);await ensureProfile(env,s.user);return json(req,{ok:true,profile:await profile(env,s.user)})}
+104- if(p==='/api/public/work/catalog'&&m==='GET'){const user=clean(u.searchParams.get('user')),c=await env.DB.prepare('SELECT id,position,title,category,icon,custom,compatible_cargos_json FROM work_catalog WHERE active=1 ORDER BY position').all(),d=await env.DB.prepare('SELECT work_id FROM work_completed WHERE user=? AND month_key=?').bind(user,month()).all(),done=new Set((d.results||[]).map(x=>x.work_id));return json(req,{ok:true,catalog:(c.results||[]).map(x=>{let compatible=[];try{compatible=JSON.parse(x.compatible_cargos_json||'[]')}catch{}const{compatible_cargos_json,...item}=x;return{...item,custom:!!x.custom,compatible_cargos:compatible,completed:done.has(x.id)}}),mission_min_km:MIN_KM})}
+105- if((p==='/api/site/work/select'||p==='/api/site/work/take')&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);await ensureProfile(env,s.user);const pr=await env.DB.prepare('SELECT current_mission_json,monthly_completed FROM profiles WHERE user=?').bind(s.user).first();if(pr?.current_mission_json)throw new HttpError(409,'mission_already_active');const item=p.endsWith('/take')&&!b.work_id?await env.DB.prepare('SELECT wc.* FROM work_catalog wc WHERE wc.active=1 AND NOT EXISTS(SELECT 1 FROM work_completed d WHERE d.user=? AND d.work_id=wc.id AND d.month_key=?) ORDER BY wc.position LIMIT 1').bind(s.user,month()).first():await env.DB.prepare('SELECT * FROM work_catalog WHERE id=? AND active=1').bind(String(b.work_id||'')).first();if(!item)throw new HttpError(404,'invalid_work');if(await env.DB.prepare('SELECT 1 FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(s.user,item.id,month()).first())throw new HttpError(409,'work_already_completed');const custom=String(b.custom_cargo||'').trim();if(item.custom&&(custom.length<2||custom.length>100))throw new HttpError(400,'custom_cargo_required');const t=now(),mission={id:`${month()}-${s.user}-${item.id}-${randomHex(6)}`,catalog_id:item.id,sequence:item.position,title:item.title,category:item.category,custom_cargo:custom,state:'assigned',min_km:MIN_KM,created_at:t,assigned_at:t};await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(mission),t,s.user).run();return json(req,{ok:true,mission,completed:Number(pr?.monthly_completed||0),rules_enabled:true,operation_mode:'official'})}
+106- if(p==='/api/site/admin/session'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return json(req,{ok:true,user:s.user,role:s.role})}
+107- if(p==='/api/site/admin/drivers'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b),r=await env.DB.prepare('SELECT a.user,a.role,a.disabled,a.created_at,p.monthly_completed,p.monthly_goal,p.xp,p.total_km,p.current_mission_json,t.driver,t.updated_at last_telemetry_at,t.telemetry_json FROM accounts a LEFT JOIN profiles p ON p.user=a.user LEFT JOIN telemetry_live t ON t.account_user=a.user ORDER BY a.user').all(),drivers=(r.results||[]).map(x=>{let mission=null,raw={};try{mission=x.current_mission_json?JSON.parse(x.current_mission_json):null}catch{}try{raw=x.telemetry_json?JSON.parse(x.telemetry_json):{}}catch{}const f=flat(x.driver||x.user,x.user,x.last_telemetry_at||'',raw);return{user:x.user,role:x.role,disabled:!!x.disabled,created_at:x.created_at,monthly_completed:Number(x.monthly_completed||0),monthly_goal:Number(x.monthly_goal||30),xp:Number(x.xp||0),level:level(x.xp),total_km:Number(x.total_km||0),current_mission:mission,last_telemetry_at:x.last_telemetry_at,online:!!x.last_telemetry_at&&Date.now()-Date.parse(x.last_telemetry_at)<30000,truck:[f.truck_make,f.truck_model].filter(Boolean).join(' '),cargo:f.cargo_name}});return json(req,{ok:true,viewer_role:s.role,drivers})}
+108- if(p==='/api/site/admin/driver'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b),d=await adminDriver(env,clean(b.target));if(!d)throw new HttpError(404,'not_found');return json(req,{ok:true,viewer_role:s.role,...d})}
+109- if(p==='/api/site/admin/audit'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b,true),r=await env.DB.prepare('SELECT id,at,actor,action,target,details FROM audit ORDER BY id DESC LIMIT 200').all();return json(req,{ok:true,viewer_role:s.role,audit:r.results||[]})}
