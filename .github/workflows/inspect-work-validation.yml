@@ -1,4 +1,4 @@
-name: Inspect GAT local journal validation
+name: Inspect GAT points and XP rules
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Assemble GAT Server Local 1.0.56 and inspect journal ordering
+      - name: Assemble GAT Server Local 1.0.56 and inspect scoring
         shell: bash
         run: |
           set -euo pipefail
@@ -40,19 +40,19 @@ jobs:
           python server-local/apply-v155-open-cargo.py server-local/runtime
           python server-local/apply-v156-damage-evidence-points.py server-local/runtime
           {
-            echo '=== inspectClientPacket call context ==='
-            grep -n -C 80 'inspectClientPacket(env' server-local/runtime/worker.js || true
-            echo '=== restoreDeliveredTrailer context ==='
-            grep -n -C 80 'restoreDeliveredTrailer(raw' server-local/runtime/worker.js || true
-            echo '=== journal payload/hash ==='
-            grep -n -C 25 -E 'journalPayloadHash|journal_payload_changed|journal_signature_invalid|journal_chain_gap' server-local/runtime/worker.js || true
-            echo '=== ranking local journal ==='
-            grep -n -C 35 'local_journal_invalid' server-local/runtime/ranking-telemetry.js || true
+            echo '=== processMission ==='
+            grep -n -A220 -B30 'async function processMission' server-local/runtime/worker.js || true
+            echo '=== GAT points ==='
+            grep -n -C 35 -E 'gatPoints|gat_points|gatBase|gat_base|gatSpeedPenalty|gatCargoPenalty|gatTruckPenalty|rankEligible|rankReason' server-local/runtime/worker.js || true
+            echo '=== XP ==='
+            grep -n -C 35 -E 'xpBase|xpAward|xp_awarded|Math.floor\(distance|distance.*20|20.*distance|xp=' server-local/runtime/worker.js || true
+            echo '=== deferred journal ordering ==='
+            grep -n -C 45 -E 'telemetry_deferred|inspectClientPacket\(env|restoreDeliveredTrailer\(raw' server-local/runtime/worker.js || true
           } > server-native-0.1/inspect-work-result.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add server-native-0.1/inspect-work-result.txt
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Inspeciona ordem do journal na Central local 1.0.56'
+          git commit -m 'Inspeciona regras de XP e Pontos GAT 1.0.56'
           git pull --rebase origin main
           git push
