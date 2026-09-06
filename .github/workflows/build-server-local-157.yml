@@ -1,0 +1,165 @@
+name: Build GAT Server 1.0.57 Local
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'server-local-157/**'
+      - '.github/workflows/build-server-local-157.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gat-server-local-157-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: windows-latest
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Assemble verified GAT Server 1.0.56 base
+        shell: bash
+        run: |
+          set -euo pipefail
+          python server-local/build-api.py
+          python server-local/apply-admin-work-switch.py
+          python server-local/apply-auto-classification.py server-local/runtime/worker.js
+          python server-local/apply-auto-classification-safety.py server-local/runtime/worker.js
+          python server-local/apply-trip-state-machine.py server-local/runtime/worker.js
+          python server-local/apply-rank-startup-grace.py server-local/runtime/worker.js
+          python server-local/apply-v147-lapeal-rank-fix.py server-local/runtime
+          python server-local/apply-v148-jeanjc-rank-fix.py server-local/runtime
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          p=Path('server-local/ui/app.ico.base64')
+          p.with_suffix('').write_bytes(base64.b64decode(p.read_text()))
+          PY
+          python server-local/normalize-go-live.py
+          python server-local/apply-monthly-trip-goal.py server-local/runtime/worker.js
+          python server-local/apply-v149-career-history.py server-local/runtime
+          python server-local/apply-v150-driver-directory-totals.py server-local/runtime
+          python server-local/apply-v151-resumable-journeys.py server-local/runtime
+          python server-local/apply-v152-admin-gat-review.py server-local/runtime
+          python server-local/apply-v153-live-telemetry-fk-fix.py server-local/runtime
+          python server-local/apply-v154-durable-trip-journal.py server-local/runtime
+          node --test --test-timeout=30000 server-local/durable-trip-journal-v154.test.mjs
+          python server-local/apply-v155-open-cargo.py server-local/runtime
+          node --test --test-timeout=30000 server-local/open-cargo-v155.test.mjs
+          python server-local/apply-v156-damage-evidence-points.py server-local/runtime
+          node --test --test-timeout=30000 server-local/damage-evidence-points-v156.test.mjs
+
+      - name: Apply direct GAT points rule 1.0.57
+        shell: bash
+        run: |
+          set -euo pipefail
+          python server-local-157/apply-v157-direct-gat-points.py server-local/runtime
+          node --test --test-timeout=30000 server-local-157/direct-gat-points-v157.test.mjs
+
+      - name: Prepare panel and updater 1.0.57
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          import subprocess
+
+          subprocess.run(['python','server-local/patch-ui-version.py'],check=True)
+          for name in ['server-local/ui/GatLogServer/MainForm.cs','server-local/ui/Properties/AssemblyInfo.cs']:
+              p=Path(name);s=p.read_text(encoding='utf-8').replace('1.0.56','1.0.57').replace('damage-evidence-points','direct-gat-points')
+              p.write_text(s,encoding='utf-8')
+
+          p=Path('server-local/updater/Updater.csproj')
+          s=p.read_text(encoding='utf-8').replace('GAT_LOG_SERVER_UPDATE_1.0.56_LOCAL','GAT_LOG_SERVER_UPDATE_1.0.57_LOCAL')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('server-local/updater/Program.cs')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('GAT_SERVER_LOCAL_1.0.56.zip','GAT_SERVER_LOCAL_1.0.57.zip')
+          s=s.replace('GAT Servidor 1.0.56 - hotfix de ranking automatico','GAT Servidor 1.0.57 - Pontos GAT diretos')
+          s=s.replace('&&version!="1.0.56.0")throw','&&version!="1.0.56.0"&&version!="1.0.57.0")throw')
+          s=s.replace('versoes 1.0.39 a 1.0.56','versoes 1.0.39 a 1.0.57')
+          s=s.replace('Instalando o hotfix da Central 1.0.56 sem alterar o andamento das viagens...','Instalando a Central 1.0.57 sem alterar o andamento das viagens...')
+          start='MessageBox.Show(this,"Hotfix do GAT Servidor 1.0.56 instalado.'
+          end='","Atualizacao concluida",MessageBoxButtons.OK,MessageBoxIcon.Information);Close();'
+          a=s.find(start);b=s.find(end,a)
+          if a<0 or b<0: raise SystemExit('Nao encontrei mensagem final do updater 1.0.56')
+          msg=('MessageBox.Show(this,"GAT Servidor 1.0.57 instalado.\\r\\n\\r\\n'
+               'Pontos GAT agora seguem a mesma entrega aceita para XP. A unica exigencia extra para pontuar e a viagem ter 500 km ou mais.\\r\\n\\r\\n'
+               'XP continua em 20 XP por cada 100 km completos, inclusive em viagens abaixo de 500 km.\\r\\n\\r\\n'
+               'Pontos GAT comecam em 100 e diminuem somente pelas penalidades ja existentes de multa, dano da carga e dano do caminhao.\\r\\n\\r\\n'
+               'A verificacao do diario local foi corrigida: a assinatura e conferida antes de qualquer restauracao interna do pacote, e pacotes assinados nao sao descartados antes de atualizar a cadeia. O estado antigo da cadeia e reiniciado uma unica vez sem apagar dados.\\r\\n\\r\\n'
+               'Banco, historico, XP, pontos, entregas, contas, senhas, PCs vinculados, viagens abertas, checkpoints e recibos sao preservados. O instalador cria backup antes da troca da Central.')
+          s=s[:a]+msg+end+s[b+len(end):]
+          p.write_text(s,encoding='utf-8')
+
+      - name: Compile panel 1.0.57
+        run: dotnet build server-local/ui/GAT_LOG_SERVER.csproj -c Release -o server-local/ui-out
+
+      - name: Package verified runtime 1.0.57
+        shell: python
+        run: |
+          import pathlib,subprocess,urllib.request,hashlib,zipfile,io,shutil,os,tempfile
+          root=pathlib.Path('server-local');stage=pathlib.Path('server-local-157/package');central=stage/'central';central.mkdir(parents=True,exist_ok=True)
+          version=subprocess.check_output(['node','--version'],text=True).strip()
+          name=f'node-{version}-win-x64.zip';base=f'https://nodejs.org/dist/{version}/'
+          sums=urllib.request.urlopen(base+'SHASUMS256.txt').read().decode();expected=next(line.split()[0] for line in sums.splitlines() if line.split()[-1]==name)
+          data=urllib.request.urlopen(base+name).read();assert hashlib.sha256(data).hexdigest()==expected,'Node download checksum mismatch'
+          with zipfile.ZipFile(io.BytesIO(data)) as z:
+              (central/'node.exe').write_bytes(z.read(f'node-{version}-win-x64/node.exe'))
+              for license_name in ['LICENSE','README.md']:(central/('NODE-'+license_name)).write_bytes(z.read(f'node-{version}-win-x64/{license_name}'))
+          for n in ['worker.js','host.mjs','database.mjs','ranking-telemetry.js','read-cache.js','budget-guard.js','schema.sql','package.json']:shutil.copy2(root/'runtime'/n,central/n)
+          (central/'migrations').mkdir(exist_ok=True);shutil.copy2(root/'runtime/migrations/0004_read_efficiency.sql',central/'migrations/0004_read_efficiency.sql')
+          shutil.copy2(root/'LEIA-ME.txt',central/'LEIA-ME.txt');shutil.copy2(root/'ui-out/GAT_LOG_SERVER.exe',stage/'GAT_LOG_SERVER.exe')
+          with tempfile.TemporaryDirectory() as localapp:
+              check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
+              assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
+          text=(central/'worker.js').read_text();host=(central/'host.mjs').read_text()
+          assert "const VERSION='1.0.57-local'" in text
+          assert "rankReason=distance>=500?null:'gat_distance_below_500'" in text
+          assert 'baseXP=Math.floor(distance/100)*20' in text
+          assert 'gatPoints=rankEligible?Math.max(0,100-pointPenalty):0' in text
+          assert 'ranking_integrity_reason:rankGuardReason||null' in text
+          assert 'if(!packetState.journal_present&&!queuedTimeOK' in text
+          assert text.index("const packetState=await inspectClientPacket(env,account,device,String(b.token||''),raw,t);") < text.index('restoreDeliveredTrailer(raw,prevRaw,previousSampleAt,t,delivered,loaded);')
+          assert 'journal_state_reset_v157_direct_points' in host and 'DELETE FROM telemetry_journal_state' in host
+          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.57.zip')
+          with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
+              for f in stage.rglob('*'):
+                  if f.is_file():z.write(f,f.relative_to(stage))
+          digest=hashlib.sha256(release.read_bytes()).hexdigest()
+          p=root/'updater/Program.cs';p.write_text(p.read_text().replace('__PAYLOAD_SHA256__',digest),encoding='utf-8')
+          release.with_suffix('.sha256').write_text(digest+'  '+release.name+'\n')
+
+      - name: Compile updater 1.0.57
+        run: dotnet build server-local/updater/Updater.csproj -c Release -o server-local/updater-out
+
+      - name: Publish GAT Server 1.0.57 updater
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.57_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.57_LOCAL.exe
+          git config user.name 'GAT Server Build'
+          git config user.email 'actions@users.noreply.github.com'
+          git add releases/GAT_LOG_SERVER_UPDATE_1.0.57_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.57.zip releases/GAT_SERVER_LOCAL_1.0.57.sha256
+          git commit -m 'Publish GAT Server 1.0.57 direct GAT points'
+          git restore server-local/updater/Program.cs server-local/updater/Updater.csproj server-local/ui/GatLogServer/MainForm.cs server-local/ui/Properties/AssemblyInfo.cs
+          git pull --rebase -X theirs
+          git push
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Server-1.0.57-local-updater
+          path: server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.57_LOCAL.exe
