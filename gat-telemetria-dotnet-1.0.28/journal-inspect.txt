@@ -1,0 +1,3267 @@
+﻿=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 123 ===
+  111: 	}
+  112: 
+  113: 	private const string CurrentVersion = "1.0.28";
+  114: 
+  115: 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
+  116: 
+  117: 	private const string AccountAuthority = "https://api.gatlogets2.com.br";
+  118: 
+  119: 	private readonly ApiClient _api = new ApiClient();
+  120: 
+  121: 	private readonly TelemetryEngine _telemetry = new TelemetryEngine();
+  122: 
+  123: 	private readonly TripJournal _tripJournal = new TripJournal();
+  124: 
+  125: 	private readonly Timer _timer = new Timer
+  126: 	{
+  127: 		Interval = 1000
+  128: 	};
+  129: 
+  130: 	private readonly Timer _updateTimer = new Timer
+  131: 	{
+  132: 		Interval = 1800000
+  133: 	};
+  134: 
+  135: 	private List<ServerEntry> _servers;
+  136: 
+  137: 	private ClientSettings _settings;
+  138: 
+  139: 	private readonly string _deviceId;
+  140: 
+  141: 	private bool _busy;
+  142: 
+  143: 	private bool _waiting;
+  144: 
+  145: 	private bool _loggedIn;
+  146: 
+  147: 	private string _endpoint = string.Empty;
+  148: 
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 896 ===
+  884: 		{
+  885: 			ApiResponse apiResponse = await _api.AccountLoginAsync("https://api.gatlogets2.com.br", text, text2);
+  886: 			if (apiResponse.StatusCode != 200 || apiResponse.Json == null || !ApiClient.Bool(apiResponse.Json["ok"]))
+  887: 			{
+  888: 				lblAccount.Text = "Conta: login inválido";
+  889: 				MessageBox.Show("Usuário ou senha inválidos. Use a mesma conta cadastrada no site.", "Conta GAT", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+  890: 				return;
+  891: 			}
+  892: 			string text3 = ApiClient.Str(apiResponse.Json["user"]);
+  893: 			string text4 = ApiClient.Str(apiResponse.Json["token"]);
+  894: 			if (string.IsNullOrWhiteSpace(text3) || string.IsNullOrWhiteSpace(text4))
+  895: 			{
+  896: 				throw new InvalidOperationException("O servidor não retornou a sessão da Conta GAT.");
+  897: 			}
+  898: 			ClientStore.SaveAccountCredential(text3, text4);
+  899: 			txtAccountUser.Text = text3;
+  900: 			txtAccountPassword.Clear();
+  901: 			SetAccountState(text3, text4);
+  902: 			_waiting = false;
+  903: 			_loggedIn = false;
+  904: 			_driver = string.Empty;
+  905: 			_token = string.Empty;
+  906: 			lblSession.Text = "GAT LOG: conta reconhecida, aguardando sessão";
+  907: 			if (chkAuto.Checked && cmbServers.SelectedItem is ServerEntry)
+  908: 			{
+  909: 				BeginWaiting(manual: false);
+  910: 			}
+  911: 		}
+  912: 		catch (Exception ex)
+  913: 		{
+  914: 			ClientStore.Log("Conta GAT: " + ex);
+  915: 			MessageBox.Show("Falha ao entrar na Conta GAT: " + ex.Message, "Conta GAT", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+  916: 		}
+  917: 		finally
+  918: 		{
+  919: 			btnAccountLogin.Enabled = true;
+  920: 			btnAccountLogin.Text = "ENTRAR NA CONTA";
+  921: 		}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1086 ===
+ 1074: 		bool flag = string.Equals(text2, "active", StringComparison.OrdinalIgnoreCase);
+ 1075: 		bool flag2 = !string.IsNullOrWhiteSpace(text) && string.Equals(_lastMissionId, text, StringComparison.OrdinalIgnoreCase);
+ 1076: 		bool flag3 = ((_missionStateKnown & flag2) && !string.Equals(_lastMissionState, "active", StringComparison.OrdinalIgnoreCase)) & flag;
+ 1077: 		if (startedNow | flag3 | flag)
+ 1078: 		{
+ 1079: 			AnnounceWorkStarted(text);
+ 1080: 		}
+ 1081: 		_lastMissionId = text;
+ 1082: 		_lastMissionState = text2;
+ 1083: 		_missionStateKnown = true;
+ 1084: 	}
+ 1085: 
+ 1086: 	private async Task CaptureTripJournalAsync()
+ 1087: 	{
+ 1088: 		if (!((DateTime.UtcNow - _lastTripCapture).TotalMilliseconds < 850.0))
+ 1089: 		{
+ 1090: 			JObject jObject = await _telemetry.ReadAsync();
+ 1091: 			_lastTripCapture = DateTime.UtcNow;
+ 1092: 			if (jObject != null)
+ 1093: 			{
+ 1094: 				_tripJournal.Observe(jObject);
+ 1095: 			}
+ 1096: 		}
+ 1097: 	}
+ 1098: 
+ 1099: 	private async Task FlushTripReceiptsAsync()
+ 1100: 	{
+ 1101: 		if (!AccountReady || (DateTime.UtcNow - _lastTripFlush).TotalSeconds < 4.0)
+ 1102: 		{
+ 1103: 			return;
+ 1104: 		}
+ 1105: 		_lastTripFlush = DateTime.UtcNow;
+ 1106: 		TripReceipt receipt = _tripJournal.PeekPending();
+ 1107: 		if (receipt == null)
+ 1108: 		{
+ 1109: 			return;
+ 1110: 		}
+ 1111: 		string driver = (string.IsNullOrWhiteSpace(_driver) ? _accountUser : _driver);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1094 ===
+ 1082: 		_lastMissionState = text2;
+ 1083: 		_missionStateKnown = true;
+ 1084: 	}
+ 1085: 
+ 1086: 	private async Task CaptureTripJournalAsync()
+ 1087: 	{
+ 1088: 		if (!((DateTime.UtcNow - _lastTripCapture).TotalMilliseconds < 850.0))
+ 1089: 		{
+ 1090: 			JObject jObject = await _telemetry.ReadAsync();
+ 1091: 			_lastTripCapture = DateTime.UtcNow;
+ 1092: 			if (jObject != null)
+ 1093: 			{
+ 1094: 				_tripJournal.Observe(jObject);
+ 1095: 			}
+ 1096: 		}
+ 1097: 	}
+ 1098: 
+ 1099: 	private async Task FlushTripReceiptsAsync()
+ 1100: 	{
+ 1101: 		if (!AccountReady || (DateTime.UtcNow - _lastTripFlush).TotalSeconds < 4.0)
+ 1102: 		{
+ 1103: 			return;
+ 1104: 		}
+ 1105: 		_lastTripFlush = DateTime.UtcNow;
+ 1106: 		TripReceipt receipt = _tripJournal.PeekPending();
+ 1107: 		if (receipt == null)
+ 1108: 		{
+ 1109: 			return;
+ 1110: 		}
+ 1111: 		string driver = (string.IsNullOrWhiteSpace(_driver) ? _accountUser : _driver);
+ 1112: 		ApiResponse apiResponse = await _api.SendTripReceiptAsync("https://api.gatlogets2.com.br", _accountToken, driver, receipt);
+ 1113: 		if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
+ 1114: 		{
+ 1115: 			_tripJournal.MarkSent(receipt.TripId);
+ 1116: 			if (ApiClient.Bool(apiResponse.Json["completed_now"]) || ApiClient.Bool(apiResponse.Json["already_counted"]))
+ 1117: 			{
+ 1118: 				int num = ((apiResponse.Json["xp_awarded"] != null) ? apiResponse.Json["xp_awarded"].Value<int>() : 0);
+ 1119: 				int num2 = ((apiResponse.Json["penalty_xp"] != null) ? apiResponse.Json["penalty_xp"].Value<int>() : 0);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1106 ===
+ 1094: 				_tripJournal.Observe(jObject);
+ 1095: 			}
+ 1096: 		}
+ 1097: 	}
+ 1098: 
+ 1099: 	private async Task FlushTripReceiptsAsync()
+ 1100: 	{
+ 1101: 		if (!AccountReady || (DateTime.UtcNow - _lastTripFlush).TotalSeconds < 4.0)
+ 1102: 		{
+ 1103: 			return;
+ 1104: 		}
+ 1105: 		_lastTripFlush = DateTime.UtcNow;
+ 1106: 		TripReceipt receipt = _tripJournal.PeekPending();
+ 1107: 		if (receipt == null)
+ 1108: 		{
+ 1109: 			return;
+ 1110: 		}
+ 1111: 		string driver = (string.IsNullOrWhiteSpace(_driver) ? _accountUser : _driver);
+ 1112: 		ApiResponse apiResponse = await _api.SendTripReceiptAsync("https://api.gatlogets2.com.br", _accountToken, driver, receipt);
+ 1113: 		if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
+ 1114: 		{
+ 1115: 			_tripJournal.MarkSent(receipt.TripId);
+ 1116: 			if (ApiClient.Bool(apiResponse.Json["completed_now"]) || ApiClient.Bool(apiResponse.Json["already_counted"]))
+ 1117: 			{
+ 1118: 				int num = ((apiResponse.Json["xp_awarded"] != null) ? apiResponse.Json["xp_awarded"].Value<int>() : 0);
+ 1119: 				int num2 = ((apiResponse.Json["penalty_xp"] != null) ? apiResponse.Json["penalty_xp"].Value<int>() : 0);
+ 1120: 				lblTelemetry.Text = ((num2 > 0) ? ("Central GAT: ENTREGA " + num + " XP (-" + num2 + ")") : ("Central GAT: ENTREGA " + num + " XP"));
+ 1121: 			}
+ 1122: 			ClientStore.Log("recibo de viagem confirmado: " + receipt.TripId);
+ 1123: 			return;
+ 1124: 		}
+ 1125: 		if (apiResponse.StatusCode == 409 && apiResponse.Json != null)
+ 1126: 		{
+ 1127: 			string text = ApiClient.Str(apiResponse.Json["error"]);
+ 1128: 			switch (text)
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1115 ===
+ 1103: 			return;
+ 1104: 		}
+ 1105: 		_lastTripFlush = DateTime.UtcNow;
+ 1106: 		TripReceipt receipt = _tripJournal.PeekPending();
+ 1107: 		if (receipt == null)
+ 1108: 		{
+ 1109: 			return;
+ 1110: 		}
+ 1111: 		string driver = (string.IsNullOrWhiteSpace(_driver) ? _accountUser : _driver);
+ 1112: 		ApiResponse apiResponse = await _api.SendTripReceiptAsync("https://api.gatlogets2.com.br", _accountToken, driver, receipt);
+ 1113: 		if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
+ 1114: 		{
+ 1115: 			_tripJournal.MarkSent(receipt.TripId);
+ 1116: 			if (ApiClient.Bool(apiResponse.Json["completed_now"]) || ApiClient.Bool(apiResponse.Json["already_counted"]))
+ 1117: 			{
+ 1118: 				int num = ((apiResponse.Json["xp_awarded"] != null) ? apiResponse.Json["xp_awarded"].Value<int>() : 0);
+ 1119: 				int num2 = ((apiResponse.Json["penalty_xp"] != null) ? apiResponse.Json["penalty_xp"].Value<int>() : 0);
+ 1120: 				lblTelemetry.Text = ((num2 > 0) ? ("Central GAT: ENTREGA " + num + " XP (-" + num2 + ")") : ("Central GAT: ENTREGA " + num + " XP"));
+ 1121: 			}
+ 1122: 			ClientStore.Log("recibo de viagem confirmado: " + receipt.TripId);
+ 1123: 			return;
+ 1124: 		}
+ 1125: 		if (apiResponse.StatusCode == 409 && apiResponse.Json != null)
+ 1126: 		{
+ 1127: 			string text = ApiClient.Str(apiResponse.Json["error"]);
+ 1128: 			switch (text)
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1120 ===
+ 1108: 		{
+ 1109: 			return;
+ 1110: 		}
+ 1111: 		string driver = (string.IsNullOrWhiteSpace(_driver) ? _accountUser : _driver);
+ 1112: 		ApiResponse apiResponse = await _api.SendTripReceiptAsync("https://api.gatlogets2.com.br", _accountToken, driver, receipt);
+ 1113: 		if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
+ 1114: 		{
+ 1115: 			_tripJournal.MarkSent(receipt.TripId);
+ 1116: 			if (ApiClient.Bool(apiResponse.Json["completed_now"]) || ApiClient.Bool(apiResponse.Json["already_counted"]))
+ 1117: 			{
+ 1118: 				int num = ((apiResponse.Json["xp_awarded"] != null) ? apiResponse.Json["xp_awarded"].Value<int>() : 0);
+ 1119: 				int num2 = ((apiResponse.Json["penalty_xp"] != null) ? apiResponse.Json["penalty_xp"].Value<int>() : 0);
+ 1120: 				lblTelemetry.Text = ((num2 > 0) ? ("Central GAT: ENTREGA " + num + " XP (-" + num2 + ")") : ("Central GAT: ENTREGA " + num + " XP"));
+ 1121: 			}
+ 1122: 			ClientStore.Log("recibo de viagem confirmado: " + receipt.TripId);
+ 1123: 			return;
+ 1124: 		}
+ 1125: 		if (apiResponse.StatusCode == 409 && apiResponse.Json != null)
+ 1126: 		{
+ 1127: 			string text = ApiClient.Str(apiResponse.Json["error"]);
+ 1128: 			switch (text)
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1134 ===
+ 1122: 			ClientStore.Log("recibo de viagem confirmado: " + receipt.TripId);
+ 1123: 			return;
+ 1124: 		}
+ 1125: 		if (apiResponse.StatusCode == 409 && apiResponse.Json != null)
+ 1126: 		{
+ 1127: 			string text = ApiClient.Str(apiResponse.Json["error"]);
+ 1128: 			switch (text)
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+ 1146: 			}
+ 1147: 		}
+ 1148: 		if (apiResponse.StatusCode != 0 && apiResponse.StatusCode != 401)
+ 1149: 		{
+ 1150: 			ClientStore.Log("recibo pendente " + receipt.TripId + ": HTTP " + apiResponse.StatusCode + " " + apiResponse.Text);
+ 1151: 		}
+ 1152: 	}
+ 1153: 
+ 1154: 	private async Task SendCentralTelemetryAsync()
+ 1155: 	{
+ 1156: 		if (!AccountReady)
+ 1157: 		{
+ 1158: 			return;
+ 1159: 		}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1135 ===
+ 1123: 			return;
+ 1124: 		}
+ 1125: 		if (apiResponse.StatusCode == 409 && apiResponse.Json != null)
+ 1126: 		{
+ 1127: 			string text = ApiClient.Str(apiResponse.Json["error"]);
+ 1128: 			switch (text)
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+ 1146: 			}
+ 1147: 		}
+ 1148: 		if (apiResponse.StatusCode != 0 && apiResponse.StatusCode != 401)
+ 1149: 		{
+ 1150: 			ClientStore.Log("recibo pendente " + receipt.TripId + ": HTTP " + apiResponse.StatusCode + " " + apiResponse.Text);
+ 1151: 		}
+ 1152: 	}
+ 1153: 
+ 1154: 	private async Task SendCentralTelemetryAsync()
+ 1155: 	{
+ 1156: 		if (!AccountReady)
+ 1157: 		{
+ 1158: 			return;
+ 1159: 		}
+ 1160: 		await FlushTripReceiptsAsync();
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1136 ===
+ 1124: 		}
+ 1125: 		if (apiResponse.StatusCode == 409 && apiResponse.Json != null)
+ 1126: 		{
+ 1127: 			string text = ApiClient.Str(apiResponse.Json["error"]);
+ 1128: 			switch (text)
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+ 1146: 			}
+ 1147: 		}
+ 1148: 		if (apiResponse.StatusCode != 0 && apiResponse.StatusCode != 401)
+ 1149: 		{
+ 1150: 			ClientStore.Log("recibo pendente " + receipt.TripId + ": HTTP " + apiResponse.StatusCode + " " + apiResponse.Text);
+ 1151: 		}
+ 1152: 	}
+ 1153: 
+ 1154: 	private async Task SendCentralTelemetryAsync()
+ 1155: 	{
+ 1156: 		if (!AccountReady)
+ 1157: 		{
+ 1158: 			return;
+ 1159: 		}
+ 1160: 		await FlushTripReceiptsAsync();
+ 1161: 		if ((DateTime.UtcNow - _lastAccountTelemetry).TotalMilliseconds < 1200.0)
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1139 ===
+ 1127: 			string text = ApiClient.Str(apiResponse.Json["error"]);
+ 1128: 			switch (text)
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+ 1146: 			}
+ 1147: 		}
+ 1148: 		if (apiResponse.StatusCode != 0 && apiResponse.StatusCode != 401)
+ 1149: 		{
+ 1150: 			ClientStore.Log("recibo pendente " + receipt.TripId + ": HTTP " + apiResponse.StatusCode + " " + apiResponse.Text);
+ 1151: 		}
+ 1152: 	}
+ 1153: 
+ 1154: 	private async Task SendCentralTelemetryAsync()
+ 1155: 	{
+ 1156: 		if (!AccountReady)
+ 1157: 		{
+ 1158: 			return;
+ 1159: 		}
+ 1160: 		await FlushTripReceiptsAsync();
+ 1161: 		if ((DateTime.UtcNow - _lastAccountTelemetry).TotalMilliseconds < 1200.0)
+ 1162: 		{
+ 1163: 			return;
+ 1164: 		}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1140 ===
+ 1128: 			switch (text)
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+ 1146: 			}
+ 1147: 		}
+ 1148: 		if (apiResponse.StatusCode != 0 && apiResponse.StatusCode != 401)
+ 1149: 		{
+ 1150: 			ClientStore.Log("recibo pendente " + receipt.TripId + ": HTTP " + apiResponse.StatusCode + " " + apiResponse.Text);
+ 1151: 		}
+ 1152: 	}
+ 1153: 
+ 1154: 	private async Task SendCentralTelemetryAsync()
+ 1155: 	{
+ 1156: 		if (!AccountReady)
+ 1157: 		{
+ 1158: 			return;
+ 1159: 		}
+ 1160: 		await FlushTripReceiptsAsync();
+ 1161: 		if ((DateTime.UtcNow - _lastAccountTelemetry).TotalMilliseconds < 1200.0)
+ 1162: 		{
+ 1163: 			return;
+ 1164: 		}
+ 1165: 		JObject tele = await _telemetry.ReadAsync();
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1141 ===
+ 1129: 			{
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+ 1146: 			}
+ 1147: 		}
+ 1148: 		if (apiResponse.StatusCode != 0 && apiResponse.StatusCode != 401)
+ 1149: 		{
+ 1150: 			ClientStore.Log("recibo pendente " + receipt.TripId + ": HTTP " + apiResponse.StatusCode + " " + apiResponse.Text);
+ 1151: 		}
+ 1152: 	}
+ 1153: 
+ 1154: 	private async Task SendCentralTelemetryAsync()
+ 1155: 	{
+ 1156: 		if (!AccountReady)
+ 1157: 		{
+ 1158: 			return;
+ 1159: 		}
+ 1160: 		await FlushTripReceiptsAsync();
+ 1161: 		if ((DateTime.UtcNow - _lastAccountTelemetry).TotalMilliseconds < 1200.0)
+ 1162: 		{
+ 1163: 			return;
+ 1164: 		}
+ 1165: 		JObject tele = await _telemetry.ReadAsync();
+ 1166: 		_lastAccountTelemetry = DateTime.UtcNow;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1142 ===
+ 1130: 			case "actual_distance_below_minimum":
+ 1131: 			case "distance_not_verified":
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+ 1146: 			}
+ 1147: 		}
+ 1148: 		if (apiResponse.StatusCode != 0 && apiResponse.StatusCode != 401)
+ 1149: 		{
+ 1150: 			ClientStore.Log("recibo pendente " + receipt.TripId + ": HTTP " + apiResponse.StatusCode + " " + apiResponse.Text);
+ 1151: 		}
+ 1152: 	}
+ 1153: 
+ 1154: 	private async Task SendCentralTelemetryAsync()
+ 1155: 	{
+ 1156: 		if (!AccountReady)
+ 1157: 		{
+ 1158: 			return;
+ 1159: 		}
+ 1160: 		await FlushTripReceiptsAsync();
+ 1161: 		if ((DateTime.UtcNow - _lastAccountTelemetry).TotalMilliseconds < 1200.0)
+ 1162: 		{
+ 1163: 			return;
+ 1164: 		}
+ 1165: 		JObject tele = await _telemetry.ReadAsync();
+ 1166: 		_lastAccountTelemetry = DateTime.UtcNow;
+ 1167: 		tele = StabilizeJobTelemetry(tele);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1144 ===
+ 1132: 			case "vehicle_changed":
+ 1133: 			case "odometer_discontinuity":
+ 1134: 			case "integrity_mod_blocked":
+ 1135: 			case "integrity_not_verified":
+ 1136: 				_tripJournal.MarkSent(receipt.TripId);
+ 1137: 				lblTelemetry.Text = text switch
+ 1138: 				{
+ 1139: 					"integrity_not_verified" => "Central GAT: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+ 1140: 					"integrity_mod_blocked" => "Central GAT: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+ 1141: 					"actual_distance_below_minimum" => "Central GAT: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+ 1142: 					_ => "Central GAT: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+ 1143: 				};
+ 1144: 				ClientStore.Log("entrega nao validada pela Central GAT: " + text + " / " + receipt.TripId);
+ 1145: 				return;
+ 1146: 			}
+ 1147: 		}
+ 1148: 		if (apiResponse.StatusCode != 0 && apiResponse.StatusCode != 401)
+ 1149: 		{
+ 1150: 			ClientStore.Log("recibo pendente " + receipt.TripId + ": HTTP " + apiResponse.StatusCode + " " + apiResponse.Text);
+ 1151: 		}
+ 1152: 	}
+ 1153: 
+ 1154: 	private async Task SendCentralTelemetryAsync()
+ 1155: 	{
+ 1156: 		if (!AccountReady)
+ 1157: 		{
+ 1158: 			return;
+ 1159: 		}
+ 1160: 		await FlushTripReceiptsAsync();
+ 1161: 		if ((DateTime.UtcNow - _lastAccountTelemetry).TotalMilliseconds < 1200.0)
+ 1162: 		{
+ 1163: 			return;
+ 1164: 		}
+ 1165: 		JObject tele = await _telemetry.ReadAsync();
+ 1166: 		_lastAccountTelemetry = DateTime.UtcNow;
+ 1167: 		tele = StabilizeJobTelemetry(tele);
+ 1168: 		if (tele == null)
+ 1169: 		{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1176 ===
+ 1164: 		}
+ 1165: 		JObject tele = await _telemetry.ReadAsync();
+ 1166: 		_lastAccountTelemetry = DateTime.UtcNow;
+ 1167: 		tele = StabilizeJobTelemetry(tele);
+ 1168: 		if (tele == null)
+ 1169: 		{
+ 1170: 			lblTruck.Text = "TruckSim GPS: aguardando";
+ 1171: 			lblTelemetry.Text = "Central GAT: aguardando ETS2";
+ 1172: 			return;
+ 1173: 		}
+ 1174: 		tele["gat_account_user"] = _accountUser;
+ 1175: 		tele["gat_client_version"] = "1.0.28";
+ 1176: 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+ 1177: 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
+ 1178: 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
+ 1179: 		tele["gat_integrity_evidence_hash"] = modIntegrityResult.EvidenceHash ?? string.Empty;
+ 1180: 		if (modIntegrityResult.Matches != null && modIntegrityResult.Matches.Length != 0)
+ 1181: 		{
+ 1182: 			tele["gat_integrity_matches"] = JArray.FromObject(modIntegrityResult.Matches);
+ 1183: 		}
+ 1184: 		tele["gat_map"] = CurrentMapModeKey;
+ 1185: 		tele["gat_map_label"] = CurrentMapModeLabel;
+ 1186: 		lblTruck.Text = "TruckSim GPS: CONECTADO";
+ 1187: 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
+ 1188: 		string centralDriver = _accountUser;
+ 1189: 		CredentialEntry credential = ClientStore.FindCredential("https://api.gatlogets2.com.br", centralDriver);
+ 1190: 		string centralClientToken = ClientStore.GetPlainToken(credential);
+ 1191: 		if (string.IsNullOrWhiteSpace(centralClientToken))
+ 1192: 		{
+ 1193: 			ApiResponse apiResponse = await _api.LoginAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, string.Empty, _accountUser, _accountToken);
+ 1194: 			if (apiResponse.StatusCode == 428 && apiResponse.Json != null)
+ 1195: 			{
+ 1196: 				string text = ApiClient.Str(apiResponse.Json["pairing_code"]);
+ 1197: 				lblAccount.Text = (string.IsNullOrWhiteSpace(text) ? ("Conta: @" + _accountUser) : ("Vincular PC: " + text));
+ 1198: 				lblAccount.ForeColor = Color.Gold;
+ 1199: 				SetPcRegistrationState(false, text);
+ 1200: 				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central GAT: computador ainda nao vinculado" : ("Central GAT: digite o codigo " + text + " no site"));
+ 1201: 				return;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1177 ===
+ 1165: 		JObject tele = await _telemetry.ReadAsync();
+ 1166: 		_lastAccountTelemetry = DateTime.UtcNow;
+ 1167: 		tele = StabilizeJobTelemetry(tele);
+ 1168: 		if (tele == null)
+ 1169: 		{
+ 1170: 			lblTruck.Text = "TruckSim GPS: aguardando";
+ 1171: 			lblTelemetry.Text = "Central GAT: aguardando ETS2";
+ 1172: 			return;
+ 1173: 		}
+ 1174: 		tele["gat_account_user"] = _accountUser;
+ 1175: 		tele["gat_client_version"] = "1.0.28";
+ 1176: 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+ 1177: 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
+ 1178: 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
+ 1179: 		tele["gat_integrity_evidence_hash"] = modIntegrityResult.EvidenceHash ?? string.Empty;
+ 1180: 		if (modIntegrityResult.Matches != null && modIntegrityResult.Matches.Length != 0)
+ 1181: 		{
+ 1182: 			tele["gat_integrity_matches"] = JArray.FromObject(modIntegrityResult.Matches);
+ 1183: 		}
+ 1184: 		tele["gat_map"] = CurrentMapModeKey;
+ 1185: 		tele["gat_map_label"] = CurrentMapModeLabel;
+ 1186: 		lblTruck.Text = "TruckSim GPS: CONECTADO";
+ 1187: 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
+ 1188: 		string centralDriver = _accountUser;
+ 1189: 		CredentialEntry credential = ClientStore.FindCredential("https://api.gatlogets2.com.br", centralDriver);
+ 1190: 		string centralClientToken = ClientStore.GetPlainToken(credential);
+ 1191: 		if (string.IsNullOrWhiteSpace(centralClientToken))
+ 1192: 		{
+ 1193: 			ApiResponse apiResponse = await _api.LoginAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, string.Empty, _accountUser, _accountToken);
+ 1194: 			if (apiResponse.StatusCode == 428 && apiResponse.Json != null)
+ 1195: 			{
+ 1196: 				string text = ApiClient.Str(apiResponse.Json["pairing_code"]);
+ 1197: 				lblAccount.Text = (string.IsNullOrWhiteSpace(text) ? ("Conta: @" + _accountUser) : ("Vincular PC: " + text));
+ 1198: 				lblAccount.ForeColor = Color.Gold;
+ 1199: 				SetPcRegistrationState(false, text);
+ 1200: 				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central GAT: computador ainda nao vinculado" : ("Central GAT: digite o codigo " + text + " no site"));
+ 1201: 				return;
+ 1202: 			}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1178 ===
+ 1166: 		_lastAccountTelemetry = DateTime.UtcNow;
+ 1167: 		tele = StabilizeJobTelemetry(tele);
+ 1168: 		if (tele == null)
+ 1169: 		{
+ 1170: 			lblTruck.Text = "TruckSim GPS: aguardando";
+ 1171: 			lblTelemetry.Text = "Central GAT: aguardando ETS2";
+ 1172: 			return;
+ 1173: 		}
+ 1174: 		tele["gat_account_user"] = _accountUser;
+ 1175: 		tele["gat_client_version"] = "1.0.28";
+ 1176: 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+ 1177: 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
+ 1178: 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
+ 1179: 		tele["gat_integrity_evidence_hash"] = modIntegrityResult.EvidenceHash ?? string.Empty;
+ 1180: 		if (modIntegrityResult.Matches != null && modIntegrityResult.Matches.Length != 0)
+ 1181: 		{
+ 1182: 			tele["gat_integrity_matches"] = JArray.FromObject(modIntegrityResult.Matches);
+ 1183: 		}
+ 1184: 		tele["gat_map"] = CurrentMapModeKey;
+ 1185: 		tele["gat_map_label"] = CurrentMapModeLabel;
+ 1186: 		lblTruck.Text = "TruckSim GPS: CONECTADO";
+ 1187: 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
+ 1188: 		string centralDriver = _accountUser;
+ 1189: 		CredentialEntry credential = ClientStore.FindCredential("https://api.gatlogets2.com.br", centralDriver);
+ 1190: 		string centralClientToken = ClientStore.GetPlainToken(credential);
+ 1191: 		if (string.IsNullOrWhiteSpace(centralClientToken))
+ 1192: 		{
+ 1193: 			ApiResponse apiResponse = await _api.LoginAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, string.Empty, _accountUser, _accountToken);
+ 1194: 			if (apiResponse.StatusCode == 428 && apiResponse.Json != null)
+ 1195: 			{
+ 1196: 				string text = ApiClient.Str(apiResponse.Json["pairing_code"]);
+ 1197: 				lblAccount.Text = (string.IsNullOrWhiteSpace(text) ? ("Conta: @" + _accountUser) : ("Vincular PC: " + text));
+ 1198: 				lblAccount.ForeColor = Color.Gold;
+ 1199: 				SetPcRegistrationState(false, text);
+ 1200: 				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central GAT: computador ainda nao vinculado" : ("Central GAT: digite o codigo " + text + " no site"));
+ 1201: 				return;
+ 1202: 			}
+ 1203: 			if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1179 ===
+ 1167: 		tele = StabilizeJobTelemetry(tele);
+ 1168: 		if (tele == null)
+ 1169: 		{
+ 1170: 			lblTruck.Text = "TruckSim GPS: aguardando";
+ 1171: 			lblTelemetry.Text = "Central GAT: aguardando ETS2";
+ 1172: 			return;
+ 1173: 		}
+ 1174: 		tele["gat_account_user"] = _accountUser;
+ 1175: 		tele["gat_client_version"] = "1.0.28";
+ 1176: 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+ 1177: 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
+ 1178: 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
+ 1179: 		tele["gat_integrity_evidence_hash"] = modIntegrityResult.EvidenceHash ?? string.Empty;
+ 1180: 		if (modIntegrityResult.Matches != null && modIntegrityResult.Matches.Length != 0)
+ 1181: 		{
+ 1182: 			tele["gat_integrity_matches"] = JArray.FromObject(modIntegrityResult.Matches);
+ 1183: 		}
+ 1184: 		tele["gat_map"] = CurrentMapModeKey;
+ 1185: 		tele["gat_map_label"] = CurrentMapModeLabel;
+ 1186: 		lblTruck.Text = "TruckSim GPS: CONECTADO";
+ 1187: 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
+ 1188: 		string centralDriver = _accountUser;
+ 1189: 		CredentialEntry credential = ClientStore.FindCredential("https://api.gatlogets2.com.br", centralDriver);
+ 1190: 		string centralClientToken = ClientStore.GetPlainToken(credential);
+ 1191: 		if (string.IsNullOrWhiteSpace(centralClientToken))
+ 1192: 		{
+ 1193: 			ApiResponse apiResponse = await _api.LoginAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, string.Empty, _accountUser, _accountToken);
+ 1194: 			if (apiResponse.StatusCode == 428 && apiResponse.Json != null)
+ 1195: 			{
+ 1196: 				string text = ApiClient.Str(apiResponse.Json["pairing_code"]);
+ 1197: 				lblAccount.Text = (string.IsNullOrWhiteSpace(text) ? ("Conta: @" + _accountUser) : ("Vincular PC: " + text));
+ 1198: 				lblAccount.ForeColor = Color.Gold;
+ 1199: 				SetPcRegistrationState(false, text);
+ 1200: 				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central GAT: computador ainda nao vinculado" : ("Central GAT: digite o codigo " + text + " no site"));
+ 1201: 				return;
+ 1202: 			}
+ 1203: 			if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
+ 1204: 			{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1180 ===
+ 1168: 		if (tele == null)
+ 1169: 		{
+ 1170: 			lblTruck.Text = "TruckSim GPS: aguardando";
+ 1171: 			lblTelemetry.Text = "Central GAT: aguardando ETS2";
+ 1172: 			return;
+ 1173: 		}
+ 1174: 		tele["gat_account_user"] = _accountUser;
+ 1175: 		tele["gat_client_version"] = "1.0.28";
+ 1176: 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+ 1177: 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
+ 1178: 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
+ 1179: 		tele["gat_integrity_evidence_hash"] = modIntegrityResult.EvidenceHash ?? string.Empty;
+ 1180: 		if (modIntegrityResult.Matches != null && modIntegrityResult.Matches.Length != 0)
+ 1181: 		{
+ 1182: 			tele["gat_integrity_matches"] = JArray.FromObject(modIntegrityResult.Matches);
+ 1183: 		}
+ 1184: 		tele["gat_map"] = CurrentMapModeKey;
+ 1185: 		tele["gat_map_label"] = CurrentMapModeLabel;
+ 1186: 		lblTruck.Text = "TruckSim GPS: CONECTADO";
+ 1187: 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
+ 1188: 		string centralDriver = _accountUser;
+ 1189: 		CredentialEntry credential = ClientStore.FindCredential("https://api.gatlogets2.com.br", centralDriver);
+ 1190: 		string centralClientToken = ClientStore.GetPlainToken(credential);
+ 1191: 		if (string.IsNullOrWhiteSpace(centralClientToken))
+ 1192: 		{
+ 1193: 			ApiResponse apiResponse = await _api.LoginAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, string.Empty, _accountUser, _accountToken);
+ 1194: 			if (apiResponse.StatusCode == 428 && apiResponse.Json != null)
+ 1195: 			{
+ 1196: 				string text = ApiClient.Str(apiResponse.Json["pairing_code"]);
+ 1197: 				lblAccount.Text = (string.IsNullOrWhiteSpace(text) ? ("Conta: @" + _accountUser) : ("Vincular PC: " + text));
+ 1198: 				lblAccount.ForeColor = Color.Gold;
+ 1199: 				SetPcRegistrationState(false, text);
+ 1200: 				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central GAT: computador ainda nao vinculado" : ("Central GAT: digite o codigo " + text + " no site"));
+ 1201: 				return;
+ 1202: 			}
+ 1203: 			if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
+ 1204: 			{
+ 1205: 				centralClientToken = ApiClient.Str(apiResponse.Json["token"]);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1182 ===
+ 1170: 			lblTruck.Text = "TruckSim GPS: aguardando";
+ 1171: 			lblTelemetry.Text = "Central GAT: aguardando ETS2";
+ 1172: 			return;
+ 1173: 		}
+ 1174: 		tele["gat_account_user"] = _accountUser;
+ 1175: 		tele["gat_client_version"] = "1.0.28";
+ 1176: 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+ 1177: 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
+ 1178: 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
+ 1179: 		tele["gat_integrity_evidence_hash"] = modIntegrityResult.EvidenceHash ?? string.Empty;
+ 1180: 		if (modIntegrityResult.Matches != null && modIntegrityResult.Matches.Length != 0)
+ 1181: 		{
+ 1182: 			tele["gat_integrity_matches"] = JArray.FromObject(modIntegrityResult.Matches);
+ 1183: 		}
+ 1184: 		tele["gat_map"] = CurrentMapModeKey;
+ 1185: 		tele["gat_map_label"] = CurrentMapModeLabel;
+ 1186: 		lblTruck.Text = "TruckSim GPS: CONECTADO";
+ 1187: 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
+ 1188: 		string centralDriver = _accountUser;
+ 1189: 		CredentialEntry credential = ClientStore.FindCredential("https://api.gatlogets2.com.br", centralDriver);
+ 1190: 		string centralClientToken = ClientStore.GetPlainToken(credential);
+ 1191: 		if (string.IsNullOrWhiteSpace(centralClientToken))
+ 1192: 		{
+ 1193: 			ApiResponse apiResponse = await _api.LoginAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, string.Empty, _accountUser, _accountToken);
+ 1194: 			if (apiResponse.StatusCode == 428 && apiResponse.Json != null)
+ 1195: 			{
+ 1196: 				string text = ApiClient.Str(apiResponse.Json["pairing_code"]);
+ 1197: 				lblAccount.Text = (string.IsNullOrWhiteSpace(text) ? ("Conta: @" + _accountUser) : ("Vincular PC: " + text));
+ 1198: 				lblAccount.ForeColor = Color.Gold;
+ 1199: 				SetPcRegistrationState(false, text);
+ 1200: 				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central GAT: computador ainda nao vinculado" : ("Central GAT: digite o codigo " + text + " no site"));
+ 1201: 				return;
+ 1202: 			}
+ 1203: 			if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
+ 1204: 			{
+ 1205: 				centralClientToken = ApiClient.Str(apiResponse.Json["token"]);
+ 1206: 				if (!string.IsNullOrWhiteSpace(centralClientToken))
+ 1207: 				{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1234 ===
+ 1222: 		{
+ 1223: 			if (apiResponse2.Json["mission_event"] is JObject jObject)
+ 1224: 			{
+ 1225: 				string a = ApiClient.Str(jObject["type"]);
+ 1226: 				if (string.Equals(a, "mission_in_progress", StringComparison.OrdinalIgnoreCase))
+ 1227: 				{
+ 1228: 					apiResponse2.Json["started"] = true;
+ 1229: 					if (jObject["mission"] != null)
+ 1230: 					{
+ 1231: 						apiResponse2.Json["mission"] = jObject["mission"];
+ 1232: 					}
+ 1233: 				}
+ 1234: 				if (string.Equals(a, "delivery_completed", StringComparison.OrdinalIgnoreCase))
+ 1235: 				{
+ 1236: 					apiResponse2.Json["completed_now"] = true;
+ 1237: 				}
+ 1238: 			}
+ 1239: 			lblAccount.Text = "Conta: @" + _accountUser + " • PC vinculado";
+ 1240: 			lblAccount.ForeColor = Color.FromArgb(130, 224, 69);
+ 1241: 			SetPcRegistrationState(true, string.Empty);
+ 1242: 			bool flag = ApiClient.Bool(apiResponse2.Json["started"]);
+ 1243: 			bool flag2 = ApiClient.Bool(apiResponse2.Json["completed_now"]);
+ 1244: 			CheckMissionVoice(apiResponse2.Json, flag, flag2);
+ 1245: 			UpdateWorkStatus(apiResponse2.Json);
+ 1246: 			if (flag2)
+ 1247: 			{
+ 1248: 				lblTelemetry.Text = "Central GAT: ONLINE • MISSÃO CONCLUÍDA";
+ 1249: 			}
+ 1250: 			else if (flag)
+ 1251: 			{
+ 1252: 				lblTelemetry.Text = "Central GAT: ONLINE • MISSÃO INICIADA";
+ 1253: 			}
+ 1254: 			else if (BoolAny(tele, "job_latched") || BoolAny(tele, "on_job"))
+ 1255: 			{
+ 1256: 				lblTelemetry.Text = "Central GAT: ONLINE • TRABALHO EM ANDAMENTO";
+ 1257: 			}
+ 1258: 			else
+ 1259: 			{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 1501 ===
+ 1489: 		return TextAny(a, "cargo_name") + " | " + NumberAny(a, "mass_kg").ToString("0") + " kg | " + NumberAny(a, "planned_distance_km").ToString("0.0") + " km | " + TextAny(a, "source_city") + " > " + TextAny(a, "destination_city");
+ 1490: 	}
+ 1491: 
+ 1492: 	private async Task TickAsync()
+ 1493: 	{
+ 1494: 		if (_busy)
+ 1495: 		{
+ 1496: 			return;
+ 1497: 		}
+ 1498: 		_busy = true;
+ 1499: 		try
+ 1500: 		{
+ 1501: 			await CaptureTripJournalAsync();
+ 1502: 			if (!AccountReady)
+ 1503: 			{
+ 1504: 				_loggedIn = false;
+ 1505: 				_waiting = false;
+ 1506: 				lblTelemetry.Text = "Central GAT: aguardando conta";
+ 1507: 				return;
+ 1508: 			}
+ 1509: 			await SendCentralTelemetryAsync();
+ 1510: 			if (cmbServers.SelectedItem is ServerEntry serverEntry)
+ 1511: 			{
+ 1512: 				_endpoint = ClientStore.NormalizeEndpoint(serverEntry.Endpoint);
+ 1513: 				if ((DateTime.UtcNow - _lastServerProbe).TotalSeconds >= 4.0)
+ 1514: 				{
+ 1515: 					await RefreshServerInfoAsync(force: false);
+ 1516: 				}
+ 1517: 			}
+ 1518: 			if ((!_waiting && !_loggedIn) || string.IsNullOrWhiteSpace(_endpoint))
+ 1519: 			{
+ 1520: 				return;
+ 1521: 			}
+ 1522: 			if (!_serverInfo.Reachable)
+ 1523: 			{
+ 1524: 				_loggedIn = false;
+ 1525: 				lblSession.Text = "GAT LOG: servidor indisponível";
+ 1526: 				return;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 2081 ===
+ 2069: 	{
+ 2070: 		if (r == null)
+ 2071: 		{
+ 2072: 			return false;
+ 2073: 		}
+ 2074: 		if (r.StatusCode == 401)
+ 2075: 		{
+ 2076: 			return true;
+ 2077: 		}
+ 2078: 		string a = ApiClient.Str(r.Json?["error"]);
+ 2079: 		if (!string.Equals(a, "token_required", StringComparison.OrdinalIgnoreCase))
+ 2080: 		{
+ 2081: 			return string.Equals(a, "invalid_token", StringComparison.OrdinalIgnoreCase);
+ 2082: 		}
+ 2083: 		return true;
+ 2084: 	}
+ 2085: 
+ 2086: 	private void UpdateTelemetryDisplay(TelemetryDisplay d)
+ 2087: 	{
+ 2088: 		lblCargo.Text = "Carga: " + d.Cargo;
+ 2089: 		lblRoute.Text = "Rota: " + d.Route;
+ 2090: 		lblDistance.Text = "Restante: " + d.Distance;
+ 2091: 		lblSpeed.Text = "Velocidade: " + d.Speed;
+ 2092: 		lblWeight.Text = "Peso: " + d.Weight;
+ 2093: 		SetDamageValue(lblDamageCargo, d.CargoDamage);
+ 2094: 		SetDamageValue(lblDamageEngine, d.EngineDamage);
+ 2095: 		SetDamageValue(lblDamageTransmission, d.TransmissionDamage);
+ 2096: 		SetDamageValue(lblDamageCabin, d.CabinDamage);
+ 2097: 		SetDamageValue(lblDamageChassis, d.ChassisDamage);
+ 2098: 		SetDamageValue(lblDamageWheels, d.WheelsDamage);
+ 2099: 		SetDamageValue(lblDamageTrailer, d.TrailerDamage);
+ 2100: 		if (lblDamage != null)
+ 2101: 		{
+ 2102: 			lblDamage.Text = "Danos: Carga " + d.CargoDamage + " | Motor " + d.EngineDamage + " | Câmbio " + d.TransmissionDamage + " | Cabine " + d.CabinDamage + " | Chassi " + d.ChassisDamage + " | Rodas " + d.WheelsDamage + " | Reboque " + d.TrailerDamage;
+ 2103: 		}
+ 2104: 	}
+ 2105: 
+ 2106: 	private static void SetDamageValue(Label label, string value)
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\MainForm.cs : line 2287 ===
+ 2275: 				{
+ 2276: 					File.WriteAllBytes(path, await http.GetByteArrayAsync(_availableUpdate.EffectiveUrl));
+ 2277: 				}
+ 2278: 				if (!string.IsNullOrWhiteSpace(_availableUpdate.Sha256))
+ 2279: 				{
+ 2280: 					string a;
+ 2281: 					using (SHA256 sHA = SHA256.Create())
+ 2282: 					{
+ 2283: 						a = BitConverter.ToString(sHA.ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant();
+ 2284: 					}
+ 2285: 					if (!string.Equals(a, _availableUpdate.Sha256.Trim(), StringComparison.OrdinalIgnoreCase))
+ 2286: 					{
+ 2287: 						throw new InvalidDataException("SHA256 do instalador não confere.");
+ 2288: 					}
+ 2289: 				}
+ 2290: 				Process.Start(new ProcessStartInfo(path)
+ 2291: 				{
+ 2292: 					UseShellExecute = true
+ 2293: 				});
+ 2294: 				Application.Exit();
+ 2295: 			}
+ 2296: 			catch (Exception ex)
+ 2297: 			{
+ 2298: 				btnUpdate.Enabled = true;
+ 2299: 				btnUpdate.Text = "TENTAR ATUALIZAÇÃO";
+ 2300: 				MessageBox.Show("Falha ao atualizar:\r\n\r\n" + ex.Message, "GAT Telemetria", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+ 2301: 			}
+ 2302: 		}
+ 2303: 	}
+ 2304: 
+ 2305: 	private static bool IsNewer(string remote, string local)
+ 2306: 	{
+ 2307: 		if (Version.TryParse(remote, out var result) && Version.TryParse(local, out var result2))
+ 2308: 		{
+ 2309: 			return result > result2;
+ 2310: 		}
+ 2311: 		return false;
+ 2312: 	}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityResult.cs : line 3 ===
+    1: namespace GatTelemetry;
+    2: 
+    3: internal sealed class ModIntegrityResult
+    4: {
+    5: 	public string Status { get; set; } = "unknown";
+    6: 
+    7: 	public string Reason { get; set; } = "not_checked";
+    8: 
+    9: 	public string[] Matches { get; set; } = new string[0];
+   10: 
+   11: 	public string EvidenceHash { get; set; } = string.Empty;
+   12: 
+   13: 	public string CheckedAt { get; set; } = string.Empty;
+   14: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 10 ===
+    1: using System;
+    2: using System.Collections.Generic;
+    3: using System.IO;
+    4: using System.Linq;
+    5: using System.Security.Cryptography;
+    6: using System.Text;
+    7: 
+    8: namespace GatTelemetry;
+    9: 
+   10: internal static class ModIntegrityScanner
+   11: {
+   12: 	private static readonly object Sync = new object();
+   13: 
+   14: 	private static DateTime _lastCheck = DateTime.MinValue;
+   15: 
+   16: 	private static ModIntegrityResult _last = new ModIntegrityResult();
+   17: 
+   18: 	private static readonly string[] SuspiciousPhrases = new string[21]
+   19: 	{
+   20: 		"no damage", "zero damage", "0 damage", "damage 0", "damage disabled", "disable damage", "no cargo damage", "cargo no damage", "zero cargo damage", "no trailer damage",
+   21: 		"trailer no damage", "no truck damage", "truck no damage", "zero truck damage", "no wear", "zero wear", "sem dano", "dano zero", "sem danos", "indestructible",
+   22: 		"invincible truck"
+   23: 	};
+   24: 
+   25: 	public static ModIntegrityResult Check()
+   26: 	{
+   27: 		lock (Sync)
+   28: 		{
+   29: 			if ((DateTime.UtcNow - _lastCheck).TotalSeconds < 12.0 && _last != null)
+   30: 			{
+   31: 				return Clone(_last);
+   32: 			}
+   33: 			_lastCheck = DateTime.UtcNow;
+   34: 			_last = ScanNow();
+   35: 			return Clone(_last);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 16 ===
+    4: using System.Linq;
+    5: using System.Security.Cryptography;
+    6: using System.Text;
+    7: 
+    8: namespace GatTelemetry;
+    9: 
+   10: internal static class ModIntegrityScanner
+   11: {
+   12: 	private static readonly object Sync = new object();
+   13: 
+   14: 	private static DateTime _lastCheck = DateTime.MinValue;
+   15: 
+   16: 	private static ModIntegrityResult _last = new ModIntegrityResult();
+   17: 
+   18: 	private static readonly string[] SuspiciousPhrases = new string[21]
+   19: 	{
+   20: 		"no damage", "zero damage", "0 damage", "damage 0", "damage disabled", "disable damage", "no cargo damage", "cargo no damage", "zero cargo damage", "no trailer damage",
+   21: 		"trailer no damage", "no truck damage", "truck no damage", "zero truck damage", "no wear", "zero wear", "sem dano", "dano zero", "sem danos", "indestructible",
+   22: 		"invincible truck"
+   23: 	};
+   24: 
+   25: 	public static ModIntegrityResult Check()
+   26: 	{
+   27: 		lock (Sync)
+   28: 		{
+   29: 			if ((DateTime.UtcNow - _lastCheck).TotalSeconds < 12.0 && _last != null)
+   30: 			{
+   31: 				return Clone(_last);
+   32: 			}
+   33: 			_lastCheck = DateTime.UtcNow;
+   34: 			_last = ScanNow();
+   35: 			return Clone(_last);
+   36: 		}
+   37: 	}
+   38: 
+   39: 	private static ModIntegrityResult ScanNow()
+   40: 	{
+   41: 		ModIntegrityResult modIntegrityResult = new ModIntegrityResult
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 25 ===
+   13: 
+   14: 	private static DateTime _lastCheck = DateTime.MinValue;
+   15: 
+   16: 	private static ModIntegrityResult _last = new ModIntegrityResult();
+   17: 
+   18: 	private static readonly string[] SuspiciousPhrases = new string[21]
+   19: 	{
+   20: 		"no damage", "zero damage", "0 damage", "damage 0", "damage disabled", "disable damage", "no cargo damage", "cargo no damage", "zero cargo damage", "no trailer damage",
+   21: 		"trailer no damage", "no truck damage", "truck no damage", "zero truck damage", "no wear", "zero wear", "sem dano", "dano zero", "sem danos", "indestructible",
+   22: 		"invincible truck"
+   23: 	};
+   24: 
+   25: 	public static ModIntegrityResult Check()
+   26: 	{
+   27: 		lock (Sync)
+   28: 		{
+   29: 			if ((DateTime.UtcNow - _lastCheck).TotalSeconds < 12.0 && _last != null)
+   30: 			{
+   31: 				return Clone(_last);
+   32: 			}
+   33: 			_lastCheck = DateTime.UtcNow;
+   34: 			_last = ScanNow();
+   35: 			return Clone(_last);
+   36: 		}
+   37: 	}
+   38: 
+   39: 	private static ModIntegrityResult ScanNow()
+   40: 	{
+   41: 		ModIntegrityResult modIntegrityResult = new ModIntegrityResult
+   42: 		{
+   43: 			CheckedAt = DateTime.UtcNow.ToString("o")
+   44: 		};
+   45: 		try
+   46: 		{
+   47: 			string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+   48: 			string path = Path.Combine(Path.Combine(folderPath, "Euro Truck Simulator 2"), "game.log.txt");
+   49: 			if (!File.Exists(path))
+   50: 			{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 39 ===
+   27: 		lock (Sync)
+   28: 		{
+   29: 			if ((DateTime.UtcNow - _lastCheck).TotalSeconds < 12.0 && _last != null)
+   30: 			{
+   31: 				return Clone(_last);
+   32: 			}
+   33: 			_lastCheck = DateTime.UtcNow;
+   34: 			_last = ScanNow();
+   35: 			return Clone(_last);
+   36: 		}
+   37: 	}
+   38: 
+   39: 	private static ModIntegrityResult ScanNow()
+   40: 	{
+   41: 		ModIntegrityResult modIntegrityResult = new ModIntegrityResult
+   42: 		{
+   43: 			CheckedAt = DateTime.UtcNow.ToString("o")
+   44: 		};
+   45: 		try
+   46: 		{
+   47: 			string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+   48: 			string path = Path.Combine(Path.Combine(folderPath, "Euro Truck Simulator 2"), "game.log.txt");
+   49: 			if (!File.Exists(path))
+   50: 			{
+   51: 				modIntegrityResult.Status = "unknown";
+   52: 				modIntegrityResult.Reason = "game_log_missing";
+   53: 				return modIntegrityResult;
+   54: 			}
+   55: 			List<string> list = new List<string>();
+   56: 			List<string> list2 = new List<string>();
+   57: 			foreach (string item in File.ReadLines(path))
+   58: 			{
+   59: 				if (string.IsNullOrWhiteSpace(item))
+   60: 				{
+   61: 					continue;
+   62: 				}
+   63: 				string text = item.Trim();
+   64: 				string text2 = text.ToLowerInvariant();
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 41 ===
+   29: 			if ((DateTime.UtcNow - _lastCheck).TotalSeconds < 12.0 && _last != null)
+   30: 			{
+   31: 				return Clone(_last);
+   32: 			}
+   33: 			_lastCheck = DateTime.UtcNow;
+   34: 			_last = ScanNow();
+   35: 			return Clone(_last);
+   36: 		}
+   37: 	}
+   38: 
+   39: 	private static ModIntegrityResult ScanNow()
+   40: 	{
+   41: 		ModIntegrityResult modIntegrityResult = new ModIntegrityResult
+   42: 		{
+   43: 			CheckedAt = DateTime.UtcNow.ToString("o")
+   44: 		};
+   45: 		try
+   46: 		{
+   47: 			string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+   48: 			string path = Path.Combine(Path.Combine(folderPath, "Euro Truck Simulator 2"), "game.log.txt");
+   49: 			if (!File.Exists(path))
+   50: 			{
+   51: 				modIntegrityResult.Status = "unknown";
+   52: 				modIntegrityResult.Reason = "game_log_missing";
+   53: 				return modIntegrityResult;
+   54: 			}
+   55: 			List<string> list = new List<string>();
+   56: 			List<string> list2 = new List<string>();
+   57: 			foreach (string item in File.ReadLines(path))
+   58: 			{
+   59: 				if (string.IsNullOrWhiteSpace(item))
+   60: 				{
+   61: 					continue;
+   62: 				}
+   63: 				string text = item.Trim();
+   64: 				string text2 = text.ToLowerInvariant();
+   65: 				if (!text2.Contains("[mod") && !text2.Contains("mod_package") && !text2.Contains("mod package") && !text2.Contains("workshop") && !text2.Contains(".scs") && !text2.Contains("active mod") && !text2.Contains("loaded mod") && !text2.Contains("mounting mod") && !text2.Contains("mod manager"))
+   66: 				{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 51 ===
+   39: 	private static ModIntegrityResult ScanNow()
+   40: 	{
+   41: 		ModIntegrityResult modIntegrityResult = new ModIntegrityResult
+   42: 		{
+   43: 			CheckedAt = DateTime.UtcNow.ToString("o")
+   44: 		};
+   45: 		try
+   46: 		{
+   47: 			string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+   48: 			string path = Path.Combine(Path.Combine(folderPath, "Euro Truck Simulator 2"), "game.log.txt");
+   49: 			if (!File.Exists(path))
+   50: 			{
+   51: 				modIntegrityResult.Status = "unknown";
+   52: 				modIntegrityResult.Reason = "game_log_missing";
+   53: 				return modIntegrityResult;
+   54: 			}
+   55: 			List<string> list = new List<string>();
+   56: 			List<string> list2 = new List<string>();
+   57: 			foreach (string item in File.ReadLines(path))
+   58: 			{
+   59: 				if (string.IsNullOrWhiteSpace(item))
+   60: 				{
+   61: 					continue;
+   62: 				}
+   63: 				string text = item.Trim();
+   64: 				string text2 = text.ToLowerInvariant();
+   65: 				if (!text2.Contains("[mod") && !text2.Contains("mod_package") && !text2.Contains("mod package") && !text2.Contains("workshop") && !text2.Contains(".scs") && !text2.Contains("active mod") && !text2.Contains("loaded mod") && !text2.Contains("mounting mod") && !text2.Contains("mod manager"))
+   66: 				{
+   67: 					continue;
+   68: 				}
+   69: 				if (list2.Count < 250)
+   70: 				{
+   71: 					list2.Add(Sanitize(text, folderPath));
+   72: 				}
+   73: 				string[] suspiciousPhrases = SuspiciousPhrases;
+   74: 				foreach (string value in suspiciousPhrases)
+   75: 				{
+   76: 					if (text2.Contains(value))
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 52 ===
+   40: 	{
+   41: 		ModIntegrityResult modIntegrityResult = new ModIntegrityResult
+   42: 		{
+   43: 			CheckedAt = DateTime.UtcNow.ToString("o")
+   44: 		};
+   45: 		try
+   46: 		{
+   47: 			string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+   48: 			string path = Path.Combine(Path.Combine(folderPath, "Euro Truck Simulator 2"), "game.log.txt");
+   49: 			if (!File.Exists(path))
+   50: 			{
+   51: 				modIntegrityResult.Status = "unknown";
+   52: 				modIntegrityResult.Reason = "game_log_missing";
+   53: 				return modIntegrityResult;
+   54: 			}
+   55: 			List<string> list = new List<string>();
+   56: 			List<string> list2 = new List<string>();
+   57: 			foreach (string item in File.ReadLines(path))
+   58: 			{
+   59: 				if (string.IsNullOrWhiteSpace(item))
+   60: 				{
+   61: 					continue;
+   62: 				}
+   63: 				string text = item.Trim();
+   64: 				string text2 = text.ToLowerInvariant();
+   65: 				if (!text2.Contains("[mod") && !text2.Contains("mod_package") && !text2.Contains("mod package") && !text2.Contains("workshop") && !text2.Contains(".scs") && !text2.Contains("active mod") && !text2.Contains("loaded mod") && !text2.Contains("mounting mod") && !text2.Contains("mod manager"))
+   66: 				{
+   67: 					continue;
+   68: 				}
+   69: 				if (list2.Count < 250)
+   70: 				{
+   71: 					list2.Add(Sanitize(text, folderPath));
+   72: 				}
+   73: 				string[] suspiciousPhrases = SuspiciousPhrases;
+   74: 				foreach (string value in suspiciousPhrases)
+   75: 				{
+   76: 					if (text2.Contains(value))
+   77: 					{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 53 ===
+   41: 		ModIntegrityResult modIntegrityResult = new ModIntegrityResult
+   42: 		{
+   43: 			CheckedAt = DateTime.UtcNow.ToString("o")
+   44: 		};
+   45: 		try
+   46: 		{
+   47: 			string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+   48: 			string path = Path.Combine(Path.Combine(folderPath, "Euro Truck Simulator 2"), "game.log.txt");
+   49: 			if (!File.Exists(path))
+   50: 			{
+   51: 				modIntegrityResult.Status = "unknown";
+   52: 				modIntegrityResult.Reason = "game_log_missing";
+   53: 				return modIntegrityResult;
+   54: 			}
+   55: 			List<string> list = new List<string>();
+   56: 			List<string> list2 = new List<string>();
+   57: 			foreach (string item in File.ReadLines(path))
+   58: 			{
+   59: 				if (string.IsNullOrWhiteSpace(item))
+   60: 				{
+   61: 					continue;
+   62: 				}
+   63: 				string text = item.Trim();
+   64: 				string text2 = text.ToLowerInvariant();
+   65: 				if (!text2.Contains("[mod") && !text2.Contains("mod_package") && !text2.Contains("mod package") && !text2.Contains("workshop") && !text2.Contains(".scs") && !text2.Contains("active mod") && !text2.Contains("loaded mod") && !text2.Contains("mounting mod") && !text2.Contains("mod manager"))
+   66: 				{
+   67: 					continue;
+   68: 				}
+   69: 				if (list2.Count < 250)
+   70: 				{
+   71: 					list2.Add(Sanitize(text, folderPath));
+   72: 				}
+   73: 				string[] suspiciousPhrases = SuspiciousPhrases;
+   74: 				foreach (string value in suspiciousPhrases)
+   75: 				{
+   76: 					if (text2.Contains(value))
+   77: 					{
+   78: 						string safe = Sanitize(text, folderPath);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 91 ===
+   79: 						if (!list.Any((string x) => string.Equals(x, safe, StringComparison.OrdinalIgnoreCase)))
+   80: 						{
+   81: 							list.Add(safe);
+   82: 						}
+   83: 						break;
+   84: 					}
+   85: 				}
+   86: 				if (list.Count >= 10)
+   87: 				{
+   88: 					break;
+   89: 				}
+   90: 			}
+   91: 			modIntegrityResult.EvidenceHash = HashLines(list2);
+   92: 			if (list.Count > 0)
+   93: 			{
+   94: 				modIntegrityResult.Status = "blocked";
+   95: 				modIntegrityResult.Reason = "damage_mod_detected";
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 94 ===
+   82: 						}
+   83: 						break;
+   84: 					}
+   85: 				}
+   86: 				if (list.Count >= 10)
+   87: 				{
+   88: 					break;
+   89: 				}
+   90: 			}
+   91: 			modIntegrityResult.EvidenceHash = HashLines(list2);
+   92: 			if (list.Count > 0)
+   93: 			{
+   94: 				modIntegrityResult.Status = "blocked";
+   95: 				modIntegrityResult.Reason = "damage_mod_detected";
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 95 ===
+   83: 						break;
+   84: 					}
+   85: 				}
+   86: 				if (list.Count >= 10)
+   87: 				{
+   88: 					break;
+   89: 				}
+   90: 			}
+   91: 			modIntegrityResult.EvidenceHash = HashLines(list2);
+   92: 			if (list.Count > 0)
+   93: 			{
+   94: 				modIntegrityResult.Status = "blocked";
+   95: 				modIntegrityResult.Reason = "damage_mod_detected";
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 96 ===
+   84: 					}
+   85: 				}
+   86: 				if (list.Count >= 10)
+   87: 				{
+   88: 					break;
+   89: 				}
+   90: 			}
+   91: 			modIntegrityResult.EvidenceHash = HashLines(list2);
+   92: 			if (list.Count > 0)
+   93: 			{
+   94: 				modIntegrityResult.Status = "blocked";
+   95: 				modIntegrityResult.Reason = "damage_mod_detected";
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+  121: 		if (text.Length > 180)
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 100 ===
+   88: 					break;
+   89: 				}
+   90: 			}
+   91: 			modIntegrityResult.EvidenceHash = HashLines(list2);
+   92: 			if (list.Count > 0)
+   93: 			{
+   94: 				modIntegrityResult.Status = "blocked";
+   95: 				modIntegrityResult.Reason = "damage_mod_detected";
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+  121: 		if (text.Length > 180)
+  122: 		{
+  123: 			text = text.Substring(0, 180);
+  124: 		}
+  125: 		return text;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 101 ===
+   89: 				}
+   90: 			}
+   91: 			modIntegrityResult.EvidenceHash = HashLines(list2);
+   92: 			if (list.Count > 0)
+   93: 			{
+   94: 				modIntegrityResult.Status = "blocked";
+   95: 				modIntegrityResult.Reason = "damage_mod_detected";
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+  121: 		if (text.Length > 180)
+  122: 		{
+  123: 			text = text.Substring(0, 180);
+  124: 		}
+  125: 		return text;
+  126: 	}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 102 ===
+   90: 			}
+   91: 			modIntegrityResult.EvidenceHash = HashLines(list2);
+   92: 			if (list.Count > 0)
+   93: 			{
+   94: 				modIntegrityResult.Status = "blocked";
+   95: 				modIntegrityResult.Reason = "damage_mod_detected";
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+  121: 		if (text.Length > 180)
+  122: 		{
+  123: 			text = text.Substring(0, 180);
+  124: 		}
+  125: 		return text;
+  126: 	}
+  127: 
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 107 ===
+   95: 				modIntegrityResult.Reason = "damage_mod_detected";
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+  121: 		if (text.Length > 180)
+  122: 		{
+  123: 			text = text.Substring(0, 180);
+  124: 		}
+  125: 		return text;
+  126: 	}
+  127: 
+  128: 	private static string HashLines(List<string> lines)
+  129: 	{
+  130: 		try
+  131: 		{
+  132: 			string s = string.Join("\n", lines ?? new List<string>());
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 108 ===
+   96: 				modIntegrityResult.Matches = list.ToArray();
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+  121: 		if (text.Length > 180)
+  122: 		{
+  123: 			text = text.Substring(0, 180);
+  124: 		}
+  125: 		return text;
+  126: 	}
+  127: 
+  128: 	private static string HashLines(List<string> lines)
+  129: 	{
+  130: 		try
+  131: 		{
+  132: 			string s = string.Join("\n", lines ?? new List<string>());
+  133: 			using SHA256 sHA = SHA256.Create();
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 109 ===
+   97: 			}
+   98: 			else
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+  121: 		if (text.Length > 180)
+  122: 		{
+  123: 			text = text.Substring(0, 180);
+  124: 		}
+  125: 		return text;
+  126: 	}
+  127: 
+  128: 	private static string HashLines(List<string> lines)
+  129: 	{
+  130: 		try
+  131: 		{
+  132: 			string s = string.Join("\n", lines ?? new List<string>());
+  133: 			using SHA256 sHA = SHA256.Create();
+  134: 			return BitConverter.ToString(sHA.ComputeHash(Encoding.UTF8.GetBytes(s))).Replace("-", string.Empty).ToLowerInvariant();
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 111 ===
+   99: 			{
+  100: 				modIntegrityResult.Status = "ok";
+  101: 				modIntegrityResult.Reason = "active_mod_log_scanned";
+  102: 				modIntegrityResult.Matches = new string[0];
+  103: 			}
+  104: 		}
+  105: 		catch (Exception ex)
+  106: 		{
+  107: 			modIntegrityResult.Status = "unknown";
+  108: 			modIntegrityResult.Reason = "scan_failed:" + ex.GetType().Name;
+  109: 			modIntegrityResult.Matches = new string[0];
+  110: 		}
+  111: 		return modIntegrityResult;
+  112: 	}
+  113: 
+  114: 	private static string Sanitize(string line, string docs)
+  115: 	{
+  116: 		string text = line ?? string.Empty;
+  117: 		if (!string.IsNullOrWhiteSpace(docs))
+  118: 		{
+  119: 			text = text.Replace(docs, "%DOCUMENTS%");
+  120: 		}
+  121: 		if (text.Length > 180)
+  122: 		{
+  123: 			text = text.Substring(0, 180);
+  124: 		}
+  125: 		return text;
+  126: 	}
+  127: 
+  128: 	private static string HashLines(List<string> lines)
+  129: 	{
+  130: 		try
+  131: 		{
+  132: 			string s = string.Join("\n", lines ?? new List<string>());
+  133: 			using SHA256 sHA = SHA256.Create();
+  134: 			return BitConverter.ToString(sHA.ComputeHash(Encoding.UTF8.GetBytes(s))).Replace("-", string.Empty).ToLowerInvariant();
+  135: 		}
+  136: 		catch
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 142 ===
+  130: 		try
+  131: 		{
+  132: 			string s = string.Join("\n", lines ?? new List<string>());
+  133: 			using SHA256 sHA = SHA256.Create();
+  134: 			return BitConverter.ToString(sHA.ComputeHash(Encoding.UTF8.GetBytes(s))).Replace("-", string.Empty).ToLowerInvariant();
+  135: 		}
+  136: 		catch
+  137: 		{
+  138: 			return string.Empty;
+  139: 		}
+  140: 	}
+  141: 
+  142: 	private static ModIntegrityResult Clone(ModIntegrityResult x)
+  143: 	{
+  144: 		if (x == null)
+  145: 		{
+  146: 			return new ModIntegrityResult();
+  147: 		}
+  148: 		return new ModIntegrityResult
+  149: 		{
+  150: 			Status = x.Status,
+  151: 			Reason = x.Reason,
+  152: 			Matches = ((x.Matches == null) ? new string[0] : x.Matches.ToArray()),
+  153: 			EvidenceHash = x.EvidenceHash,
+  154: 			CheckedAt = x.CheckedAt
+  155: 		};
+  156: 	}
+  157: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 146 ===
+  134: 			return BitConverter.ToString(sHA.ComputeHash(Encoding.UTF8.GetBytes(s))).Replace("-", string.Empty).ToLowerInvariant();
+  135: 		}
+  136: 		catch
+  137: 		{
+  138: 			return string.Empty;
+  139: 		}
+  140: 	}
+  141: 
+  142: 	private static ModIntegrityResult Clone(ModIntegrityResult x)
+  143: 	{
+  144: 		if (x == null)
+  145: 		{
+  146: 			return new ModIntegrityResult();
+  147: 		}
+  148: 		return new ModIntegrityResult
+  149: 		{
+  150: 			Status = x.Status,
+  151: 			Reason = x.Reason,
+  152: 			Matches = ((x.Matches == null) ? new string[0] : x.Matches.ToArray()),
+  153: 			EvidenceHash = x.EvidenceHash,
+  154: 			CheckedAt = x.CheckedAt
+  155: 		};
+  156: 	}
+  157: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\ModIntegrityScanner.cs : line 148 ===
+  136: 		catch
+  137: 		{
+  138: 			return string.Empty;
+  139: 		}
+  140: 	}
+  141: 
+  142: 	private static ModIntegrityResult Clone(ModIntegrityResult x)
+  143: 	{
+  144: 		if (x == null)
+  145: 		{
+  146: 			return new ModIntegrityResult();
+  147: 		}
+  148: 		return new ModIntegrityResult
+  149: 		{
+  150: 			Status = x.Status,
+  151: 			Reason = x.Reason,
+  152: 			Matches = ((x.Matches == null) ? new string[0] : x.Matches.ToArray()),
+  153: 			EvidenceHash = x.EvidenceHash,
+  154: 			CheckedAt = x.CheckedAt
+  155: 		};
+  156: 	}
+  157: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 12 ===
+    1: using System;
+    2: using System.Collections.Generic;
+    3: using System.Globalization;
+    4: using System.IO;
+    5: using System.Linq;
+    6: using System.Text;
+    7: using Newtonsoft.Json;
+    8: using Newtonsoft.Json.Linq;
+    9: 
+   10: namespace GatTelemetry;
+   11: 
+   12: internal sealed class TripJournal
+   13: {
+   14: 	private readonly object _sync = new object();
+   15: 
+   16: 	private readonly string _file;
+   17: 
+   18: 	private TripJournalState _state;
+   19: 
+   20: 	private DateTime _lastDiskWrite = DateTime.MinValue;
+   21: 
+   22: 	private sealed class DamageSnapshot
+   23: 	{
+   24: 		public double Cargo = -1.0;
+   25: 		public double Engine = -1.0;
+   26: 		public double Transmission = -1.0;
+   27: 		public double Cabin = -1.0;
+   28: 		public double Chassis = -1.0;
+   29: 		public double Wheels = -1.0;
+   30: 		public double Trailer = -1.0;
+   31: 
+   32: 		public double TruckOverall
+   33: 		{
+   34: 			get
+   35: 			{
+   36: 				double max = -1.0;
+   37: 				double[] values = { Engine, Transmission, Cabin, Chassis, Wheels };
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 18 ===
+    6: using System.Text;
+    7: using Newtonsoft.Json;
+    8: using Newtonsoft.Json.Linq;
+    9: 
+   10: namespace GatTelemetry;
+   11: 
+   12: internal sealed class TripJournal
+   13: {
+   14: 	private readonly object _sync = new object();
+   15: 
+   16: 	private readonly string _file;
+   17: 
+   18: 	private TripJournalState _state;
+   19: 
+   20: 	private DateTime _lastDiskWrite = DateTime.MinValue;
+   21: 
+   22: 	private sealed class DamageSnapshot
+   23: 	{
+   24: 		public double Cargo = -1.0;
+   25: 		public double Engine = -1.0;
+   26: 		public double Transmission = -1.0;
+   27: 		public double Cabin = -1.0;
+   28: 		public double Chassis = -1.0;
+   29: 		public double Wheels = -1.0;
+   30: 		public double Trailer = -1.0;
+   31: 
+   32: 		public double TruckOverall
+   33: 		{
+   34: 			get
+   35: 			{
+   36: 				double max = -1.0;
+   37: 				double[] values = { Engine, Transmission, Cabin, Chassis, Wheels };
+   38: 				foreach (double value in values)
+   39: 				{
+   40: 					if (value > max)
+   41: 					{
+   42: 						max = value;
+   43: 					}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 61 ===
+   49: 
+   50: 	public int PendingCount
+   51: 	{
+   52: 		get
+   53: 		{
+   54: 			lock (_sync)
+   55: 			{
+   56: 				return _state.Outbox.Count;
+   57: 			}
+   58: 		}
+   59: 	}
+   60: 
+   61: 	public TripJournal()
+   62: 	{
+   63: 		ClientStore.Ensure();
+   64: 		_file = Path.Combine(ClientStore.DataDir, "trip_journal.json");
+   65: 		_state = Load();
+   66: 	}
+   67: 
+   68: 	public void Observe(JObject telemetry)
+   69: 	{
+   70: 		if (telemetry == null)
+   71: 		{
+   72: 			return;
+   73: 		}
+   74: 		lock (_sync)
+   75: 		{
+   76: 			bool flag = BoolAny(telemetry, "gameplay.jobDelivered", "job_delivered");
+   77: 			bool flag2 = BoolAny(telemetry, "gameplay.jobCancelled", "job_cancelled");
+   78: 			bool flag3 = false;
+   79: 			bool flag4 = false;
+   80: 			if (!_state.EventsInitialized)
+   81: 			{
+   82: 				_state.EventsInitialized = true;
+   83: 				_state.LastJobDelivered = flag;
+   84: 				_state.LastJobCancelled = flag2;
+   85: 				Save(force: true);
+   86: 			}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 64 ===
+   52: 		get
+   53: 		{
+   54: 			lock (_sync)
+   55: 			{
+   56: 				return _state.Outbox.Count;
+   57: 			}
+   58: 		}
+   59: 	}
+   60: 
+   61: 	public TripJournal()
+   62: 	{
+   63: 		ClientStore.Ensure();
+   64: 		_file = Path.Combine(ClientStore.DataDir, "trip_journal.json");
+   65: 		_state = Load();
+   66: 	}
+   67: 
+   68: 	public void Observe(JObject telemetry)
+   69: 	{
+   70: 		if (telemetry == null)
+   71: 		{
+   72: 			return;
+   73: 		}
+   74: 		lock (_sync)
+   75: 		{
+   76: 			bool flag = BoolAny(telemetry, "gameplay.jobDelivered", "job_delivered");
+   77: 			bool flag2 = BoolAny(telemetry, "gameplay.jobCancelled", "job_cancelled");
+   78: 			bool flag3 = false;
+   79: 			bool flag4 = false;
+   80: 			if (!_state.EventsInitialized)
+   81: 			{
+   82: 				_state.EventsInitialized = true;
+   83: 				_state.LastJobDelivered = flag;
+   84: 				_state.LastJobCancelled = flag2;
+   85: 				Save(force: true);
+   86: 			}
+   87: 			else
+   88: 			{
+   89: 				flag3 = flag != _state.LastJobDelivered;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 169 ===
+  157: 						TruckId = text3,
+  158: 						TruckMake = text4,
+  159: 						TruckModel = text5,
+  160: 						TruckPlate = text6,
+  161: 						TruckIdentity = text7,
+  162: 						StartOdometerKm = ((num7 > 0.0) ? num7 : (-1.0)),
+  163: 						EndOdometerKm = ((num7 > 0.0) ? num7 : (-1.0)),
+  164: 						DrivenDistanceKm = 0.0,
+  165: 						OdometerVerified = (num7 > 0.0),
+  166: 						LastOdometerObservedAt = DateTime.UtcNow.ToString("o")
+  167: 					};
+  168: 					UpdateOdometerAndVehicle(_state.ActiveTrip, num7, text3, text6, text4, text5, text7);
+  169: 					ApplyModIntegrity(_state.ActiveTrip);
+  170: 					UpdateSpeedFine(_state.ActiveTrip, speedKmh);
+  171: 					Save(force: true);
+  172: 				}
+  173: 				else
+  174: 				{
+  175: 					TripReceipt activeTrip = _state.ActiveTrip;
+  176: 					if (num > 0.0)
+  177: 					{
+  178: 						activeTrip.WeightKg = num;
+  179: 					}
+  180: 					if (num2 > 0.0)
+  181: 					{
+  182: 						activeTrip.PlannedDistanceKm = num2;
+  183: 					}
+  184: 					if (num3 >= 0.0)
+  185: 					{
+  186: 						activeTrip.LastObservedRemainingKm = num3;
+  187: 					}
+  188: 					if (!string.IsNullOrWhiteSpace(text2))
+  189: 					{
+  190: 						activeTrip.Market = text2;
+  191: 					}
+  192: 					UpdateDamage(activeTrip, damage);
+  193: 					UpdateOdometerAndVehicle(activeTrip, num7, text3, text6, text4, text5, text7);
+  194: 					UpdateSpeedFine(activeTrip, speedKmh);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 202 ===
+  190: 						activeTrip.Market = text2;
+  191: 					}
+  192: 					UpdateDamage(activeTrip, damage);
+  193: 					UpdateOdometerAndVehicle(activeTrip, num7, text3, text6, text4, text5, text7);
+  194: 					UpdateSpeedFine(activeTrip, speedKmh);
+  195: 					Save(force: false);
+  196: 				}
+  197: 			}
+  198: 			if (_state.ActiveTrip != null)
+  199: 			{
+  200: 				UpdateDamage(_state.ActiveTrip, damage);
+  201: 				UpdateOdometerAndVehicle(_state.ActiveTrip, num7, text3, text6, text4, text5, text7);
+  202: 				ApplyModIntegrity(_state.ActiveTrip);
+  203: 				if (!flag5)
+  204: 				{
+  205: 					ResetOverspeed();
+  206: 				}
+  207: 			}
+  208: 			if (flag3 && _state.ActiveTrip != null)
+  209: 			{
+  210: 				TripReceipt done = _state.ActiveTrip;
+  211: 				done.CompletedAt = DateTime.UtcNow.ToString("o");
+  212: 				if (done.PlannedDistanceKm <= 0.0)
+  213: 				{
+  214: 					done.PlannedDistanceKm = Math.Max(done.FirstObservedRemainingKm, done.LastObservedRemainingKm);
+  215: 				}
+  216: 				if (!_state.Outbox.Any((TripReceipt x) => string.Equals(x.TripId, done.TripId, StringComparison.OrdinalIgnoreCase)))
+  217: 				{
+  218: 					_state.Outbox.Add(done);
+  219: 				}
+  220: 				_state.ActiveTrip = null;
+  221: 				ResetOverspeed();
+  222: 				Save(force: true);
+  223: 			}
+  224: 			else if (flag4 && _state.ActiveTrip != null)
+  225: 			{
+  226: 				_state.ActiveTrip = null;
+  227: 				ResetOverspeed();
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 258 ===
+  246: 	{
+  247: 		if (string.IsNullOrWhiteSpace(tripId))
+  248: 		{
+  249: 			return;
+  250: 		}
+  251: 		lock (_sync)
+  252: 		{
+  253: 			_state.Outbox.RemoveAll((TripReceipt x) => string.Equals(x.TripId, tripId, StringComparison.OrdinalIgnoreCase));
+  254: 			Save(force: true);
+  255: 		}
+  256: 	}
+  257: 
+  258: 	private TripJournalState Load()
+  259: 	{
+  260: 		try
+  261: 		{
+  262: 			if (!File.Exists(_file))
+  263: 			{
+  264: 				return new TripJournalState();
+  265: 			}
+  266: 			TripJournalState tripJournalState = JsonConvert.DeserializeObject<TripJournalState>(File.ReadAllText(_file, Encoding.UTF8));
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 264 ===
+  252: 		{
+  253: 			_state.Outbox.RemoveAll((TripReceipt x) => string.Equals(x.TripId, tripId, StringComparison.OrdinalIgnoreCase));
+  254: 			Save(force: true);
+  255: 		}
+  256: 	}
+  257: 
+  258: 	private TripJournalState Load()
+  259: 	{
+  260: 		try
+  261: 		{
+  262: 			if (!File.Exists(_file))
+  263: 			{
+  264: 				return new TripJournalState();
+  265: 			}
+  266: 			TripJournalState tripJournalState = JsonConvert.DeserializeObject<TripJournalState>(File.ReadAllText(_file, Encoding.UTF8));
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 266 ===
+  254: 			Save(force: true);
+  255: 		}
+  256: 	}
+  257: 
+  258: 	private TripJournalState Load()
+  259: 	{
+  260: 		try
+  261: 		{
+  262: 			if (!File.Exists(_file))
+  263: 			{
+  264: 				return new TripJournalState();
+  265: 			}
+  266: 			TripJournalState tripJournalState = JsonConvert.DeserializeObject<TripJournalState>(File.ReadAllText(_file, Encoding.UTF8));
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+  290: 		try
+  291: 		{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 267 ===
+  255: 		}
+  256: 	}
+  257: 
+  258: 	private TripJournalState Load()
+  259: 	{
+  260: 		try
+  261: 		{
+  262: 			if (!File.Exists(_file))
+  263: 			{
+  264: 				return new TripJournalState();
+  265: 			}
+  266: 			TripJournalState tripJournalState = JsonConvert.DeserializeObject<TripJournalState>(File.ReadAllText(_file, Encoding.UTF8));
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+  290: 		try
+  291: 		{
+  292: 			ClientStore.Ensure();
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 269 ===
+  257: 
+  258: 	private TripJournalState Load()
+  259: 	{
+  260: 		try
+  261: 		{
+  262: 			if (!File.Exists(_file))
+  263: 			{
+  264: 				return new TripJournalState();
+  265: 			}
+  266: 			TripJournalState tripJournalState = JsonConvert.DeserializeObject<TripJournalState>(File.ReadAllText(_file, Encoding.UTF8));
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+  290: 		try
+  291: 		{
+  292: 			ClientStore.Ensure();
+  293: 			string text = _file + ".tmp";
+  294: 			File.WriteAllText(text, JsonConvert.SerializeObject(_state, Formatting.Indented), Encoding.UTF8);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 271 ===
+  259: 	{
+  260: 		try
+  261: 		{
+  262: 			if (!File.Exists(_file))
+  263: 			{
+  264: 				return new TripJournalState();
+  265: 			}
+  266: 			TripJournalState tripJournalState = JsonConvert.DeserializeObject<TripJournalState>(File.ReadAllText(_file, Encoding.UTF8));
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+  290: 		try
+  291: 		{
+  292: 			ClientStore.Ensure();
+  293: 			string text = _file + ".tmp";
+  294: 			File.WriteAllText(text, JsonConvert.SerializeObject(_state, Formatting.Indented), Encoding.UTF8);
+  295: 			if (File.Exists(_file))
+  296: 			{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 273 ===
+  261: 		{
+  262: 			if (!File.Exists(_file))
+  263: 			{
+  264: 				return new TripJournalState();
+  265: 			}
+  266: 			TripJournalState tripJournalState = JsonConvert.DeserializeObject<TripJournalState>(File.ReadAllText(_file, Encoding.UTF8));
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+  290: 		try
+  291: 		{
+  292: 			ClientStore.Ensure();
+  293: 			string text = _file + ".tmp";
+  294: 			File.WriteAllText(text, JsonConvert.SerializeObject(_state, Formatting.Indented), Encoding.UTF8);
+  295: 			if (File.Exists(_file))
+  296: 			{
+  297: 				File.Delete(_file);
+  298: 			}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 275 ===
+  263: 			{
+  264: 				return new TripJournalState();
+  265: 			}
+  266: 			TripJournalState tripJournalState = JsonConvert.DeserializeObject<TripJournalState>(File.ReadAllText(_file, Encoding.UTF8));
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+  290: 		try
+  291: 		{
+  292: 			ClientStore.Ensure();
+  293: 			string text = _file + ".tmp";
+  294: 			File.WriteAllText(text, JsonConvert.SerializeObject(_state, Formatting.Indented), Encoding.UTF8);
+  295: 			if (File.Exists(_file))
+  296: 			{
+  297: 				File.Delete(_file);
+  298: 			}
+  299: 			File.Move(text, _file);
+  300: 			_lastDiskWrite = DateTime.UtcNow;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 279 ===
+  267: 			if (tripJournalState == null)
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+  290: 		try
+  291: 		{
+  292: 			ClientStore.Ensure();
+  293: 			string text = _file + ".tmp";
+  294: 			File.WriteAllText(text, JsonConvert.SerializeObject(_state, Formatting.Indented), Encoding.UTF8);
+  295: 			if (File.Exists(_file))
+  296: 			{
+  297: 				File.Delete(_file);
+  298: 			}
+  299: 			File.Move(text, _file);
+  300: 			_lastDiskWrite = DateTime.UtcNow;
+  301: 		}
+  302: 		catch (Exception ex)
+  303: 		{
+  304: 			ClientStore.Log("trip journal save: " + ex.Message);
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 280 ===
+  268: 			{
+  269: 				tripJournalState = new TripJournalState();
+  270: 			}
+  271: 			if (tripJournalState.Outbox == null)
+  272: 			{
+  273: 				tripJournalState.Outbox = new List<TripReceipt>();
+  274: 			}
+  275: 			return tripJournalState;
+  276: 		}
+  277: 		catch (Exception ex)
+  278: 		{
+  279: 			ClientStore.Log("trip journal load: " + ex.Message);
+  280: 			return new TripJournalState();
+  281: 		}
+  282: 	}
+  283: 
+  284: 	private void Save(bool force)
+  285: 	{
+  286: 		if (!force && (DateTime.UtcNow - _lastDiskWrite).TotalSeconds < 5.0)
+  287: 		{
+  288: 			return;
+  289: 		}
+  290: 		try
+  291: 		{
+  292: 			ClientStore.Ensure();
+  293: 			string text = _file + ".tmp";
+  294: 			File.WriteAllText(text, JsonConvert.SerializeObject(_state, Formatting.Indented), Encoding.UTF8);
+  295: 			if (File.Exists(_file))
+  296: 			{
+  297: 				File.Delete(_file);
+  298: 			}
+  299: 			File.Move(text, _file);
+  300: 			_lastDiskWrite = DateTime.UtcNow;
+  301: 		}
+  302: 		catch (Exception ex)
+  303: 		{
+  304: 			ClientStore.Log("trip journal save: " + ex.Message);
+  305: 		}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 304 ===
+  292: 			ClientStore.Ensure();
+  293: 			string text = _file + ".tmp";
+  294: 			File.WriteAllText(text, JsonConvert.SerializeObject(_state, Formatting.Indented), Encoding.UTF8);
+  295: 			if (File.Exists(_file))
+  296: 			{
+  297: 				File.Delete(_file);
+  298: 			}
+  299: 			File.Move(text, _file);
+  300: 			_lastDiskWrite = DateTime.UtcNow;
+  301: 		}
+  302: 		catch (Exception ex)
+  303: 		{
+  304: 			ClientStore.Log("trip journal save: " + ex.Message);
+  305: 		}
+  306: 	}
+  307: 
+  308: 	private static TripReceipt Clone(TripReceipt t)
+  309: 	{
+  310: 		if (t == null)
+  311: 		{
+  312: 			return null;
+  313: 		}
+  314: 		return JsonConvert.DeserializeObject<TripReceipt>(JsonConvert.SerializeObject(t));
+  315: 	}
+  316: 
+  317: 	private static bool SameTrip(TripReceipt t, string cargo, string source, string destination)
+  318: 	{
+  319: 		if (t != null && string.Equals((t.Cargo ?? string.Empty).Trim(), (cargo ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals((t.Source ?? string.Empty).Trim(), (source ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
+  320: 		{
+  321: 			return string.Equals((t.Destination ?? string.Empty).Trim(), (destination ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
+  322: 		}
+  323: 		return false;
+  324: 	}
+  325: 
+  326: 	private static void ApplyModIntegrity(TripReceipt trip)
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 326 ===
+  314: 		return JsonConvert.DeserializeObject<TripReceipt>(JsonConvert.SerializeObject(t));
+  315: 	}
+  316: 
+  317: 	private static bool SameTrip(TripReceipt t, string cargo, string source, string destination)
+  318: 	{
+  319: 		if (t != null && string.Equals((t.Cargo ?? string.Empty).Trim(), (cargo ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals((t.Source ?? string.Empty).Trim(), (source ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
+  320: 		{
+  321: 			return string.Equals((t.Destination ?? string.Empty).Trim(), (destination ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
+  322: 		}
+  323: 		return false;
+  324: 	}
+  325: 
+  326: 	private static void ApplyModIntegrity(TripReceipt trip)
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 330 ===
+  318: 	{
+  319: 		if (t != null && string.Equals((t.Cargo ?? string.Empty).Trim(), (cargo ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals((t.Source ?? string.Empty).Trim(), (source ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
+  320: 		{
+  321: 			return string.Equals((t.Destination ?? string.Empty).Trim(), (destination ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
+  322: 		}
+  323: 		return false;
+  324: 	}
+  325: 
+  326: 	private static void ApplyModIntegrity(TripReceipt trip)
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 331 ===
+  319: 		if (t != null && string.Equals((t.Cargo ?? string.Empty).Trim(), (cargo ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals((t.Source ?? string.Empty).Trim(), (source ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
+  320: 		{
+  321: 			return string.Equals((t.Destination ?? string.Empty).Trim(), (destination ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
+  322: 		}
+  323: 		return false;
+  324: 	}
+  325: 
+  326: 	private static void ApplyModIntegrity(TripReceipt trip)
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 333 ===
+  321: 			return string.Equals((t.Destination ?? string.Empty).Trim(), (destination ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
+  322: 		}
+  323: 		return false;
+  324: 	}
+  325: 
+  326: 	private static void ApplyModIntegrity(TripReceipt trip)
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+  357: 		return value;
+  358: 	}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 334 ===
+  322: 		}
+  323: 		return false;
+  324: 	}
+  325: 
+  326: 	private static void ApplyModIntegrity(TripReceipt trip)
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+  357: 		return value;
+  358: 	}
+  359: 
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 336 ===
+  324: 	}
+  325: 
+  326: 	private static void ApplyModIntegrity(TripReceipt trip)
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+  357: 		return value;
+  358: 	}
+  359: 
+  360: 	private static string BuildTruckIdentity(string id, string plate, string make, string model)
+  361: 	{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 338 ===
+  326: 	private static void ApplyModIntegrity(TripReceipt trip)
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+  357: 		return value;
+  358: 	}
+  359: 
+  360: 	private static string BuildTruckIdentity(string id, string plate, string make, string model)
+  361: 	{
+  362: 		if (!string.IsNullOrWhiteSpace(id))
+  363: 		{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 339 ===
+  327: 	{
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+  357: 		return value;
+  358: 	}
+  359: 
+  360: 	private static string BuildTruckIdentity(string id, string plate, string make, string model)
+  361: 	{
+  362: 		if (!string.IsNullOrWhiteSpace(id))
+  363: 		{
+  364: 			return "id:" + id.Trim();
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 340 ===
+  328: 		if (trip != null)
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+  357: 		return value;
+  358: 	}
+  359: 
+  360: 	private static string BuildTruckIdentity(string id, string plate, string make, string model)
+  361: 	{
+  362: 		if (!string.IsNullOrWhiteSpace(id))
+  363: 		{
+  364: 			return "id:" + id.Trim();
+  365: 		}
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 341 ===
+  329: 		{
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+  357: 		return value;
+  358: 	}
+  359: 
+  360: 	private static string BuildTruckIdentity(string id, string plate, string make, string model)
+  361: 	{
+  362: 		if (!string.IsNullOrWhiteSpace(id))
+  363: 		{
+  364: 			return "id:" + id.Trim();
+  365: 		}
+  366: 		if (!string.IsNullOrWhiteSpace(plate))
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 342 ===
+  330: 			ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
+  331: 			if (modIntegrityResult == null)
+  332: 			{
+  333: 				trip.IntegrityStatus = "unknown";
+  334: 				trip.IntegrityReason = "scanner_unavailable";
+  335: 			}
+  336: 			else if (!string.Equals(trip.IntegrityStatus, "blocked", StringComparison.OrdinalIgnoreCase) || string.Equals(modIntegrityResult.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+  337: 			{
+  338: 				trip.IntegrityStatus = modIntegrityResult.Status ?? "unknown";
+  339: 				trip.IntegrityReason = modIntegrityResult.Reason;
+  340: 				trip.IntegrityMatches = modIntegrityResult.Matches ?? new string[0];
+  341: 				trip.IntegrityEvidenceHash = modIntegrityResult.EvidenceHash;
+  342: 				trip.IntegrityCheckedAt = modIntegrityResult.CheckedAt;
+  343: 			}
+  344: 		}
+  345: 	}
+  346: 
+  347: 	private static double OdometerKm(JObject m)
+  348: 	{
+  349: 		if (!TryDoubleAny(m, out var value, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"))
+  350: 		{
+  351: 			return -1.0;
+  352: 		}
+  353: 		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0.0 || value > 50000000.0)
+  354: 		{
+  355: 			return -1.0;
+  356: 		}
+  357: 		return value;
+  358: 	}
+  359: 
+  360: 	private static string BuildTruckIdentity(string id, string plate, string make, string model)
+  361: 	{
+  362: 		if (!string.IsNullOrWhiteSpace(id))
+  363: 		{
+  364: 			return "id:" + id.Trim();
+  365: 		}
+  366: 		if (!string.IsNullOrWhiteSpace(plate))
+  367: 		{
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournal.cs : line 455 ===
+  443: 		trip.LastOdometerObservedAt = utcNow.ToString("o");
+  444: 	}
+  445: 
+  446: 	private void UpdateSpeedFine(TripReceipt trip, double speedKmh)
+  447: 	{
+  448: 		if (trip != null)
+  449: 		{
+  450: 			DateTime utcNow = DateTime.UtcNow;
+  451: 			DateTime result;
+  452: 			DateTime result2;
+  453: 			if (double.IsNaN(speedKmh) || double.IsInfinity(speedKmh) || speedKmh > 200.0)
+  454: 			{
+  455: 				ClientStore.Log("telemetria ignorada: pico de velocidade invalido");
+  456: 			}
+  457: 			else if (speedKmh <= 91.0)
+  458: 			{
+  459: 				ResetOverspeed();
+  460: 			}
+  461: 			else if (string.IsNullOrWhiteSpace(_state.OverspeedSince) || !DateTime.TryParse(_state.OverspeedSince, null, DateTimeStyles.RoundtripKind, out result))
+  462: 			{
+  463: 				_state.OverspeedSince = utcNow.ToString("o");
+  464: 			}
+  465: 			else if (!((utcNow - result.ToUniversalTime()).TotalSeconds < 5.0) && (string.IsNullOrWhiteSpace(_state.LastSpeedFineAt) || !DateTime.TryParse(_state.LastSpeedFineAt, null, DateTimeStyles.RoundtripKind, out result2) || (utcNow - result2.ToUniversalTime()).TotalMinutes >= 5.0))
+  466: 			{
+  467: 				trip.SpeedFines++;
+  468: 				_state.LastSpeedFineAt = utcNow.ToString("o");
+  469: 				ClientStore.Log("multa GAT por excesso de velocidade: " + speedKmh.ToString("0", CultureInfo.InvariantCulture) + " km/h");
+  470: 			}
+  471: 		}
+  472: 	}
+  473: 
+  474: 	private void ResetOverspeed()
+  475: 	{
+  476: 		_state.OverspeedSince = null;
+  477: 		_state.LastSpeedFineAt = null;
+  478: 	}
+  479: 
+  480: 	private static void UpdateDamage(TripReceipt trip, DamageSnapshot damage)
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripJournalState.cs : line 6 ===
+    1: using System.Collections.Generic;
+    2: using Newtonsoft.Json;
+    3: 
+    4: namespace GatTelemetry;
+    5: 
+    6: internal sealed class TripJournalState
+    7: {
+    8: 	[JsonProperty("active_trip")]
+    9: 	public TripReceipt ActiveTrip { get; set; }
+   10: 
+   11: 	[JsonProperty("outbox")]
+   12: 	public List<TripReceipt> Outbox { get; set; } = new List<TripReceipt>();
+   13: 
+   14: 	[JsonProperty("events_initialized")]
+   15: 	public bool EventsInitialized { get; set; }
+   16: 
+   17: 	[JsonProperty("last_job_delivered")]
+   18: 	public bool LastJobDelivered { get; set; }
+   19: 
+   20: 	[JsonProperty("last_job_cancelled")]
+   21: 	public bool LastJobCancelled { get; set; }
+   22: 
+   23: 	[JsonProperty("overspeed_since")]
+   24: 	public string OverspeedSince { get; set; }
+   25: 
+   26: 	[JsonProperty("last_speed_fine_at")]
+   27: 	public string LastSpeedFineAt { get; set; }
+   28: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 127 ===
+  115: 	[JsonProperty("odometer_verified")]
+  116: 	public bool OdometerVerified { get; set; }
+  117: 
+  118: 	[JsonProperty("vehicle_changed")]
+  119: 	public bool VehicleChanged { get; set; }
+  120: 
+  121: 	[JsonProperty("odometer_discontinuity")]
+  122: 	public bool OdometerDiscontinuity { get; set; }
+  123: 
+  124: 	[JsonProperty("last_odometer_observed_at")]
+  125: 	public string LastOdometerObservedAt { get; set; }
+  126: 
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 128 ===
+  116: 	public bool OdometerVerified { get; set; }
+  117: 
+  118: 	[JsonProperty("vehicle_changed")]
+  119: 	public bool VehicleChanged { get; set; }
+  120: 
+  121: 	[JsonProperty("odometer_discontinuity")]
+  122: 	public bool OdometerDiscontinuity { get; set; }
+  123: 
+  124: 	[JsonProperty("last_odometer_observed_at")]
+  125: 	public string LastOdometerObservedAt { get; set; }
+  126: 
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 130 ===
+  118: 	[JsonProperty("vehicle_changed")]
+  119: 	public bool VehicleChanged { get; set; }
+  120: 
+  121: 	[JsonProperty("odometer_discontinuity")]
+  122: 	public bool OdometerDiscontinuity { get; set; }
+  123: 
+  124: 	[JsonProperty("last_odometer_observed_at")]
+  125: 	public string LastOdometerObservedAt { get; set; }
+  126: 
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 131 ===
+  119: 	public bool VehicleChanged { get; set; }
+  120: 
+  121: 	[JsonProperty("odometer_discontinuity")]
+  122: 	public bool OdometerDiscontinuity { get; set; }
+  123: 
+  124: 	[JsonProperty("last_odometer_observed_at")]
+  125: 	public string LastOdometerObservedAt { get; set; }
+  126: 
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 133 ===
+  121: 	[JsonProperty("odometer_discontinuity")]
+  122: 	public bool OdometerDiscontinuity { get; set; }
+  123: 
+  124: 	[JsonProperty("last_odometer_observed_at")]
+  125: 	public string LastOdometerObservedAt { get; set; }
+  126: 
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 134 ===
+  122: 	public bool OdometerDiscontinuity { get; set; }
+  123: 
+  124: 	[JsonProperty("last_odometer_observed_at")]
+  125: 	public string LastOdometerObservedAt { get; set; }
+  126: 
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 136 ===
+  124: 	[JsonProperty("last_odometer_observed_at")]
+  125: 	public string LastOdometerObservedAt { get; set; }
+  126: 
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 137 ===
+  125: 	public string LastOdometerObservedAt { get; set; }
+  126: 
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 139 ===
+  127: 	[JsonProperty("integrity_status")]
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
+=== GAT_Telemetria_Source_1.0.28\GatTelemetry\TripReceipt.cs : line 140 ===
+  128: 	public string IntegrityStatus { get; set; } = "unknown";
+  129: 
+  130: 	[JsonProperty("integrity_reason")]
+  131: 	public string IntegrityReason { get; set; }
+  132: 
+  133: 	[JsonProperty("integrity_matches")]
+  134: 	public string[] IntegrityMatches { get; set; } = new string[0];
+  135: 
+  136: 	[JsonProperty("integrity_evidence_hash")]
+  137: 	public string IntegrityEvidenceHash { get; set; }
+  138: 
+  139: 	[JsonProperty("integrity_checked_at")]
+  140: 	public string IntegrityCheckedAt { get; set; }
+  141: }
+
