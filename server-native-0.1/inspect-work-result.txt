@@ -1,2 +1,621 @@
-=== local journal / gat_journal validation ===
-=== rank decision ===
+=== inspectClientPacket call context ===
+6-import {budgetState} from './budget-guard.js';
+7-import {rankingReadiness, rankingMessage, advanceRankGuard, restoreDeliveredTrailer} from './ranking-telemetry.js';
+8-
+9-const VERSION='1.0.56-local';
+10-const MIN_KM=0;
+11-const MAX_BODY=262144;
+12-const ADMIN=new Set(['owner','admin','moderator']);
+13-const POWER=new Set(['owner','admin']);
+14-const ORIGINS=new Set(['https://gatlogets2.com.br','https://www.gatlogets2.com.br','https://bidu620-alt.github.io']);
+15-const enc=new TextEncoder();
+16-const now=()=>new Date().toISOString();
+17-const clean=v=>String(v||'').replace(/^@/,'').trim().toLowerCase();
+18-const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+19-const randomHex=n=>{const a=new Uint8Array(n);crypto.getRandomValues(a);return hex(a)};
+20-const sha=async v=>hex(await crypto.subtle.digest('SHA-256',enc.encode(String(v))));
+21-const month=v=>String(v||now()).slice(0,7);
+22-const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+23-const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
+24-const deep=(o,p)=>String(p).split('.').reduce((v,k)=>v&&typeof v==='object'?v[k]:undefined,o);
+25-const pick=(o,...ps)=>{for(const p of ps){const v=deep(o,p);if(v!==undefined&&v!==null)return v}};
+26-const num=(o,...ps)=>{const v=Number(pick(o,...ps));return Number.isFinite(v)?v:0};
+27-const str=(o,...ps)=>String(pick(o,...ps)||'').trim();
+28-const bool=(o,...ps)=>{const v=pick(o,...ps);return v===true||v===1||String(v).toLowerCase()==='true'};
+29-const level=x=>Math.max(1,Math.floor((Number(x)||0)/2000)+1);
+30-const scoreTier=(v,a,b,c)=>{v=Math.max(0,Number(v)||0);return v<=0?0:v<=a?3:v<=b?5:v<=c?10:15};
+31-const damageAliasPct=(raw,key)=>{const v=deep(raw,key),n=Number(v);return v!==undefined&&v!==null&&Number.isFinite(n)?Math.max(0,n):0};
+32-const damageRawPct=(raw,...keys)=>{for(const key of keys){const v=deep(raw,key),n=Number(v);if(v!==undefined&&v!==null&&Number.isFinite(n))return Math.max(0,n<=1.0001?n*100:n)}return 0};
+33-const truckDamageParts=raw=>({engine:Math.max(damageAliasPct(raw,'truck_engine_damage_pct'),damageRawPct(raw,'truck.wearEngine','truck.engineWear','truck.engineDamage')),transmission:Math.max(damageAliasPct(raw,'truck_transmission_damage_pct'),damageRawPct(raw,'truck.wearTransmission','truck.transmissionWear','truck.transmissionDamage')),cabin:Math.max(damageAliasPct(raw,'truck_cabin_damage_pct'),damageRawPct(raw,'truck.wearCabin','truck.cabinWear','truck.cabinDamage')),chassis:Math.max(damageAliasPct(raw,'truck_chassis_damage_pct'),damageRawPct(raw,'truck.wearChassis','truck.chassisWear','truck.chassisDamage')),wheels:Math.max(damageAliasPct(raw,'truck_wheels_damage_pct'),damageRawPct(raw,'truck.wearWheels','truck.wheelsWear','truck.wheelsDamage'))});
+34-const truckDamageOf=raw=>{const p=truckDamageParts(raw);return Math.max(damageAliasPct(raw,'truck_damage_pct'),p.engine,p.transmission,p.cabin,p.chassis,p.wheels)};
+35-const trailerDamageOf=raw=>Math.max(damageAliasPct(raw,'trailer_damage_pct'),damageRawPct(raw,'trailers.0.wearChassis'),damageRawPct(raw,'trailers.0.wearWheels'),damageRawPct(raw,'trailers.0.wearBody'));
+36-const damageDelta=(max,start)=>Math.max(0,(Number(max)||0)-(Number(start)||0));
+37-const monthPoints=list=>(list||[]).filter(x=>String(x?.delivered_at||'').slice(0,7)===month()).reduce((sum,x)=>{const gp=Number(x?.gat_points);if(Number.isFinite(gp))return sum+Math.max(0,gp);return sum+Math.max(0,100-(Number(x?.penalty_xp)||0))},0);
+38-
+39-class HttpError extends Error{constructor(status,code){super(code);this.status=status;this.code=code}}
+40-function headers(req){const o=req.headers.get('Origin');return{'Access-Control-Allow-Origin':o&&ORIGINS.has(o)?o:'https://gatlogets2.com.br','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type,Authorization','Cache-Control':'no-store','Vary':'Origin','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}}
+41-function json(req,data,status=200){return new Response(JSON.stringify(data),{status,headers:{...headers(req),'Content-Type':'application/json; charset=utf-8'}})}
+42-async function body(req){const declared=Number(req.headers.get('Content-Length')||0);if(declared>MAX_BODY)throw new HttpError(413,'payload_too_large');const text=await req.text();if(enc.encode(text).byteLength>MAX_BODY)throw new HttpError(413,'payload_too_large');try{const v=JSON.parse(text||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{throw new HttpError(400,'invalid_json')}}
+43-async function equal(a,b){const[x,y]=await Promise.all([crypto.subtle.digest('SHA-256',enc.encode(String(a))),crypto.subtle.digest('SHA-256',enc.encode(String(b)))]),xa=new Uint8Array(x),ya=new Uint8Array(y);let diff=xa.length^ya.length;for(let i=0;i<xa.length;i++)diff|=xa[i]^ya[i%ya.length];return diff===0}
+44-// Keep the established cost so existing Cloudflare account hashes remain valid.
+45-async function passHash(password,salt){return bytesToHex(pbkdf2(sha256,enc.encode(String(password)),enc.encode(String(salt)),{c:140000,dkLen:32}))}
+46-// Legacy GAT Server accounts used 120,000 consecutive SHA-256 rounds over salt + NUL + password.
+47-function legacyPassHash(password,salt){let x=enc.encode(String(salt)+'\x00'+String(password));for(let i=0;i<120000;i++)x=sha256(x);return bytesToHex(x)}
+48-async function verifyPassword(env,account,password){if(!account?.password_hash||!account?.password_salt)return false;const current=await passHash(password,account.password_salt);if(await equal(current,account.password_hash))return true;const legacy=legacyPassHash(password,account.password_salt);if(!(await equal(legacy,account.password_hash)))return false;const salt=randomHex(16),hash=await passHash(password,salt);await env.DB.prepare('UPDATE accounts SET password_salt=?,password_hash=?,updated_at=? WHERE user=?').bind(salt,hash,now(),account.user).run();return true}
+49-function bearer(req){const v=req.headers.get('Authorization')||'';return v.toLowerCase().startsWith('bearer ')?v.slice(7).trim():''}
+50-async function makeSession(env,user){const token=randomHex(32),t=Date.now();await env.DB.prepare('INSERT INTO sessions(token_hash,user,created_at,expires_at) VALUES(?,?,?,?)').bind(await sha(token),user,new Date(t).toISOString(),new Date(t+30*86400000).toISOString()).run();return token}
+51-async function sessionUser(env,token){if(!token)return null;const r=await env.DB.prepare('SELECT a.user,a.role,a.disabled,s.expires_at FROM sessions s JOIN accounts a ON a.user=s.user WHERE s.token_hash=?').bind(await sha(token)).first();return!r||r.disabled||Date.parse(r.expires_at)<=Date.now()?null:r}
+52-async function requireSession(req,env,b){const s=await sessionUser(env,String(b.token||bearer(req)));if(!s)throw new HttpError(401,'invalid_session');return s}
+53-async function requireAdmin(req,env,b,power=false){const s=await requireSession(req,env,b);if(!(power?POWER:ADMIN).has(s.role))throw new HttpError(403,'forbidden');return s}
+54-async function ensureProfile(env,user){await env.DB.prepare('INSERT OR IGNORE INTO profiles(user,updated_at) VALUES(?,?)').bind(user,now()).run()}
+55-async function audit(env,actor,action,target,details={}){await env.DB.prepare('INSERT INTO audit(at,actor,action,target,details) VALUES(?,?,?,?,?)').bind(now(),actor,action,target,JSON.stringify(details)).run()}
+56-
+57-function flat(driver,account,updated,raw){return{driver,account_user:account||'',updated_at:updated,rank_status:rankingReadiness(raw),telemetry:raw,on_job:bool(raw,'on_job','onJob','gameplay.onJob','job.onJob','Job.OnJob','job.active','Job.Active'),cargo_name:str(raw,'cargo_name','cargo','job.cargo','job.cargoName','Job.CargoName','job.cargo.name','job.name'),cargo_id:str(raw,'cargo_id','cargoId','job.cargoId','job.cargo.id','game.job.cargoId'),source_city:str(raw,'source_city','source','job.sourceCity','job.source.cityName'),source_city_id:str(raw,'source_city_id','sourceCityId','job.sourceCityId','job.source.id','game.job.sourceCityId'),destination_city:str(raw,'destination_city','destination','job.destinationCity','job.destination.cityName'),destination_city_id:str(raw,'destination_city_id','destinationCityId','job.destinationCityId','job.destination.id','game.job.destinationCityId'),mass_kg:num(raw,'mass_kg','cargo_mass','cargoMass','cargo_mass_kg','job.cargoMass','Job.CargoMass','job.mass_kg','job.cargo.mass_kg'),remaining_km:num(raw,'remaining_km')||num(raw,'distance_m','navigation.estimatedDistance')/1000,speed_kmh:Math.abs(num(raw,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed')),truck_make:str(raw,'truck_make','truck.make'),truck_model:str(raw,'truck_model','truck.model'),job_market:str(raw,'job_market','job.market'),map_x:num(raw,'map_x','truck.placement.x'),map_z:num(raw,'map_z','truck.placement.z'),map_heading:num(raw,'map_heading','truck.placement.heading'),gat_map:str(raw,'gat_map','map_mode','gatMap')||'base',job_latched:bool(raw,'job_latched','jobLatched'),job_latch_key:str(raw,'job_latch_key','jobLatchKey')}}
+58-async function live(env){return cachedRead('live',5,()=>readLive(env))}
+59-async function readLive(env){const r=await env.DB.prepare('SELECT driver,account_user,updated_at,telemetry_json FROM telemetry_live WHERE updated_at>=? ORDER BY updated_at DESC').bind(new Date(Date.now()-45000).toISOString()).all();return(r.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.telemetry_json||'{}')}catch{}return flat(x.driver,x.account_user,x.updated_at,raw)})}
+60-async function profile(env,user){return cachedRead('profile:'+user,15,()=>readProfile(env,user))}
+61-async function readProfile(env,user){const p=await env.DB.prepare('SELECT * FROM profiles WHERE user=?').bind(user).first();if(!p)return null;const d=await env.DB.prepare('SELECT id,sequence_no AS sequence,source,destination,cargo,weight_kg,distance_km,xp,xp AS xp_awarded,perfect,perfect AS perfect_trip,penalty_xp,speed_fines,delivered_at,delivered_at AS completed_at,raw_json FROM deliveries WHERE user=? ORDER BY id DESC LIMIT 100').bind(user).all();const c=await env.DB.prepare('SELECT cargo,weight_kg FROM deliveries WHERE user=? GROUP BY cargo,weight_kg').bind(user).all();let mission=null;try{mission=p.current_mission_json?JSON.parse(p.current_mission_json):null}catch{}const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.raw_json||'{}')}catch{}return{...x,...raw.audit}}).reverse(),points=monthPoints(deliveries);return{user,monthly_completed:p.monthly_completed,monthly_deliveries:p.monthly_completed,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}}
+62-
+63-async function resetAssigned(env,user,mission,reason,extra={}){const m={...mission,state:'assigned',min_km:MIN_KM,last_rejected_at:now(),last_rejected_reason:reason,...extra};for(const k of['cargo','cargo_id','source','source_city_id','destination','destination_city_id','weight_kg','planned_distance_km','rbr_start_remaining_km','map_mode','distance_source','started_at','suspended_at','resumed_at','job_latch_key','start_remaining_km','start_odometer_km','trip_progress_confirmed','rank_guard','delivery_details_start'])delete m[k];for(const k of Object.keys(m))if(/^(truck_|trailer_).*damage_(start|max)_pct$/.test(k))delete m[k];await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),now(),user).run();return m}
+64-async function cargoOK(env,mission,cargo,cargoId){
+65- if(mission.catalog_id==='custom')return true;
+66- const r=await env.DB.prepare('SELECT compatible_cargos_json FROM work_catalog WHERE id=?').bind(String(mission.catalog_id||'')).first();let names=[];try{names=JSON.parse(r?.compatible_cargos_json||'[]')}catch{}
+67- const idRaw=String(cargoId||'').trim();
+68- if(idRaw){
+69-   const base=idRaw.split('.')[0],id=compact(base);
+70-   if(id&&names.some(n=>{const x=compact(n);return x&&(x===id||x.includes(id)||id.includes(x))}))return true;
+71- }
+72- const actual=norm(cargo);if(!actual)return false;
+73- return names.map(norm).some(n=>n&&(actual===n||actual.includes(n)||n.includes(actual)));
+74-}
+75-
+76-function journalPacketId(raw){return String(raw?.gat_packet_id||'').trim()}
+77-function journalTripId(raw){return String(raw?.gat_trip_id||raw?.job_latch_key||'').trim()}
+78-function journalPayloadHash(raw){
+79- const copy={...raw};for(const key of ['gat_journal_seq','gat_journal_prev','gat_journal_chain','gat_journal_payload_sha256','gat_journal_version','gat_journal_verified','gat_journal_invalid'])delete copy[key];
+80- return createHash('sha256').update(JSON.stringify(copy)).digest('hex');
+81-}
+82-function fixedHexEqual(a,b){
+83- a=String(a||'').toLowerCase();b=String(b||'').toLowerCase();if(a.length!==b.length||!a.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0;
+84-}
+85-function journalMacKey(token,device){return createHash('sha256').update(`GAT-JOURNAL-V1|${String(token||'')}|${String(device||'')}`).digest()}
+86:async function inspectClientPacket(env,user,device,token,raw,t){
+87- const packetId=journalPacketId(raw);if(!packetId)return{packet_id:'',duplicate:false,journal_present:false,journal_verified:false,journal_reason:'legacy_no_packet_id'};
+88- const prior=await env.DB.prepare('SELECT mission_event_json,journal_verified,journal_reason FROM telemetry_packet_receipts WHERE user=? AND packet_id=?').bind(user,packetId).first();
+89- if(prior)return{packet_id:packetId,duplicate:true,journal_present:true,journal_verified:!!prior.journal_verified,journal_reason:prior.journal_reason||null,mission_event_json:prior.mission_event_json||null};
+90- const seq=Math.trunc(Number(raw?.gat_journal_seq)||0),prev=String(raw?.gat_journal_prev||''),chain=String(raw?.gat_journal_chain||'').toLowerCase(),claimedPayload=String(raw?.gat_journal_payload_sha256||'').toLowerCase(),collected=String(raw?.gat_collected_at||''),tripId=journalTripId(raw);
+91- const present=seq>0&&chain&&claimedPayload&&String(raw?.gat_journal_version||'')==='1';
+92- if(!present)return{packet_id:packetId,duplicate:false,journal_present:false,journal_verified:false,journal_reason:'legacy_unsigned_packet',seq:null,chain:null,trip_id:tripId,collected_at:collected};
+93- const actualPayload=journalPayloadHash(raw);
+94- if(!fixedHexEqual(actualPayload,claimedPayload))return{packet_id:packetId,duplicate:false,journal_present:true,journal_verified:false,journal_reason:'journal_payload_changed',seq,chain,trip_id:tripId,collected_at:collected};
+95- const canonical=`${packetId}|${collected}|${tripId}|${seq}|${prev}|${claimedPayload}`;
+96- const expected=createHmac('sha256',journalMacKey(token,device)).update(canonical).digest('hex');
+97- if(!fixedHexEqual(expected,chain))return{packet_id:packetId,duplicate:false,journal_present:true,journal_verified:false,journal_reason:'journal_signature_invalid',seq,chain,trip_id:tripId,collected_at:collected};
+98- const state=await env.DB.prepare('SELECT last_seq,last_chain,last_packet_id FROM telemetry_journal_state WHERE user=? AND device_id=?').bind(user,device).first();
+99- const continuous=!state||(seq===Number(state.last_seq)+1&&prev===String(state.last_chain||''));
+100- return{packet_id:packetId,duplicate:false,journal_present:true,journal_verified:continuous,journal_reason:continuous?null:'journal_chain_gap',seq,chain,prev,trip_id:tripId,collected_at:collected};
+101-}
+102-async function persistClientPacket(env,user,device,raw,t,packetState,missionEvent,openJourneyState,phase){
+103- const packetId=String(packetState?.packet_id||journalPacketId(raw));if(!packetId)return;
+104- const tripId=String(openJourneyState?.canonical||packetState?.trip_id||journalTripId(raw)||'').trim();
+105- if(packetState?.journal_verified){
+106-   await env.DB.prepare("INSERT INTO telemetry_journal_state(user,device_id,last_seq,last_chain,last_packet_id,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(user,device_id) DO UPDATE SET last_seq=excluded.last_seq,last_chain=excluded.last_chain,last_packet_id=excluded.last_packet_id,updated_at=excluded.updated_at").bind(user,device,Number(packetState.seq)||0,String(packetState.chain||''),packetId,t).run();
+107- }
+108- await env.DB.prepare('INSERT INTO telemetry_packet_receipts(user,packet_id,device_id,trip_id,collected_at,received_at,journal_seq,journal_chain,journal_verified,journal_reason,mission_event_json) VALUES(?,?,?,?,?,?,?,?,?,?,?)').bind(user,packetId,device,tripId,String(packetState?.collected_at||raw?.gat_collected_at||''),t,packetState?.seq??null,packetState?.chain||null,packetState?.journal_verified?1:0,packetState?.journal_reason||null,missionEvent?JSON.stringify(missionEvent):null).run();
+109- if(!tripId)return;
+110- const terminal=phase==='delivered'||phase==='cancelled',last=await env.DB.prepare('SELECT received_at FROM trip_checkpoints WHERE user=? AND trip_id=? ORDER BY id DESC LIMIT 1').bind(user,tripId).first(),age=last?Date.parse(t)-Date.parse(last.received_at):Infinity;
+111- if(!terminal&&Number.isFinite(age)&&age<120000)return;
+112- const f=flat(user,user,t,raw),summary={phase,cargo:f.cargo_name,source:f.source_city,destination:f.destination_city,weight_kg:f.mass_kg,remaining_km:f.remaining_km,speed_kmh:f.speed_kmh,game_name:str(raw,'gat_game','game.gameName','gameName'),map_mode:f.gat_map,cargo_damage_pct:num(raw,'cargo_damage_pct'),truck_engine_damage_pct:num(raw,'truck_engine_damage_pct'),truck_transmission_damage_pct:num(raw,'truck_transmission_damage_pct'),truck_cabin_damage_pct:num(raw,'truck_cabin_damage_pct'),truck_chassis_damage_pct:num(raw,'truck_chassis_damage_pct'),truck_wheels_damage_pct:num(raw,'truck_wheels_damage_pct'),trailer_damage_pct:num(raw,'trailer_damage_pct'),journal_verified:!!packetState?.journal_verified,journal_reason:packetState?.journal_reason||null};
+113- await env.DB.prepare('INSERT OR IGNORE INTO trip_checkpoints(user,trip_id,packet_id,phase,collected_at,received_at,journal_verified,summary_json,raw_json) VALUES(?,?,?,?,?,?,?,?,?)').bind(user,tripId,packetId,phase,String(packetState?.collected_at||raw?.gat_collected_at||''),t,packetState?.journal_verified?1:0,JSON.stringify(summary),JSON.stringify(raw)).run();
+114-}
+115-
+116-function journeyGame(raw){return clean(str(raw,'gat_game','game.gameName','gameName'))||'unknown'}
+117-function journeyMap(raw){return clean(str(raw,'gat_map','map_mode','gatMap'))||'base'}
+118-function journeyContext(raw){const explicit=clean(str(raw,'gat_context_id','gatContextId','profile_context_id','profileContextId'));return explicit||`${journeyGame(raw)}|${journeyMap(raw)}`}
+119-function journeyFingerprintRaw(raw){
+120- const cargo=clean(str(raw,'cargo_id','job.cargoId','Job.CargoId'))||norm(str(raw,'cargo_name','job.cargoName','job.cargo'));
+121- const source=clean(str(raw,'source_city_id','job.sourceCityId','Job.SourceCityId'))||norm(str(raw,'source_city','job.sourceCity','Job.SourceCity'));
+122- const destination=clean(str(raw,'destination_city_id','job.destinationCityId','Job.DestinationCityId'))||norm(str(raw,'destination_city','job.destinationCity','Job.DestinationCity'));
+123- const planned=Math.max(0,Math.round(num(raw,'planned_distance_km','job.plannedDistanceKm','Job.PlannedDistanceKm'))),mass=Math.max(0,Math.round(num(raw,'mass_kg','cargoMass','cargo_mass','job.cargoMass','Job.CargoMass')));
+124- return `${journeyContext(raw)}|${cargo}|${source}|${destination}|${planned}|${mass}`;
+125-}
+126-function journeyFingerprintMission(m,raw={}){
+127- const context=String(m?.context_key||'').trim()||`${clean(m?.game_name)||journeyGame(raw)}|${clean(m?.map_mode)||journeyMap(raw)}`;
+128- const cargo=clean(m?.cargo_id)||norm(m?.cargo||'');
+129- const source=clean(m?.source_city_id)||norm(m?.source||'');
+130- const destination=clean(m?.destination_city_id)||norm(m?.destination||'');
+131- const planned=Math.max(0,Math.round(Number(m?.planned_distance_km)||0)),mass=Math.max(0,Math.round(Number(m?.weight_kg)||0));
+132- return `${context}|${cargo}|${source}|${destination}|${planned}|${mass}`;
+133-}
+134-async function openJourneyAlias(env,user,observed,canonical,t){
+135- observed=String(observed||'').trim();canonical=String(canonical||'').trim();if(!observed||!canonical)return;
+136- await env.DB.prepare("INSERT INTO open_trip_aliases(observed_trip_id,trip_id,user,first_seen_at,last_seen_at) VALUES(?,?,?,?,?) ON CONFLICT(observed_trip_id) DO UPDATE SET trip_id=excluded.trip_id,user=excluded.user,last_seen_at=excluded.last_seen_at").bind(observed,canonical,user,t,t).run();
+137-}
+138-async function saveOpenJourney(env,user,m,raw,t,state='suspended'){
+139- if(!m)return null;const canonical=String(m.canonical_trip_id||m.trip_id||m.job_latch_key||m.id||'').trim();if(!canonical)return null;
+140- const game=clean(m.game_name)||journeyGame(raw),context=String(m.context_key||'').trim()||journeyContext(raw),fingerprint=String(m.journey_fingerprint||'').trim()||journeyFingerprintMission({...m,game_name:game,context_key:context},raw);
+141- m.canonical_trip_id=canonical;m.game_name=game;m.context_key=context;m.journey_fingerprint=fingerprint;
+142- await env.DB.prepare("INSERT INTO open_trips(trip_id,user,game_name,context_key,fingerprint,state,mission_json,created_at,updated_at,last_seen_at) VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(trip_id) DO UPDATE SET game_name=excluded.game_name,context_key=excluded.context_key,fingerprint=excluded.fingerprint,state=excluded.state,mission_json=excluded.mission_json,updated_at=excluded.updated_at,last_seen_at=excluded.last_seen_at").bind(canonical,user,game,context,fingerprint,state,JSON.stringify(m),String(m.started_at||m.created_at||t),t,t).run();
+143- return canonical;
+144-}
+145-async function prepareOpenJourney(env,user,raw,t,loaded,terminal){
+146- const observed=String(str(raw,'gat_trip_id','gatTripId')||str(raw,'job_latch_key','jobLatchKey')||'').trim(),rawFp=loaded?journeyFingerprintRaw(raw):'',rawContext=loaded?journeyContext(raw):'';
+147- const pr=await env.DB.prepare('SELECT current_mission_json FROM profiles WHERE user=?').bind(user).first();let current=null;try{current=pr?.current_mission_json?JSON.parse(pr.current_mission_json):null}catch{}
+148- let canonical=current?String(current.canonical_trip_id||current.trip_id||current.job_latch_key||current.id||'').trim():'';
+149- if(current){
+150-   if(!current.game_name)current.game_name=journeyGame(raw);if(!current.context_key)current.context_key=journeyContext(raw);if(!current.journey_fingerprint)current.journey_fingerprint=journeyFingerprintMission(current,raw);
+151-   const same=loaded&&current.journey_fingerprint===rawFp;
+152-   if(!terminal&&(!loaded||!same)){
+153-     canonical=await saveOpenJourney(env,user,current,raw,t,'suspended')||canonical;
+154-     await env.DB.prepare('UPDATE profiles SET current_mission_json=NULL,updated_at=? WHERE user=?').bind(t,user).run();current=null;canonical='';
+155-   }else if(same){
+156-     canonical=String(current.canonical_trip_id||current.trip_id||current.job_latch_key||current.id||'').trim();current.canonical_trip_id=canonical;
+157-     if(observed){current.trip_id=observed;current.job_latch_key=observed}
+158-     current.game_name=journeyGame(raw);current.context_key=rawContext;current.journey_fingerprint=rawFp;current.state='active';current.resumed_at=current.resumed_at||t;
+159-     // FK-safe: primeiro persiste a viagem canonica; somente depois cria/atualiza o alias observado.
+160-     canonical=await saveOpenJourney(env,user,current,raw,t,'active')||canonical;
+161-     if(observed&&canonical)await openJourneyAlias(env,user,observed,canonical,t);
+162-     await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(current),t,user).run();
+163-     return{canonical,observed,fingerprint:rawFp,resumed:true};
+164-   }
+165- }
+166- if(loaded&&!current){
+--
+331-  return{gat_review_suggested_points:suggestion.points,gat_review_suggestion_available:suggestion.available,gat_reviewable:current===0&&!!reason&&suggestion.available&&!manual,gat_review_status:manual?.status||null,gat_review_actor:manual?.actor||null,gat_review_at:manual?.at||null,gat_review_previous_points:manual?.previous_points??null,gat_review_approved_points:manual?.approved_points??null};
+332-}
+333-
+334-async function adminDriver(env,target){const a=await env.DB.prepare('SELECT user,role,disabled,created_at,updated_at FROM accounts WHERE user=?').bind(target).first();if(!a)return null;const p=await profile(env,target),sessions=await env.DB.prepare('SELECT COUNT(*) total FROM sessions WHERE user=? AND expires_at>?').bind(target,now()).first(),tel=await env.DB.prepare('SELECT driver,account_user,updated_at,telemetry_json FROM telemetry_live WHERE account_user=? ORDER BY updated_at DESC LIMIT 1').bind(target).first();let liveData={online:false};if(tel){let raw={};try{raw=JSON.parse(tel.telemetry_json||'{}')}catch{}liveData={...flat(tel.driver,tel.account_user,tel.updated_at,raw),online:Date.now()-Date.parse(tel.updated_at)<30000}}p.deliveries=(Array.isArray(p?.deliveries)?p.deliveries:[]).map(x=>({...x,...gatReviewView(x)}));return{account:{...a,disabled:!!a.disabled,active_sessions:Number(sessions?.total||0)},profile:p,live:liveData}}
+335-async function recalc(env,user){const s=await env.DB.prepare('SELECT COUNT(*) total,COALESCE(SUM(distance_km),0) km,COALESCE(SUM(xp),0) xp,COALESCE(SUM(perfect),0) perfect,COALESCE(SUM(penalty_xp),0) penalties,COALESCE(SUM(speed_fines),0) fines FROM deliveries WHERE user=?').bind(user).first(),m=await env.DB.prepare('SELECT COUNT(*) total FROM deliveries WHERE user=? AND substr(delivered_at,1,7)=?').bind(user,month()).first();await env.DB.prepare('UPDATE profiles SET monthly_completed=?,total_deliveries=?,total_km=?,xp=?,perfect_trips=?,penalty_xp=?,speed_fines=?,safety_score=MAX(0,100-(?*0.1)),updated_at=? WHERE user=?').bind(Number(m?.total||0),Number(s?.total||0),Number(s?.km||0),Number(s?.xp||0),Number(s?.perfect||0),Number(s?.penalties||0),Number(s?.fines||0),Number(s?.penalties||0),now(),user).run()}
+336-async function adminAction(req,env,b,actor){const action=String(b.action||''),target=clean(b.target);if(!target)throw new HttpError(400,'target_required');const a=await env.DB.prepare('SELECT user,role,disabled FROM accounts WHERE user=?').bind(target).first();if(!a)throw new HttpError(404,'not_found');if(a.role==='owner'&&actor.role!=='owner')throw new HttpError(403,'owner_protected');if(actor.role==='moderator'&&!['reset_mission','review_gat_points'].includes(action))throw new HttpError(403,'forbidden');
+337- if(action==='review_gat_points'){
+338-   const id=Math.trunc(Number(b.delivery_id)),decision=String(b.review_decision||'');
+339-   if(!Number.isFinite(id)||id<=0)throw new HttpError(400,'invalid_delivery_id');
+340-   if(!['approve','keep_zero'].includes(decision))throw new HttpError(400,'invalid_review_decision');
+341-   const d=await env.DB.prepare('SELECT id,raw_json FROM deliveries WHERE id=? AND user=?').bind(id,target).first();if(!d)throw new HttpError(404,'delivery_not_found');
+342-   let raw={};try{raw=JSON.parse(d.raw_json||'{}')}catch{}if(!raw||typeof raw!=='object')raw={};
+343-   const aData=raw.audit&&typeof raw.audit==='object'?{...raw.audit}:{},existing=aData.gat_manual_review&&typeof aData.gat_manual_review==='object'?aData.gat_manual_review:null;
+344-   if(existing)throw new HttpError(409,'gat_review_already_done');
+345-   const current=Number.isFinite(Number(aData.gat_points))?Math.max(0,Math.round(Number(aData.gat_points))):0,automaticReason=String(aData.ranking_reason||aData.automatic_ranking_reason||'');
+346-   if(current!==0)throw new HttpError(409,'gat_review_requires_zero_points');
+347-   if(!automaticReason)throw new HttpError(409,'gat_review_requires_validation_error');
+348-   const suggestion=gatReviewSuggestion(aData);if(!suggestion.available)throw new HttpError(409,'gat_review_no_saved_breakdown');
+349-   const approved=decision==='approve'?suggestion.points:0,reviewAt=now(),manual={status:decision==='approve'?'approved':'kept_zero',actor:actor.user,at:reviewAt,previous_points:current,suggested_points:suggestion.points,approved_points:approved,automatic_reason:automaticReason};
+350-   aData.automatic_ranking_reason=aData.automatic_ranking_reason||automaticReason;
+351-   aData.automatic_ranking_message=aData.automatic_ranking_message||String(aData.ranking_message||'');
+352-   aData.gat_manual_review=manual;aData.gat_points_manual=decision==='approve';aData.gat_points=approved;
+353-   if(decision==='approve'){
+354-     aData.ranking_eligible=true;aData.rank_eligible=true;aData.ranking_reason=null;aData.ranking_message='Pontuacao GAT validada manualmente por @'+actor.user+'.';
+355-   }
+356-   raw.audit=aData;
+357-   const delta=approved-current;
+358-   await env.DB.batch([env.DB.prepare('UPDATE deliveries SET raw_json=? WHERE id=? AND user=?').bind(JSON.stringify(raw),id,target),env.DB.prepare('UPDATE profiles SET points=MAX(0,points+?),updated_at=? WHERE user=?').bind(delta,reviewAt,target)]);
+359-   await audit(env,actor.user,'review_gat_points',target,{delivery_id:id,decision,previous_points:current,suggested_points:suggestion.points,approved_points:approved,points_delta:delta,automatic_reason:automaticReason});
+360-   invalidateRead('profile:'+target);invalidateRead('ranking');
+361-   return json(req,{ok:true,action,target,delivery_id:id,decision,previous_points:current,suggested_points:suggestion.points,approved_points:approved,points_delta:delta});
+362- }
+363- if(action==='reset_mission')await env.DB.prepare('UPDATE profiles SET current_mission_json=NULL,updated_at=? WHERE user=?').bind(now(),target).run();
+364- else if(action==='block'||action==='unblock'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const disabled=action==='block'?1:0;await env.DB.batch([env.DB.prepare('UPDATE accounts SET disabled=?,updated_at=? WHERE user=?').bind(disabled,now(),target),...(disabled?[env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(target),env.DB.prepare('UPDATE client_tokens SET revoked_at=? WHERE account_user=? AND revoked_at IS NULL').bind(now(),target)]:[])])}
+365- else if(action==='reset_password'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const password=String(b.password||'');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');const salt=randomHex(16);await env.DB.batch([env.DB.prepare('UPDATE accounts SET password_salt=?,password_hash=?,updated_at=? WHERE user=?').bind(salt,await passHash(password,salt),now(),target),env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(target)])}
+366- else if(action==='role'){if(actor.role!=='owner'||a.role==='owner')throw new HttpError(403,'forbidden');const role=String(b.role||'');if(!['driver','moderator','admin'].includes(role))throw new HttpError(400,'invalid_role');await env.DB.prepare('UPDATE accounts SET role=?,updated_at=? WHERE user=?').bind(role,now(),target).run()}
+367- else if(action==='delete'){if(actor.role!=='owner'||a.role==='owner'||actor.user===target)throw new HttpError(403,'forbidden');await env.DB.prepare('DELETE FROM accounts WHERE user=?').bind(target).run()}
+368- else if(action==='set_progress'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const monthly=Math.trunc(Number(b.monthly_completed)),total=Math.trunc(Number(b.total_deliveries)),km=Number(b.total_km);if(!Number.isFinite(monthly)||!Number.isFinite(total)||!Number.isFinite(km)||monthly<0||monthly>40||total<monthly||km<0)throw new HttpError(400,'invalid_progress');await env.DB.prepare('UPDATE profiles SET monthly_completed=?,total_deliveries=?,total_km=?,updated_at=? WHERE user=?').bind(monthly,total,km,now(),target).run()}
+369- else if(action==='delete_delivery'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const id=Math.trunc(Number(b.delivery_id)),d=await env.DB.prepare('SELECT id,raw_json,delivered_at FROM deliveries WHERE id=? AND user=?').bind(id,target).first();if(!d)throw new HttpError(404,'delivery_not_found');let raw={};try{raw=JSON.parse(d.raw_json||'{}')}catch{}const work=String(raw?.mission?.catalog_id||'');await env.DB.batch([env.DB.prepare('DELETE FROM deliveries WHERE id=? AND user=?').bind(id,target),...(work?[env.DB.prepare('DELETE FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(target,work,month(d.delivered_at))]:[])]);await recalc(env,target)}
+370- else if(action==='set_delivery_xp'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const id=Math.trunc(Number(b.delivery_id)),xp=Math.trunc(Number(b.delivery_xp));if(!Number.isFinite(xp)||xp<0||xp>100000)throw new HttpError(400,'invalid_xp');const r=await env.DB.prepare('UPDATE deliveries SET xp=? WHERE id=? AND user=?').bind(xp,id,target).run();if(!r.meta?.changes)throw new HttpError(404,'delivery_not_found');await recalc(env,target)}else throw new HttpError(400,'invalid_action');await audit(env,actor.user,action,target,{role:b.role,delivery_id:b.delivery_id});return json(req,{ok:true,action,target})}
+371-
+372-async function route(req,env){const u=new URL(req.url),p=u.pathname,m=req.method;if(m==='OPTIONS')return new Response(null,{status:204,headers:headers(req)});if(!['GET','POST'].includes(m))throw new HttpError(405,'method_not_allowed');
+373- if(p==='/health')return json(req,{ok:true,service:'GAT Central Local',agent_version:VERSION,time:now(),mission_min_km:MIN_KM,test_mode:false});
+374- if(p==='/api/public/version')return json(req,{ok:true,agent_version:VERSION,platform:'cloudflare-workers-d1',mission_min_km:MIN_KM,test_mode:false});
+375- if(p==='/api/client/server-info')return json(req,{ok:true,online:true,server_name:'GAT CENTRAL CLOUD',session_id:'CLOUD',players:(await live(env)).length,max_players:999});if(p==='/api/client/players')return json(req,{ok:true,players:(await live(env)).map(x=>x.driver)});
+376- if(p==='/api/account/register'&&m==='POST'){const b=await body(req),user=clean(b.user),password=String(b.password||'');if(!/^[a-z0-9._-]{3,32}$/.test(user))throw new HttpError(400,'invalid_user');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');if(await env.DB.prepare('SELECT 1 FROM accounts WHERE user=?').bind(user).first())throw new HttpError(409,'user_exists');const salt=randomHex(16),t=now();await env.DB.prepare('INSERT INTO accounts(user,password_salt,password_hash,role,created_at,updated_at) VALUES(?,?,?,?,?,?)').bind(user,salt,await passHash(password,salt),'driver',t,t).run();await ensureProfile(env,user);return json(req,{ok:true,user,role:'driver',token:await makeSession(env,user)},201)}
+377- if(p==='/api/account/login'&&m==='POST'){const b=await body(req),user=clean(b.user),key=`${req.headers.get('CF-Connecting-IP')||'unknown'}:${user}`,cutoff=new Date(Date.now()-15*60000).toISOString(),attempts=await env.DB.prepare('SELECT COUNT(*) total FROM auth_attempts WHERE attempt_key=? AND succeeded=0 AND at>=?').bind(key,cutoff).first();if(Number(attempts?.total||0)>=10)throw new HttpError(429,'too_many_attempts');const a=await env.DB.prepare('SELECT * FROM accounts WHERE user=?').bind(user).first(),valid=!!a&&!a.disabled&&!!a.password_hash&&await verifyPassword(env,a,String(b.password||''));await env.DB.prepare('INSERT INTO auth_attempts(at,attempt_key,succeeded) VALUES(?,?,?)').bind(now(),key,valid?1:0).run();if(!valid)throw new HttpError(401,'invalid_credentials');return json(req,{ok:true,user:a.user,role:a.role,token:await makeSession(env,a.user)})}
+378- if((p==='/api/account/session'||p==='/api/site/session')&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);return json(req,{ok:true,user:s.user,role:s.role})}
+379- if(p==='/api/account/password'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b),password=String(b.password||'');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');const salt=randomHex(16);await env.DB.batch([env.DB.prepare('UPDATE accounts SET password_salt=?,password_hash=?,updated_at=? WHERE user=?').bind(salt,await passHash(password,salt),now(),s.user),env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(s.user)]);return json(req,{ok:true})}
+380- if(p==='/api/client/login'&&m==='POST'){const b=await body(req),driver=clean(b.driver),device=String(b.device_id||'').trim();if(!driver||device.length<16)throw new HttpError(400,'driver_and_device_required');if(b.token){const c=await clientCredential(env,driver,device,String(b.token));if(c.row)return json(req,{ok:true,driver,account_user:c.row.account_user,token:b.token})}const done=await finishPair(env,driver,device);if(done)return json(req,{ok:true,driver,...done});const pair=await pairing(env,driver,device);return json(req,{ok:false,error:'link_required',pairing_code:pair.code_plain,expires_at:pair.expires_at,link_url:'https://gatlogets2.com.br/motorista.html?tab=account'},428)}
+381- if(p==='/api/site/client/link'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b),code=String(b.pairing_code||'').trim().toUpperCase();if(!/^[A-F0-9]{8}$/.test(code))throw new HttpError(400,'invalid_pairing_code');const pair=await env.DB.prepare('SELECT code_hash,driver,device_id,expires_at,claimed_user FROM client_pairings WHERE code_hash=?').bind(await sha(code)).first();if(!pair||pair.claimed_user||Date.parse(pair.expires_at)<=Date.now())throw new HttpError(404,'pairing_not_found');const old=await env.DB.prepare('SELECT account_user FROM client_tokens WHERE device_id=? AND revoked_at IS NULL LIMIT 1').bind(pair.device_id).first();if(old?.account_user&&old.account_user!==s.user)throw new HttpError(409,'device_already_linked');await env.DB.prepare('UPDATE client_pairings SET claimed_user=? WHERE code_hash=?').bind(s.user,pair.code_hash).run();await audit(env,s.user,'link_device',s.user,{driver:pair.driver,device_id_suffix:String(pair.device_id).slice(-8)});return json(req,{ok:true,user:s.user,driver:pair.driver})}
+382- if(p==='/api/client/heartbeat'&&m==='POST'){const b=await body(req),c=await clientCredential(env,clean(b.driver),String(b.device_id||''),String(b.token||''));if(!c.row)throw new HttpError(401,c.error);return json(req,{ok:true,driver:c.row.driver,account_user:c.row.account_user,time:now()})}
+383- if(p==='/api/client/telemetry'&&m==='POST'){
+384-   const b=await body(req),driver=clean(b.driver),device=String(b.device_id||''),c=await clientCredential(env,driver,device,String(b.token||''));
+385-   if(!c.row)throw new HttpError(401,c.error);
+386-   const raw=b.telemetry&&typeof b.telemetry==='object'&&!Array.isArray(b.telemetry)?b.telemetry:{},receivedAt=now(),account=c.row.account_user;
+387-   const collectedRaw=str(raw,'gat_collected_at','gatCollectedAt'),collectedMs=Date.parse(collectedRaw),receiveMs=Date.parse(receivedAt);
+388-   const queuedTimeOK=Number.isFinite(collectedMs)&&collectedMs<=receiveMs+30000&&collectedMs>=receiveMs-6*60*60*1000;
+389-   const t=queuedTimeOK?new Date(collectedMs).toISOString():receivedAt;
+390-   const previous=await env.DB.prepare('SELECT account_user,updated_at,telemetry_json FROM telemetry_live WHERE driver=?').bind(driver).first();
+391-   let prevRaw=null;try{if(previous?.account_user===account)prevRaw=JSON.parse(previous.telemetry_json)}catch{}
+392-   const packetId=str(raw,'gat_packet_id','gatPacketId');
+393-   if(packetId&&prevRaw&&packetId===str(prevRaw,'gat_packet_id','gatPacketId'))
+394-     return json(req,{ok:true,driver,account_user:account,updated_at:previous.updated_at,duplicate_packet:true,next_upload_ms:15000});
+395-   const previousCollected=str(prevRaw||{},'gat_collected_at','gatCollectedAt'),previousCollectedMs=Date.parse(previousCollected);
+396-   const previousSampleAt=Number.isFinite(previousCollectedMs)?new Date(previousCollectedMs).toISOString():(prevRaw?previous.updated_at:null);
+397-   const f=flat(driver,account,t,raw),loaded=Boolean(f.job_latched)||Boolean(f.cargo_id||f.cargo_name)&&f.mass_kg>0;
+398-   const event=clean(str(raw,'gat_job_event','gatJobEvent'));
+399-   const deliveryDetailsRaw=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{},previousDeliveryDetailsRaw=pick(prevRaw||{},'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{};
+400-   const deliveryDetailsPositive=num(deliveryDetailsRaw,'distanceKm','distance_km')>0||num(deliveryDetailsRaw,'revenue')>0||num(deliveryDetailsRaw,'earnedXp','earned_xp')>0;
+401-   const deliveryDetailsChanged=!loaded&&prevRaw&&JSON.stringify(deliveryDetailsRaw)!==JSON.stringify(previousDeliveryDetailsRaw)&&deliveryDetailsPositive;
+402-   const delivered=event==='delivered'||deliveryDetailsChanged||(!loaded&&bool(raw,'gameplay.jobDelivered','jobDelivered'));
+403-   const cancelled=!delivered&&raw?.game?.connected===true&&(event==='cancelled'||(!loaded&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled')));
+404-   restoreDeliveredTrailer(raw,prevRaw,previousSampleAt,t,delivered,loaded);
+405-   const readiness=rankingReadiness(raw);
+406-   const signature=x=>{const q=flat(driver,account,t,x);return JSON.stringify([rankingReadiness(x),q.job_latched,q.on_job,q.job_latch_key,q.cargo_id,q.cargo_name,q.source_city,q.destination_city,q.mass_kg,q.gat_map,num(x,'job.plannedDistanceKm','planned_distance_km'),x.cargo_damage_pct,x.truck_engine_damage_pct,x.truck_transmission_damage_pct,x.truck_cabin_damage_pct,x.truck_chassis_damage_pct,x.truck_wheels_damage_pct,x.trailer_damage_pct,deep(x,'game.paused')])};
+407-   if(!queuedTimeOK&&!delivered&&!cancelled&&prevRaw&&Date.parse(receivedAt)-Date.parse(previous.updated_at)<15000&&signature(raw)===signature(prevRaw))
+408-     return json(req,{ok:true,driver,account_user:account,updated_at:previous.updated_at,rank_status:readiness,telemetry_deferred:true,next_upload_ms:15000});
+409-   const previousIdle=!!prevRaw&&prevRaw?.game?.connected===true&&!bool(prevRaw,'job_latched','jobLatched')&&!bool(prevRaw,'on_job','onJob','gameplay.onJob');
+410-   const preflightTruckDamageReady=previousIdle&&['truck_engine_damage_pct','truck_transmission_damage_pct','truck_cabin_damage_pct','truck_chassis_damage_pct','truck_wheels_damage_pct'].every(key=>typeof prevRaw[key]==='number'&&Number.isFinite(prevRaw[key])&&prevRaw[key]>=0&&prevRaw[key]<=100);
+411:   const packetState=await inspectClientPacket(env,account,device,String(b.token||''),raw,t);
+412-   if(packetState.journal_present&&!packetState.journal_verified)raw.gat_journal_invalid=true;
+413-   let openJourneyState=null,missionEvent=null;
+414-   if(packetState.duplicate){try{missionEvent=packetState.mission_event_json?JSON.parse(packetState.mission_event_json):null}catch{missionEvent=null}}
+415-   else{
+416-     openJourneyState=await prepareOpenJourney(env,account,raw,t,loaded,delivered||cancelled);
+417-     missionEvent=await processMission(env,account,raw,t,previousSampleAt,preflightTruckDamageReady);
+418-   // Se um novo trip_id chegou enquanto a missao anterior ainda estava ativa,
+419-   // o mesmo pacote encerra a antiga e ja abre a nova. Nao esperamos 15 s nem
+420-   // dependemos de um segundo evento do cliente.
+421-   if(loaded&&missionEvent&&['mission_cancelled','delivery_completed','delivery_completed_xp_only'].includes(String(missionEvent.type))){
+422-     const firstEvent=missionEvent,nextEvent=await processMission(env,account,raw,t,previousSampleAt);
+423-     if(nextEvent)missionEvent={...firstEvent,next_mission_event:nextEvent};
+424-   }
+425-     await finishOpenJourney(env,account,raw,t,openJourneyState,missionEvent);
+426-     const checkpointPhase=delivered?'delivered':cancelled?'cancelled':loaded?'progress':'idle';
+427-     await persistClientPacket(env,account,device,raw,t,packetState,missionEvent,openJourneyState,checkpointPhase);
+428-   }
+429-   if(missionEvent&&missionEvent.type&&!['mission_in_progress','mission_waiting'].includes(String(missionEvent.type))){invalidateRead('profile:'+account);invalidateRead('get:/api/public/work/catalog:'+account);if(String(missionEvent.type).startsWith('delivery_completed')){invalidateRead('get:/api/public/ranking:');invalidateRead('get:/api/public/safety-ranking:')}}
+430-   await env.DB.prepare('INSERT INTO telemetry_live(driver,account_user,device_id,updated_at,telemetry_json) VALUES(?,?,?,?,?) ON CONFLICT(driver) DO UPDATE SET account_user=excluded.account_user,device_id=excluded.device_id,updated_at=excluded.updated_at,telemetry_json=excluded.telemetry_json').bind(driver,account,device,receivedAt,JSON.stringify(raw)).run();
+431-   return json(req,{ok:true,driver,account_user:account,updated_at:receivedAt,collected_at:t,replayed:queuedTimeOK,rank_status:readiness,mission_event:missionEvent,next_upload_ms:15000});
+432- }
+433-
+434- if(p==='/api/public/account-live'&&m==='GET')return json(req,{ok:true,telemetry:await live(env),updated_at:now()});
+435- if(p==='/api/public/ranking'&&m==='GET'){const season=(await env.DB.prepare("SELECT value FROM meta WHERE key='season'").first())?.value||month(),mode=(await env.DB.prepare("SELECT value FROM meta WHERE key='operation_mode'").first())?.value||'official',r=await env.DB.prepare(`SELECT p.user,p.monthly_completed,p.total_deliveries,p.xp,p.perfect_trips,p.penalty_xp,p.speed_fines,p.total_km,COALESCE(s.points,0) AS points FROM profiles p JOIN accounts a ON a.user=p.user LEFT JOIN (SELECT user,SUM(COALESCE(CAST(json_extract(raw_json,'$.audit.gat_points') AS INTEGER),MAX(0,100-penalty_xp))) AS points FROM deliveries WHERE substr(delivered_at,1,7)=? GROUP BY user) s ON s.user=p.user WHERE a.disabled=0 ORDER BY points DESC,p.monthly_completed DESC,p.perfect_trips DESC,p.penalty_xp ASC,p.speed_fines ASC,p.user ASC`).bind(season).all();return json(req,{ok:true,operation_mode:mode,season,scoring:{base_per_delivery:100},ranking:r.results||[]})}
+436- if(p==='/api/public/safety-ranking'&&m==='GET'){const r=await env.DB.prepare('SELECT p.user,p.safety_score AS score,p.perfect_trips,p.speed_fines,p.penalty_xp FROM profiles p JOIN accounts a ON a.user=p.user WHERE a.disabled=0 ORDER BY p.safety_score DESC,p.perfect_trips DESC,p.speed_fines ASC,p.user ASC').all();return json(req,{ok:true,ranking:r.results||[]})}
+437- if(p==='/api/public/driver'&&m==='GET'){const d=await profile(env,clean(u.searchParams.get('user')));if(!d)throw new HttpError(404,'not_found');return json(req,{ok:true,profile:d})}
+438- if(p==='/api/site/profile'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);let pr=await profile(env,s.user);if(!pr){await ensureProfile(env,s.user);pr=await readProfile(env,s.user)}return json(req,{ok:true,profile:pr})}
+439- if(p==='/api/site/profile/avatar'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);await ensureProfile(env,s.user);const avatar=String(b.avatar_url||'').trim();if(avatar){if(avatar.length>220000)throw new HttpError(413,'avatar_too_large');if(!/^data:image\/(?:webp|png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(avatar))throw new HttpError(400,'invalid_avatar')}await env.DB.prepare('UPDATE profiles SET avatar_url=?,updated_at=? WHERE user=?').bind(avatar||null,now(),s.user).run();await audit(env,s.user,avatar?'profile_avatar_update':'profile_avatar_remove',s.user,{bytes:avatar.length});return json(req,{ok:true,avatar_url:avatar})}
+440- if(p==='/api/public/work/catalog'&&m==='GET'){const user=clean(u.searchParams.get('user')),c=await env.DB.prepare('SELECT id,position,title,category,icon,custom,compatible_cargos_json FROM work_catalog WHERE active=1 ORDER BY position').all(),d=await env.DB.prepare('SELECT DISTINCT work_id FROM work_completed WHERE user=?').bind(user).all(),done=new Set((d.results||[]).map(x=>x.work_id));return json(req,{ok:true,catalog:(c.results||[]).map(x=>{let compatible=[];try{compatible=JSON.parse(x.compatible_cargos_json||'[]')}catch{}const{compatible_cargos_json,...item}=x;return{...item,custom:!!x.custom,compatible_cargos:compatible,completed:done.has(x.id)}}),mission_min_km:MIN_KM})}
+441- if((p==='/api/site/work/select'||p==='/api/site/work/take')&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);await ensureProfile(env,s.user);const pr=await env.DB.prepare('SELECT current_mission_json,monthly_completed FROM profiles WHERE user=?').bind(s.user).first();if(pr?.current_mission_json)throw new HttpError(409,'mission_already_active');const item=p.endsWith('/take')&&!b.work_id?await env.DB.prepare('SELECT wc.* FROM work_catalog wc WHERE wc.active=1 AND NOT EXISTS(SELECT 1 FROM work_completed d WHERE d.user=? AND d.work_id=wc.id AND d.month_key=?) ORDER BY wc.position LIMIT 1').bind(s.user,month()).first():await env.DB.prepare('SELECT * FROM work_catalog WHERE id=? AND active=1').bind(String(b.work_id||'')).first();if(!item)throw new HttpError(404,'invalid_work');const repeatXpOnly=!!(await env.DB.prepare('SELECT 1 FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(s.user,item.id,month()).first());const custom=String(b.custom_cargo||'').trim();if(item.custom&&(custom.length<2||custom.length>100))throw new HttpError(400,'custom_cargo_required');const t=now(),mission={id:`${month()}-${s.user}-${item.id}-${randomHex(6)}`,catalog_id:item.id,sequence:item.position,title:item.title,category:item.category,custom_cargo:custom,xp_only:false,state:'assigned',min_km:MIN_KM,created_at:t,assigned_at:t};await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(mission),t,s.user).run();return json(req,{ok:true,mission,completed:Number(pr?.monthly_completed||0),xp_only:false,rules_enabled:true,admin_test_mode:false,operation_mode:'official'})}
+442- if(p==='/api/public/notice'&&m==='GET'){const rows=await env.DB.prepare("SELECT key,value FROM meta WHERE key IN ('site_notice_enabled','site_notice_title','site_notice_message','site_notice_updated_at')").all(),v=Object.fromEntries((rows.results||[]).map(x=>[x.key,x.value]));return json(req,{ok:true,enabled:v.site_notice_enabled==='1',title:v.site_notice_title||'AVISO GAT',message:v.site_notice_message||'',updated_at:v.site_notice_updated_at||null})}
+443- if(p==='/api/site/admin/notice'&&m==='POST'){const b=await body(req),a=await requireAdmin(req,env,b);if(b.save){const title=String(b.title||'').trim().slice(0,80),message=String(b.message||'').trim().slice(0,600),enabled=b.enabled?1:0;if(enabled&&!message)throw new HttpError(400,'notice_message_required');const t=now();await env.DB.batch([env.DB.prepare("INSERT INTO meta(key,value) VALUES('site_notice_enabled',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(String(enabled)),env.DB.prepare("INSERT INTO meta(key,value) VALUES('site_notice_title',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(title||'AVISO GAT'),env.DB.prepare("INSERT INTO meta(key,value) VALUES('site_notice_message',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(message),env.DB.prepare("INSERT INTO meta(key,value) VALUES('site_notice_updated_at',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(t)]);await audit(env,a.user,'site_notice',a.user,{enabled:!!enabled,title:title||'AVISO GAT'});return json(req,{ok:true,enabled:!!enabled,title:title||'AVISO GAT',message,updated_at:t})}const rows=await env.DB.prepare("SELECT key,value FROM meta WHERE key IN ('site_notice_enabled','site_notice_title','site_notice_message','site_notice_updated_at')").all(),v=Object.fromEntries((rows.results||[]).map(x=>[x.key,x.value]));return json(req,{ok:true,enabled:v.site_notice_enabled==='1',title:v.site_notice_title||'AVISO GAT',message:v.site_notice_message||'',updated_at:v.site_notice_updated_at||null})}
+444- if(p==='/api/site/admin/session'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return json(req,{ok:true,user:s.user,role:s.role})}
+445- if(p==='/api/site/admin/drivers'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b),r=await env.DB.prepare('SELECT a.user,a.role,a.disabled,a.created_at,p.monthly_completed,p.total_deliveries,p.xp,p.total_km,p.current_mission_json,t.driver,t.updated_at last_telemetry_at,t.telemetry_json FROM accounts a LEFT JOIN profiles p ON p.user=a.user LEFT JOIN telemetry_live t ON t.account_user=a.user ORDER BY a.user').all(),drivers=(r.results||[]).map(x=>{let mission=null,raw={};try{mission=x.current_mission_json?JSON.parse(x.current_mission_json):null}catch{}try{raw=x.telemetry_json?JSON.parse(x.telemetry_json):{}}catch{}const f=flat(x.driver||x.user,x.user,x.last_telemetry_at||'',raw);return{user:x.user,role:x.role,disabled:!!x.disabled,created_at:x.created_at,monthly_completed:Number(x.monthly_completed||0),total_deliveries:Number(x.total_deliveries||0),xp:Number(x.xp||0),level:level(x.xp),total_km:Number(x.total_km||0),current_mission:mission,last_telemetry_at:x.last_telemetry_at,online:!!x.last_telemetry_at&&Date.now()-Date.parse(x.last_telemetry_at)<30000,truck:[f.truck_make,f.truck_model].filter(Boolean).join(' '),cargo:f.cargo_name}});return json(req,{ok:true,viewer_role:s.role,drivers})}
+446- if(p==='/api/site/admin/driver'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b),d=await adminDriver(env,clean(b.target));if(!d)throw new HttpError(404,'not_found');return json(req,{ok:true,viewer_role:s.role,...d})}
+447- if(p==='/api/site/admin/audit'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b,true),r=await env.DB.prepare('SELECT id,at,actor,action,target,details FROM audit ORDER BY id DESC LIMIT 200').all();return json(req,{ok:true,viewer_role:s.role,audit:r.results||[]})}
+448- if(p==='/api/site/admin/action'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return adminAction(req,env,b,s)}
+449- if(p==='/api/site/admin/health'&&m==='POST'){const b=await body(req);await requireAdmin(req,env,b);const[a,o,l,bk,last]=await Promise.all([env.DB.prepare('SELECT COUNT(*) total FROM accounts').first(),env.DB.prepare('SELECT COUNT(*) total FROM telemetry_live WHERE updated_at>=?').bind(new Date(Date.now()-45000).toISOString()).first(),env.DB.prepare('SELECT MAX(updated_at) at FROM telemetry_live').first(),env.DB.prepare('SELECT COUNT(*) total FROM admin_backups').first(),env.DB.prepare('SELECT name,created_at FROM admin_backups ORDER BY id DESC LIMIT 1').first()]);return json(req,{ok:true,agent_version:VERSION,online_drivers:Number(o?.total||0),accounts:Number(a?.total||0),data_bytes:0,last_telemetry_at:l?.at||null,backup_count:Number(bk?.total||0),backup_keep:7,last_backup:last?.name||null})}
+450- if(p==='/api/site/admin/backup'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b,true),[a,pr,d,w,r,meta]=await Promise.all([env.DB.prepare('SELECT user,role,disabled,created_at,updated_at FROM accounts').all(),env.DB.prepare('SELECT * FROM profiles').all(),env.DB.prepare('SELECT * FROM deliveries').all(),env.DB.prepare('SELECT * FROM work_completed').all(),env.DB.prepare('SELECT * FROM routes_completed').all(),env.DB.prepare('SELECT * FROM meta').all()]),t=now(),name=`gat-central-${t.replace(/[:.]/g,'-')}`;await env.DB.batch([env.DB.prepare('INSERT INTO admin_backups(name,created_at,actor,snapshot_json) VALUES(?,?,?,?)').bind(name,t,s.user,JSON.stringify({accounts:a.results,profiles:pr.results,deliveries:d.results,work_completed:w.results,routes_completed:r.results,meta:meta.results})),env.DB.prepare('DELETE FROM admin_backups WHERE id NOT IN (SELECT id FROM admin_backups ORDER BY id DESC LIMIT 7)')]);await audit(env,s.user,'backup','central',{name});return json(req,{ok:true,backup:name})}
+451- if(p==='/api/migration/import'&&m==='POST'){if(!env.MIGRATION_KEY)throw new HttpError(403,'migration_disabled');const b=await body(req);if(!await equal(String(b.key||''),String(env.MIGRATION_KEY)))throw new HttpError(403,'forbidden');const users=Array.isArray(b.users)?b.users.slice(0,500):[];for(const x of users){const user=clean(x.user);if(!user)continue;await env.DB.prepare('INSERT INTO accounts(user,role,disabled,created_at,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(user) DO UPDATE SET role=excluded.role,disabled=excluded.disabled,updated_at=excluded.updated_at').bind(user,x.role||'driver',x.disabled?1:0,x.created_at||now(),now()).run();await ensureProfile(env,user)}return json(req,{ok:true,imported:users.length})}
+452- throw new HttpError(404,'not_found')}
+453-
+454-export default{async scheduled(event,env,ctx){
+455- if(budgetState(env).paused)return;
+456- ctx.waitUntil(env.DB.batch([
+457-   env.DB.prepare('DELETE FROM sessions WHERE token_hash IN (SELECT token_hash FROM sessions WHERE expires_at<? ORDER BY expires_at LIMIT 1000)').bind(now()),
+458-   env.DB.prepare('DELETE FROM auth_attempts WHERE id IN (SELECT id FROM auth_attempts WHERE at<? ORDER BY at LIMIT 1000)').bind(new Date(Date.now()-86400000).toISOString())
+459- ]));
+460-},async fetch(req,env,ctx){try{
+461- const p=new URL(req.url).pathname,budget=budgetState(env);
+462- if(req.method==='OPTIONS')return new Response(null,{status:204,headers:headers(req)});
+463- if(p==='/api/public/service-status')return json(req,{ok:true,...budget});
+464- if(budget.paused&&p!=='/health'&&p!=='/api/public/version'){
+465-   if(p==='/api/public/notice')return json(req,{ok:true,enabled:true,title:'PAUSA DO PLANO GRATUITO',message:budget.message+(budget.resumes_at?' Renovação: '+new Date(budget.resumes_at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+' (Brasília).':''),...budget});
+466-   if(p==='/api/public/account-live')return json(req,{ok:true,telemetry:[],service_paused:true,...budget});
+467-   const response=json(req,{ok:false,error:'free_tier_protection',...budget},503);response.headers.set('Retry-After','300');return response;
+468- }
+469- return await economicalRoute(req,env)}catch(e){const status=e instanceof HttpError?e.status:500,code=e instanceof HttpError?e.code:'internal_error';console.error(JSON.stringify({message:'request_failed',status,code,path:new URL(req.url).pathname,error:e instanceof Error?e.message:String(e)}));return json(req,{ok:false,error:code},status)}}};
+470-
+471-async function economicalRoute(req,env){
+472- const url=new URL(req.url),ttls={'/api/public/ranking':60,'/api/public/safety-ranking':60,'/api/public/work/catalog':60,'/api/public/notice':60};
+473- const ttl=req.method==='GET'?ttls[url.pathname]:0;
+474- if(!ttl)return route(req,env);
+475- const user=url.pathname==='/api/public/work/catalog'?clean(url.searchParams.get('user')):'';
+476- if(user&&!/^[a-z0-9._-]{3,32}$/.test(user))throw new HttpError(400,'invalid_user');
+477- const data=await cachedRead('get:'+url.pathname+':'+user,ttl,async()=>{
+478-   const response=await route(req,env);
+479-   if(!response.ok)throw new HttpError(response.status,'read_failed');
+480-   return response.json();
+481- });
+482- return json(req,data);
+483-}
+=== restoreDeliveredTrailer context ===
+324-  const available=own('gat_base_points')&&own('gat_speed_penalty_points')&&own('gat_cargo_penalty_points')&&own('gat_truck_penalty_points');
+325-  if(!available)return{available:false,points:null,base:null,speed:null,cargo:null,truck:null};
+326-  const base=Math.max(0,Math.min(100,Math.round(Number(a.gat_base_points)))),speed=Math.max(0,Math.round(Number(a.gat_speed_penalty_points))),cargo=Math.max(0,Math.round(Number(a.gat_cargo_penalty_points))),truck=Math.max(0,Math.round(Number(a.gat_truck_penalty_points)));
+327-  return{available:true,points:Math.max(0,Math.min(100,base-speed-cargo-truck)),base,speed,cargo,truck};
+328-}
+329-function gatReviewView(a={}){
+330-  const suggestion=gatReviewSuggestion(a),manual=a?.gat_manual_review&&typeof a.gat_manual_review==='object'?a.gat_manual_review:null,current=Number.isFinite(Number(a?.gat_points))?Number(a.gat_points):0,reason=String(a?.ranking_reason||a?.automatic_ranking_reason||'');
+331-  return{gat_review_suggested_points:suggestion.points,gat_review_suggestion_available:suggestion.available,gat_reviewable:current===0&&!!reason&&suggestion.available&&!manual,gat_review_status:manual?.status||null,gat_review_actor:manual?.actor||null,gat_review_at:manual?.at||null,gat_review_previous_points:manual?.previous_points??null,gat_review_approved_points:manual?.approved_points??null};
+332-}
+333-
+334-async function adminDriver(env,target){const a=await env.DB.prepare('SELECT user,role,disabled,created_at,updated_at FROM accounts WHERE user=?').bind(target).first();if(!a)return null;const p=await profile(env,target),sessions=await env.DB.prepare('SELECT COUNT(*) total FROM sessions WHERE user=? AND expires_at>?').bind(target,now()).first(),tel=await env.DB.prepare('SELECT driver,account_user,updated_at,telemetry_json FROM telemetry_live WHERE account_user=? ORDER BY updated_at DESC LIMIT 1').bind(target).first();let liveData={online:false};if(tel){let raw={};try{raw=JSON.parse(tel.telemetry_json||'{}')}catch{}liveData={...flat(tel.driver,tel.account_user,tel.updated_at,raw),online:Date.now()-Date.parse(tel.updated_at)<30000}}p.deliveries=(Array.isArray(p?.deliveries)?p.deliveries:[]).map(x=>({...x,...gatReviewView(x)}));return{account:{...a,disabled:!!a.disabled,active_sessions:Number(sessions?.total||0)},profile:p,live:liveData}}
+335-async function recalc(env,user){const s=await env.DB.prepare('SELECT COUNT(*) total,COALESCE(SUM(distance_km),0) km,COALESCE(SUM(xp),0) xp,COALESCE(SUM(perfect),0) perfect,COALESCE(SUM(penalty_xp),0) penalties,COALESCE(SUM(speed_fines),0) fines FROM deliveries WHERE user=?').bind(user).first(),m=await env.DB.prepare('SELECT COUNT(*) total FROM deliveries WHERE user=? AND substr(delivered_at,1,7)=?').bind(user,month()).first();await env.DB.prepare('UPDATE profiles SET monthly_completed=?,total_deliveries=?,total_km=?,xp=?,perfect_trips=?,penalty_xp=?,speed_fines=?,safety_score=MAX(0,100-(?*0.1)),updated_at=? WHERE user=?').bind(Number(m?.total||0),Number(s?.total||0),Number(s?.km||0),Number(s?.xp||0),Number(s?.perfect||0),Number(s?.penalties||0),Number(s?.fines||0),Number(s?.penalties||0),now(),user).run()}
+336-async function adminAction(req,env,b,actor){const action=String(b.action||''),target=clean(b.target);if(!target)throw new HttpError(400,'target_required');const a=await env.DB.prepare('SELECT user,role,disabled FROM accounts WHERE user=?').bind(target).first();if(!a)throw new HttpError(404,'not_found');if(a.role==='owner'&&actor.role!=='owner')throw new HttpError(403,'owner_protected');if(actor.role==='moderator'&&!['reset_mission','review_gat_points'].includes(action))throw new HttpError(403,'forbidden');
+337- if(action==='review_gat_points'){
+338-   const id=Math.trunc(Number(b.delivery_id)),decision=String(b.review_decision||'');
+339-   if(!Number.isFinite(id)||id<=0)throw new HttpError(400,'invalid_delivery_id');
+340-   if(!['approve','keep_zero'].includes(decision))throw new HttpError(400,'invalid_review_decision');
+341-   const d=await env.DB.prepare('SELECT id,raw_json FROM deliveries WHERE id=? AND user=?').bind(id,target).first();if(!d)throw new HttpError(404,'delivery_not_found');
+342-   let raw={};try{raw=JSON.parse(d.raw_json||'{}')}catch{}if(!raw||typeof raw!=='object')raw={};
+343-   const aData=raw.audit&&typeof raw.audit==='object'?{...raw.audit}:{},existing=aData.gat_manual_review&&typeof aData.gat_manual_review==='object'?aData.gat_manual_review:null;
+344-   if(existing)throw new HttpError(409,'gat_review_already_done');
+345-   const current=Number.isFinite(Number(aData.gat_points))?Math.max(0,Math.round(Number(aData.gat_points))):0,automaticReason=String(aData.ranking_reason||aData.automatic_ranking_reason||'');
+346-   if(current!==0)throw new HttpError(409,'gat_review_requires_zero_points');
+347-   if(!automaticReason)throw new HttpError(409,'gat_review_requires_validation_error');
+348-   const suggestion=gatReviewSuggestion(aData);if(!suggestion.available)throw new HttpError(409,'gat_review_no_saved_breakdown');
+349-   const approved=decision==='approve'?suggestion.points:0,reviewAt=now(),manual={status:decision==='approve'?'approved':'kept_zero',actor:actor.user,at:reviewAt,previous_points:current,suggested_points:suggestion.points,approved_points:approved,automatic_reason:automaticReason};
+350-   aData.automatic_ranking_reason=aData.automatic_ranking_reason||automaticReason;
+351-   aData.automatic_ranking_message=aData.automatic_ranking_message||String(aData.ranking_message||'');
+352-   aData.gat_manual_review=manual;aData.gat_points_manual=decision==='approve';aData.gat_points=approved;
+353-   if(decision==='approve'){
+354-     aData.ranking_eligible=true;aData.rank_eligible=true;aData.ranking_reason=null;aData.ranking_message='Pontuacao GAT validada manualmente por @'+actor.user+'.';
+355-   }
+356-   raw.audit=aData;
+357-   const delta=approved-current;
+358-   await env.DB.batch([env.DB.prepare('UPDATE deliveries SET raw_json=? WHERE id=? AND user=?').bind(JSON.stringify(raw),id,target),env.DB.prepare('UPDATE profiles SET points=MAX(0,points+?),updated_at=? WHERE user=?').bind(delta,reviewAt,target)]);
+359-   await audit(env,actor.user,'review_gat_points',target,{delivery_id:id,decision,previous_points:current,suggested_points:suggestion.points,approved_points:approved,points_delta:delta,automatic_reason:automaticReason});
+360-   invalidateRead('profile:'+target);invalidateRead('ranking');
+361-   return json(req,{ok:true,action,target,delivery_id:id,decision,previous_points:current,suggested_points:suggestion.points,approved_points:approved,points_delta:delta});
+362- }
+363- if(action==='reset_mission')await env.DB.prepare('UPDATE profiles SET current_mission_json=NULL,updated_at=? WHERE user=?').bind(now(),target).run();
+364- else if(action==='block'||action==='unblock'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const disabled=action==='block'?1:0;await env.DB.batch([env.DB.prepare('UPDATE accounts SET disabled=?,updated_at=? WHERE user=?').bind(disabled,now(),target),...(disabled?[env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(target),env.DB.prepare('UPDATE client_tokens SET revoked_at=? WHERE account_user=? AND revoked_at IS NULL').bind(now(),target)]:[])])}
+365- else if(action==='reset_password'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const password=String(b.password||'');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');const salt=randomHex(16);await env.DB.batch([env.DB.prepare('UPDATE accounts SET password_salt=?,password_hash=?,updated_at=? WHERE user=?').bind(salt,await passHash(password,salt),now(),target),env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(target)])}
+366- else if(action==='role'){if(actor.role!=='owner'||a.role==='owner')throw new HttpError(403,'forbidden');const role=String(b.role||'');if(!['driver','moderator','admin'].includes(role))throw new HttpError(400,'invalid_role');await env.DB.prepare('UPDATE accounts SET role=?,updated_at=? WHERE user=?').bind(role,now(),target).run()}
+367- else if(action==='delete'){if(actor.role!=='owner'||a.role==='owner'||actor.user===target)throw new HttpError(403,'forbidden');await env.DB.prepare('DELETE FROM accounts WHERE user=?').bind(target).run()}
+368- else if(action==='set_progress'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const monthly=Math.trunc(Number(b.monthly_completed)),total=Math.trunc(Number(b.total_deliveries)),km=Number(b.total_km);if(!Number.isFinite(monthly)||!Number.isFinite(total)||!Number.isFinite(km)||monthly<0||monthly>40||total<monthly||km<0)throw new HttpError(400,'invalid_progress');await env.DB.prepare('UPDATE profiles SET monthly_completed=?,total_deliveries=?,total_km=?,updated_at=? WHERE user=?').bind(monthly,total,km,now(),target).run()}
+369- else if(action==='delete_delivery'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const id=Math.trunc(Number(b.delivery_id)),d=await env.DB.prepare('SELECT id,raw_json,delivered_at FROM deliveries WHERE id=? AND user=?').bind(id,target).first();if(!d)throw new HttpError(404,'delivery_not_found');let raw={};try{raw=JSON.parse(d.raw_json||'{}')}catch{}const work=String(raw?.mission?.catalog_id||'');await env.DB.batch([env.DB.prepare('DELETE FROM deliveries WHERE id=? AND user=?').bind(id,target),...(work?[env.DB.prepare('DELETE FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(target,work,month(d.delivered_at))]:[])]);await recalc(env,target)}
+370- else if(action==='set_delivery_xp'){if(!POWER.has(actor.role))throw new HttpError(403,'forbidden');const id=Math.trunc(Number(b.delivery_id)),xp=Math.trunc(Number(b.delivery_xp));if(!Number.isFinite(xp)||xp<0||xp>100000)throw new HttpError(400,'invalid_xp');const r=await env.DB.prepare('UPDATE deliveries SET xp=? WHERE id=? AND user=?').bind(xp,id,target).run();if(!r.meta?.changes)throw new HttpError(404,'delivery_not_found');await recalc(env,target)}else throw new HttpError(400,'invalid_action');await audit(env,actor.user,action,target,{role:b.role,delivery_id:b.delivery_id});return json(req,{ok:true,action,target})}
+371-
+372-async function route(req,env){const u=new URL(req.url),p=u.pathname,m=req.method;if(m==='OPTIONS')return new Response(null,{status:204,headers:headers(req)});if(!['GET','POST'].includes(m))throw new HttpError(405,'method_not_allowed');
+373- if(p==='/health')return json(req,{ok:true,service:'GAT Central Local',agent_version:VERSION,time:now(),mission_min_km:MIN_KM,test_mode:false});
+374- if(p==='/api/public/version')return json(req,{ok:true,agent_version:VERSION,platform:'cloudflare-workers-d1',mission_min_km:MIN_KM,test_mode:false});
+375- if(p==='/api/client/server-info')return json(req,{ok:true,online:true,server_name:'GAT CENTRAL CLOUD',session_id:'CLOUD',players:(await live(env)).length,max_players:999});if(p==='/api/client/players')return json(req,{ok:true,players:(await live(env)).map(x=>x.driver)});
+376- if(p==='/api/account/register'&&m==='POST'){const b=await body(req),user=clean(b.user),password=String(b.password||'');if(!/^[a-z0-9._-]{3,32}$/.test(user))throw new HttpError(400,'invalid_user');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');if(await env.DB.prepare('SELECT 1 FROM accounts WHERE user=?').bind(user).first())throw new HttpError(409,'user_exists');const salt=randomHex(16),t=now();await env.DB.prepare('INSERT INTO accounts(user,password_salt,password_hash,role,created_at,updated_at) VALUES(?,?,?,?,?,?)').bind(user,salt,await passHash(password,salt),'driver',t,t).run();await ensureProfile(env,user);return json(req,{ok:true,user,role:'driver',token:await makeSession(env,user)},201)}
+377- if(p==='/api/account/login'&&m==='POST'){const b=await body(req),user=clean(b.user),key=`${req.headers.get('CF-Connecting-IP')||'unknown'}:${user}`,cutoff=new Date(Date.now()-15*60000).toISOString(),attempts=await env.DB.prepare('SELECT COUNT(*) total FROM auth_attempts WHERE attempt_key=? AND succeeded=0 AND at>=?').bind(key,cutoff).first();if(Number(attempts?.total||0)>=10)throw new HttpError(429,'too_many_attempts');const a=await env.DB.prepare('SELECT * FROM accounts WHERE user=?').bind(user).first(),valid=!!a&&!a.disabled&&!!a.password_hash&&await verifyPassword(env,a,String(b.password||''));await env.DB.prepare('INSERT INTO auth_attempts(at,attempt_key,succeeded) VALUES(?,?,?)').bind(now(),key,valid?1:0).run();if(!valid)throw new HttpError(401,'invalid_credentials');return json(req,{ok:true,user:a.user,role:a.role,token:await makeSession(env,a.user)})}
+378- if((p==='/api/account/session'||p==='/api/site/session')&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);return json(req,{ok:true,user:s.user,role:s.role})}
+379- if(p==='/api/account/password'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b),password=String(b.password||'');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');const salt=randomHex(16);await env.DB.batch([env.DB.prepare('UPDATE accounts SET password_salt=?,password_hash=?,updated_at=? WHERE user=?').bind(salt,await passHash(password,salt),now(),s.user),env.DB.prepare('DELETE FROM sessions WHERE user=?').bind(s.user)]);return json(req,{ok:true})}
+380- if(p==='/api/client/login'&&m==='POST'){const b=await body(req),driver=clean(b.driver),device=String(b.device_id||'').trim();if(!driver||device.length<16)throw new HttpError(400,'driver_and_device_required');if(b.token){const c=await clientCredential(env,driver,device,String(b.token));if(c.row)return json(req,{ok:true,driver,account_user:c.row.account_user,token:b.token})}const done=await finishPair(env,driver,device);if(done)return json(req,{ok:true,driver,...done});const pair=await pairing(env,driver,device);return json(req,{ok:false,error:'link_required',pairing_code:pair.code_plain,expires_at:pair.expires_at,link_url:'https://gatlogets2.com.br/motorista.html?tab=account'},428)}
+381- if(p==='/api/site/client/link'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b),code=String(b.pairing_code||'').trim().toUpperCase();if(!/^[A-F0-9]{8}$/.test(code))throw new HttpError(400,'invalid_pairing_code');const pair=await env.DB.prepare('SELECT code_hash,driver,device_id,expires_at,claimed_user FROM client_pairings WHERE code_hash=?').bind(await sha(code)).first();if(!pair||pair.claimed_user||Date.parse(pair.expires_at)<=Date.now())throw new HttpError(404,'pairing_not_found');const old=await env.DB.prepare('SELECT account_user FROM client_tokens WHERE device_id=? AND revoked_at IS NULL LIMIT 1').bind(pair.device_id).first();if(old?.account_user&&old.account_user!==s.user)throw new HttpError(409,'device_already_linked');await env.DB.prepare('UPDATE client_pairings SET claimed_user=? WHERE code_hash=?').bind(s.user,pair.code_hash).run();await audit(env,s.user,'link_device',s.user,{driver:pair.driver,device_id_suffix:String(pair.device_id).slice(-8)});return json(req,{ok:true,user:s.user,driver:pair.driver})}
+382- if(p==='/api/client/heartbeat'&&m==='POST'){const b=await body(req),c=await clientCredential(env,clean(b.driver),String(b.device_id||''),String(b.token||''));if(!c.row)throw new HttpError(401,c.error);return json(req,{ok:true,driver:c.row.driver,account_user:c.row.account_user,time:now()})}
+383- if(p==='/api/client/telemetry'&&m==='POST'){
+384-   const b=await body(req),driver=clean(b.driver),device=String(b.device_id||''),c=await clientCredential(env,driver,device,String(b.token||''));
+385-   if(!c.row)throw new HttpError(401,c.error);
+386-   const raw=b.telemetry&&typeof b.telemetry==='object'&&!Array.isArray(b.telemetry)?b.telemetry:{},receivedAt=now(),account=c.row.account_user;
+387-   const collectedRaw=str(raw,'gat_collected_at','gatCollectedAt'),collectedMs=Date.parse(collectedRaw),receiveMs=Date.parse(receivedAt);
+388-   const queuedTimeOK=Number.isFinite(collectedMs)&&collectedMs<=receiveMs+30000&&collectedMs>=receiveMs-6*60*60*1000;
+389-   const t=queuedTimeOK?new Date(collectedMs).toISOString():receivedAt;
+390-   const previous=await env.DB.prepare('SELECT account_user,updated_at,telemetry_json FROM telemetry_live WHERE driver=?').bind(driver).first();
+391-   let prevRaw=null;try{if(previous?.account_user===account)prevRaw=JSON.parse(previous.telemetry_json)}catch{}
+392-   const packetId=str(raw,'gat_packet_id','gatPacketId');
+393-   if(packetId&&prevRaw&&packetId===str(prevRaw,'gat_packet_id','gatPacketId'))
+394-     return json(req,{ok:true,driver,account_user:account,updated_at:previous.updated_at,duplicate_packet:true,next_upload_ms:15000});
+395-   const previousCollected=str(prevRaw||{},'gat_collected_at','gatCollectedAt'),previousCollectedMs=Date.parse(previousCollected);
+396-   const previousSampleAt=Number.isFinite(previousCollectedMs)?new Date(previousCollectedMs).toISOString():(prevRaw?previous.updated_at:null);
+397-   const f=flat(driver,account,t,raw),loaded=Boolean(f.job_latched)||Boolean(f.cargo_id||f.cargo_name)&&f.mass_kg>0;
+398-   const event=clean(str(raw,'gat_job_event','gatJobEvent'));
+399-   const deliveryDetailsRaw=pick(raw,'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{},previousDeliveryDetailsRaw=pick(prevRaw||{},'gameplay.jobDeliveredDetails','jobDeliveredDetails')||{};
+400-   const deliveryDetailsPositive=num(deliveryDetailsRaw,'distanceKm','distance_km')>0||num(deliveryDetailsRaw,'revenue')>0||num(deliveryDetailsRaw,'earnedXp','earned_xp')>0;
+401-   const deliveryDetailsChanged=!loaded&&prevRaw&&JSON.stringify(deliveryDetailsRaw)!==JSON.stringify(previousDeliveryDetailsRaw)&&deliveryDetailsPositive;
+402-   const delivered=event==='delivered'||deliveryDetailsChanged||(!loaded&&bool(raw,'gameplay.jobDelivered','jobDelivered'));
+403-   const cancelled=!delivered&&raw?.game?.connected===true&&(event==='cancelled'||(!loaded&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled')));
+404:   restoreDeliveredTrailer(raw,prevRaw,previousSampleAt,t,delivered,loaded);
+405-   const readiness=rankingReadiness(raw);
+406-   const signature=x=>{const q=flat(driver,account,t,x);return JSON.stringify([rankingReadiness(x),q.job_latched,q.on_job,q.job_latch_key,q.cargo_id,q.cargo_name,q.source_city,q.destination_city,q.mass_kg,q.gat_map,num(x,'job.plannedDistanceKm','planned_distance_km'),x.cargo_damage_pct,x.truck_engine_damage_pct,x.truck_transmission_damage_pct,x.truck_cabin_damage_pct,x.truck_chassis_damage_pct,x.truck_wheels_damage_pct,x.trailer_damage_pct,deep(x,'game.paused')])};
+407-   if(!queuedTimeOK&&!delivered&&!cancelled&&prevRaw&&Date.parse(receivedAt)-Date.parse(previous.updated_at)<15000&&signature(raw)===signature(prevRaw))
+408-     return json(req,{ok:true,driver,account_user:account,updated_at:previous.updated_at,rank_status:readiness,telemetry_deferred:true,next_upload_ms:15000});
+409-   const previousIdle=!!prevRaw&&prevRaw?.game?.connected===true&&!bool(prevRaw,'job_latched','jobLatched')&&!bool(prevRaw,'on_job','onJob','gameplay.onJob');
+410-   const preflightTruckDamageReady=previousIdle&&['truck_engine_damage_pct','truck_transmission_damage_pct','truck_cabin_damage_pct','truck_chassis_damage_pct','truck_wheels_damage_pct'].every(key=>typeof prevRaw[key]==='number'&&Number.isFinite(prevRaw[key])&&prevRaw[key]>=0&&prevRaw[key]<=100);
+411-   const packetState=await inspectClientPacket(env,account,device,String(b.token||''),raw,t);
+412-   if(packetState.journal_present&&!packetState.journal_verified)raw.gat_journal_invalid=true;
+413-   let openJourneyState=null,missionEvent=null;
+414-   if(packetState.duplicate){try{missionEvent=packetState.mission_event_json?JSON.parse(packetState.mission_event_json):null}catch{missionEvent=null}}
+415-   else{
+416-     openJourneyState=await prepareOpenJourney(env,account,raw,t,loaded,delivered||cancelled);
+417-     missionEvent=await processMission(env,account,raw,t,previousSampleAt,preflightTruckDamageReady);
+418-   // Se um novo trip_id chegou enquanto a missao anterior ainda estava ativa,
+419-   // o mesmo pacote encerra a antiga e ja abre a nova. Nao esperamos 15 s nem
+420-   // dependemos de um segundo evento do cliente.
+421-   if(loaded&&missionEvent&&['mission_cancelled','delivery_completed','delivery_completed_xp_only'].includes(String(missionEvent.type))){
+422-     const firstEvent=missionEvent,nextEvent=await processMission(env,account,raw,t,previousSampleAt);
+423-     if(nextEvent)missionEvent={...firstEvent,next_mission_event:nextEvent};
+424-   }
+425-     await finishOpenJourney(env,account,raw,t,openJourneyState,missionEvent);
+426-     const checkpointPhase=delivered?'delivered':cancelled?'cancelled':loaded?'progress':'idle';
+427-     await persistClientPacket(env,account,device,raw,t,packetState,missionEvent,openJourneyState,checkpointPhase);
+428-   }
+429-   if(missionEvent&&missionEvent.type&&!['mission_in_progress','mission_waiting'].includes(String(missionEvent.type))){invalidateRead('profile:'+account);invalidateRead('get:/api/public/work/catalog:'+account);if(String(missionEvent.type).startsWith('delivery_completed')){invalidateRead('get:/api/public/ranking:');invalidateRead('get:/api/public/safety-ranking:')}}
+430-   await env.DB.prepare('INSERT INTO telemetry_live(driver,account_user,device_id,updated_at,telemetry_json) VALUES(?,?,?,?,?) ON CONFLICT(driver) DO UPDATE SET account_user=excluded.account_user,device_id=excluded.device_id,updated_at=excluded.updated_at,telemetry_json=excluded.telemetry_json').bind(driver,account,device,receivedAt,JSON.stringify(raw)).run();
+431-   return json(req,{ok:true,driver,account_user:account,updated_at:receivedAt,collected_at:t,replayed:queuedTimeOK,rank_status:readiness,mission_event:missionEvent,next_upload_ms:15000});
+432- }
+433-
+434- if(p==='/api/public/account-live'&&m==='GET')return json(req,{ok:true,telemetry:await live(env),updated_at:now()});
+435- if(p==='/api/public/ranking'&&m==='GET'){const season=(await env.DB.prepare("SELECT value FROM meta WHERE key='season'").first())?.value||month(),mode=(await env.DB.prepare("SELECT value FROM meta WHERE key='operation_mode'").first())?.value||'official',r=await env.DB.prepare(`SELECT p.user,p.monthly_completed,p.total_deliveries,p.xp,p.perfect_trips,p.penalty_xp,p.speed_fines,p.total_km,COALESCE(s.points,0) AS points FROM profiles p JOIN accounts a ON a.user=p.user LEFT JOIN (SELECT user,SUM(COALESCE(CAST(json_extract(raw_json,'$.audit.gat_points') AS INTEGER),MAX(0,100-penalty_xp))) AS points FROM deliveries WHERE substr(delivered_at,1,7)=? GROUP BY user) s ON s.user=p.user WHERE a.disabled=0 ORDER BY points DESC,p.monthly_completed DESC,p.perfect_trips DESC,p.penalty_xp ASC,p.speed_fines ASC,p.user ASC`).bind(season).all();return json(req,{ok:true,operation_mode:mode,season,scoring:{base_per_delivery:100},ranking:r.results||[]})}
+436- if(p==='/api/public/safety-ranking'&&m==='GET'){const r=await env.DB.prepare('SELECT p.user,p.safety_score AS score,p.perfect_trips,p.speed_fines,p.penalty_xp FROM profiles p JOIN accounts a ON a.user=p.user WHERE a.disabled=0 ORDER BY p.safety_score DESC,p.perfect_trips DESC,p.speed_fines ASC,p.user ASC').all();return json(req,{ok:true,ranking:r.results||[]})}
+437- if(p==='/api/public/driver'&&m==='GET'){const d=await profile(env,clean(u.searchParams.get('user')));if(!d)throw new HttpError(404,'not_found');return json(req,{ok:true,profile:d})}
+438- if(p==='/api/site/profile'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);let pr=await profile(env,s.user);if(!pr){await ensureProfile(env,s.user);pr=await readProfile(env,s.user)}return json(req,{ok:true,profile:pr})}
+439- if(p==='/api/site/profile/avatar'&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);await ensureProfile(env,s.user);const avatar=String(b.avatar_url||'').trim();if(avatar){if(avatar.length>220000)throw new HttpError(413,'avatar_too_large');if(!/^data:image\/(?:webp|png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(avatar))throw new HttpError(400,'invalid_avatar')}await env.DB.prepare('UPDATE profiles SET avatar_url=?,updated_at=? WHERE user=?').bind(avatar||null,now(),s.user).run();await audit(env,s.user,avatar?'profile_avatar_update':'profile_avatar_remove',s.user,{bytes:avatar.length});return json(req,{ok:true,avatar_url:avatar})}
+440- if(p==='/api/public/work/catalog'&&m==='GET'){const user=clean(u.searchParams.get('user')),c=await env.DB.prepare('SELECT id,position,title,category,icon,custom,compatible_cargos_json FROM work_catalog WHERE active=1 ORDER BY position').all(),d=await env.DB.prepare('SELECT DISTINCT work_id FROM work_completed WHERE user=?').bind(user).all(),done=new Set((d.results||[]).map(x=>x.work_id));return json(req,{ok:true,catalog:(c.results||[]).map(x=>{let compatible=[];try{compatible=JSON.parse(x.compatible_cargos_json||'[]')}catch{}const{compatible_cargos_json,...item}=x;return{...item,custom:!!x.custom,compatible_cargos:compatible,completed:done.has(x.id)}}),mission_min_km:MIN_KM})}
+441- if((p==='/api/site/work/select'||p==='/api/site/work/take')&&m==='POST'){const b=await body(req),s=await requireSession(req,env,b);await ensureProfile(env,s.user);const pr=await env.DB.prepare('SELECT current_mission_json,monthly_completed FROM profiles WHERE user=?').bind(s.user).first();if(pr?.current_mission_json)throw new HttpError(409,'mission_already_active');const item=p.endsWith('/take')&&!b.work_id?await env.DB.prepare('SELECT wc.* FROM work_catalog wc WHERE wc.active=1 AND NOT EXISTS(SELECT 1 FROM work_completed d WHERE d.user=? AND d.work_id=wc.id AND d.month_key=?) ORDER BY wc.position LIMIT 1').bind(s.user,month()).first():await env.DB.prepare('SELECT * FROM work_catalog WHERE id=? AND active=1').bind(String(b.work_id||'')).first();if(!item)throw new HttpError(404,'invalid_work');const repeatXpOnly=!!(await env.DB.prepare('SELECT 1 FROM work_completed WHERE user=? AND work_id=? AND month_key=?').bind(s.user,item.id,month()).first());const custom=String(b.custom_cargo||'').trim();if(item.custom&&(custom.length<2||custom.length>100))throw new HttpError(400,'custom_cargo_required');const t=now(),mission={id:`${month()}-${s.user}-${item.id}-${randomHex(6)}`,catalog_id:item.id,sequence:item.position,title:item.title,category:item.category,custom_cargo:custom,xp_only:false,state:'assigned',min_km:MIN_KM,created_at:t,assigned_at:t};await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(mission),t,s.user).run();return json(req,{ok:true,mission,completed:Number(pr?.monthly_completed||0),xp_only:false,rules_enabled:true,admin_test_mode:false,operation_mode:'official'})}
+442- if(p==='/api/public/notice'&&m==='GET'){const rows=await env.DB.prepare("SELECT key,value FROM meta WHERE key IN ('site_notice_enabled','site_notice_title','site_notice_message','site_notice_updated_at')").all(),v=Object.fromEntries((rows.results||[]).map(x=>[x.key,x.value]));return json(req,{ok:true,enabled:v.site_notice_enabled==='1',title:v.site_notice_title||'AVISO GAT',message:v.site_notice_message||'',updated_at:v.site_notice_updated_at||null})}
+443- if(p==='/api/site/admin/notice'&&m==='POST'){const b=await body(req),a=await requireAdmin(req,env,b);if(b.save){const title=String(b.title||'').trim().slice(0,80),message=String(b.message||'').trim().slice(0,600),enabled=b.enabled?1:0;if(enabled&&!message)throw new HttpError(400,'notice_message_required');const t=now();await env.DB.batch([env.DB.prepare("INSERT INTO meta(key,value) VALUES('site_notice_enabled',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(String(enabled)),env.DB.prepare("INSERT INTO meta(key,value) VALUES('site_notice_title',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(title||'AVISO GAT'),env.DB.prepare("INSERT INTO meta(key,value) VALUES('site_notice_message',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(message),env.DB.prepare("INSERT INTO meta(key,value) VALUES('site_notice_updated_at',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(t)]);await audit(env,a.user,'site_notice',a.user,{enabled:!!enabled,title:title||'AVISO GAT'});return json(req,{ok:true,enabled:!!enabled,title:title||'AVISO GAT',message,updated_at:t})}const rows=await env.DB.prepare("SELECT key,value FROM meta WHERE key IN ('site_notice_enabled','site_notice_title','site_notice_message','site_notice_updated_at')").all(),v=Object.fromEntries((rows.results||[]).map(x=>[x.key,x.value]));return json(req,{ok:true,enabled:v.site_notice_enabled==='1',title:v.site_notice_title||'AVISO GAT',message:v.site_notice_message||'',updated_at:v.site_notice_updated_at||null})}
+444- if(p==='/api/site/admin/session'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return json(req,{ok:true,user:s.user,role:s.role})}
+445- if(p==='/api/site/admin/drivers'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b),r=await env.DB.prepare('SELECT a.user,a.role,a.disabled,a.created_at,p.monthly_completed,p.total_deliveries,p.xp,p.total_km,p.current_mission_json,t.driver,t.updated_at last_telemetry_at,t.telemetry_json FROM accounts a LEFT JOIN profiles p ON p.user=a.user LEFT JOIN telemetry_live t ON t.account_user=a.user ORDER BY a.user').all(),drivers=(r.results||[]).map(x=>{let mission=null,raw={};try{mission=x.current_mission_json?JSON.parse(x.current_mission_json):null}catch{}try{raw=x.telemetry_json?JSON.parse(x.telemetry_json):{}}catch{}const f=flat(x.driver||x.user,x.user,x.last_telemetry_at||'',raw);return{user:x.user,role:x.role,disabled:!!x.disabled,created_at:x.created_at,monthly_completed:Number(x.monthly_completed||0),total_deliveries:Number(x.total_deliveries||0),xp:Number(x.xp||0),level:level(x.xp),total_km:Number(x.total_km||0),current_mission:mission,last_telemetry_at:x.last_telemetry_at,online:!!x.last_telemetry_at&&Date.now()-Date.parse(x.last_telemetry_at)<30000,truck:[f.truck_make,f.truck_model].filter(Boolean).join(' '),cargo:f.cargo_name}});return json(req,{ok:true,viewer_role:s.role,drivers})}
+446- if(p==='/api/site/admin/driver'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b),d=await adminDriver(env,clean(b.target));if(!d)throw new HttpError(404,'not_found');return json(req,{ok:true,viewer_role:s.role,...d})}
+447- if(p==='/api/site/admin/audit'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b,true),r=await env.DB.prepare('SELECT id,at,actor,action,target,details FROM audit ORDER BY id DESC LIMIT 200').all();return json(req,{ok:true,viewer_role:s.role,audit:r.results||[]})}
+448- if(p==='/api/site/admin/action'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return adminAction(req,env,b,s)}
+449- if(p==='/api/site/admin/health'&&m==='POST'){const b=await body(req);await requireAdmin(req,env,b);const[a,o,l,bk,last]=await Promise.all([env.DB.prepare('SELECT COUNT(*) total FROM accounts').first(),env.DB.prepare('SELECT COUNT(*) total FROM telemetry_live WHERE updated_at>=?').bind(new Date(Date.now()-45000).toISOString()).first(),env.DB.prepare('SELECT MAX(updated_at) at FROM telemetry_live').first(),env.DB.prepare('SELECT COUNT(*) total FROM admin_backups').first(),env.DB.prepare('SELECT name,created_at FROM admin_backups ORDER BY id DESC LIMIT 1').first()]);return json(req,{ok:true,agent_version:VERSION,online_drivers:Number(o?.total||0),accounts:Number(a?.total||0),data_bytes:0,last_telemetry_at:l?.at||null,backup_count:Number(bk?.total||0),backup_keep:7,last_backup:last?.name||null})}
+450- if(p==='/api/site/admin/backup'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b,true),[a,pr,d,w,r,meta]=await Promise.all([env.DB.prepare('SELECT user,role,disabled,created_at,updated_at FROM accounts').all(),env.DB.prepare('SELECT * FROM profiles').all(),env.DB.prepare('SELECT * FROM deliveries').all(),env.DB.prepare('SELECT * FROM work_completed').all(),env.DB.prepare('SELECT * FROM routes_completed').all(),env.DB.prepare('SELECT * FROM meta').all()]),t=now(),name=`gat-central-${t.replace(/[:.]/g,'-')}`;await env.DB.batch([env.DB.prepare('INSERT INTO admin_backups(name,created_at,actor,snapshot_json) VALUES(?,?,?,?)').bind(name,t,s.user,JSON.stringify({accounts:a.results,profiles:pr.results,deliveries:d.results,work_completed:w.results,routes_completed:r.results,meta:meta.results})),env.DB.prepare('DELETE FROM admin_backups WHERE id NOT IN (SELECT id FROM admin_backups ORDER BY id DESC LIMIT 7)')]);await audit(env,s.user,'backup','central',{name});return json(req,{ok:true,backup:name})}
+451- if(p==='/api/migration/import'&&m==='POST'){if(!env.MIGRATION_KEY)throw new HttpError(403,'migration_disabled');const b=await body(req);if(!await equal(String(b.key||''),String(env.MIGRATION_KEY)))throw new HttpError(403,'forbidden');const users=Array.isArray(b.users)?b.users.slice(0,500):[];for(const x of users){const user=clean(x.user);if(!user)continue;await env.DB.prepare('INSERT INTO accounts(user,role,disabled,created_at,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(user) DO UPDATE SET role=excluded.role,disabled=excluded.disabled,updated_at=excluded.updated_at').bind(user,x.role||'driver',x.disabled?1:0,x.created_at||now(),now()).run();await ensureProfile(env,user)}return json(req,{ok:true,imported:users.length})}
+452- throw new HttpError(404,'not_found')}
+453-
+454-export default{async scheduled(event,env,ctx){
+455- if(budgetState(env).paused)return;
+456- ctx.waitUntil(env.DB.batch([
+457-   env.DB.prepare('DELETE FROM sessions WHERE token_hash IN (SELECT token_hash FROM sessions WHERE expires_at<? ORDER BY expires_at LIMIT 1000)').bind(now()),
+458-   env.DB.prepare('DELETE FROM auth_attempts WHERE id IN (SELECT id FROM auth_attempts WHERE at<? ORDER BY at LIMIT 1000)').bind(new Date(Date.now()-86400000).toISOString())
+459- ]));
+460-},async fetch(req,env,ctx){try{
+461- const p=new URL(req.url).pathname,budget=budgetState(env);
+462- if(req.method==='OPTIONS')return new Response(null,{status:204,headers:headers(req)});
+463- if(p==='/api/public/service-status')return json(req,{ok:true,...budget});
+464- if(budget.paused&&p!=='/health'&&p!=='/api/public/version'){
+465-   if(p==='/api/public/notice')return json(req,{ok:true,enabled:true,title:'PAUSA DO PLANO GRATUITO',message:budget.message+(budget.resumes_at?' Renovação: '+new Date(budget.resumes_at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+' (Brasília).':''),...budget});
+466-   if(p==='/api/public/account-live')return json(req,{ok:true,telemetry:[],service_paused:true,...budget});
+467-   const response=json(req,{ok:false,error:'free_tier_protection',...budget},503);response.headers.set('Retry-After','300');return response;
+468- }
+469- return await economicalRoute(req,env)}catch(e){const status=e instanceof HttpError?e.status:500,code=e instanceof HttpError?e.code:'internal_error';console.error(JSON.stringify({message:'request_failed',status,code,path:new URL(req.url).pathname,error:e instanceof Error?e.message:String(e)}));return json(req,{ok:false,error:code},status)}}};
+470-
+471-async function economicalRoute(req,env){
+472- const url=new URL(req.url),ttls={'/api/public/ranking':60,'/api/public/safety-ranking':60,'/api/public/work/catalog':60,'/api/public/notice':60};
+473- const ttl=req.method==='GET'?ttls[url.pathname]:0;
+474- if(!ttl)return route(req,env);
+475- const user=url.pathname==='/api/public/work/catalog'?clean(url.searchParams.get('user')):'';
+476- if(user&&!/^[a-z0-9._-]{3,32}$/.test(user))throw new HttpError(400,'invalid_user');
+477- const data=await cachedRead('get:'+url.pathname+':'+user,ttl,async()=>{
+478-   const response=await route(req,env);
+479-   if(!response.ok)throw new HttpError(response.status,'read_failed');
+480-   return response.json();
+481- });
+482- return json(req,data);
+483-}
+=== journal payload/hash ===
+53-async function requireAdmin(req,env,b,power=false){const s=await requireSession(req,env,b);if(!(power?POWER:ADMIN).has(s.role))throw new HttpError(403,'forbidden');return s}
+54-async function ensureProfile(env,user){await env.DB.prepare('INSERT OR IGNORE INTO profiles(user,updated_at) VALUES(?,?)').bind(user,now()).run()}
+55-async function audit(env,actor,action,target,details={}){await env.DB.prepare('INSERT INTO audit(at,actor,action,target,details) VALUES(?,?,?,?,?)').bind(now(),actor,action,target,JSON.stringify(details)).run()}
+56-
+57-function flat(driver,account,updated,raw){return{driver,account_user:account||'',updated_at:updated,rank_status:rankingReadiness(raw),telemetry:raw,on_job:bool(raw,'on_job','onJob','gameplay.onJob','job.onJob','Job.OnJob','job.active','Job.Active'),cargo_name:str(raw,'cargo_name','cargo','job.cargo','job.cargoName','Job.CargoName','job.cargo.name','job.name'),cargo_id:str(raw,'cargo_id','cargoId','job.cargoId','job.cargo.id','game.job.cargoId'),source_city:str(raw,'source_city','source','job.sourceCity','job.source.cityName'),source_city_id:str(raw,'source_city_id','sourceCityId','job.sourceCityId','job.source.id','game.job.sourceCityId'),destination_city:str(raw,'destination_city','destination','job.destinationCity','job.destination.cityName'),destination_city_id:str(raw,'destination_city_id','destinationCityId','job.destinationCityId','job.destination.id','game.job.destinationCityId'),mass_kg:num(raw,'mass_kg','cargo_mass','cargoMass','cargo_mass_kg','job.cargoMass','Job.CargoMass','job.mass_kg','job.cargo.mass_kg'),remaining_km:num(raw,'remaining_km')||num(raw,'distance_m','navigation.estimatedDistance')/1000,speed_kmh:Math.abs(num(raw,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed')),truck_make:str(raw,'truck_make','truck.make'),truck_model:str(raw,'truck_model','truck.model'),job_market:str(raw,'job_market','job.market'),map_x:num(raw,'map_x','truck.placement.x'),map_z:num(raw,'map_z','truck.placement.z'),map_heading:num(raw,'map_heading','truck.placement.heading'),gat_map:str(raw,'gat_map','map_mode','gatMap')||'base',job_latched:bool(raw,'job_latched','jobLatched'),job_latch_key:str(raw,'job_latch_key','jobLatchKey')}}
+58-async function live(env){return cachedRead('live',5,()=>readLive(env))}
+59-async function readLive(env){const r=await env.DB.prepare('SELECT driver,account_user,updated_at,telemetry_json FROM telemetry_live WHERE updated_at>=? ORDER BY updated_at DESC').bind(new Date(Date.now()-45000).toISOString()).all();return(r.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.telemetry_json||'{}')}catch{}return flat(x.driver,x.account_user,x.updated_at,raw)})}
+60-async function profile(env,user){return cachedRead('profile:'+user,15,()=>readProfile(env,user))}
+61-async function readProfile(env,user){const p=await env.DB.prepare('SELECT * FROM profiles WHERE user=?').bind(user).first();if(!p)return null;const d=await env.DB.prepare('SELECT id,sequence_no AS sequence,source,destination,cargo,weight_kg,distance_km,xp,xp AS xp_awarded,perfect,perfect AS perfect_trip,penalty_xp,speed_fines,delivered_at,delivered_at AS completed_at,raw_json FROM deliveries WHERE user=? ORDER BY id DESC LIMIT 100').bind(user).all();const c=await env.DB.prepare('SELECT cargo,weight_kg FROM deliveries WHERE user=? GROUP BY cargo,weight_kg').bind(user).all();let mission=null;try{mission=p.current_mission_json?JSON.parse(p.current_mission_json):null}catch{}const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.raw_json||'{}')}catch{}return{...x,...raw.audit}}).reverse(),points=monthPoints(deliveries);return{user,monthly_completed:p.monthly_completed,monthly_deliveries:p.monthly_completed,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}}
+62-
+63-async function resetAssigned(env,user,mission,reason,extra={}){const m={...mission,state:'assigned',min_km:MIN_KM,last_rejected_at:now(),last_rejected_reason:reason,...extra};for(const k of['cargo','cargo_id','source','source_city_id','destination','destination_city_id','weight_kg','planned_distance_km','rbr_start_remaining_km','map_mode','distance_source','started_at','suspended_at','resumed_at','job_latch_key','start_remaining_km','start_odometer_km','trip_progress_confirmed','rank_guard','delivery_details_start'])delete m[k];for(const k of Object.keys(m))if(/^(truck_|trailer_).*damage_(start|max)_pct$/.test(k))delete m[k];await env.DB.prepare('UPDATE profiles SET current_mission_json=?,updated_at=? WHERE user=?').bind(JSON.stringify(m),now(),user).run();return m}
+64-async function cargoOK(env,mission,cargo,cargoId){
+65- if(mission.catalog_id==='custom')return true;
+66- const r=await env.DB.prepare('SELECT compatible_cargos_json FROM work_catalog WHERE id=?').bind(String(mission.catalog_id||'')).first();let names=[];try{names=JSON.parse(r?.compatible_cargos_json||'[]')}catch{}
+67- const idRaw=String(cargoId||'').trim();
+68- if(idRaw){
+69-   const base=idRaw.split('.')[0],id=compact(base);
+70-   if(id&&names.some(n=>{const x=compact(n);return x&&(x===id||x.includes(id)||id.includes(x))}))return true;
+71- }
+72- const actual=norm(cargo);if(!actual)return false;
+73- return names.map(norm).some(n=>n&&(actual===n||actual.includes(n)||n.includes(actual)));
+74-}
+75-
+76-function journalPacketId(raw){return String(raw?.gat_packet_id||'').trim()}
+77-function journalTripId(raw){return String(raw?.gat_trip_id||raw?.job_latch_key||'').trim()}
+78:function journalPayloadHash(raw){
+79- const copy={...raw};for(const key of ['gat_journal_seq','gat_journal_prev','gat_journal_chain','gat_journal_payload_sha256','gat_journal_version','gat_journal_verified','gat_journal_invalid'])delete copy[key];
+80- return createHash('sha256').update(JSON.stringify(copy)).digest('hex');
+81-}
+82-function fixedHexEqual(a,b){
+83- a=String(a||'').toLowerCase();b=String(b||'').toLowerCase();if(a.length!==b.length||!a.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0;
+84-}
+85-function journalMacKey(token,device){return createHash('sha256').update(`GAT-JOURNAL-V1|${String(token||'')}|${String(device||'')}`).digest()}
+86-async function inspectClientPacket(env,user,device,token,raw,t){
+87- const packetId=journalPacketId(raw);if(!packetId)return{packet_id:'',duplicate:false,journal_present:false,journal_verified:false,journal_reason:'legacy_no_packet_id'};
+88- const prior=await env.DB.prepare('SELECT mission_event_json,journal_verified,journal_reason FROM telemetry_packet_receipts WHERE user=? AND packet_id=?').bind(user,packetId).first();
+89- if(prior)return{packet_id:packetId,duplicate:true,journal_present:true,journal_verified:!!prior.journal_verified,journal_reason:prior.journal_reason||null,mission_event_json:prior.mission_event_json||null};
+90- const seq=Math.trunc(Number(raw?.gat_journal_seq)||0),prev=String(raw?.gat_journal_prev||''),chain=String(raw?.gat_journal_chain||'').toLowerCase(),claimedPayload=String(raw?.gat_journal_payload_sha256||'').toLowerCase(),collected=String(raw?.gat_collected_at||''),tripId=journalTripId(raw);
+91- const present=seq>0&&chain&&claimedPayload&&String(raw?.gat_journal_version||'')==='1';
+92- if(!present)return{packet_id:packetId,duplicate:false,journal_present:false,journal_verified:false,journal_reason:'legacy_unsigned_packet',seq:null,chain:null,trip_id:tripId,collected_at:collected};
+93: const actualPayload=journalPayloadHash(raw);
+94: if(!fixedHexEqual(actualPayload,claimedPayload))return{packet_id:packetId,duplicate:false,journal_present:true,journal_verified:false,journal_reason:'journal_payload_changed',seq,chain,trip_id:tripId,collected_at:collected};
+95- const canonical=`${packetId}|${collected}|${tripId}|${seq}|${prev}|${claimedPayload}`;
+96- const expected=createHmac('sha256',journalMacKey(token,device)).update(canonical).digest('hex');
+97: if(!fixedHexEqual(expected,chain))return{packet_id:packetId,duplicate:false,journal_present:true,journal_verified:false,journal_reason:'journal_signature_invalid',seq,chain,trip_id:tripId,collected_at:collected};
+98- const state=await env.DB.prepare('SELECT last_seq,last_chain,last_packet_id FROM telemetry_journal_state WHERE user=? AND device_id=?').bind(user,device).first();
+99- const continuous=!state||(seq===Number(state.last_seq)+1&&prev===String(state.last_chain||''));
+100: return{packet_id:packetId,duplicate:false,journal_present:true,journal_verified:continuous,journal_reason:continuous?null:'journal_chain_gap',seq,chain,prev,trip_id:tripId,collected_at:collected};
+101-}
+102-async function persistClientPacket(env,user,device,raw,t,packetState,missionEvent,openJourneyState,phase){
+103- const packetId=String(packetState?.packet_id||journalPacketId(raw));if(!packetId)return;
+104- const tripId=String(openJourneyState?.canonical||packetState?.trip_id||journalTripId(raw)||'').trim();
+105- if(packetState?.journal_verified){
+106-   await env.DB.prepare("INSERT INTO telemetry_journal_state(user,device_id,last_seq,last_chain,last_packet_id,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(user,device_id) DO UPDATE SET last_seq=excluded.last_seq,last_chain=excluded.last_chain,last_packet_id=excluded.last_packet_id,updated_at=excluded.updated_at").bind(user,device,Number(packetState.seq)||0,String(packetState.chain||''),packetId,t).run();
+107- }
+108- await env.DB.prepare('INSERT INTO telemetry_packet_receipts(user,packet_id,device_id,trip_id,collected_at,received_at,journal_seq,journal_chain,journal_verified,journal_reason,mission_event_json) VALUES(?,?,?,?,?,?,?,?,?,?,?)').bind(user,packetId,device,tripId,String(packetState?.collected_at||raw?.gat_collected_at||''),t,packetState?.seq??null,packetState?.chain||null,packetState?.journal_verified?1:0,packetState?.journal_reason||null,missionEvent?JSON.stringify(missionEvent):null).run();
+109- if(!tripId)return;
+110- const terminal=phase==='delivered'||phase==='cancelled',last=await env.DB.prepare('SELECT received_at FROM trip_checkpoints WHERE user=? AND trip_id=? ORDER BY id DESC LIMIT 1').bind(user,tripId).first(),age=last?Date.parse(t)-Date.parse(last.received_at):Infinity;
+111- if(!terminal&&Number.isFinite(age)&&age<120000)return;
+112- const f=flat(user,user,t,raw),summary={phase,cargo:f.cargo_name,source:f.source_city,destination:f.destination_city,weight_kg:f.mass_kg,remaining_km:f.remaining_km,speed_kmh:f.speed_kmh,game_name:str(raw,'gat_game','game.gameName','gameName'),map_mode:f.gat_map,cargo_damage_pct:num(raw,'cargo_damage_pct'),truck_engine_damage_pct:num(raw,'truck_engine_damage_pct'),truck_transmission_damage_pct:num(raw,'truck_transmission_damage_pct'),truck_cabin_damage_pct:num(raw,'truck_cabin_damage_pct'),truck_chassis_damage_pct:num(raw,'truck_chassis_damage_pct'),truck_wheels_damage_pct:num(raw,'truck_wheels_damage_pct'),trailer_damage_pct:num(raw,'trailer_damage_pct'),journal_verified:!!packetState?.journal_verified,journal_reason:packetState?.journal_reason||null};
+113- await env.DB.prepare('INSERT OR IGNORE INTO trip_checkpoints(user,trip_id,packet_id,phase,collected_at,received_at,journal_verified,summary_json,raw_json) VALUES(?,?,?,?,?,?,?,?,?)').bind(user,tripId,packetId,phase,String(packetState?.collected_at||raw?.gat_collected_at||''),t,packetState?.journal_verified?1:0,JSON.stringify(summary),JSON.stringify(raw)).run();
+114-}
+115-
+116-function journeyGame(raw){return clean(str(raw,'gat_game','game.gameName','gameName'))||'unknown'}
+117-function journeyMap(raw){return clean(str(raw,'gat_map','map_mode','gatMap'))||'base'}
+118-function journeyContext(raw){const explicit=clean(str(raw,'gat_context_id','gatContextId','profile_context_id','profileContextId'));return explicit||`${journeyGame(raw)}|${journeyMap(raw)}`}
+119-function journeyFingerprintRaw(raw){
+120- const cargo=clean(str(raw,'cargo_id','job.cargoId','Job.CargoId'))||norm(str(raw,'cargo_name','job.cargoName','job.cargo'));
+121- const source=clean(str(raw,'source_city_id','job.sourceCityId','Job.SourceCityId'))||norm(str(raw,'source_city','job.sourceCity','Job.SourceCity'));
+122- const destination=clean(str(raw,'destination_city_id','job.destinationCityId','Job.DestinationCityId'))||norm(str(raw,'destination_city','job.destinationCity','Job.DestinationCity'));
+123- const planned=Math.max(0,Math.round(num(raw,'planned_distance_km','job.plannedDistanceKm','Job.PlannedDistanceKm'))),mass=Math.max(0,Math.round(num(raw,'mass_kg','cargoMass','cargo_mass','job.cargoMass','Job.CargoMass')));
+124- return `${journeyContext(raw)}|${cargo}|${source}|${destination}|${planned}|${mass}`;
+125-}
+=== ranking local journal ===
+1-export const MIN_RANK_CLIENT = '1.0.28';
+2-export const MAX_TELEMETRY_GAP_MS = 120000;
+3-export const DAMAGE_TRANSIENT_GRACE_MS = 30000;
+4-export const RESUME_VALID_SAMPLES = 2;
+5-export const RANK_STARTUP_GRACE_MS = 120000;
+6-export const DAMAGE_FIELDS = {
+7-  cargo: 'cargo_damage_pct', engine: 'truck_engine_damage_pct',
+8-  transmission: 'truck_transmission_damage_pct', cabin: 'truck_cabin_damage_pct',
+9-  chassis: 'truck_chassis_damage_pct', wheels: 'truck_wheels_damage_pct',
+10-  trailer: 'trailer_damage_pct'
+11-};
+12-export function validDamage(value) {
+13-  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100;
+14-}
+15-export function versionAtLeast(value, minimum = MIN_RANK_CLIENT) {
+16-  if (typeof value !== 'string' || !/^\d+\.\d+\.\d+(?:\.\d+)?$/.test(value)) return false;
+17-  const a = value.split('.').map(Number), b = minimum.split('.').map(Number);
+18-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+19-    if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0);
+20-  }
+21-  return true;
+22-}
+23-export function rankingReadiness(raw = {}) {
+24-  const missing = Object.entries(DAMAGE_FIELDS).filter(([, key]) => !validDamage(raw[key])).map(([name]) => name);
+25-  const versionOK = versionAtLeast(raw.gat_client_version);
+26-  const connected = raw.game?.connected === true;
+27-  const journalInvalid = raw.gat_journal_invalid === true;
+28:  const reason = journalInvalid ? 'local_journal_invalid' : !versionOK ? 'client_update_required' : !connected ? 'telemetry_disconnected' : missing.length ? 'damage_data_incomplete' : null;
+29-  return {eligible: !reason, reason, missing_damage: missing, client_version: String(raw.gat_client_version || ''), minimum_version: MIN_RANK_CLIENT};
+30-}
+31-export function rankingMessage(reason) {
+32-  if (reason === 'client_update_required') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: atualize o GAT Telemetria para 1.0.28 ou superior.';
+33-  if (reason === 'damage_data_incomplete') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: faltaram dados de danos.';
+34:  if (reason === 'local_journal_invalid') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: a caixa-preta local nao passou na verificacao de integridade.';
+35-  if (reason === 'telemetry_disconnected') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: a telemetria ficou desconectada.';
+36-  if (reason === 'telemetry_gap') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: houve interrupção prolongada da telemetria.';
+37-  if (reason === 'telemetry_resume_pending') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: faltaram amostras válidas após a retomada da viagem.';
+38-  if (reason === 'telemetry_not_verified_from_start') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: a telemetria não foi confirmada continuamente desde o início.';
+39-  if (reason === 'trip_progress_unverified') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: o progresso contínuo da viagem não pôde ser confirmado.';
+40-  if (reason === 'mission_not_active') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: o início da viagem não foi validado para pontuação.';
+41-  if (reason === 'distance_below_minimum') return 'Viagem registrada e XP mantido, mas sem Pontos GAT: a distância não atendeu ao requisito de pontuação.';
+42-  return reason ? 'Viagem registrada e XP mantido, mas esta entrega não recebeu Pontos GAT.' : '';
+43-}
+44-// O primeiro pacote de uma carga pode chegar enquanto o TruckSim GPS ainda atualiza
+45-// os campos de dano. Durante uma janela curta de 30 s, a Central nao condena a viagem
+46-// por esse pacote transitorio: exige duas leituras completas e continuas para selar
+47-// o rank_guard. Depois de verified_at, qualquer falta real de dados ou gap fica sticky.
+48-export function advanceRankGuard(guard, readiness, previousAt, at, legacyProgressConfirmed = false) {
+49-  if (!guard && legacyProgressConfirmed && readiness.eligible) {
+50-    return {reason: null, verified_at: at, last_sample_at: at, valid_samples: 2, migrated_after_server_update: true};
+51-  }
+52-
+53-  const next = guard ? {...guard} : {reason: 'telemetry_not_verified_from_start', valid_samples: 0, startup_started_at: at};
+54-  const currentTime = Date.parse(at || '');
+55-  const missionPrevious = Date.parse(next.last_sample_at || '');
+56-  const fallbackPrevious = Date.parse(previousAt || '');
+57-  const previousTime = Number.isFinite(missionPrevious) ? missionPrevious : fallbackPrevious;
+58-  const continuous = Number.isFinite(previousTime) && Number.isFinite(currentTime) &&
+59-    currentTime >= previousTime && currentTime - previousTime <= MAX_TELEMETRY_GAP_MS;
+60-
+61-  // Migra uma missao iniciada na 1.0.44 que ficou presa com damage_data_incomplete
+62-  // no primeiro pacote. A migracao so abre uma nova janela curta; ainda exige duas
+63-  // amostras validas antes de liberar a viagem.
+64-  if (!next.verified_at && !next.startup_started_at) {
+65-    next.startup_started_at = at;
+66-    next.valid_samples = 0;
+67-    next.reason = 'telemetry_not_verified_from_start';
+68-    next.migrated_startup_guard_v145 = true;
+69-  }
