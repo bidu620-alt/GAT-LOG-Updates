@@ -3,8 +3,8 @@
   "source": "https://trucksimulator.wiki.gg/wiki/Cargo_types/Euro_Truck_Simulator_2",
   "source_note": "Cargas transportáveis atuais do Truck Simulator Wiki. Entradas marcadas como removidas foram excluídas; versão de referência conferida no conjunto AlexOQ/trucker.",
   "reference_game_version": "1.60.1.7",
-  "reference_data_refreshed": "2026-06-30",
-  "generated_at": "2026-08-31T07:35:37Z",
+  "reference_data_refreshed": "2026-09-04",
+  "generated_at": "2026-09-07T07:41:44Z",
   "total_entries": 378,
   "category_titles": {
     "tractor": "Trator e máquinas agrícolas",
@@ -123,7 +123,7 @@
         "weight": "22"
       },
       {
-        "name": "Mower Conditioner Krone BiG M 450",
+        "name": "Mower Conditioner Krone BiG M 45",
         "dlc": "KRONE Agriculture Equipment",
         "weight": "15"
       },
