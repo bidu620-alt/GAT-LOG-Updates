@@ -149,25 +149,15 @@ if (-not [regex]::IsMatch($text, $tickPattern)) {
 $tickReplacement = "private async Task TickAsync()`r`n`t{`r`n`t`tEnsureTruckSimGpsRunning();`r`n`t`tif (_busy)"
 $text = [regex]::Replace($text, $tickPattern, $tickReplacement, 1)
 
-# Hotfix de mapas: "Outro mapa" deve usar exatamente a mesma base logica do
-# Mapa Base. O rotulo continua "Outro mapa" na interface, mas gat_map passa a
-# ser "base". RBR continua independente, enviando "rbr" sem qualquer alteracao.
-$otherMapOld = @'
-			if (string.Equals(a, "Outro mapa", StringComparison.OrdinalIgnoreCase))
-			{
-				return "other";
-			}
-'@
-$otherMapNew = @'
-			if (string.Equals(a, "Outro mapa", StringComparison.OrdinalIgnoreCase))
-			{
-				return "base";
-			}
-'@
-if (-not $text.Contains($otherMapOld)) {
+# Hotfix de mapas: "Outro mapa" usa a mesma base logica do Mapa Base.
+# O texto visivel continua "Outro mapa"; somente gat_map muda de other para base.
+# RBR permanece separado e continua enviando rbr.
+$otherMapPattern = 'if\s*\(string\.Equals\(a,\s*"Outro mapa",\s*StringComparison\.OrdinalIgnoreCase\)\)\s*\{\s*return\s*"other";\s*\}'
+if (-not [regex]::IsMatch($text, $otherMapPattern)) {
     throw 'Marcador ausente no hotfix de mapas: Outro mapa -> other'
 }
-$text = $text.Replace($otherMapOld, $otherMapNew)
+$otherMapReplacement = "if (string.Equals(a, `"Outro mapa`", StringComparison.OrdinalIgnoreCase))`r`n`t`t`t{`r`n`t`t`t`treturn `"base`";`r`n`t`t`t}"
+$text = [regex]::Replace($text, $otherMapPattern, $otherMapReplacement, 1)
 
 Set-Content -LiteralPath $main.FullName -Value $text -Encoding UTF8
 
@@ -194,8 +184,11 @@ foreach ($marker in @(
         throw "Branding/hotfix BETA incompleto: $marker"
     }
 }
-if ($check.Contains('return "other";')) {
+if ([regex]::IsMatch($check, 'if\s*\(string\.Equals\(a,\s*"Outro mapa",\s*StringComparison\.OrdinalIgnoreCase\)\)\s*\{\s*return\s*"other";')) {
     throw 'Hotfix de mapas incompleto: Outro mapa ainda envia gat_map=other'
+}
+if (-not [regex]::IsMatch($check, 'if\s*\(string\.Equals\(a,\s*"Outro mapa",\s*StringComparison\.OrdinalIgnoreCase\)\)\s*\{\s*return\s*"base";')) {
+    throw 'Hotfix de mapas incompleto: Outro mapa nao esta usando gat_map=base'
 }
 
 Write-Host 'GAT Telemetria BETA aplicado; cliente publico 1.0.32, revisao interna 1.0.32.3, Outro mapa usando base e RBR preservado.'
