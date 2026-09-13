@@ -110,7 +110,7 @@ internal sealed class MainForm : Form
 		}
 	}
 
-	private const string CurrentVersion = "1.0.32.2";
+	private const string CurrentVersion = "1.0.32.3";
 
 	// Build validation compatibility: CurrentVersion = "1.0.32.1"
 
@@ -303,7 +303,7 @@ internal sealed class MainForm : Form
 			}
 			if (string.Equals(a, "Outro mapa", StringComparison.OrdinalIgnoreCase))
 			{
-				return "other";
+				return "base";
 			}
 			return "base";
 		}
