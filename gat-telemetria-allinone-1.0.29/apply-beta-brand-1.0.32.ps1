@@ -26,14 +26,14 @@ function Replace-Required {
 }
 
 # Mantem a versao publica 1.0.32, mas usa uma revisao interna para que
-# quem ja esta na 1.0.32 receba esta republicacao uma unica vez.
+# quem ja esta na revisao anterior receba este hotfix uma unica vez.
 # O comentario de compatibilidade logo abaixo existe apenas porque o workflow
 # antigo ainda valida literalmente o marcador da revisao anterior.
-$versionReplacement = 'private const string CurrentVersion = "1.0.32.2";' + "`r`n`r`n`t// Build validation compatibility: CurrentVersion = `"1.0.32.1`""
+$versionReplacement = 'private const string CurrentVersion = "1.0.32.3";' + "`r`n`r`n`t// Build validation compatibility: CurrentVersion = `"1.0.32.1`""
 $text = Replace-Required $text `
     'private const string CurrentVersion = "1.0.32";' `
     $versionReplacement `
-    'revisao interna 1.0.32.2'
+    'revisao interna 1.0.32.3'
 
 # Nome da janela: sem numero de versao.
 $text = Replace-Required $text `
@@ -149,11 +149,31 @@ if (-not [regex]::IsMatch($text, $tickPattern)) {
 $tickReplacement = "private async Task TickAsync()`r`n`t{`r`n`t`tEnsureTruckSimGpsRunning();`r`n`t`tif (_busy)"
 $text = [regex]::Replace($text, $tickPattern, $tickReplacement, 1)
 
+# Hotfix de mapas: "Outro mapa" deve usar exatamente a mesma base logica do
+# Mapa Base. O rotulo continua "Outro mapa" na interface, mas gat_map passa a
+# ser "base". RBR continua independente, enviando "rbr" sem qualquer alteracao.
+$otherMapOld = @'
+			if (string.Equals(a, "Outro mapa", StringComparison.OrdinalIgnoreCase))
+			{
+				return "other";
+			}
+'@
+$otherMapNew = @'
+			if (string.Equals(a, "Outro mapa", StringComparison.OrdinalIgnoreCase))
+			{
+				return "base";
+			}
+'@
+if (-not $text.Contains($otherMapOld)) {
+    throw 'Marcador ausente no hotfix de mapas: Outro mapa -> other'
+}
+$text = $text.Replace($otherMapOld, $otherMapNew)
+
 Set-Content -LiteralPath $main.FullName -Value $text -Encoding UTF8
 
 $check = Get-Content -LiteralPath $main.FullName -Raw
 foreach ($marker in @(
-    'private const string CurrentVersion = "1.0.32.2";',
+    'private const string CurrentVersion = "1.0.32.3";',
     'CurrentVersion = "1.0.32.1"',
     'Text = "GAT Telemetria BETA";',
     'Text = "GAT TELEMETRIA BETA",',
@@ -165,11 +185,17 @@ foreach ($marker in @(
     'EnsureTruckSimGpsRunning(force: true);',
     'EnsureTruckSimGpsRunning();',
     'Path.Combine(baseDir, "TruckSimGPS")',
-    'Arguments = "-minimized"'
+    'Arguments = "-minimized"',
+    'if (string.Equals(a, "RBR", StringComparison.OrdinalIgnoreCase))',
+    'return "rbr";',
+    'if (string.Equals(a, "Outro mapa", StringComparison.OrdinalIgnoreCase))'
 )) {
     if (-not $check.Contains($marker)) {
         throw "Branding/hotfix BETA incompleto: $marker"
     }
 }
+if ($check.Contains('return "other";')) {
+    throw 'Hotfix de mapas incompleto: Outro mapa ainda envia gat_map=other'
+}
 
-Write-Host 'GAT Telemetria BETA aplicado; cliente publico 1.0.32, revisao interna 1.0.32.2 e auto-recuperacao do TruckSim GPS ativa.'
+Write-Host 'GAT Telemetria BETA aplicado; cliente publico 1.0.32, revisao interna 1.0.32.3, Outro mapa usando base e RBR preservado.'
