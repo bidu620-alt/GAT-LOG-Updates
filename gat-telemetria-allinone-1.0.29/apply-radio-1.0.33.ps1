@@ -43,30 +43,33 @@ $mainText = $mainText.Replace('Text = "Cliente 1.0.32",', 'Text = "Cliente 1.0.3
 if ($mainText -notmatch 'Text = "Cliente 1\.0\.33"') { throw 'Nao consegui atualizar o rotulo de versao do cliente.' }
 
 if ($mainText -notmatch 'RÁDIO GAT') {
-    $anchor = 'btnUpdate = MakeButton("↻  VERIFICAR ATUALIZAÇÃO", 24, 654, 240, 36, async delegate'
-    if (-not $mainText.Contains($anchor)) { throw 'Botao de atualizacao nao encontrado para inserir Radio GAT.' }
+    # Nao depende do texto do botao (que pode variar por encoding/branding). Insere
+    # imediatamente antes da atribuicao de btnUpdate dentro do BuildUi.
+    $updatePattern = '(?m)^(\s*)btnUpdate\s*=\s*MakeButton\('
+    $match = [regex]::Match($mainText, $updatePattern)
+    if (-not $match.Success) { throw 'Botao de atualizacao nao encontrado para inserir Radio GAT.' }
 
+    $indent = $match.Groups[1].Value
     $radioButton = @"
-		RadioForm radioForm = null;
-		Button btnRadio = MakeButton("RÁDIO GAT", 278, 654, 190, 36, delegate
-		{
-			if (radioForm == null || radioForm.IsDisposed)
-			{
-				radioForm = new RadioForm();
-			}
-			if (!radioForm.Visible)
-			{
-				radioForm.Show(this);
-			}
-			radioForm.WindowState = FormWindowState.Normal;
-			radioForm.BringToFront();
-		});
-		btnRadio.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-		Controls.Add(btnRadio);
+${indent}RadioForm radioForm = null;
+${indent}Button btnRadio = MakeButton("RÁDIO GAT", 278, 654, 190, 36, delegate
+${indent}{
+${indent}`tif (radioForm == null || radioForm.IsDisposed)
+${indent}`t{
+${indent}`t`tradioForm = new RadioForm();
+${indent}`t}
+${indent}`tif (!radioForm.Visible)
+${indent}`t{
+${indent}`t`tradioForm.Show(this);
+${indent}`t}
+${indent}`tradioForm.WindowState = FormWindowState.Normal;
+${indent}`tradioForm.BringToFront();
+${indent}});
+${indent}btnRadio.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+${indent}Controls.Add(btnRadio);
 
-		
 "@
-    $mainText = $mainText.Replace($anchor, $radioButton + $anchor)
+    $mainText = $mainText.Insert($match.Index, $radioButton)
 }
 
 foreach ($marker in @('CurrentVersion = "1.0.33.0"','Text = "Cliente 1.0.33"','RÁDIO GAT','new RadioForm()')) {
