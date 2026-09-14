@@ -16,6 +16,9 @@ $adapted = Join-Path $env:TEMP 'gat-radio-web-140.ps1'
 Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/00136c82583806cac5cb0d643a26d5e30399b3cc/gat-telemetria-allinone-1.0.29/apply-radio-web-1.0.38.ps1' -OutFile $legacy
 $patch = Get-Content $legacy -Raw
 $patch = $patch.Replace('1.0.37','1.0.39').Replace('1.0.38','1.0.40')
+# O script legado valida a versao com pontos escapados (1\.0\.38\.0),
+# portanto a troca acima nao alcanca esse trecho. Ajusta a validacao tambem.
+$patch = $patch.Replace('1\.0\.38\.0','1\.0\.40\.0')
 Set-Content $adapted $patch -Encoding UTF8
 & $adapted -Root $rootPath
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao aplicar base Canal Web 1.0.40.' }
