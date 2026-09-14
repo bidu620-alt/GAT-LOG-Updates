@@ -59,15 +59,14 @@ $radioText = $radioText.Replace('_source.Text = "Fonte oficial: " + (_serverSour
 # Canal GAT: stream usa a propria URL como identificador local.
 $videoSourceLine = '            if (sourceType == "video") sourceId = Convert.ToString(radio["video_id"]) ?? string.Empty;'
 $streamSourceLine = '            else if (sourceType == "stream") sourceId = sourceUrl;'
-if ($radioText -notlike "*$videoSourceLine*") { throw 'Leitura da fonte do Canal GAT 1.0.36 nao encontrada.' }
+if (-not $radioText.Contains($videoSourceLine)) { throw 'Leitura da fonte do Canal GAT 1.0.36 nao encontrada.' }
 $radioText = $radioText.Replace($videoSourceLine, $videoSourceLine + "`r`n" + $streamSourceLine)
 
-# Carrega video, playlist ou stream direto. Troca o miolo do metodo por indices,
+# Carrega video, playlist ou stream direto. Troca o metodo inteiro por indices,
 # evitando dependencia de CRLF/LF do fonte reconstruido.
 $loadMethodStart = $radioText.IndexOf('    private async Task LoadActiveSourceAsync()')
-$loadBodyStart = $radioText.IndexOf('        string id = ActiveSourceId();', $loadMethodStart)
 $loadMethodEnd = $radioText.IndexOf('    private async Task ExecutePlayerAsync(string script)', $loadMethodStart)
-if ($loadMethodStart -lt 0 -or $loadBodyStart -lt 0 -or $loadMethodEnd -lt 0) { throw 'LoadActiveSourceAsync 1.0.36 nao encontrado.' }
+if ($loadMethodStart -lt 0 -or $loadMethodEnd -lt 0) { throw 'LoadActiveSourceAsync 1.0.36 nao encontrado.' }
 $newLoadMethod = @'
     private async Task LoadActiveSourceAsync()
     {
@@ -98,7 +97,7 @@ $newYoutubeErrorTail = @'
         if (code == 900) return "Não foi possível tocar esta rádio online. Confirme se o link é o stream direto MP3/AAC; HTTPS é recomendado.";
         if (code == 901) return "A rádio online foi interrompida. O servidor da estação pode estar offline ou ter recusado a conexão.";
 '@
-if ($radioText -notlike "*$oldYoutubeErrorTail*") { throw 'Tabela de erros do player nao encontrada.' }
+if (-not $radioText.Contains($oldYoutubeErrorTail)) { throw 'Tabela de erros do player nao encontrada.' }
 $radioText = $radioText.Replace($oldYoutubeErrorTail, $newYoutubeErrorTail.TrimEnd())
 
 # Parser: continua priorizando list= em links watch e passa a aceitar URL direta
