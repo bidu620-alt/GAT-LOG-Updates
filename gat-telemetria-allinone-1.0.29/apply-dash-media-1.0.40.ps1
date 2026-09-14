@@ -50,15 +50,16 @@ $bridgeSource = Join-Path $PSScriptRoot 'DashMediaBridge.cs'
 $bridgeTarget = Join-Path (Split-Path $main.FullName -Parent) 'DashMediaBridge.cs'
 Copy-Item $bridgeSource $bridgeTarget -Force
 
+# A 1.0.33 sempre injeta a linha local "RadioForm radioForm = null;" no BuildUi.
+# Usa esse ponto estavel para iniciar a ponte uma unica vez e registra o encerramento
+# no ApplicationExit, sem depender de um construtor/ClientStore/FormClosed especifico.
 if ($mainText -notlike '*DashMediaBridge.Start();*') {
-    $needle = '        ClientStore.Ensure();'
-    if (-not $mainText.Contains($needle)) { throw 'Ponto ClientStore.Ensure nao encontrado.' }
-    $mainText = $mainText.Replace($needle, $needle + "`r`n        DashMediaBridge.Start();")
-}
-if ($mainText -notlike '*DashMediaBridge.Stop();*') {
-    $needle = '            _timer.Stop();'
-    if (-not $mainText.Contains($needle)) { throw 'Ponto FormClosed nao encontrado.' }
-    $mainText = $mainText.Replace($needle, "            DashMediaBridge.Stop();`r`n" + $needle)
+    $pattern = '(?m)^(\s*)RadioForm\s+radioForm\s*=\s*null;\s*$'
+    $match = [regex]::Match($mainText, $pattern)
+    if (-not $match.Success) { throw 'Ponto RadioForm radioForm = null nao encontrado para iniciar ponte DASH.' }
+    $indent = $match.Groups[1].Value
+    $replacement = $match.Value + "`r`n" + $indent + 'DashMediaBridge.Start();' + "`r`n" + $indent + 'Application.ApplicationExit += delegate { DashMediaBridge.Stop(); };'
+    $mainText = $mainText.Remove($match.Index, $match.Length).Insert($match.Index, $replacement)
 }
 
 foreach($m in @('CurrentVersion = "1.0.40.0"','DashMediaBridge.Start();','DashMediaBridge.Stop();')) {
