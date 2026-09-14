@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#02070d">
+  <title>GAT DASH</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <section id="loginScreen" class="screen login-screen">
+    <div class="login-glow"></div>
+    <div class="login-card glass">
+      <div class="brand-logo"><span>GAT</span><b>DASH</b></div>
+      <div class="brand-sub">ETS2 TELEMETRIA EM OUTRO NÍVEL</div>
+      <div class="login-truck">🚛</div>
+      <form id="loginForm" autocomplete="off">
+        <label for="loginUser">Motorista</label>
+        <input id="loginUser" type="text" autocapitalize="none" autocomplete="username" placeholder="seu usuário GAT" maxlength="32" required>
+        <label for="loginPassword">Senha</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="mesma senha da GAT Telemetria" maxlength="128" required>
+        <button id="loginButton" type="submit">ENTRAR NO GAT DASH</button>
+        <div id="loginStatus" class="login-status">Use o mesmo usuário e senha da GAT Telemetria.</div>
+      </form>
+      <div class="login-foot">Sua senha não é salva neste aparelho.</div>
+    </div>
+  </section>
+
+  <section id="dashScreen" class="screen dash-screen hidden">
+    <header class="topbar">
+      <div>
+        <div class="brand-logo small"><span>GAT</span><b>DASH</b></div>
+        <div class="brand-sub">ETS2 TELEMETRIA EM OUTRO NÍVEL</div>
+      </div>
+      <div class="top-actions">
+        <div class="connection-pill"><span id="gameDot" class="dot"></span><div><b id="gameStatus">ETS2 aguardando</b><small id="driverName">Motorista</small></div></div>
+        <button id="settingsBtn" class="icon-btn" title="Configurações" aria-label="Configurações">☰</button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="speed-hero glass">
+        <div class="ambient-copy">MAIS ESTRADA<br><b>MAIS HISTÓRIAS</b></div>
+        <div class="indicator-row">
+          <span id="highBeam" class="indicator blue">◉</span>
+          <span id="blinkLeft" class="indicator green">⬅</span>
+          <span id="parkBrake" class="indicator red">Ⓟ</span>
+          <span id="blinkRight" class="indicator green">➡</span>
+        </div>
+        <div id="speedGauge" class="speed-gauge">
+          <div class="gauge-ring"></div>
+          <div class="gauge-center">
+            <div id="speedValue" class="speed-value">0</div>
+            <div class="speed-unit">km/h</div>
+            <div class="gear-rpm"><b id="gearValue">N</b><span><strong id="rpmValue">0</strong> RPM</span></div>
+            <div id="overspeedAlert" class="overspeed-alert hidden">⚠ ACIMA DO LIMITE</div>
+          </div>
+          <div class="limit-badge"><small>Limite</small><b id="speedLimitSign">—</b></div>
+        </div>
+        <div id="speedNotice" class="speed-notice">
+          <div><b id="speedNoticeTitle">Radar inteligente</b><small id="gpsInstruction">Aguardando rota</small></div>
+          <div id="cruiseBox" class="cruise-box"><small>CRUISE</small><b id="cruiseValue">OFF</b></div>
+        </div>
+      </section>
+
+      <section class="stats-row">
+        <article class="stat-card glass"><span class="stat-icon">⛽</span><div><small>Combustível</small><b id="fuelPct">0%</b><em id="fuelLiters">0 / 0 L</em></div></article>
+        <article class="stat-card glass"><span class="stat-icon">⚙</span><div><small>Marcha</small><b id="gearMini">N</b><em id="gearMode">Automática</em></div></article>
+        <article class="stat-card glass"><span class="stat-icon">🛣</span><div><small>Status</small><b id="tripStatus">Aguardando</b><em id="tripStatusText">Conecte ao ETS2</em></div></article>
+      </section>
+
+      <section class="panel route-panel glass">
+        <div class="panel-head"><h2>⌁ Rota Atual</h2><span id="routeBadge">TELEMETRIA AO VIVO</span></div>
+        <div class="route-grid">
+          <div class="route-cities">
+            <div class="route-city"><span class="node start"></span><div><small>Origem</small><b id="sourceCity">—</b></div></div>
+            <div class="route-line"></div>
+            <div class="route-city"><span class="node end"></span><div><small>Destino</small><b id="destinationCity">—</b></div></div>
+          </div>
+          <div class="route-data">
+            <div><span>🛣</span><p><small>Distância restante</small><b id="remainingKm">0 km</b></p></div>
+            <div><span>◷</span><p><small>Tempo estimado</small><b id="etaText">—</b></p></div>
+            <div><span>📦</span><p><small>Carga</small><b id="cargoName">Sem carga</b><em id="cargoMass">0 t</em></p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel trip-panel glass">
+        <div class="panel-head"><h2>🛣 Viagem em Andamento</h2><span id="tripHeroBadge">ESTRADA É LIBERDADE</span></div>
+        <div class="trip-scene">
+          <div class="sun"></div><div class="mountains m1"></div><div class="mountains m2"></div><div class="road"></div>
+          <svg class="truck-art" viewBox="0 0 760 330" role="img" aria-label="Caminhão GAT na estrada">
+            <defs>
+              <linearGradient id="cab" x1="0" x2="1"><stop stop-color="#07121d"/><stop offset=".55" stop-color="#20384a"/><stop offset="1" stop-color="#07111a"/></linearGradient>
+              <linearGradient id="trail" x1="0" x2="1"><stop stop-color="#071018"/><stop offset=".5" stop-color="#162b3a"/><stop offset="1" stop-color="#05090d"/></linearGradient>
+              <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <g transform="translate(28 70)">
+              <rect x="18" y="42" width="390" height="150" rx="12" fill="url(#trail)" stroke="#2f5068" stroke-width="3"/>
+              <text x="72" y="128" fill="#f4fbff" font-size="62" font-weight="900" font-family="Arial">GAT</text>
+              <text x="206" y="128" fill="#48b8ff" font-size="30" font-weight="800" font-family="Arial">DASH</text>
+              <text x="76" y="158" fill="#94aabc" font-size="14" letter-spacing="5" font-family="Arial">DRIVE FURTHER</text>
+              <path d="M408 68 L500 68 Q532 69 556 98 L592 148 L592 192 L395 192 L395 92 Q395 68 408 68Z" fill="url(#cab)" stroke="#41647b" stroke-width="3"/>
+              <path d="M454 82 H510 Q529 84 543 105 L560 132 H443Z" fill="#5d88a3" opacity=".46"/>
+              <rect x="431" y="143" width="129" height="25" rx="5" fill="#05090d" stroke="#335064"/>
+              <text x="448" y="161" fill="#f6fbff" font-size="18" font-weight="900" font-family="Arial">SCANIA</text>
+              <rect x="562" y="156" width="20" height="10" rx="4" fill="#dff7ff" filter="url(#glow)"/>
+              <rect x="410" y="160" width="18" height="9" rx="4" fill="#dff7ff" filter="url(#glow)"/>
+              <g fill="#05070a" stroke="#354b5b" stroke-width="5"><circle cx="112" cy="196" r="34"/><circle cx="340" cy="196" r="34"/><circle cx="470" cy="196" r="34"/><circle cx="554" cy="196" r="34"/></g>
+              <g fill="#8998a4"><circle cx="112" cy="196" r="13"/><circle cx="340" cy="196" r="13"/><circle cx="470" cy="196" r="13"/><circle cx="554" cy="196" r="13"/></g>
+            </g>
+          </svg>
+          <div class="trip-caption"><b id="tripDestination">Rota pronta</b><small id="tripRoadText">Telemetria GAT em tempo real</small></div>
+        </div>
+      </section>
+
+      <section class="panel condition-panel glass">
+        <div class="panel-head"><h2>🔧 Condição do Caminhão</h2><span class="ok-label">Tudo em ordem ✓</span></div>
+        <div class="condition-summary"><div><small>Condição geral</small><b id="overallCondition">100%</b></div><span id="conditionText">Sem avarias</span></div>
+        <div class="wear-grid">
+          <div class="wear-card"><span>⚙</span><small>Motor</small><b id="wearEngine">100%</b><i></i></div>
+          <div class="wear-card"><span>⚙</span><small>Transmissão</small><b id="wearTransmission">100%</b><i></i></div>
+          <div class="wear-card"><span>▣</span><small>Cabine</small><b id="wearCabin">100%</b><i></i></div>
+          <div class="wear-card"><span>━</span><small>Chassi</small><b id="wearChassis">100%</b><i></i></div>
+          <div class="wear-card"><span>◉</span><small>Pneus</small><b id="wearWheels">100%</b><i></i></div>
+          <div class="wear-card temperature"><span>♨</span><small>Temperatura</small><b id="waterTemp">0°C</b><i></i></div>
+        </div>
+        <div class="electrical"><span>🔋 Sistema elétrico</span><b id="batteryVoltage">0 V</b></div>
+      </section>
+    </main>
+
+    <div class="hidden" aria-hidden="true">
+      <div id="gpsPanel"></div><span id="gpsDestination"></span><span id="gpsDistance"></span><span id="gpsRemain"></span><span id="gpsEta"></span><span id="gpsRoad"></span><span id="truckArrow"></span>
+    </div>
+
+    <footer class="footerbar"><span>GAT LOG • VIRTUAL TRUCKING</span><span id="telemetryStatus">TruckSim GPS: aguardando...</span><span>ANDROID 1.2.0</span></footer>
+  </section>
+
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-card glass">
+      <div class="modal-title">CONFIGURAÇÕES <button id="closeSettings">✕</button></div>
+      <label for="telemetryHost">PC do ETS2 / GAT Telemetria</label>
+      <input id="telemetryHost" type="text" placeholder="192.168.1.100 ou 100.x.x.x">
+      <small>Informe o IP do PC na rede local ou pelo Tailscale.</small>
+      <label class="check-row"><input id="voiceToggle" type="checkbox" checked> Alertas de limite por voz</label>
+      <label for="speedTolerance">Tolerância do radar</label>
+      <select id="speedTolerance"><option value="0">0 km/h</option><option value="3" selected>3 km/h</option><option value="5">5 km/h</option><option value="10">10 km/h</option></select>
+      <button id="saveSettings" class="primary">SALVAR E CONECTAR</button>
+      <button id="logoutBtn" class="danger">SAIR DA CONTA</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
