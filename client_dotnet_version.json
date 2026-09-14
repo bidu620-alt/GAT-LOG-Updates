@@ -1,10 +1,10 @@
 ﻿{
     "app":  "GAT Telemetria BETA",
     "channel":  "stable-dotnet",
-    "version":  "1.0.39.0",
-    "display_version":  "BETA 1.0.39 YOUTUBE HOTFIX",
-    "notas":  "Hotfix do player YouTube no WebView2: o GAT agora envia HTTP Referer e widget_referrer para identificar corretamente o player incorporado e evitar falhas/erro 153. Mantem Canal GAT, Minha Radio, YouTube, playlists, Radio Online MP3/AAC, overlay, volume e fullscreen. O modo SITE/WEB experimental da 1.0.38 nao faz parte desta versao.",
-    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.39.exe",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.39_SOURCE.zip",
-    "sha256":  "9e469b1cbc088d6de30d49127aaaf8542e777344e6dfca393e02acf507d5a1fa"
+    "version":  "1.0.40.0",
+    "display_version":  "BETA 1.0.40 RADIO TV + GAT DASH",
+    "notas":  "Radio/TV GAT com Canal GAT, Meu Video e Canal Web. Meu Video e Canal Web ficam disponiveis para o GAT DASH Android/PC pela ponte local na porta 31378. Mantem YouTube, playlists, Radio Online, overlay e hotfix de Referer.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.40.exe",
+    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.40_SOURCE.zip",
+    "sha256":  "f8e5533a28271e724be9491116b1e5c05284c1052f81b478d94ebdca671a7fa4"
 }
