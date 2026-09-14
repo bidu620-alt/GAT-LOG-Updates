@@ -29,8 +29,10 @@ $radioBeforeLegacy = Get-Content $radio.FullName -Raw
 $radioBeforeLegacy = $radioBeforeLegacy.Replace("`r`n", "`n").Replace("`r", "`n")
 Set-Content $radio.FullName $radioBeforeLegacy -Encoding UTF8 -NoNewline
 
+# O script legado usa $ErrorActionPreference=Stop e lanca excecao quando falha.
+# Nao usar $LASTEXITCODE aqui: ele pode conservar o codigo de um processo nativo anterior
+# mesmo quando o patch PowerShell terminou com sucesso.
 & $adapted -Root $rootPath
-if ($LASTEXITCODE -ne 0) { throw 'Falha ao aplicar base Canal Web 1.0.40.' }
 
 $mainText = Get-Content $main.FullName -Raw
 $radioText = Get-Content $radio.FullName -Raw
