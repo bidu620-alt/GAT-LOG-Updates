@@ -174,7 +174,7 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add releases/GAT_LOG_SERVER_UPDATE_1.0.61_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.61.zip releases/GAT_SERVER_LOCAL_1.0.61.sha256 server_dotnet_version.json
           git commit -m 'Publish GAT Server 1.0.61 Radio Video'
-          git restore server-local/updater/Program.cs server-local/updater/Updater.csproj server-local/ui/GatLogServer/MainForm.cs server-local/ui/Properties/AssemblyInfo.cs
+          git reset --hard HEAD
           git pull --rebase -X theirs
           git push
 
