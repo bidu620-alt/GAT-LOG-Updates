@@ -6,5 +6,5 @@
     "notas":  "GAT Telemetria BETA 1.0.33: adiciona Radio GAT com playlist do YouTube definida por Admin/Moderador no site. O audio toca somente dentro do Telemetria; cada motorista escolhe ouvir e controla o proprio volume. Mantem telemetria, viagens offline, assinatura, criptografia e TruckSim GPS integrado.",
     "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.33.exe",
     "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.33_SOURCE.zip",
-    "sha256":  "5747479ea502eb45ba944728bdb26d38bc12c142825a7ec179d02362c4cdd903"
+    "sha256":  "47dc61389be47035ec58e098890a88e23ee8f2e60c27b5a1e3c8db8a6c0d5cf7"
 }
