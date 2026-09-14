@@ -1,4 +1,4 @@
-name: Build GAT DASH 1.0 PC + Android
+name: Build GAT DASH 1.0.1 PC + Android
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: gat-dash-v1-${{ github.ref }}
+  group: gat-dash-v101-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: gat-dash-pc
-          path: gat-dash/windows/Output/GAT_DASH_PC_SETUP_1.0.0.exe
+          path: gat-dash/windows/Output/GAT_DASH_PC_SETUP_1.0.1.exe
 
   android:
     runs-on: ubuntu-latest
@@ -74,11 +74,11 @@ jobs:
         run: |
           set -euo pipefail
           gradle -p gat-dash/android :app:assembleDebug --no-daemon
-          cp gat-dash/android/app/build/outputs/apk/debug/app-debug.apk GAT_DASH_ANDROID_1.0.0.apk
+          cp gat-dash/android/app/build/outputs/apk/debug/app-debug.apk GAT_DASH_ANDROID_1.0.1.apk
       - uses: actions/upload-artifact@v4
         with:
           name: gat-dash-android
-          path: GAT_DASH_ANDROID_1.0.0.apk
+          path: GAT_DASH_ANDROID_1.0.1.apk
 
   publish:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -95,30 +95,30 @@ jobs:
         with:
           name: gat-dash-android
           path: dist/android
-      - name: Publish GAT DASH 1.0
+      - name: Publish GAT DASH 1.0.1
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p releases
-          cp dist/pc/GAT_DASH_PC_SETUP_1.0.0.exe releases/GAT_DASH_PC_SETUP_1.0.0.exe
-          cp dist/android/GAT_DASH_ANDROID_1.0.0.apk releases/GAT_DASH_ANDROID_1.0.0.apk
-          PC_SHA=$(sha256sum releases/GAT_DASH_PC_SETUP_1.0.0.exe | awk '{print $1}')
-          APK_SHA=$(sha256sum releases/GAT_DASH_ANDROID_1.0.0.apk | awk '{print $1}')
+          cp dist/pc/GAT_DASH_PC_SETUP_1.0.1.exe releases/GAT_DASH_PC_SETUP_1.0.1.exe
+          cp dist/android/GAT_DASH_ANDROID_1.0.1.apk releases/GAT_DASH_ANDROID_1.0.1.apk
+          PC_SHA=$(sha256sum releases/GAT_DASH_PC_SETUP_1.0.1.exe | awk '{print $1}')
+          APK_SHA=$(sha256sum releases/GAT_DASH_ANDROID_1.0.1.apk | awk '{print $1}')
           cat > gat_dash_version.json <<JSON
           {
             "app":"GAT DASH",
-            "version":"1.0.0",
-            "display_version":"GAT DASH 1.0 PC + ANDROID",
-            "notes":"Dashboard GAT LOG com login da Central, telemetria TruckSim GPS, radar de limite, alerta por voz, velocidade, RPM, marcha, combustivel, cruise, GPS, rota, ETA e condicao do caminhao. Sem radio e sem cadastro no app.",
-            "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.0.0.exe",
-            "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.0.0.apk",
+            "version":"1.0.1",
+            "display_version":"GAT DASH 1.0.1 PC + ANDROID",
+            "notes":"Aviso antecipado de reducao de velocidade por voz. O GAT DASH aprende localmente os pontos reais onde o limite muda usando posicao e direcao do caminhao; nas proximas passagens avisa por volta de 250 m e reforca perto de 100 m se a velocidade estiver acima do proximo limite. Mantem radar atual, login Central GAT e telemetria TruckSim GPS.",
+            "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.0.1.exe",
+            "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.0.1.apk",
             "pc_sha256":"$PC_SHA",
             "android_sha256":"$APK_SHA"
           }
           JSON
           git config user.name 'GAT DASH Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add -f releases/GAT_DASH_PC_SETUP_1.0.0.exe releases/GAT_DASH_ANDROID_1.0.0.apk gat_dash_version.json
-          git commit -m 'Publish GAT DASH 1.0 PC + Android'
+          git add -f releases/GAT_DASH_PC_SETUP_1.0.1.exe releases/GAT_DASH_ANDROID_1.0.1.apk gat_dash_version.json
+          git commit -m 'Publish GAT DASH 1.0.1 PC + Android'
           git pull --rebase -X theirs origin main
           git push origin main

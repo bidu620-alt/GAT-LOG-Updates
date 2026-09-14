@@ -2,7 +2,12 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const allowedRoles = new Set(['driver','moderator','admin','owner']);
-  const state = {user:'',role:'',telemetry:null,lastTelemetry:0,lastSpoken:0,lastLimit:0,voice:true,tolerance:3,host:'',platform:'web'};
+  const SPEED_POINTS_KEY = 'gat_dash_speed_points_v1';
+  const state = {
+    user:'',role:'',telemetry:null,lastTelemetry:0,lastSpoken:0,lastLimit:0,
+    voice:true,tolerance:3,host:'',platform:'web',
+    speedPoints:loadSpeedPoints(),lastPos:null,lastObservedLimit:0,previewSpoken:{}
+  };
   const native = window.chrome && window.chrome.webview ? 'windows' : (window.GatAndroid ? 'android' : 'web');
   state.platform = native;
 
@@ -44,6 +49,82 @@
   function gearText(t){const d=Number(first(t,'truck.displayedGear','Truck.DisplayedGear')||0); if(d<0)return 'R'+Math.abs(d); if(d===0)return 'N'; return 'D'+d}
   function setIndicator(id,on){$(id).classList.toggle('on',!!on)}
 
+  function loadSpeedPoints(){
+    try {
+      const raw=localStorage.getItem(SPEED_POINTS_KEY); const arr=raw?JSON.parse(raw):[];
+      return Array.isArray(arr)?arr.filter(p=>p&&Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.z))&&Number(p.to)>0).slice(-800):[];
+    } catch { return []; }
+  }
+  function saveSpeedPoints(){
+    try { localStorage.setItem(SPEED_POINTS_KEY,JSON.stringify(state.speedPoints.slice(-800))); } catch {}
+  }
+  function normHeading(h){ h=Number(h||0); if(Math.abs(h)>1.5)h/=360; h%=1; if(h<0)h+=1; return h; }
+  function headingDiff(a,b){ const d=Math.abs(normHeading(a)-normHeading(b)); return Math.min(d,1-d); }
+  function getPosition(t){
+    const x=Number(first(t,'truck.placement.x','Truck.Placement.X','truck.position.x','Truck.Position.X'));
+    const z=Number(first(t,'truck.placement.z','Truck.Placement.Z','truck.position.z','Truck.Position.Z'));
+    const h=normHeading(first(t,'truck.placement.heading','Truck.Placement.Heading','truck.position.heading','Truck.Position.Heading'));
+    return Number.isFinite(x)&&Number.isFinite(z)?{x,z,h}:null;
+  }
+  function distance(a,b){const dx=a.x-b.x,dz=a.z-b.z;return Math.sqrt(dx*dx+dz*dz)}
+  function learnSpeedPoint(pos,fromLimit,toLimit){
+    const from=Math.round(Number(fromLimit||0)),to=Math.round(Number(toLimit||0));
+    if(!pos||from<=0||to<=0||Math.abs(from-to)<2)return;
+    let found=null;
+    for(const p of state.speedPoints){
+      if(Math.round(Number(p.to))!==to||headingDiff(p.h,pos.h)>.12)continue;
+      if(distance(p,pos)<=80){found=p;break;}
+    }
+    if(found){
+      const seen=Math.max(1,Number(found.seen||1));
+      found.x=(Number(found.x)*seen+pos.x)/(seen+1); found.z=(Number(found.z)*seen+pos.z)/(seen+1);
+      found.h=pos.h; found.from=from; found.to=to; found.seen=seen+1; found.updated=Date.now();
+    } else {
+      state.speedPoints.push({id:'sp-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),x:pos.x,z:pos.z,h:pos.h,from,to,seen:1,updated:Date.now()});
+      if(state.speedPoints.length>800)state.speedPoints=state.speedPoints.slice(-800);
+    }
+    saveSpeedPoints();
+  }
+  function canRepeatPreview(key,waitMs=600000){const last=Number(state.previewSpoken[key]||0);return Date.now()-last>waitMs}
+  function markPreview(key){state.previewSpoken[key]=Date.now();}
+  function speakPreview(text,key){
+    if(!state.voice||!canRepeatPreview(key)||Date.now()-state.lastSpoken<3500)return false;
+    state.lastSpoken=Date.now(); markPreview(key); nativePost({type:'speak',text}); return true;
+  }
+  function processPredictiveLimit(t,speed,limit,connected){
+    if(!connected){state.lastPos=null;state.lastObservedLimit=0;return}
+    const pos=getPosition(t); if(!pos)return;
+    if(state.lastObservedLimit>0&&limit>0&&Math.abs(limit-state.lastObservedLimit)>=2){learnSpeedPoint(pos,state.lastObservedLimit,limit)}
+
+    let best=null,bestDistance=Infinity;
+    if(state.lastPos&&limit>0){
+      const mvx=pos.x-state.lastPos.x,mvz=pos.z-state.lastPos.z,moved=Math.sqrt(mvx*mvx+mvz*mvz);
+      if(moved>0.4){
+        for(const p of state.speedPoints){
+          const target=Number(p.to||0); if(target<=0||target>=limit-1)continue;
+          if(headingDiff(pos.h,p.h)>.14)continue;
+          const d=distance(pos,p); if(d<35||d>300)continue;
+          const tx=Number(p.x)-pos.x,tz=Number(p.z)-pos.z; if(mvx*tx+mvz*tz<=0)continue;
+          if(d<bestDistance){best=p;bestDistance=d;}
+        }
+      }
+    }
+
+    if(best){
+      const target=Math.round(Number(best.to));
+      const rounded=Math.max(50,Math.round(bestDistance/50)*50);
+      $('gpsInstruction').textContent=`Limite ${target} km/h em ~${rounded} m`;
+      if(bestDistance<=260&&bestDistance>115){
+        speakPreview(`Atenção. Limite de ${target} quilômetros por hora em aproximadamente ${rounded} metros.`,`early:${best.id}`);
+      } else if(bestDistance<=115&&speed>target+state.tolerance){
+        speakPreview(`Reduza a velocidade. Limite de ${target} quilômetros por hora à frente.`,`near:${best.id}`,);
+      }
+    }
+
+    state.lastPos=pos;
+    if(limit>0)state.lastObservedLimit=limit;
+  }
+
   window.gatDashPushTelemetry = function(payload){
     let t=payload; if(typeof t==='string'){try{t=JSON.parse(t)}catch{return}}
     if(!t||typeof t!=='object')return; state.telemetry=t; state.lastTelemetry=Date.now(); render(t);
@@ -75,6 +156,7 @@
     for(const name of wears){const raw=first(t,'truck.wear'+name,'Truck.Wear'+name); const c=raw===undefined?100:conditionFromWear(raw); $('wear'+name).textContent=c+'%'; sum+=c;count++;}
     const overall=Math.round(sum/count); $('overallCondition').textContent=overall+'%'; $('conditionText').textContent=overall>=95?'Sem avarias':overall>=80?'Desgaste leve':overall>=60?'Atenção ao caminhão':'Manutenção recomendada';
     $('gameDot').classList.toggle('online',connected); $('gameStatus').textContent=connected?(game.gameName||game.GameName||'ETS2 Conectado'):'ETS2 desconectado'; $('telemetryStatus').textContent='TruckSim GPS: '+(connected?'telemetria ativa':'servidor conectado • jogo aguardando');
+    processPredictiveLimit(t,speed,limit,connected);
     applyRadar(speed,limit);
   }
 
