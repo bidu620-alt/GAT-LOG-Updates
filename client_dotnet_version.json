@@ -1,10 +1,10 @@
 ﻿{
     "app":  "GAT Telemetria BETA",
     "channel":  "stable-dotnet",
-    "version":  "1.0.33.0",
-    "display_version":  "BETA",
-    "notas":  "GAT Telemetria BETA 1.0.33: adiciona Radio GAT com playlist do YouTube definida por Admin/Moderador no site. O audio toca somente dentro do Telemetria; cada motorista escolhe ouvir e controla o proprio volume. Mantem telemetria, viagens offline, assinatura, criptografia e TruckSim GPS integrado.",
-    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.33.exe",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.33_SOURCE.zip",
-    "sha256":  "47dc61389be47035ec58e098890a88e23ee8f2e60c27b5a1e3c8db8a6c0d5cf7"
+    "version":  "1.0.34.0",
+    "display_version":  "BETA 1.0.34 RADIO / TV GAT",
+    "notas":  "Radio/TV GAT: aceita video individual e playlist do YouTube, exibe video no Telemetria, controles do YouTube, tela cheia, botao Abrir no YouTube e pula automaticamente clips bloqueados dentro de playlists. Usa pasta WebView2 limpa para corrigir E_ACCESSDENIED.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.34.exe",
+    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.34_SOURCE.zip",
+    "sha256":  "45523b2c9e6493a264d308713cd08c4ed433139d42cd788c45881271fef8a4c4"
 }
