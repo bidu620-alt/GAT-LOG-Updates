@@ -1,10 +1,10 @@
 ﻿{
     "app":  "GAT Telemetria BETA",
     "channel":  "stable-dotnet",
-    "version":  "1.0.34.0",
-    "display_version":  "BETA 1.0.34 RADIO / TV GAT",
-    "notas":  "Radio/TV GAT: aceita video individual e playlist do YouTube, exibe video no Telemetria, controles do YouTube, tela cheia, botao Abrir no YouTube e pula automaticamente clips bloqueados dentro de playlists. Usa pasta WebView2 limpa para corrigir E_ACCESSDENIED.",
-    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.34.exe",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.34_SOURCE.zip",
-    "sha256":  "45523b2c9e6493a264d308713cd08c4ed433139d42cd788c45881271fef8a4c4"
+    "version":  "1.0.35.0",
+    "display_version":  "BETA 1.0.35 RÃDIO / TV OVERLAY",
+    "notas":  "Radio/TV GAT agora fica independente do painel principal e pode permanecer sobre o Euro Truck e outros jogos. Inclui MODO JOGO compacto, TopMost, redimensionamento e minimiza o GAT principal sem parar a radio. Mantem video/playlist, fullscreen, volume e fallback do YouTube.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.35.exe",
+    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.35_SOURCE.zip",
+    "sha256":  "cc8a49c12fc9e6a226baa84c31ab9a17dc4f9c3952ef7a5409caa82c59ca2428"
 }
