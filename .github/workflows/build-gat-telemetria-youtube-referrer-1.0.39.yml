@@ -1,0 +1,175 @@
+name: Build GAT Telemetria YouTube Referrer 1.0.39
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/apply-youtube-referrer-1.0.39.ps1'
+      - '.github/workflows/build-gat-telemetria-youtube-referrer-1.0.39.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/apply-youtube-referrer-1.0.39.ps1'
+      - '.github/workflows/build-gat-telemetria-youtube-referrer-1.0.39.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gat-telemetria-youtube-referrer-production-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Reconstruct and compile GAT Telemetria 1.0.39
+        shell: powershell
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias do fonte e encontrei $($parts.Count)" }
+          $zip = Join-Path $PWD 'gat139-source.zip'
+          $out = [IO.File]::Create($zip)
+          try {
+            $out.Write($first, 0, $first.Length)
+            foreach ($part in $parts) { $bytes = [IO.File]::ReadAllBytes($part.FullName); $out.Write($bytes, 0, $bytes.Length) }
+          } finally { $out.Dispose() }
+          if (Test-Path 'gat139-build') { Remove-Item 'gat139-build' -Recurse -Force }
+          Expand-Archive $zip 'gat139-build' -Force
+          Get-ChildItem 'gat139-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+            $txt = Get-Content $_.FullName -Raw
+            if ($txt -like '*1.0.28*') { Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8 }
+          }
+          ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-beta-brand-1.0.32.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.33.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.34.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-overlay-1.0.35.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-personal-1.0.36.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-stream-1.0.37.ps1 -Root "$PWD/gat139-build"
+          ./gat-telemetria-allinone-1.0.29/apply-youtube-referrer-1.0.39.ps1 -Root "$PWD/gat139-build"
+
+          $main = Get-ChildItem 'gat139-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          $radio = Get-ChildItem 'gat139-build' -Filter 'RadioForm.cs' -Recurse | Select-Object -First 1
+          $project = Get-ChildItem 'gat139-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if (-not $main -or -not $radio -or -not $project) { throw 'Fonte 1.0.39 incompleto.' }
+          $mainText = Get-Content $main.FullName -Raw
+          $radioText = Get-Content $radio.FullName -Raw
+          $projectText = Get-Content $project.FullName -Raw
+          foreach($m in @('CurrentVersion = "1.0.39.0"','RÁDIO GAT','new RadioForm()','radioForm.Show();')) { if ($mainText -notlike "*$m*") { throw "Cliente sem $m" } }
+          foreach($m in @('CANAL GAT','MINHA RÁDIO','TryParseMediaSource','sourceType = "stream"','gatLoadStream','ABRIR FONTE','MODO JOGO • SOBREPOSTO','TopMost = true;','Radio-1.0.39','/index.html?v=139','SetHeader("Referer", "https://radio.gatlogets2.local/")',"widget_referrer:'https://radio.gatlogets2.local/'")) { if ($radioText -notlike "*$m*") { throw "Radio hotfix sem $m" } }
+          if ($radioText -like '*SITE / WEB*' -or $radioText -like '*radio-web-url.txt*') { throw 'SITE/WEB entrou indevidamente na 1.0.39.' }
+          if ($projectText -notlike '*Microsoft.Web.WebView2*') { throw 'WebView2 ausente do projeto.' }
+          msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilacao do GAT Telemetria 1.0.39' }
+          $projectDir = Split-Path $project.FullName -Parent
+          $exe = Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado' }
+          "GAT_OUT=$($exe.Directory.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build TruckSim GPS GAT dependency
+        shell: powershell
+        run: |
+          if (Test-Path 'trucksim-youtube-build') { Remove-Item 'trucksim-youtube-build' -Recurse -Force }
+          git clone --depth 1 https://github.com/TruckSim-GPS/trucksim-gps-server.git trucksim-youtube-build
+          Remove-Item 'trucksim-youtube-build/.git' -Recurse -Force
+          ./trucksim-gps-gat/apply-patch.ps1 -Root "$PWD/trucksim-youtube-build"
+          nuget restore trucksim-youtube-build/source/Funbit.Ets.Telemetry.sln -NonInteractive
+          msbuild trucksim-youtube-build/source/Funbit.Ets.Telemetry.sln /m /t:Rebuild /p:Configuration=Release /p:Platform="Mixed Platforms"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar TruckSim GPS GAT' }
+          $truckOut = Join-Path $PWD 'trucksim-youtube-build/source/Funbit.Ets.Telemetry.Server/bin/Release'
+          if (-not (Test-Path (Join-Path $truckOut 'TruckSimGPS_Server.exe'))) { throw 'TruckSimGPS_Server.exe nao foi gerado' }
+          "TRUCK_OUT=$truckOut" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Stage application and launcher
+        shell: powershell
+        run: |
+          $stage = Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging-youtube139'
+          if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $stage, "$stage/gat", "$stage/trucksim" | Out-Null
+          Copy-Item "$env:GAT_OUT/*" "$stage/gat" -Recurse -Force
+          Copy-Item (Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
+          $cfg = Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe.config'
+          if (Test-Path $cfg) { Copy-Item $cfg (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force }
+          Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe') -Force -ErrorAction SilentlyContinue
+          Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe.config') -Force -ErrorAction SilentlyContinue
+          Copy-Item "$env:TRUCK_OUT/*" "$stage/trucksim" -Recurse -Force
+          $launcherText = Get-Content 'gat-telemetria-allinone-1.0.29/Launcher.cs' -Raw
+          foreach($m in @('TruckSimGPS_Server.exe','Process.GetProcessesByName("TruckSimGPS_Server")','GAT_TELEMETRIA_APP.exe')) { if ($launcherText -notlike "*$m*") { throw "Launcher sem $m" } }
+          $launcherText = $launcherText.Replace('"GAT Telemetria"', '"GAT Telemetria BETA"')
+          $patched = Join-Path $PWD 'Launcher.YouTube139.cs'; Set-Content $patched $launcherText -Encoding UTF8
+          $csc = "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$stage/GAT_TELEMETRIA.exe" $patched
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar launcher integrado' }
+          Invoke-WebRequest 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile "$stage/vc_redist.x64.exe"
+          "RADIO_STAGE=$stage" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install Inno Setup
+        shell: powershell
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer 1.0.39
+        shell: powershell
+        run: |
+          $issSource = 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
+          $iss = 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_YouTubeReferrer_1.0.39.iss'
+          $text = Get-Content $issSource -Raw
+          $text = $text.Replace('1.0.29','1.0.39').Replace('staging','staging-youtube139')
+          $text = $text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA').Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
+          $text = $text.Replace('Name: "{group}\GAT Telemetria";','Name: "{group}\GAT Telemetria BETA";').Replace('Name: "{group}\Desinstalar GAT Telemetria";','Name: "{group}\Desinstalar GAT Telemetria BETA";').Replace('Name: "{autodesktop}\GAT Telemetria";','Name: "{autodesktop}\GAT Telemetria BETA";').Replace('Description: "Abrir GAT Telemetria";','Description: "Abrir GAT Telemetria BETA";')
+          Set-Content $iss $text -Encoding UTF8
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao gerar instalador 1.0.39' }
+          $setup = 'gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_SETUP_1.0.39.exe'
+          if (-not (Test-Path $setup)) { throw 'Setup 1.0.39 nao foi gerado' }
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          Copy-Item $setup 'releases/GAT_TELEMETRIA_SETUP_1.0.39.exe' -Force
+
+      - name: Package GPL source for TruckSim GPS GAT
+        shell: powershell
+        run: |
+          $sourceZip = 'releases/TruckSimGPS_GAT_DANOS_1.0.39_SOURCE.zip'
+          if (Test-Path $sourceZip) { Remove-Item $sourceZip -Force }
+          Compress-Archive -Path 'trucksim-youtube-build/*' -DestinationPath $sourceZip -CompressionLevel Optimal
+
+      - name: Publish manifest and installer
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: powershell
+        run: |
+          $setup = 'releases/GAT_TELEMETRIA_SETUP_1.0.39.exe'
+          $sha = (Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant()
+          $manifest = [ordered]@{
+            app = 'GAT Telemetria BETA'
+            channel = 'stable-dotnet'
+            version = '1.0.39.0'
+            display_version = 'BETA 1.0.39 YOUTUBE HOTFIX'
+            notas = 'Hotfix do player YouTube no WebView2: o GAT agora envia HTTP Referer e widget_referrer para identificar corretamente o player incorporado e evitar falhas/erro 153. Mantem Canal GAT, Minha Radio, YouTube, playlists, Radio Online MP3/AAC, overlay, volume e fullscreen. O modo SITE/WEB experimental da 1.0.38 nao faz parte desta versao.'
+            setup_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.39.exe'
+            source_url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.39_SOURCE.zip'
+            sha256 = $sha
+          }
+          $manifest | ConvertTo-Json | Set-Content 'client_dotnet_version.json' -Encoding UTF8
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f releases/GAT_TELEMETRIA_SETUP_1.0.39.exe releases/TruckSimGPS_GAT_DANOS_1.0.39_SOURCE.zip client_dotnet_version.json
+          git commit -m "Publish GAT Telemetria YouTube Hotfix 1.0.39"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar commit 1.0.39' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao sincronizar antes da publicacao' }
+          git push
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar GAT Telemetria 1.0.39' }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Telemetria-YouTube-Hotfix-1.0.39
+          path: releases/GAT_TELEMETRIA_SETUP_1.0.39.exe
