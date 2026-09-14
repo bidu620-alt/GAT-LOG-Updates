@@ -20,6 +20,15 @@ $patch = $patch.Replace('1.0.37','1.0.39').Replace('1.0.38','1.0.40')
 # portanto a troca acima nao alcanca esse trecho. Ajusta a validacao tambem.
 $patch = $patch.Replace('1\.0\.38\.0','1\.0\.40\.0')
 Set-Content $adapted $patch -Encoding UTF8
+
+# O script legado possui duas comparacoes de blocos multilinha por igualdade exata.
+# O fonte reconstruido pelos patches anteriores pode estar em CRLF enquanto o script
+# baixado do GitHub esta em LF. Normaliza o RadioForm para LF antes de aplicar a base
+# 1.0.38, evitando falso "Bloco MINHA RADIO nao encontrado" sem alterar o codigo C#.
+$radioBeforeLegacy = Get-Content $radio.FullName -Raw
+$radioBeforeLegacy = $radioBeforeLegacy.Replace("`r`n", "`n").Replace("`r", "`n")
+Set-Content $radio.FullName $radioBeforeLegacy -Encoding UTF8 -NoNewline
+
 & $adapted -Root $rootPath
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao aplicar base Canal Web 1.0.40.' }
 
