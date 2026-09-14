@@ -23,6 +23,7 @@ namespace GatDash.Windows
         private readonly Timer _telemetryTimer = new Timer { Interval = 350 };
         private readonly SpeechSynthesizer _voice = new SpeechSynthesizer();
         private bool _polling;
+        private bool _mediaPolling;
         private bool _ready;
         private string _host = "";
         private bool _voiceEnabled = true;
@@ -31,7 +32,7 @@ namespace GatDash.Windows
 
         public MainForm()
         {
-            Text = "GAT DASH 1.0";
+            Text = "GAT DASH 1.1";
             MinimumSize = new Size(1024, 620);
             Size = new Size(1450, 850);
             StartPosition = FormStartPosition.CenterScreen;
@@ -102,7 +103,30 @@ namespace GatDash.Windows
                     {
                         try { _voice.SpeakAsyncCancelAll(); _voice.SpeakAsync(text); } catch { }
                     }
+                    return;
                 }
+                if (type == "openUrl")
+                {
+                    OpenExternal((string)msg["url"] ?? "");
+                    return;
+                }
+                if (type == "mediaRefresh")
+                {
+                    await PollMediaAsync();
+                    return;
+                }
+            }
+            catch { }
+        }
+
+        private static void OpenExternal(string value)
+        {
+            try
+            {
+                Uri uri;
+                if (!Uri.TryCreate((value ?? "").Trim(), UriKind.Absolute, out uri)) return;
+                if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps) return;
+                Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
             }
             catch { }
         }
@@ -142,6 +166,24 @@ namespace GatDash.Windows
                 await JsAsync("window.gatDashTelemetryError(" + JsonConvert.SerializeObject(ShortError(ex.Message)) + ")");
             }
             finally { _polling = false; }
+        }
+
+        private async Task PollMediaAsync()
+        {
+            if (!_ready || _mediaPolling || _web.CoreWebView2 == null) return;
+            _mediaPolling = true;
+            try
+            {
+                string host = string.IsNullOrWhiteSpace(_host) ? "127.0.0.1" : _host;
+                string url = "http://" + host + (host.Contains(":") ? "" : ":31378") + "/api/gat/media?t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                string json = await _http.GetStringAsync(url);
+                await JsAsync("window.gatDashPushMedia(" + JsonConvert.SerializeObject(json) + ")");
+            }
+            catch
+            {
+                await JsAsync("window.gatDashMediaError('abra o GAT Telemetria no PC')");
+            }
+            finally { _mediaPolling = false; }
         }
 
         private async Task JsAsync(string script)

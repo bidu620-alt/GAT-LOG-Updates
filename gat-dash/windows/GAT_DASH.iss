@@ -1,5 +1,5 @@
 #define MyAppName "GAT DASH"
-#define MyAppVersion "1.0.1"
+#define MyAppVersion "1.1.0"
 #define MyAppExeName "GAT_DASH.exe"
 [Setup]
 AppId={{8A7D57F2-6B9A-4D0E-8E5D-14F6520DB251}}
@@ -8,7 +8,7 @@ AppVersion={#MyAppVersion}
 DefaultDirName={autopf}\GAT-LOG\GAT DASH
 DefaultGroupName=GAT LOG
 OutputDir=Output
-OutputBaseFilename=GAT_DASH_PC_SETUP_1.0.1
+OutputBaseFilename=GAT_DASH_PC_SETUP_1.1.0
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

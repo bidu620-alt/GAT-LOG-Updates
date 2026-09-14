@@ -65,6 +65,8 @@
           </div>
         </div>
         <div id="cruiseBox" class="cruise-box"><span>◴</span><div><small>CRUISE</small><b id="cruiseValue">OFF</b></div></div>
+        <div id="speedNotice" class="speed-notice"><span id="speedLimitSign" class="speed-limit-small">—</span><div><b id="speedNoticeTitle">Limite atual</b><small id="gpsInstruction">Aguardando rota</small></div></div>
+        <div id="overspeedAlert" class="overspeed-alert hidden">⚠ REDUZA A VELOCIDADE</div>
         <div class="mini-cards">
           <div class="mini-card"><span>⛽</span><div><b id="fuelPct">0%</b><small id="fuelLiters">0 / 0 L</small></div></div>
           <div class="mini-card"><span>♨</span><div><b id="waterTemp">0°C</b><small>Temperatura</small></div></div>
@@ -72,19 +74,21 @@
         </div>
       </section>
 
-      <section class="panel gps-panel" id="gpsPanel">
-        <div class="panel-title gps-title"><span>△ GPS / NAVEGAÇÃO</span><span id="voiceBadge" class="voice-badge">🔊 VOZ ATIVA</span></div>
-        <div class="gps-map">
-          <div class="map-grid"></div>
-          <svg class="route-svg" viewBox="0 0 400 450" preserveAspectRatio="none" aria-hidden="true">
-            <path class="road-shadow" d="M195 460 C205 380 155 325 210 260 S270 160 238 85 S260 30 285 -20"/>
-            <path class="road-line" d="M195 460 C205 380 155 325 210 260 S270 160 238 85 S260 30 285 -20"/>
-          </svg>
-          <div class="next-turn"><span>↱</span><div><b id="gpsDestination">Destino</b><small id="gpsDistance">0 km</small></div></div>
-          <div id="speedLimitSign" class="speed-limit">—</div>
-          <div id="truckArrow" class="truck-arrow">▲</div>
-          <div id="overspeedAlert" class="overspeed-alert hidden">⚠ REDUZA A VELOCIDADE</div>
-          <div class="gps-footer"><div><b id="gpsRoad">ROTA</b><small id="gpsInstruction">Siga para o destino</small></div><div class="arrival"><b id="gpsRemain">0 km</b><small id="gpsEta">—</small></div></div>
+      <section class="panel media-panel" id="mediaPanel">
+        <div class="panel-title media-title"><span>📺 RÁDIO / TV GAT</span><span id="voiceBadge" class="voice-badge">🔊 VOZ ATIVA</span></div>
+        <div class="media-tabs">
+          <button id="mediaGat" class="media-tab active">📡 CANAL GAT</button>
+          <button id="mediaMine" class="media-tab">🎬 MEU VÍDEO</button>
+          <button id="mediaWeb" class="media-tab">🌐 CANAL WEB</button>
+        </div>
+        <div class="media-stage" id="mediaStage">
+          <iframe id="mediaFrame" title="Player GAT" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          <div id="mediaEmpty" class="media-empty"><div class="media-empty-icon">▶</div><b id="mediaEmptyTitle">Aguardando programação</b><span id="mediaEmptyText">Abra a Rádio/TV GAT no Telemetria para configurar.</span></div>
+          <div id="mediaLoading" class="media-loading hidden">Carregando canal...</div>
+        </div>
+        <div class="media-footer">
+          <div><b id="mediaSourceName">Canal GAT</b><small id="mediaStatus">Conectando ao GAT Telemetria...</small></div>
+          <div class="media-actions"><button id="toggleVideoBtn">OCULTAR VÍDEO</button></div>
         </div>
       </section>
 
@@ -101,16 +105,21 @@
       </section>
     </main>
 
-    <footer class="footerbar"><span>GAT LOG • VIRTUAL TRUCKING</span><span id="telemetryStatus">TruckSim GPS: aguardando...</span><span>GAT DASH 1.0</span></footer>
+
+    <div class="hidden" aria-hidden="true">
+      <div id="gpsPanel"></div><span id="gpsDestination"></span><span id="gpsDistance"></span><span id="gpsRemain"></span><span id="gpsEta"></span><span id="gpsRoad"></span><span id="truckArrow"></span>
+    </div>
+
+    <footer class="footerbar"><span>GAT LOG • VIRTUAL TRUCKING</span><span id="telemetryStatus">TruckSim GPS: aguardando...</span><span>GAT DASH 1.1</span></footer>
   </section>
 
   <div id="settingsModal" class="modal hidden">
     <div class="modal-card">
       <div class="modal-title">CONFIGURAÇÕES DO GAT DASH <button id="closeSettings">✕</button></div>
-      <label>PC do ETS2 / TruckSim GPS</label>
+      <label>PC do ETS2 / GAT Telemetria</label>
       <input id="telemetryHost" type="text" placeholder="192.168.1.100 ou 100.x.x.x">
       <small>No PC, deixe vazio para usar 127.0.0.1. No celular, informe o IP do PC na rede ou Tailscale.</small>
-      <label class="check-row"><input id="voiceToggle" type="checkbox" checked> Alerta por voz ao ultrapassar o limite</label>
+      <label class="check-row"><input id="voiceToggle" type="checkbox" checked> Alertas de limite por voz</label>
       <label>Tolerância do radar</label>
       <select id="speedTolerance"><option value="0">0 km/h</option><option value="3" selected>3 km/h</option><option value="5">5 km/h</option><option value="10">10 km/h</option></select>
       <button id="saveSettings" class="primary">SALVAR E CONECTAR</button>
@@ -119,5 +128,6 @@
   </div>
 
   <script src="app.js"></script>
+  <script src="media.js"></script>
 </body>
 </html>
