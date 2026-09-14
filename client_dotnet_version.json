@@ -1,10 +1,10 @@
-{
-  "app": "GAT Telemetria BETA",
-  "channel": "stable-dotnet",
-  "version": "1.0.32.3",
-  "display_version": "BETA",
-  "notas": "Cliente 1.0.32: Outro mapa agora usa a mesma base logica do Mapa Base. RBR permanece separado e sem alteracoes. Mantidos os hotfixes de estabilidade, abertura automatica do TruckSim GPS, registro do PC, viagens offline, assinatura e criptografia local.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.32.exe",
-  "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.32_SOURCE.zip",
-  "sha256": "ced2ab3042a4cabe6c9d235243f1eb66798e226acd8c8d86fc263348ed4c90f5"
+﻿{
+    "app":  "GAT Telemetria BETA",
+    "channel":  "stable-dotnet",
+    "version":  "1.0.33.0",
+    "display_version":  "BETA",
+    "notas":  "GAT Telemetria BETA 1.0.33: adiciona Radio GAT com playlist do YouTube definida por Admin/Moderador no site. O audio toca somente dentro do Telemetria; cada motorista escolhe ouvir e controla o proprio volume. Mantem telemetria, viagens offline, assinatura, criptografia e TruckSim GPS integrado.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.33.exe",
+    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.33_SOURCE.zip",
+    "sha256":  "5747479ea502eb45ba944728bdb26d38bc12c142825a7ec179d02362c4cdd903"
 }
