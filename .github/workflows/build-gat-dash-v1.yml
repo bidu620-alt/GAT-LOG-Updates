@@ -1,4 +1,4 @@
-name: Build GAT DASH 1.1.1 PC Hotfix + Android
+name: Build GAT DASH 1.1.1 PC + Android Hotfix
 
 on:
   workflow_dispatch:
@@ -68,17 +68,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p gat-dash/android/app/src/main/assets
+          rm -f gat-dash/android/app/src/main/assets/index.html gat-dash/android/app/src/main/assets/app.css gat-dash/android/app/src/main/assets/app.js gat-dash/android/app/src/main/assets/media.js
           cp gat-dash/shared/index.html gat-dash/shared/app.css gat-dash/shared/app.js gat-dash/shared/media.js gat-dash/android/app/src/main/assets/
+          grep -q 'MEU VÍDEO' gat-dash/android/app/src/main/assets/index.html
+          grep -q 'CANAL WEB' gat-dash/android/app/src/main/assets/index.html
+          grep -q 'media.js' gat-dash/android/app/src/main/assets/index.html
       - name: Build Android APK
         shell: bash
         run: |
           set -euo pipefail
           gradle -p gat-dash/android :app:assembleDebug --no-daemon
-          cp gat-dash/android/app/build/outputs/apk/debug/app-debug.apk GAT_DASH_ANDROID_1.1.0.apk
+          cp gat-dash/android/app/build/outputs/apk/debug/app-debug.apk GAT_DASH_ANDROID_1.1.1.apk
       - uses: actions/upload-artifact@v4
         with:
           name: gat-dash-android
-          path: GAT_DASH_ANDROID_1.1.0.apk
+          path: GAT_DASH_ANDROID_1.1.1.apk
 
   publish:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -95,30 +99,30 @@ jobs:
         with:
           name: gat-dash-android
           path: dist/android
-      - name: Publish GAT DASH 1.1.1 PC hotfix
+      - name: Publish GAT DASH 1.1.1
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p releases
           cp dist/pc/GAT_DASH_PC_SETUP_1.1.1.exe releases/GAT_DASH_PC_SETUP_1.1.1.exe
-          cp dist/android/GAT_DASH_ANDROID_1.1.0.apk releases/GAT_DASH_ANDROID_1.1.0.apk
+          cp dist/android/GAT_DASH_ANDROID_1.1.1.apk releases/GAT_DASH_ANDROID_1.1.1.apk
           PC_SHA=$(sha256sum releases/GAT_DASH_PC_SETUP_1.1.1.exe | awk '{print $1}')
-          APK_SHA=$(sha256sum releases/GAT_DASH_ANDROID_1.1.0.apk | awk '{print $1}')
+          APK_SHA=$(sha256sum releases/GAT_DASH_ANDROID_1.1.1.apk | awk '{print $1}')
           cat > gat_dash_version.json <<JSON
           {
             "app":"GAT DASH",
             "version":"1.1.1",
-            "display_version":"GAT DASH 1.1.1 PC HOTFIX + ANDROID 1.1.0",
-            "notes":"Hotfix do Windows: compila o GAT DASH explicitamente em x64 para evitar erro 0x8007000B ao carregar o WebView2. Mantem Radio/TV GAT, Canal GAT, Meu Video, Canal Web, telemetria, radar e aviso antecipado de reducao de velocidade. Android permanece 1.1.0.",
+            "display_version":"GAT DASH 1.1.1 PC + ANDROID",
+            "notes":"Android 1.1.1 limpa e desativa o cache do WebView e usa URL versionada para garantir a nova tela sem mapa, com Canal GAT, Meu Video e Canal Web. PC permanece no hotfix x64 1.1.1.",
             "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.1.1.exe",
-            "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.1.0.apk",
+            "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.1.1.apk",
             "pc_sha256":"$PC_SHA",
             "android_sha256":"$APK_SHA"
           }
           JSON
           git config user.name 'GAT DASH Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add -f releases/GAT_DASH_PC_SETUP_1.1.1.exe releases/GAT_DASH_ANDROID_1.1.0.apk gat_dash_version.json
-          git commit -m 'Publish GAT DASH 1.1.1 PC hotfix'
+          git add -f releases/GAT_DASH_PC_SETUP_1.1.1.exe releases/GAT_DASH_ANDROID_1.1.1.apk gat_dash_version.json
+          git commit -m 'Publish GAT DASH 1.1.1 PC + Android'
           git pull --rebase -X theirs origin main
           git push origin main
