@@ -1,0 +1,122 @@
+name: Build GAT DASH 1.0 PC + Android
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'gat-dash/**'
+      - '.github/workflows/build-gat-dash-v1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'gat-dash/**'
+      - '.github/workflows/build-gat-dash-v1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gat-dash-v1-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - name: Restore and build GAT DASH PC
+        shell: powershell
+        run: |
+          msbuild gat-dash/windows/GatDash.Windows.csproj /restore /t:Rebuild /p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar GAT DASH PC' }
+          if (-not (Test-Path 'gat-dash/windows/bin/Release/GAT_DASH.exe')) { throw 'GAT_DASH.exe nao gerado' }
+          if (-not (Test-Path 'gat-dash/windows/bin/Release/www/index.html')) { throw 'Assets do dashboard nao copiados' }
+      - name: Install Inno Setup
+        shell: powershell
+        run: choco install innosetup -y --no-progress
+      - name: Build PC installer
+        shell: powershell
+        run: |
+          Push-Location gat-dash/windows
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' 'GAT_DASH.iss'
+          if ($LASTEXITCODE -ne 0) { throw 'Falha no instalador GAT DASH PC' }
+          Pop-Location
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gat-dash-pc
+          path: gat-dash/windows/Output/GAT_DASH_PC_SETUP_1.0.0.exe
+
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+      - name: Stage shared dashboard assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p gat-dash/android/app/src/main/assets
+          cp gat-dash/shared/index.html gat-dash/shared/app.css gat-dash/shared/app.js gat-dash/android/app/src/main/assets/
+      - name: Build Android APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle -p gat-dash/android :app:assembleDebug --no-daemon
+          cp gat-dash/android/app/build/outputs/apk/debug/app-debug.apk GAT_DASH_ANDROID_1.0.0.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gat-dash-android
+          path: GAT_DASH_ANDROID_1.0.0.apk
+
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [windows, android]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: gat-dash-pc
+          path: dist/pc
+      - uses: actions/download-artifact@v4
+        with:
+          name: gat-dash-android
+          path: dist/android
+      - name: Publish GAT DASH 1.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p releases
+          cp dist/pc/GAT_DASH_PC_SETUP_1.0.0.exe releases/GAT_DASH_PC_SETUP_1.0.0.exe
+          cp dist/android/GAT_DASH_ANDROID_1.0.0.apk releases/GAT_DASH_ANDROID_1.0.0.apk
+          PC_SHA=$(sha256sum releases/GAT_DASH_PC_SETUP_1.0.0.exe | awk '{print $1}')
+          APK_SHA=$(sha256sum releases/GAT_DASH_ANDROID_1.0.0.apk | awk '{print $1}')
+          cat > gat_dash_version.json <<JSON
+          {
+            "app":"GAT DASH",
+            "version":"1.0.0",
+            "display_version":"GAT DASH 1.0 PC + ANDROID",
+            "notes":"Dashboard GAT LOG com login da Central, telemetria TruckSim GPS, radar de limite, alerta por voz, velocidade, RPM, marcha, combustivel, cruise, GPS, rota, ETA e condicao do caminhao. Sem radio e sem cadastro no app.",
+            "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.0.0.exe",
+            "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.0.0.apk",
+            "pc_sha256":"$PC_SHA",
+            "android_sha256":"$APK_SHA"
+          }
+          JSON
+          git config user.name 'GAT DASH Build'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -f releases/GAT_DASH_PC_SETUP_1.0.0.exe releases/GAT_DASH_ANDROID_1.0.0.apk gat_dash_version.json
+          git commit -m 'Publish GAT DASH 1.0 PC + Android'
+          git pull --rebase -X theirs origin main
+          git push origin main
