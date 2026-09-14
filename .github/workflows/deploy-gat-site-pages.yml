@@ -6,6 +6,7 @@ on:
     paths:
       - 'docs/**'
       - 'scripts/apply-profile-avatar-site.py'
+      - 'scripts/apply-radio-admin-site.py'
       - '.github/workflows/deploy-gat-site-pages.yml'
   workflow_dispatch:
 
@@ -30,6 +31,15 @@ jobs:
 
       - name: Apply profile avatar UI
         run: python scripts/apply-profile-avatar-site.py
+
+      - name: Add Radio GAT admin navigation
+        run: python scripts/apply-radio-admin-site.py
+
+      - name: Validate Radio GAT site files
+        run: |
+          node --check docs/radio-admin.js
+          grep -q 'radio-admin.html' docs/admin.html
+          grep -q 'site não reproduz áudio' docs/radio-admin.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
