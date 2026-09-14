@@ -1,0 +1,201 @@
+name: Build GAT Server 1.0.60 Radio UI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'server-local/ui/GatLogServer/RadioPanel.cs'
+      - 'server-local-160/**'
+      - '.github/workflows/build-server-local-160-radio-ui.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'server-local/ui/GatLogServer/RadioPanel.cs'
+      - 'server-local-160/**'
+      - '.github/workflows/build-server-local-160-radio-ui.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gat-server-local-160-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    timeout-minutes: 20
+    runs-on: windows-latest
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Assemble verified GAT Server through 1.0.58
+        shell: bash
+        run: |
+          set -euo pipefail
+          python server-local/build-api.py
+          python server-local/apply-admin-work-switch.py
+          python server-local/apply-auto-classification.py server-local/runtime/worker.js
+          python server-local/apply-auto-classification-safety.py server-local/runtime/worker.js
+          python server-local/apply-trip-state-machine.py server-local/runtime/worker.js
+          python server-local/apply-rank-startup-grace.py server-local/runtime/worker.js
+          python server-local/apply-v147-lapeal-rank-fix.py server-local/runtime
+          python server-local/apply-v148-jeanjc-rank-fix.py server-local/runtime
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          p=Path('server-local/ui/app.ico.base64')
+          p.with_suffix('').write_bytes(base64.b64decode(p.read_text()))
+          PY
+          python server-local/normalize-go-live.py
+          python server-local/apply-monthly-trip-goal.py server-local/runtime/worker.js
+          python server-local/apply-v149-career-history.py server-local/runtime
+          python server-local/apply-v150-driver-directory-totals.py server-local/runtime
+          python server-local/apply-v151-resumable-journeys.py server-local/runtime
+          python server-local/apply-v152-admin-gat-review.py server-local/runtime
+          python server-local/apply-v153-live-telemetry-fk-fix.py server-local/runtime
+          python server-local/apply-v154-durable-trip-journal.py server-local/runtime
+          python server-local/apply-v155-open-cargo.py server-local/runtime
+          python server-local/apply-v156-damage-evidence-points.py server-local/runtime
+          python server-local-157/apply-v157-direct-gat-points.py server-local/runtime
+          python server-local-158/apply-v158-distance-gat-points.py server-local/runtime
+
+      - name: Apply Radio GAT backend 1.0.59
+        shell: bash
+        run: |
+          set -euo pipefail
+          python server-local-159/apply-v159-gat-radio.py server-local/runtime
+          node --check server-local/runtime/worker.js
+          node --test server-local-159/gat-radio-v159.test.mjs
+
+      - name: Add Radio GAT page to server panel 1.0.60
+        shell: bash
+        run: |
+          set -euo pipefail
+          python server-local-160/apply-v160-radio-panel.py server-local/ui/GatLogServer
+          grep -q 'RÁDIO GAT' server-local/ui/GatLogServer/MainForm.cs
+          grep -q 'api/site/admin/radio' server-local/ui/GatLogServer/RadioPanel.cs
+          grep -q 'api/account/login' server-local/ui/GatLogServer/RadioPanel.cs
+          grep -q 'UseSystemPasswordChar = password' server-local/ui/GatLogServer/RadioPanel.cs
+
+      - name: Prepare server panel and updater 1.0.60
+        shell: python
+        run: |
+          from pathlib import Path
+
+          import subprocess
+          subprocess.run(['python','server-local/patch-ui-version.py'],check=True)
+          for name in ['server-local/ui/GatLogServer/MainForm.cs','server-local/ui/Properties/AssemblyInfo.cs']:
+              p=Path(name)
+              s=p.read_text(encoding='utf-8').replace('1.0.56','1.0.60').replace('damage-evidence-points','gat-radio-ui')
+              p.write_text(s,encoding='utf-8')
+
+          p=Path('server-local/updater/Updater.csproj')
+          s=p.read_text(encoding='utf-8').replace('GAT_LOG_SERVER_UPDATE_1.0.56_LOCAL','GAT_LOG_SERVER_UPDATE_1.0.60_LOCAL')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('server-local/updater/Program.cs')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('GAT_SERVER_LOCAL_1.0.56.zip','GAT_SERVER_LOCAL_1.0.60.zip')
+          s=s.replace('GAT Servidor 1.0.56 - hotfix de ranking automatico','GAT Servidor 1.0.60 - Radio GAT no painel')
+          s=s.replace('&&version!="1.0.56.0")throw','&&version!="1.0.56.0"&&version!="1.0.57.0"&&version!="1.0.58.0"&&version!="1.0.59.0"&&version!="1.0.60.0")throw')
+          s=s.replace('versoes 1.0.39 a 1.0.56','versoes 1.0.39 a 1.0.60')
+          s=s.replace('Instalando o hotfix da Central 1.0.56 sem alterar o andamento das viagens...','Instalando a Central 1.0.60 com Radio GAT no painel sem alterar o andamento das viagens...')
+          start='MessageBox.Show(this,"Hotfix do GAT Servidor 1.0.56 instalado.'
+          end='","Atualizacao concluida",MessageBoxButtons.OK,MessageBoxIcon.Information);Close();'
+          a=s.find(start);b=s.find(end,a)
+          if a<0 or b<0: raise SystemExit('Nao encontrei a mensagem final do updater base.')
+          msg=('MessageBox.Show(this,"GAT Servidor 1.0.60 instalado.\\r\\n\\r\\n'
+               'Nova pagina RADIO GAT no proprio GAT Server: Admin e Moderador podem entrar com a conta do site, colar a playlist do YouTube, definir o nome e ligar/desligar a radio.\\r\\n\\r\\n'
+               'A senha usada nessa tela nao fica salva no GAT Server. O audio continua tocando somente no GAT Telemetria dos motoristas.\\r\\n\\r\\n'
+               'O backend Radio GAT 1.0.59 continua ativo e o servidor nao baixa nem retransmite audio.\\r\\n\\r\\n'
+               'Ranking, XP, Pontos GAT, telemetria, viagens e regras existentes continuam inalterados.\\r\\n\\r\\n'
+               'Banco, historico, pontos, entregas, contas, senhas, PCs vinculados, viagens abertas, checkpoints e recibos sao preservados. O instalador cria backup antes da troca da Central.')
+          s=s[:a]+msg+end+s[b+len(end):]
+          p.write_text(s,encoding='utf-8')
+
+      - name: Compile server panel 1.0.60
+        run: dotnet build server-local/ui/GAT_LOG_SERVER.csproj -c Release -o server-local/ui-out
+
+      - name: Package verified runtime 1.0.60
+        shell: python
+        run: |
+          import pathlib,subprocess,urllib.request,hashlib,zipfile,io,shutil,os,tempfile
+          root=pathlib.Path('server-local');stage=pathlib.Path('server-local-160/package');central=stage/'central';central.mkdir(parents=True,exist_ok=True)
+          version=subprocess.check_output(['node','--version'],text=True).strip()
+          name=f'node-{version}-win-x64.zip';base=f'https://nodejs.org/dist/{version}/'
+          sums=urllib.request.urlopen(base+'SHASUMS256.txt').read().decode();expected=next(line.split()[0] for line in sums.splitlines() if line.split()[-1]==name)
+          data=urllib.request.urlopen(base+name).read();assert hashlib.sha256(data).hexdigest()==expected,'Node download checksum mismatch'
+          with zipfile.ZipFile(io.BytesIO(data)) as z:
+              (central/'node.exe').write_bytes(z.read(f'node-{version}-win-x64/node.exe'))
+              for license_name in ['LICENSE','README.md']:(central/('NODE-'+license_name)).write_bytes(z.read(f'node-{version}-win-x64/{license_name}'))
+          for n in ['worker.js','host.mjs','database.mjs','ranking-telemetry.js','read-cache.js','budget-guard.js','schema.sql','package.json']:shutil.copy2(root/'runtime'/n,central/n)
+          (central/'migrations').mkdir(exist_ok=True);shutil.copy2(root/'runtime/migrations/0004_read_efficiency.sql',central/'migrations/0004_read_efficiency.sql')
+          shutil.copy2(root/'LEIA-ME.txt',central/'LEIA-ME.txt');shutil.copy2(root/'ui-out/GAT_LOG_SERVER.exe',stage/'GAT_LOG_SERVER.exe')
+          with tempfile.TemporaryDirectory() as localapp:
+              check=subprocess.run([str((central/'node.exe').resolve()),str((central/'host.mjs').resolve())],env={**os.environ,'LOCALAPPDATA':localapp},capture_output=True,text=True,timeout=20)
+              assert check.returncode==1 and 'Importe a exportacao' in check.stderr,check.stderr
+          text=(central/'worker.js').read_text();schema=(central/'schema.sql').read_text()
+          assert "const VERSION='1.0.59-local'" in text
+          assert "p==='/api/public/radio'" in text
+          assert "p==='/api/site/admin/radio'" in text
+          assert 'await requireAdmin(req,env,b)' in text
+          assert 'invalid_youtube_playlist' in text
+          assert 'gatBasePoints=Math.floor(distance/99)*10' in text
+          assert 'baseXP=Math.floor(distance/100)*20' in text
+          assert 'CREATE TABLE IF NOT EXISTS radio_state' in schema
+          release=pathlib.Path('releases/GAT_SERVER_LOCAL_1.0.60.zip')
+          with zipfile.ZipFile(release,'w',zipfile.ZIP_DEFLATED) as z:
+              for f in stage.rglob('*'):
+                  if f.is_file():z.write(f,f.relative_to(stage))
+          digest=hashlib.sha256(release.read_bytes()).hexdigest()
+          p=root/'updater/Program.cs';p.write_text(p.read_text().replace('__PAYLOAD_SHA256__',digest),encoding='utf-8')
+          release.with_suffix('.sha256').write_text(digest+'  '+release.name+'\n')
+
+      - name: Compile updater 1.0.60
+        run: dotnet build server-local/updater/Updater.csproj -c Release -o server-local/updater-out
+
+      - name: Prepare update manifest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: python
+        run: |
+          from pathlib import Path
+          import hashlib,json
+          exe=Path('server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.60_LOCAL.exe')
+          digest=hashlib.sha256(exe.read_bytes()).hexdigest()
+          manifest={
+            'app':'GAT-LOG Server CSharp',
+            'channel':'stable-local',
+            'version':'1.0.60',
+            'display_version':'1.0.60 RADIO GAT',
+            'notas':'Nova pagina RADIO GAT no proprio GAT Server. Admin/Moderador entra com a conta do site, cola a playlist do YouTube, define o nome e liga/desliga a radio. A senha nao fica salva e o audio toca somente no GAT Telemetria.',
+            'setup_url':'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_1.0.60_LOCAL.exe',
+            'sha256':digest
+          }
+          Path('server_dotnet_version.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':'))+'\n',encoding='utf-8')
+
+      - name: Publish GAT Server 1.0.60 updater
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.60_LOCAL.exe releases/GAT_LOG_SERVER_UPDATE_1.0.60_LOCAL.exe
+          git config user.name 'GAT Server Build'
+          git config user.email 'actions@users.noreply.github.com'
+          git add releases/GAT_LOG_SERVER_UPDATE_1.0.60_LOCAL.exe releases/GAT_SERVER_LOCAL_1.0.60.zip releases/GAT_SERVER_LOCAL_1.0.60.sha256 server_dotnet_version.json
+          git commit -m 'Publish GAT Server 1.0.60 Radio UI'
+          git restore server-local/updater/Program.cs server-local/updater/Updater.csproj server-local/ui/GatLogServer/MainForm.cs server-local/ui/Properties/AssemblyInfo.cs
+          git pull --rebase -X theirs
+          git push
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Server-1.0.60-radio-ui-updater
+          path: server-local/updater-out/GAT_LOG_SERVER_UPDATE_1.0.60_LOCAL.exe
