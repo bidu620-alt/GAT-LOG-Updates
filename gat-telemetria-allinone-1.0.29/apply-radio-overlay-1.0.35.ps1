@@ -13,17 +13,14 @@ if (-not $radio) { throw 'RadioForm.cs 1.0.34 nao encontrado para aplicar Radio 
 $mainText = Get-Content $main.FullName -Raw
 $radioText = Get-Content $radio.FullName -Raw
 
-# Atualiza somente a versao do cliente. Ranking, viagens, telemetria e servidor nao mudam.
 $mainText = $mainText.Replace('CurrentVersion = "1.0.34.0"', 'CurrentVersion = "1.0.35.0"')
 $mainText = $mainText.Replace('Text = "Cliente 1.0.34"', 'Text = "Cliente 1.0.35"')
 if ($mainText -notmatch 'CurrentVersion = "1\.0\.35\.0"') { throw 'Nao consegui atualizar CurrentVersion para 1.0.35.0.' }
 
-# A janela da radio deixa de ser filha da janela principal. Assim, minimizar o
-# GAT Telemetria nao minimiza/esconde a Radio/TV.
+# A Radio/TV deixa de ser filha da janela principal para continuar aberta quando o GAT for minimizado.
 if ($mainText -notlike '*radioForm.Show(this);*') { throw 'Nao encontrei radioForm.Show(this) do cliente 1.0.34.' }
 $mainText = $mainText.Replace('radioForm.Show(this);', 'radioForm.Show();')
 
-# Botao do modo jogo/sobreposto.
 $oldField = 'private readonly Button _fullScreen = new Button();'
 $newField = $oldField + "`r`n    private readonly Button _overlay = new Button();"
 if ($radioText -notlike "*$oldField*") { throw 'Campo _fullScreen nao encontrado no RadioForm 1.0.34.' }
@@ -34,8 +31,6 @@ $newMode = $oldMode + "`r`n    private bool _overlayMode;`r`n    private Rectang
 if ($radioText -notlike "*$oldMode*") { throw 'Estado de fullscreen nao encontrado no RadioForm 1.0.34.' }
 $radioText = $radioText.Replace($oldMode, $newMode)
 
-# A Radio/TV e uma janela independente e TopMost. Em ETS2 janela/sem bordas ela
-# continua visivel mesmo com o GAT principal minimizado.
 $radioText = $radioText.Replace('StartPosition = FormStartPosition.CenterParent;', 'StartPosition = FormStartPosition.CenterScreen;')
 $oldKeyPreview = 'KeyPreview = true;'
 $newKeyPreview = @"
@@ -46,7 +41,6 @@ KeyPreview = true;
 if ($radioText -notlike "*$oldKeyPreview*") { throw 'KeyPreview nao encontrado no RadioForm 1.0.34.' }
 $radioText = $radioText.Replace($oldKeyPreview, $newKeyPreview.TrimEnd())
 
-# Coloca o comando do modo jogo no canto superior direito.
 $webMarker = '        _web.Left = 24; _web.Top = 100; _web.Width = ClientSize.Width - 48; _web.Height = 350;'
 $overlayUi = @"
         SetupButton(_overlay, "MODO JOGO • SOBREPOSTO", ClientSize.Width - 224, 18, 200);
@@ -59,15 +53,10 @@ $webMarker
 if ($radioText -notlike "*$webMarker*") { throw 'Area do player nao encontrada para inserir MODO JOGO.' }
 $radioText = $radioText.Replace($webMarker, $overlayUi.TrimEnd())
 
-# O resize normal nao deve disputar tamanho/posicao com os modos especiais.
 $radioText = $radioText.Replace('if (_fullScreenMode) return;', 'if (_fullScreenMode || _overlayMode) return;')
-
-# WebView2 separado por versao para nao reaproveitar ACL/cache quebrado.
 $radioText = $radioText.Replace('Radio-1.0.34', 'Radio-1.0.35')
 $radioText = $radioText.Replace('/index.html?v=134', '/index.html?v=135')
 
-# Insere o modo compacto: video flutuante, redimensionavel, no canto inferior
-# direito e sempre acima do jogo. O GAT principal e minimizado automaticamente.
 $loadVolumeMarker = '    private static int LoadVolume()'
 $overlayMethod = @"
     private void ToggleOverlayMode()
@@ -81,6 +70,7 @@ $overlayMethod = @"
             ShowInTaskbar = true;
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             MinimumSize = new Size(360, 240);
+            Size = new Size(520, 340);
 
             foreach (Control control in Controls)
             {
@@ -100,7 +90,6 @@ $overlayMethod = @"
             _overlay.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             _overlay.BringToFront();
 
-            Size = new Size(520, 340);
             Screen screen = Screen.FromControl(this);
             Rectangle work = screen.WorkingArea;
             Location = new Point(Math.Max(work.Left, work.Right - Width - 16), Math.Max(work.Top, work.Bottom - Height - 16));
