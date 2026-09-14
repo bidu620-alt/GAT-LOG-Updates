@@ -5,6 +5,6 @@
   "notes":"Hotfix do Windows: compila o GAT DASH explicitamente em x64 para evitar erro 0x8007000B ao carregar o WebView2. Mantem Radio/TV GAT, Canal GAT, Meu Video, Canal Web, telemetria, radar e aviso antecipado de reducao de velocidade. Android permanece 1.1.0.",
   "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.1.1.exe",
   "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.1.0.apk",
-  "pc_sha256":"70ae1d1ed97f1f01c782478f421c2c05edd27e8d396e48ba1d8384d1207468b9",
-  "android_sha256":"bb887d174cfc78f3741931fe43dd570c5c65c363ed575e44b13326605436be60"
+  "pc_sha256":"9586d43fb80209ef255d000d9392c5da2e0eb541063a80223a2fb66150117e30",
+  "android_sha256":"0955f23b7fbc6c34482cf1c3567cb0eaeba145a00250f0e06d518ad44db6c464"
 }
