@@ -1,10 +1,10 @@
 ﻿{
     "app":  "GAT Telemetria BETA",
     "channel":  "stable-dotnet",
-    "version":  "1.0.35.0",
-    "display_version":  "BETA 1.0.35 RÃDIO / TV OVERLAY",
-    "notas":  "Radio/TV GAT agora fica independente do painel principal e pode permanecer sobre o Euro Truck e outros jogos. Inclui MODO JOGO compacto, TopMost, redimensionamento e minimiza o GAT principal sem parar a radio. Mantem video/playlist, fullscreen, volume e fallback do YouTube.",
-    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.35.exe",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.35_SOURCE.zip",
-    "sha256":  "cc8a49c12fc9e6a226baa84c31ab9a17dc4f9c3952ef7a5409caa82c59ca2428"
+    "version":  "1.0.36.0",
+    "display_version":  "BETA 1.0.36 CANAL GAT + MINHA RÃDIO",
+    "notas":  "Radio/TV GAT agora possui dois modos: Canal GAT com a programacao oficial da Central e Minha Radio, onde cada motorista cola e salva localmente seu proprio video ou playlist do YouTube sem alterar o servidor. Links watch com parametro list sao reconhecidos como playlist. Mantem overlay sobre jogos, volume, fullscreen e fallback do YouTube.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.36.exe",
+    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.36_SOURCE.zip",
+    "sha256":  "04f56c8aef840f552d64ae74faaa9da93638ca0ded240b377a4eeff0fcc457f6"
 }
