@@ -27,9 +27,8 @@ $radioText = $radioText.Replace('Radio-1.0.36', 'Radio-1.0.37')
 $radioText = $radioText.Replace('/index.html?v=136', '/index.html?v=137')
 $radioText = $radioText.Replace('TryParseYoutubeSource', 'TryParseMediaSource')
 
-# O HTML5 Audio precisa conseguir iniciar somente depois do clique OUVIR RADIO; o app
-# nunca chama play sozinho. A flag de mixed content permite streams HTTP antigos de
-# Icecast/Shoutcast dentro da pagina local isolada do WebView2.
+# WebView2: permite streams HTTP antigos de Icecast/Shoutcast. A rádio continua
+# iniciando somente quando o motorista clica em OUVIR RÁDIO.
 $oldEnvironment = '            var environment = await CoreWebView2Environment.CreateAsync(null, webViewData);'
 $newEnvironment = @'
             var options = new CoreWebView2EnvironmentOptions();
@@ -40,8 +39,8 @@ if ($radioText -notlike "*$oldEnvironment*") { throw 'Inicializacao WebView2 da 
 $radioText = $radioText.Replace($oldEnvironment, $newEnvironment.TrimEnd())
 
 # Descricao amigavel da fonte ativa.
-$marker = '    private void UpdateActiveSourceUi()'
-$helper = @'
+$uiMarker = '    private void UpdateActiveSourceUi()'
+$uiHelper = @'
     private static string SourceDescription(string type)
     {
         if (string.Equals(type, "stream", StringComparison.OrdinalIgnoreCase)) return "rádio online MP3/AAC";
@@ -52,41 +51,28 @@ $helper = @'
 
     private void UpdateActiveSourceUi()
 '@
-if ($radioText -notlike "*$marker*") { throw 'UpdateActiveSourceUi nao encontrado.' }
-$radioText = $radioText.Replace($marker, $helper.TrimEnd())
+if ($radioText -notlike "*$uiMarker*") { throw 'UpdateActiveSourceUi nao encontrado.' }
+$radioText = $radioText.Replace($uiMarker, $uiHelper.TrimEnd())
 $radioText = $radioText.Replace('_source.Text = available ? "Fonte local: " + (_personalSourceType == "playlist" ? "playlist do YouTube" : "vídeo do YouTube") + " • somente neste PC" : "Fonte local: nenhuma configurada";', '_source.Text = available ? "Fonte local: " + SourceDescription(_personalSourceType) + " • somente neste PC" : "Fonte local: nenhuma configurada";')
 $radioText = $radioText.Replace('_source.Text = "Fonte oficial: " + (_serverSourceType == "video" ? "vídeo do YouTube" : "playlist do YouTube") + " • revisão " + _serverRevision;', '_source.Text = "Fonte oficial: " + SourceDescription(_serverSourceType) + " • revisão " + _serverRevision;')
 
-# Canal GAT: stream usa a propria URL como ID local para disponibilidade/troca de fonte.
-$oldServerSource = @'
-            string sourceId = string.Empty;
-            if (sourceType == "video") sourceId = Convert.ToString(radio["video_id"]) ?? string.Empty;
-            else
-            {
-                sourceId = Convert.ToString(radio["playlist_id"]) ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(sourceType) && !string.IsNullOrWhiteSpace(sourceId)) sourceType = "playlist";
-            }
-'@
-$newServerSource = @'
-            string sourceId = string.Empty;
-            if (sourceType == "video") sourceId = Convert.ToString(radio["video_id"]) ?? string.Empty;
-            else if (sourceType == "stream") sourceId = sourceUrl;
-            else
-            {
-                sourceId = Convert.ToString(radio["playlist_id"]) ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(sourceType) && !string.IsNullOrWhiteSpace(sourceId)) sourceType = "playlist";
-            }
-'@
-if ($radioText -notlike "*$($oldServerSource.Trim())*") { throw 'Leitura da fonte do Canal GAT 1.0.36 nao encontrada.' }
-$radioText = $radioText.Replace($oldServerSource.Trim(), $newServerSource.Trim())
+# Canal GAT: stream usa a propria URL como identificador local.
+$videoSourceLine = '            if (sourceType == "video") sourceId = Convert.ToString(radio["video_id"]) ?? string.Empty;'
+$streamSourceLine = '            else if (sourceType == "stream") sourceId = sourceUrl;'
+if ($radioText -notlike "*$videoSourceLine*") { throw 'Leitura da fonte do Canal GAT 1.0.36 nao encontrada.' }
+$radioText = $radioText.Replace($videoSourceLine, $videoSourceLine + "`r`n" + $streamSourceLine)
 
-# Carrega video, playlist ou stream direto.
-$oldLoad = @'
-        string jsId = Newtonsoft.Json.JsonConvert.SerializeObject(id);
-        string command = ActiveSourceType() == "video" ? "gatLoadVideo(" + jsId + ")" : "gatLoadPlaylist(" + jsId + ")";
-        await ExecutePlayerAsync(command + ";gatVolume(" + _volume.Value + ")");
-'@
-$newLoad = @'
+# Carrega video, playlist ou stream direto. Troca o miolo do metodo por indices,
+# evitando dependencia de CRLF/LF do fonte reconstruido.
+$loadMethodStart = $radioText.IndexOf('    private async Task LoadActiveSourceAsync()')
+$loadBodyStart = $radioText.IndexOf('        string id = ActiveSourceId();', $loadMethodStart)
+$loadMethodEnd = $radioText.IndexOf('    private async Task ExecutePlayerAsync(string script)', $loadMethodStart)
+if ($loadMethodStart -lt 0 -or $loadBodyStart -lt 0 -or $loadMethodEnd -lt 0) { throw 'LoadActiveSourceAsync 1.0.36 nao encontrado.' }
+$newLoadMethod = @'
+    private async Task LoadActiveSourceAsync()
+    {
+        string id = ActiveSourceId();
+        if (!_playerReady || string.IsNullOrWhiteSpace(id)) return;
         string type = ActiveSourceType();
         string command;
         if (type == "stream")
@@ -100,11 +86,12 @@ $newLoad = @'
             command = type == "video" ? "gatLoadVideo(" + jsId + ")" : "gatLoadPlaylist(" + jsId + ")";
         }
         await ExecutePlayerAsync(command + ";gatVolume(" + _volume.Value + ")");
-'@
-if ($radioText -notlike "*$($oldLoad.Trim())*") { throw 'LoadActiveSourceAsync 1.0.36 nao encontrado.' }
-$radioText = $radioText.Replace($oldLoad.Trim(), $newLoad.Trim())
+    }
 
-# Mensagem de erro para HTML5 Audio.
+'@
+$radioText = $radioText.Substring(0, $loadMethodStart) + $newLoadMethod + $radioText.Substring($loadMethodEnd)
+
+# Mensagens de erro do HTML5 Audio.
 $oldYoutubeErrorTail = '        if (code == 5) return "O player HTML5 do YouTube não conseguiu reproduzir este vídeo.";'
 $newYoutubeErrorTail = @'
         if (code == 5) return "O player HTML5 do YouTube não conseguiu reproduzir este vídeo.";
@@ -114,8 +101,8 @@ $newYoutubeErrorTail = @'
 if ($radioText -notlike "*$oldYoutubeErrorTail*") { throw 'Tabela de erros do player nao encontrada.' }
 $radioText = $radioText.Replace($oldYoutubeErrorTail, $newYoutubeErrorTail.TrimEnd())
 
-# Parser: continua priorizando list= em links watch e passa a aceitar URL direta http/https
-# de radio online. Nenhum audio e baixado pelo GAT Server.
+# Parser: continua priorizando list= em links watch e passa a aceitar URL direta
+# http/https de radio online. O GAT Server nao baixa nem retransmite o audio.
 $parserStart = $radioText.IndexOf('    private static bool TryParseMediaSource(')
 $parserEnd = $radioText.IndexOf('    private static Dictionary<string, string> ParseQuery(', $parserStart)
 if ($parserStart -lt 0 -or $parserEnd -lt 0) { throw 'Parser de YouTube 1.0.36 nao encontrado.' }
