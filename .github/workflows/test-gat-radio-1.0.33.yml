@@ -1,0 +1,80 @@
+name: Test GAT Telemetria Radio 1.0.33
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/RadioForm.cs'
+      - 'gat-telemetria-allinone-1.0.29/apply-radio-1.0.33.ps1'
+      - '.github/workflows/test-gat-radio-1.0.33.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Reconstruct current GAT Telemetria source
+        shell: powershell
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias e encontrei $($parts.Count)" }
+          $zip = Join-Path $PWD 'gat-radio-source.zip'
+          $out = [IO.File]::Create($zip)
+          try {
+            $out.Write($first, 0, $first.Length)
+            foreach ($part in $parts) {
+              $bytes = [IO.File]::ReadAllBytes($part.FullName)
+              $out.Write($bytes, 0, $bytes.Length)
+            }
+          } finally { $out.Dispose() }
+          Expand-Archive $zip 'gat-radio-build' -Force
+          Get-ChildItem 'gat-radio-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+            $txt = Get-Content $_.FullName -Raw
+            if ($txt -like '*1.0.28*') { Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8 }
+          }
+          ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root "$PWD/gat-radio-build"
+          ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root "$PWD/gat-radio-build"
+          ./gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1 -Root "$PWD/gat-radio-build"
+          ./gat-telemetria-allinone-1.0.29/apply-beta-brand-1.0.32.ps1 -Root "$PWD/gat-radio-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.33.ps1 -Root "$PWD/gat-radio-build"
+
+      - name: Validate Radio GAT patch
+        shell: powershell
+        run: |
+          $main = Get-ChildItem 'gat-radio-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          $radio = Get-ChildItem 'gat-radio-build' -Filter 'RadioForm.cs' -Recurse | Select-Object -First 1
+          $project = Get-ChildItem 'gat-radio-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if (-not $main -or -not $radio -or -not $project) { throw 'Arquivos da Radio GAT incompletos.' }
+          $mainText = Get-Content $main.FullName -Raw
+          $radioText = Get-Content $radio.FullName -Raw
+          $projectText = Get-Content $project.FullName -Raw
+          foreach($marker in @('CurrentVersion = "1.0.33.0"','RÁDIO GAT','new RadioForm()')) { if ($mainText -notlike "*$marker*") { throw "MainForm sem $marker" } }
+          foreach($marker in @('/api/public/radio','OUVIR RÁDIO','www.youtube.com/iframe_api','gatLoad','WebView2')) { if ($radioText -notlike "*$marker*") { throw "RadioForm sem $marker" } }
+          if ($projectText -notlike '*Microsoft.Web.WebView2*') { throw 'WebView2 nao foi adicionado ao projeto.' }
+
+      - name: Build GAT Telemetria Radio 1.0.33
+        shell: powershell
+        run: |
+          $project = Get-ChildItem 'gat-radio-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilacao do GAT Telemetria Radio 1.0.33' }
+          $dir = Split-Path $project.FullName -Parent
+          $exe = Get-ChildItem "$dir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado.' }
+          "RADIO_OUT=$($exe.Directory.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Telemetria-Radio-1.0.33-test
+          path: ${{ env.RADIO_OUT }}

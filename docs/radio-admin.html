@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070a0f">
+<title>Rádio GAT • GAT-LOG</title>
+<meta name="description" content="Controle administrativo da Rádio GAT.">
+<link rel="stylesheet" href="official-v4.css">
+<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="radio-admin.css?v=1">
+</head>
+<body>
+<header class="topbar"><a class="brand" href="index.html"><b>GAT-<span>LOG</span></b></a><nav><a href="index.html">Início</a><a href="motorista.html">Motorista</a><a href="mapa.html">Mapa</a><a href="admin.html">Admin</a><a class="active" href="radio-admin.html">Rádio GAT</a></nav></header>
+<main class="radio-page shell">
+<section class="radio-head"><div><span class="eyebrow">CENTRAL GAT • PROGRAMAÇÃO</span><h1>Rádio GAT</h1><p>Admin e Moderador definem a playlist. O site não reproduz áudio; a música toca somente no GAT Telemetria dos motoristas.</p></div><div class="radio-ident"><small>SESSÃO</small><b id="radioUser">—</b><span id="radioRole" class="role-pill">AGUARDANDO</span></div></section>
+
+<section id="radioGate" class="admin-gate"><div class="shield">G</div><h2>Área restrita</h2><p id="radioGateText">Validando sua Conta GAT...</p><a id="radioLoginLink" class="btn primary" href="admin.html" hidden>ENTRAR PELO PAINEL ADMIN</a></section>
+
+<section id="radioContent" class="radio-grid" hidden>
+<article class="radio-card main-card">
+<div class="radio-card-title"><div><span class="eyebrow">PROGRAMAÇÃO</span><h2>Playlist do YouTube</h2></div><span id="radioLivePill" class="radio-pill off">DESLIGADA</span></div>
+<label class="radio-field">LINK DA PLAYLIST
+<input id="radioPlaylist" type="url" inputmode="url" autocomplete="off" placeholder="https://www.youtube.com/playlist?list=...">
+</label>
+<p class="radio-help">Cole o link completo de uma playlist do YouTube. O servidor valida e salva somente o ID oficial da playlist.</p>
+<label class="radio-field">NOME EXIBIDO
+<input id="radioLabel" type="text" maxlength="80" value="Rádio GAT" placeholder="Rádio GAT">
+</label>
+<div class="radio-actions"><button id="radioSave" class="btn ghost" type="button">SALVAR PLAYLIST</button><button id="radioOn" class="btn primary" type="button">SALVAR E LIGAR</button><button id="radioOff" class="btn danger" type="button">DESLIGAR</button></div>
+<div id="radioStatus" class="admin-status">Carregando programação...</div>
+</article>
+
+<article class="radio-card status-card">
+<span class="eyebrow">ESTADO ATUAL</span><h2>Central GAT</h2>
+<div class="radio-stat"><small>STATUS</small><b id="radioState">—</b></div>
+<div class="radio-stat"><small>REVISÃO</small><b id="radioRevision">0</b></div>
+<div class="radio-stat"><small>ATUALIZADO POR</small><b id="radioUpdatedBy">—</b></div>
+<div class="radio-stat"><small>ÚLTIMA ALTERAÇÃO</small><b id="radioUpdatedAt">—</b></div>
+<div class="radio-note"><strong>Sem áudio no navegador.</strong><span>Os motoristas recebem esta programação pelo GAT Telemetria e escolhem se querem ouvir.</span></div>
+</article>
+</section>
+</main>
+<footer class="footer"><div class="shell">GAT-LOG • Rádio GAT</div></footer>
+<script src="radio-admin.js?v=1"></script>
+</body></html>
