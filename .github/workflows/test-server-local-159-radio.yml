@@ -1,0 +1,61 @@
+name: Test GAT Server 1.0.59 Radio
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'server-local-159/**'
+      - '.github/workflows/test-server-local-159-radio.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assemble current local central through 1.0.58
+        shell: bash
+        run: |
+          set -euo pipefail
+          python server-local/build-api.py
+          python server-local/apply-admin-work-switch.py
+          python server-local/apply-auto-classification.py server-local/runtime/worker.js
+          python server-local/apply-auto-classification-safety.py server-local/runtime/worker.js
+          python server-local/apply-trip-state-machine.py server-local/runtime/worker.js
+          python server-local/apply-rank-startup-grace.py server-local/runtime/worker.js
+          python server-local/apply-v147-lapeal-rank-fix.py server-local/runtime
+          python server-local/apply-v148-jeanjc-rank-fix.py server-local/runtime
+          python server-local/normalize-go-live.py
+          python server-local/apply-monthly-trip-goal.py server-local/runtime/worker.js
+          python server-local/apply-v149-career-history.py server-local/runtime
+          python server-local/apply-v150-driver-directory-totals.py server-local/runtime
+          python server-local/apply-v151-resumable-journeys.py server-local/runtime
+          python server-local/apply-v152-admin-gat-review.py server-local/runtime
+          python server-local/apply-v153-live-telemetry-fk-fix.py server-local/runtime
+          python server-local/apply-v154-durable-trip-journal.py server-local/runtime
+          python server-local/apply-v155-open-cargo.py server-local/runtime
+          python server-local/apply-v156-damage-evidence-points.py server-local/runtime
+          python server-local-157/apply-v157-direct-gat-points.py server-local/runtime
+          python server-local-158/apply-v158-distance-gat-points.py server-local/runtime
+
+      - name: Apply and verify GAT Radio 1.0.59
+        shell: bash
+        run: |
+          set -euo pipefail
+          python server-local-159/apply-v159-gat-radio.py server-local/runtime
+          node --check server-local/runtime/worker.js
+          node --test server-local-159/gat-radio-v159.test.mjs
+          grep -q "const VERSION='1.0.59-local'" server-local/runtime/worker.js
+          grep -q "/api/public/radio" server-local/runtime/worker.js
+          grep -q "/api/site/admin/radio" server-local/runtime/worker.js
+          grep -q "CREATE TABLE IF NOT EXISTS radio_state" server-local/runtime/schema.sql
