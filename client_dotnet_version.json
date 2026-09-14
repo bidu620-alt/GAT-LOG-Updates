@@ -1,10 +1,10 @@
 ﻿{
     "app":  "GAT Telemetria BETA",
     "channel":  "stable-dotnet",
-    "version":  "1.0.37.0",
-    "display_version":  "BETA 1.0.37 YOUTUBE + RÃDIO ONLINE",
-    "notas":  "Radio/TV GAT mantem Canal GAT e Minha Radio e agora aceita YouTube (video/playlist) ou URL direta de radio online MP3/AAC. Minha Radio continua salva apenas no PC do motorista. Mantem overlay sobre jogos, volume, fullscreen, pulo de clips bloqueados e links watch com list como playlist.",
-    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.37.exe",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.37_SOURCE.zip",
-    "sha256":  "d971d9c49b604a79b734c86839da4cace5458fac3e04b7bd90cb8153f61e1483"
+    "version":  "1.0.38.0",
+    "display_version":  "BETA 1.0.38 SITE / WEB",
+    "notas":  "Radio/TV GAT agora possui Canal GAT, Minha Radio e SITE / WEB. O novo modo abre paginas HTTP/HTTPS dentro do WebView2, salva o endereco somente no PC e inclui Abrir no navegador. Mantem YouTube, radio online MP3/AAC, overlay sobre jogos, volume e fullscreen. Alguns sites podem bloquear incorporacao, autoplay, login ou conteudo protegido.",
+    "setup_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.38.exe",
+    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.38_SOURCE.zip",
+    "sha256":  "c7baee199ed1094845f331424e1439419f5f329402eb72f6e708683aa0e2ce4d"
 }
