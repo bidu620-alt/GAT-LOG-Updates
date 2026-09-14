@@ -44,6 +44,9 @@ $radioText = $radioText.Replace('🌐 SITE / WEB','🌐 CANAL WEB')
 $radioText = $radioText.Replace('SITE / WEB','CANAL WEB')
 $radioText = $radioText.Replace('sua rádio pessoal','seu vídeo pessoal')
 $radioText = $radioText.Replace('Sua fonte: YouTube ou URL direta de Rádio Online MP3/AAC (somente neste PC):','Seu vídeo/playlist do YouTube (fica disponível também no GAT DASH):')
+# A base 1.0.38 injeta uma navegacao v=138 e a 1.0.39 ja usa v=139.
+# Na 1.0.40 todas as entradas do player devem apontar para a mesma revisao de cache.
+$radioText = $radioText.Replace('/index.html?v=138','/index.html?v=140').Replace('/index.html?v=139','/index.html?v=140')
 
 # Ponte local: o DASH Android/PC le as tres fontes pelo mesmo computador do Telemetria.
 $bridgeSource = Join-Path $PSScriptRoot 'DashMediaBridge.cs'
