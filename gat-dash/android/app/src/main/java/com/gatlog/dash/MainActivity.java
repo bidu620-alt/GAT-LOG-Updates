@@ -55,6 +55,9 @@ public class MainActivity extends Activity {
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setAllowFileAccess(true); s.setAllowContentAccess(true);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW); s.setMediaPlaybackRequiresUserGesture(false); s.setJavaScriptCanOpenWindowsAutomatically(true);
+        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        web.clearCache(true);
+        web.clearHistory();
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
         web.setWebViewClient(new WebViewClient() {
@@ -74,7 +77,7 @@ public class MainActivity extends Activity {
         });
         web.addJavascriptInterface(new Bridge(), "GatAndroid");
         setContentView(web);
-        web.loadUrl("https://gatdash.local/index.html");
+        web.loadUrl("https://gatdash.local/index.html?v=111");
         startTelemetryLoop();
     }
 
