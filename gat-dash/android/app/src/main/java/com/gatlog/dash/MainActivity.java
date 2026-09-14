@@ -27,7 +27,8 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
     private static final String CENTRAL_LOGIN = "https://api.gatlogets2.com.br/api/account/login";
-    private final ExecutorService io = Executors.newSingleThreadExecutor();
+    private final ExecutorService telemetryIo = Executors.newSingleThreadExecutor();
+    private final ExecutorService requestIo = Executors.newCachedThreadPool();
     private final Handler ui = new Handler(Looper.getMainLooper());
     private WebView web;
     private TextToSpeech tts;
@@ -58,13 +59,14 @@ public class MainActivity extends Activity {
     @Override protected void onDestroy() {
         running = false;
         if(tts != null) { tts.stop(); tts.shutdown(); }
-        io.shutdownNow();
+        telemetryIo.shutdownNow();
+        requestIo.shutdownNow();
         if(web != null) web.destroy();
         super.onDestroy();
     }
 
     private void startTelemetryLoop() {
-        io.submit(() -> {
+        telemetryIo.submit(() -> {
             while(running) {
                 try {
                     if(!telemetryHost.isEmpty()) {
@@ -106,7 +108,7 @@ public class MainActivity extends Activity {
     }
 
     private void login(String user, String password) {
-        io.submit(() -> {
+        requestIo.submit(() -> {
             try {
                 JSONObject body = new JSONObject(); body.put("user", user.trim().toLowerCase(Locale.ROOT)); body.put("password", password);
                 String result = httpPostJson(CENTRAL_LOGIN, body.toString(), 6000);
