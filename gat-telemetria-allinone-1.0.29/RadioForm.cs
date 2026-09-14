@@ -181,9 +181,15 @@ internal sealed class RadioForm : Form
         if (_browserReady) return;
         try
         {
-            await _web.EnsureCoreWebView2Async();
-            string folder = Path.Combine(Application.LocalUserAppDataPath, "radio-player");
+            string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string webViewData = Path.Combine(appData, "GAT-LOG", "Telemetria", "WebView2");
+            string folder = Path.Combine(appData, "GAT-LOG", "Telemetria", "radio-player");
+            Directory.CreateDirectory(webViewData);
             Directory.CreateDirectory(folder);
+
+            var environment = await CoreWebView2Environment.CreateAsync(null, webViewData);
+            await _web.EnsureCoreWebView2Async(environment);
+
             File.WriteAllText(Path.Combine(folder, "index.html"), PlayerHtml());
             _web.CoreWebView2.SetVirtualHostNameToFolderMapping(VirtualHost, folder, CoreWebView2HostResourceAccessKind.Allow);
             _web.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
@@ -195,6 +201,7 @@ internal sealed class RadioForm : Form
         }
         catch (Exception ex)
         {
+            _browserReady = false;
             _state.Text = "Rádio: não foi possível iniciar o player WebView2.";
             _state.ForeColor = Color.OrangeRed;
             _track.Text = "Detalhe: " + ex.Message;
@@ -264,7 +271,15 @@ internal sealed class RadioForm : Form
                 return;
             }
 
-            _toggle.Enabled = _browserReady;
+            if (!_browserReady)
+            {
+                _state.Text = "Rádio: AO VIVO • player indisponível neste PC";
+                _state.ForeColor = Color.OrangeRed;
+                _toggle.Enabled = false;
+                return;
+            }
+
+            _toggle.Enabled = true;
             _state.Text = _listening ? "Rádio: AO VIVO • ouvindo" : "Rádio: AO VIVO • clique em OUVIR RÁDIO";
             _state.ForeColor = Color.FromArgb(130, 224, 69);
             if (changed && _listening && _playerReady) await LoadPlaylistAsync(playlistId);
