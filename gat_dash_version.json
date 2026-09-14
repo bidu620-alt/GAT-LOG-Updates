@@ -1,0 +1,10 @@
+{
+  "app":"GAT DASH",
+  "version":"1.0.0",
+  "display_version":"GAT DASH 1.0 PC + ANDROID",
+  "notes":"Dashboard GAT LOG com login da Central, telemetria TruckSim GPS, radar de limite, alerta por voz, velocidade, RPM, marcha, combustivel, cruise, GPS, rota, ETA e condicao do caminhao. Sem radio e sem cadastro no app.",
+  "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.0.0.exe",
+  "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.0.0.apk",
+  "pc_sha256":"59d50366e406f8307c5beef6bf3a01793fa27ee6b1fdd926e9739a48978cf706",
+  "android_sha256":"f03129cd302146b889753f7c05a704008f828328aa83fea1bb1b2ecbea620e55"
+}
