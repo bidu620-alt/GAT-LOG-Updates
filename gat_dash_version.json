@@ -1,10 +1,10 @@
 {
   "app":"GAT DASH",
-  "version":"1.0.1",
-  "display_version":"GAT DASH 1.0.1 PC + ANDROID",
-  "notes":"Aviso antecipado de reducao de velocidade por voz. O GAT DASH aprende localmente os pontos reais onde o limite muda usando posicao e direcao do caminhao; nas proximas passagens avisa por volta de 250 m e reforca perto de 100 m se a velocidade estiver acima do proximo limite. Mantem radar atual, login Central GAT e telemetria TruckSim GPS.",
-  "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.0.1.exe",
-  "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.0.1.apk",
-  "pc_sha256":"2cf047db05c9fa5ee2e1d067e53a1c533536f2a8bb9b2845c6d99ec19e5962e7",
-  "android_sha256":"45a6bba843f36b6f922bf24865bb6a2e0be11043b7d58c4233a5a5d7a4379258"
+  "version":"1.1.0",
+  "display_version":"GAT DASH 1.1 PC + ANDROID",
+  "notes":"Remove o mapa fake e usa a area direita como Radio/TV GAT. Permite escolher Canal GAT, Meu Video ou Canal Web sincronizados pelo GAT Telemetria 1.0.40. Mantem telemetria, radar e aviso antecipado de reducao de velocidade.",
+  "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.1.0.exe",
+  "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.1.0.apk",
+  "pc_sha256":"9d55ecbe63d3f9fa80aa175424c03bc9e10e1f9c5d2660455d89769cb5868d7c",
+  "android_sha256":"879090b3f948e0963f8ad100bb1bd80653b462c0b48e65dc9a9f29c5bb7e0f3c"
 }
