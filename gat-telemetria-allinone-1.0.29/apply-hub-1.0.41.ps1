@@ -21,7 +21,7 @@ $mainText = $mainText.Replace('CurrentVersion = "1.0.40.0"', 'CurrentVersion = "
 $mainText = $mainText.Replace('Text = "Cliente 1.0.40"', 'Text = "Cliente 1.0.41"')
 if ($mainText -notmatch 'CurrentVersion = "1\.0\.41\.0"') { throw 'Nao consegui atualizar CurrentVersion para 1.0.41.0.' }
 
-# MainForm passa a ser parcial para receber o shell modular sem mexer no motor existente.
+# MainForm passa a ser partial para receber o shell modular sem mexer no motor existente.
 if ($mainText -notmatch 'internal sealed partial class MainForm') {
     $mainText = [regex]::Replace($mainText, 'internal\s+sealed\s+class\s+MainForm\s*:\s*Form', 'internal sealed partial class MainForm : Form', 1)
 }
@@ -41,12 +41,19 @@ $hubSource = Join-Path $PSScriptRoot 'MainForm.Hub041.cs'
 if (-not (Test-Path $hubSource)) { throw 'MainForm.Hub041.cs nao encontrado ao lado do patch.' }
 $hubTarget = Join-Path $main.Directory.FullName 'MainForm.Hub041.cs'
 Copy-Item $hubSource $hubTarget -Force
+foreach ($extra in @('TruckOverlay041.cs','VideoOverlay041.cs')) {
+    $source = Join-Path $PSScriptRoot $extra
+    if (-not (Test-Path $source)) { throw "$extra nao encontrado ao lado do patch." }
+    Copy-Item $source (Join-Path $main.Directory.FullName $extra) -Force
+}
 
-# Projetos antigos precisam declarar o novo arquivo. SDK-style inclui *.cs automaticamente.
+# Projetos antigos precisam declarar os novos arquivos. SDK-style inclui *.cs automaticamente.
 if ($projectText -notmatch '<Project\s+Sdk=' -and $projectText -notmatch 'MainForm\.Hub041\.cs') {
     $compileGroup = @"
   <ItemGroup>
     <Compile Include="MainForm.Hub041.cs" />
+    <Compile Include="TruckOverlay041.cs" />
+    <Compile Include="VideoOverlay041.cs" />
   </ItemGroup>
 "@
     if ($projectText -notmatch '</Project>') { throw 'Fim do csproj nao encontrado.' }
