@@ -1,0 +1,182 @@
+name: Build GAT Telemetria Hub 1.0.41
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/apply-hub-1.0.41.ps1'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub041.cs'
+      - 'gat-telemetria-allinone-1.0.29/TruckOverlay041.cs'
+      - 'gat-telemetria-allinone-1.0.29/VideoOverlay041.cs'
+      - 'gat-dash/shared/**'
+      - '.github/workflows/build-gat-telemetria-hub-1.0.41.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gat-telemetria-hub-141-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Reconstruct and compile GAT Telemetria 1.0.41
+        shell: powershell
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias do fonte e encontrei $($parts.Count)" }
+          $zip = Join-Path $PWD 'gat141-source.zip'
+          $out = [IO.File]::Create($zip)
+          try {
+            $out.Write($first, 0, $first.Length)
+            foreach ($part in $parts) { $bytes = [IO.File]::ReadAllBytes($part.FullName); $out.Write($bytes, 0, $bytes.Length) }
+          } finally { $out.Dispose() }
+
+          if (Test-Path 'gat141-build') { Remove-Item 'gat141-build' -Recurse -Force }
+          Expand-Archive $zip 'gat141-build' -Force
+          Get-ChildItem 'gat141-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+            $txt = Get-Content $_.FullName -Raw
+            if ($txt -like '*1.0.28*') { Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8 }
+          }
+
+          ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-beta-brand-1.0.32.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.33.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.34.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-overlay-1.0.35.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-personal-1.0.36.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-stream-1.0.37.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-youtube-referrer-1.0.39.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-dash-media-1.0.40.ps1 -Root "$PWD/gat141-build"
+          ./gat-telemetria-allinone-1.0.29/apply-hub-1.0.41.ps1 -Root "$PWD/gat141-build"
+
+          $main = Get-ChildItem 'gat141-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          $hub = Get-ChildItem 'gat141-build' -Filter 'MainForm.Hub041.cs' -Recurse | Select-Object -First 1
+          $radio = Get-ChildItem 'gat141-build' -Filter 'RadioForm.cs' -Recurse | Select-Object -First 1
+          $bridge = Get-ChildItem 'gat141-build' -Filter 'DashMediaBridge.cs' -Recurse | Select-Object -First 1
+          $project = Get-ChildItem 'gat141-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if (-not $main -or -not $hub -or -not $radio -or -not $bridge -or -not $project) { throw 'Fonte 1.0.41 incompleto.' }
+
+          $mainText = Get-Content $main.FullName -Raw
+          $hubText = Get-Content $hub.FullName -Raw
+          $radioText = Get-Content $radio.FullName -Raw
+          $bridgeText = Get-Content $bridge.FullName -Raw
+          foreach($m in @('CurrentVersion = "1.0.41.0"','internal sealed partial class MainForm','ApplyHub041();')) { if ($mainText -notlike "*$m*") { throw "Cliente sem $m" } }
+          foreach($m in @('GAT DASH','RÁDIO GAT','SOBREPOR VÍDEO','SOBREPOR CAMINHÃO','VideoOverlay041','TruckOverlay041')) { if ($hubText -notlike "*$m*") { throw "Hub sem $m" } }
+          foreach($m in @('SharedMediaModeFile041','radio-active-mode.txt','Radio-1.0.41')) { if ($radioText -notlike "*$m*") { throw "Radio sem $m" } }
+          foreach($m in @('activeMode','ReadMode041','31378')) { if ($bridgeText -notlike "*$m*") { throw "Ponte sem $m" } }
+
+          msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilacao do GAT Telemetria 1.0.41' }
+          $projectDir = Split-Path $project.FullName -Parent
+          $exe = Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado' }
+          $gatOut = $exe.Directory.FullName
+
+          $dashOut = Join-Path $gatOut 'gatdash-www'
+          New-Item -ItemType Directory -Force -Path $dashOut | Out-Null
+          Copy-Item 'gat-dash/shared/*' $dashOut -Recurse -Force
+          $mediaFile = Join-Path $dashOut 'media.js'
+          $media = Get-Content $mediaFile -Raw
+          $oldPush = "window.gatDashPushMedia=payload=>{let m=payload;if(typeof m==='string'){try{m=JSON.parse(m)}catch{return}}if(!m||typeof m!=='object')return;state.media=m;state.error='';render()};"
+          $newPush = "window.gatDashPushMedia=payload=>{let m=payload;if(typeof m==='string'){try{m=JSON.parse(m)}catch{return}}if(!m||typeof m!=='object')return;if(['gat','mine','web'].includes(String(m.activeMode||''))){state.mode=String(m.activeMode);localStorage.setItem(MODE_KEY,state.mode)}state.media=m;state.error='';render()};"
+          if (-not $media.Contains($oldPush)) { throw 'gatDashPushMedia nao encontrado em media.js' }
+          $media = $media.Replace($oldPush,$newPush)
+          $oldMode = "function setMode(mode){state.mode=mode;localStorage.setItem(MODE_KEY,mode);state.embed='';render()}"
+          $newMode = "function setMode(mode){state.mode=mode;localStorage.setItem(MODE_KEY,mode);state.embed='';post({type:'mediaMode',mode});render()}"
+          if (-not $media.Contains($oldMode)) { throw 'setMode nao encontrado em media.js' }
+          $media = $media.Replace($oldMode,$newMode)
+          Set-Content $mediaFile $media -Encoding UTF8
+          "GAT_OUT=$gatOut" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build TruckSim GPS GAT dependency
+        shell: powershell
+        run: |
+          if (Test-Path 'trucksim-hub141-build') { Remove-Item 'trucksim-hub141-build' -Recurse -Force }
+          git clone --depth 1 https://github.com/TruckSim-GPS/trucksim-gps-server.git trucksim-hub141-build
+          Remove-Item 'trucksim-hub141-build/.git' -Recurse -Force
+          ./trucksim-gps-gat/apply-patch.ps1 -Root "$PWD/trucksim-hub141-build"
+          nuget restore trucksim-hub141-build/source/Funbit.Ets.Telemetry.sln -NonInteractive
+          msbuild trucksim-hub141-build/source/Funbit.Ets.Telemetry.sln /m /t:Rebuild /p:Configuration=Release /p:Platform="Mixed Platforms"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar TruckSim GPS GAT' }
+          $truckOut = Join-Path $PWD 'trucksim-hub141-build/source/Funbit.Ets.Telemetry.Server/bin/Release'
+          if (-not (Test-Path (Join-Path $truckOut 'TruckSimGPS_Server.exe'))) { throw 'TruckSimGPS_Server.exe nao foi gerado' }
+          "TRUCK_OUT=$truckOut" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Stage application and launcher
+        shell: powershell
+        run: |
+          $stage = Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging-hub141'
+          if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $stage, "$stage/gat", "$stage/trucksim" | Out-Null
+          Copy-Item "$env:GAT_OUT/*" "$stage/gat" -Recurse -Force
+          Copy-Item (Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
+          $cfg = Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe.config'
+          if (Test-Path $cfg) { Copy-Item $cfg (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force }
+          Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe') -Force -ErrorAction SilentlyContinue
+          Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe.config') -Force -ErrorAction SilentlyContinue
+          Copy-Item "$env:TRUCK_OUT/*" "$stage/trucksim" -Recurse -Force
+          $launcherText = Get-Content 'gat-telemetria-allinone-1.0.29/Launcher.cs' -Raw
+          $launcherText = $launcherText.Replace('"GAT Telemetria"', '"GAT Telemetria BETA"')
+          $patched = Join-Path $PWD 'Launcher.Hub141.cs'; Set-Content $patched $launcherText -Encoding UTF8
+          $csc = "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$stage/GAT_TELEMETRIA.exe" $patched
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar launcher integrado' }
+          Invoke-WebRequest 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile "$stage/vc_redist.x64.exe"
+
+      - name: Install Inno Setup
+        shell: powershell
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer 1.0.41
+        shell: powershell
+        run: |
+          $issSource = 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
+          $iss = 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_Hub_1.0.41.iss'
+          $text = Get-Content $issSource -Raw
+          $text = $text.Replace('1.0.29','1.0.41').Replace('staging','staging-hub141')
+          $text = $text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA').Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
+          $text = $text.Replace('Name: "{group}\GAT Telemetria";','Name: "{group}\GAT Telemetria BETA";').Replace('Name: "{group}\Desinstalar GAT Telemetria";','Name: "{group}\Desinstalar GAT Telemetria BETA";').Replace('Name: "{autodesktop}\GAT Telemetria";','Name: "{autodesktop}\GAT Telemetria BETA";').Replace('Description: "Abrir GAT Telemetria";','Description: "Abrir GAT Telemetria BETA";')
+          Set-Content $iss $text -Encoding UTF8
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao gerar instalador 1.0.41' }
+          $setup = 'gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_SETUP_1.0.41.exe'
+          if (-not (Test-Path $setup)) { throw 'Setup 1.0.41 nao foi gerado' }
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          Copy-Item $setup 'releases/GAT_TELEMETRIA_SETUP_1.0.41.exe' -Force
+
+      - name: Package GPL source for TruckSim GPS GAT
+        shell: powershell
+        run: |
+          $sourceZip = 'releases/TruckSimGPS_GAT_DANOS_1.0.41_SOURCE.zip'
+          if (Test-Path $sourceZip) { Remove-Item $sourceZip -Force }
+          Compress-Archive -Path 'trucksim-hub141-build/*' -DestinationPath $sourceZip -CompressionLevel Optimal
+
+      - name: Publish test installer 1.0.41
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: powershell
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f releases/GAT_TELEMETRIA_SETUP_1.0.41.exe releases/TruckSimGPS_GAT_DANOS_1.0.41_SOURCE.zip
+          git commit -m "Publish GAT Telemetria Hub 1.0.41 test"
+          git pull --rebase -X theirs origin main
+          git push
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Telemetria-Hub-1.0.41
+          path: releases/GAT_TELEMETRIA_SETUP_1.0.41.exe
