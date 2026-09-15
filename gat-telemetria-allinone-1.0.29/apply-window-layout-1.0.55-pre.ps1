@@ -18,9 +18,10 @@ $videoText = Get-Content $video.FullName -Raw
 $truckText = [regex]::Replace($truckText, 'FormBorderStyle\s*=\s*FormBorderStyle\.[A-Za-z]+\s*;', 'FormBorderStyle = FormBorderStyle.None;', 1)
 $videoText = [regex]::Replace($videoText, 'FormBorderStyle\s*=\s*FormBorderStyle\.[A-Za-z]+\s*;', 'FormBorderStyle = FormBorderStyle.SizableToolWindow;', 1)
 
-# A 1.0.54 pode ter gravado o ShowInTaskbar com espacamento diferente; normaliza antes da troca.
-$hubText = [regex]::Replace($hubText, '_truckOverlay041\.ShowInTaskbar\s*=\s*false\s*;', '_truckOverlay041.ShowInTaskbar = true;')
-$hubText = [regex]::Replace($hubText, '_videoOverlay041\.ShowInTaskbar\s*=\s*false\s*;', '_videoOverlay041.ShowInTaskbar = true;')
+# A 1.0.54 pode gravar ShowInTaskbar com pequenas variacoes de formato.
+# Na 1.0.55 as janelas auxiliares sao independentes e devem aparecer na barra de tarefas.
+$hubText = $hubText.Replace('ShowInTaskbar = false', 'ShowInTaskbar = true')
+$hubText = $hubText.Replace('ShowInTaskbar=false', 'ShowInTaskbar=true')
 
 Set-Content $hub.FullName $hubText -Encoding UTF8
 Set-Content $truck.FullName $truckText -Encoding UTF8
