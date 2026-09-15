@@ -1,4 +1,5 @@
 name: Build GAT Telemetria Hub 1.0.51
+# responsive build trigger
 
 on:
   workflow_dispatch:
