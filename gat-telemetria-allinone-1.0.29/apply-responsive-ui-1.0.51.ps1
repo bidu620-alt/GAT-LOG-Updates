@@ -21,10 +21,6 @@ $hubText = $hubText.Replace('Cliente 1.0.42 TESTE', 'Cliente 1.0.51 TESTE')
 $hubText = $hubText.Replace('Cliente 1.0.50 TESTE', 'Cliente 1.0.51 TESTE')
 
 # Janela inicial respeita a area util do monitor e permite resolucoes menores.
-$oldSize = 'MinimumSize = new Size(1040, 690);`r`n        Size = new Size(1220, 820);'
-if (-not $hubText.Contains($oldSize)) {
-    $oldSize = "MinimumSize = new Size(1040, 690);`n        Size = new Size(1220, 820);"
-}
 $newSize = @'
 MinimumSize = new Size(820, 540);
         AutoScaleMode = AutoScaleMode.Dpi;
@@ -33,8 +29,9 @@ MinimumSize = new Size(820, 540);
             Math.Min(1220, Math.Max(820, work051.Width - 32)),
             Math.Min(820, Math.Max(540, work051.Height - 48)));
 '@.TrimEnd()
-if ($hubText.Contains($oldSize)) {
-    $hubText = $hubText.Replace($oldSize, $newSize)
+$sizePattern = 'MinimumSize\s*=\s*new Size\(1040,\s*690\);\s*\r?\n\s*Size\s*=\s*new Size\(1220,\s*820\);'
+if ([regex]::IsMatch($hubText, $sizePattern)) {
+    $hubText = [regex]::Replace($hubText, $sizePattern, $newSize, 1)
 } elseif ($hubText -notlike '*MinimumSize = new Size(820, 540)*') {
     throw 'Bloco de tamanho inicial do Hub nao encontrado.'
 }
@@ -57,14 +54,18 @@ $hubText = $hubText.Replace(
 $dashNeedle = 'p.Controls.Add(_hubDash041); return p;'
 if ($hubText.Contains($dashNeedle)) {
     $hubText = $hubText.Replace($dashNeedle, '_hubDash041.Resize += delegate { ApplyDashZoom051(); }; p.Controls.Add(_hubDash041); return p;')
-} elseif ($hubText -notlike '*ApplyDashZoom051()*') {
+} elseif ($hubText -notlike '*_hubDash041.Resize += delegate { ApplyDashZoom051(); }*') {
     throw 'Criacao do WebView do GAT DASH nao encontrada.'
 }
 
 # Aplica responsividade apos abrir e enquanto o usuario redimensiona a janela.
 $shownPattern = 'Shown\s*\+=\s*async\s+delegate\s*\{\s*SyncHub041\(\);\s*await\s+InitDash041\(\);\s*\};'
 if ([regex]::IsMatch($hubText, $shownPattern)) {
-    $hubText = [regex]::Replace($hubText, $shownPattern, 'Shown += async delegate { SyncHub041(); await InitDash041(); ApplyResponsive051(); };`r`n        Resize += delegate { ApplyResponsive051(); };', 1)
+    $shownReplacement = @'
+Shown += async delegate { SyncHub041(); await InitDash041(); ApplyResponsive051(); };
+        Resize += delegate { ApplyResponsive051(); };
+'@.TrimEnd()
+    $hubText = [regex]::Replace($hubText, $shownPattern, $shownReplacement, 1)
 } elseif ($hubText -notlike '*Resize += delegate { ApplyResponsive051(); }*') {
     throw 'Evento Shown do Hub nao encontrado.'
 }
@@ -169,8 +170,7 @@ if ($hubText -notlike '*GAT_RESPONSIVE_051*') {
             int w = Math.Max(1, _hubDash041.ClientSize.Width);
             int h = Math.Max(1, _hubDash041.ClientSize.Height);
 
-            // O layout visual foi desenhado para aproximadamente 1280x720.
-            // Reduz ou amplia proporcionalmente para caber no espaco real do monitor/janela.
+            // Base visual aproximada do dashboard. O zoom acompanha largura e altura reais.
             double zoom = Math.Min(w / 1280.0, h / 720.0);
             zoom = Math.Max(0.62, Math.Min(1.15, zoom));
             if (Math.Abs(_hubDash041.ZoomFactor - zoom) > 0.015)
