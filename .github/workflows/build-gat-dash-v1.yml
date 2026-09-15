@@ -1,53 +1,21 @@
-name: Build GAT DASH 1.1.1 PC + Android Hotfix
+name: Build GAT DASH Android 1.2.0
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'gat-dash/**'
-      - '.github/workflows/build-gat-dash-v1.yml'
   push:
     branches: [main]
     paths:
-      - 'gat-dash/**'
+      - 'gat-dash/android/**'
       - '.github/workflows/build-gat-dash-v1.yml'
 
 permissions:
   contents: write
 
 concurrency:
-  group: gat-dash-v111-${{ github.ref }}
+  group: gat-dash-android-v120-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  windows:
-    runs-on: windows-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: microsoft/setup-msbuild@v2
-      - name: Restore and build GAT DASH PC x64
-        shell: powershell
-        run: |
-          msbuild gat-dash/windows/GatDash.Windows.csproj /restore /t:Rebuild /p:Configuration=Release /p:PlatformTarget=x64 /p:Prefer32Bit=false
-          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar GAT DASH PC x64' }
-          if (-not (Test-Path 'gat-dash/windows/bin/Release/GAT_DASH.exe')) { throw 'GAT_DASH.exe nao gerado' }
-          if (-not (Test-Path 'gat-dash/windows/bin/Release/www/index.html')) { throw 'Assets do dashboard nao copiados' }
-      - name: Install Inno Setup
-        shell: powershell
-        run: choco install innosetup -y --no-progress
-      - name: Build PC installer
-        shell: powershell
-        run: |
-          Push-Location gat-dash/windows
-          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' 'GAT_DASH.iss'
-          if ($LASTEXITCODE -ne 0) { throw 'Falha no instalador GAT DASH PC' }
-          Pop-Location
-      - uses: actions/upload-artifact@v4
-        with:
-          name: gat-dash-pc
-          path: gat-dash/windows/Output/GAT_DASH_PC_SETUP_1.1.1.exe
-
   android:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -63,66 +31,66 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-      - name: Stage shared dashboard assets
+      - name: Validate Android 1.2.0 dashboard assets
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p gat-dash/android/app/src/main/assets
-          rm -f gat-dash/android/app/src/main/assets/index.html gat-dash/android/app/src/main/assets/app.css gat-dash/android/app/src/main/assets/app.js gat-dash/android/app/src/main/assets/media.js
-          cp gat-dash/shared/index.html gat-dash/shared/app.css gat-dash/shared/app.js gat-dash/shared/media.js gat-dash/android/app/src/main/assets/
-          grep -q 'MEU VÍDEO' gat-dash/android/app/src/main/assets/index.html
-          grep -q 'CANAL WEB' gat-dash/android/app/src/main/assets/index.html
-          grep -q 'media.js' gat-dash/android/app/src/main/assets/index.html
-      - name: Build Android APK
+          test -f gat-dash/android/app/src/main/assets/index.html
+          test -f gat-dash/android/app/src/main/assets/app.css
+          test -f gat-dash/android/app/src/main/assets/app.js
+          test -f gat-dash/android/app/src/main/assets/truck_trip.svg
+          grep -q 'GAT DASH Android 1.2.0' gat-dash/android/app/src/main/assets/index.html
+          if grep -Eiq 'GAT Rádio|GAT Radio|Rádio/TV|Radio/TV' gat-dash/android/app/src/main/assets/index.html gat-dash/android/app/src/main/assets/app.js; then
+            echo 'GAT Radio ainda presente nos assets Android' >&2
+            exit 1
+          fi
+      - name: Build Android APK 1.2.0
         shell: bash
         run: |
           set -euo pipefail
           gradle -p gat-dash/android :app:assembleDebug --no-daemon
-          cp gat-dash/android/app/build/outputs/apk/debug/app-debug.apk GAT_DASH_ANDROID_1.1.1.apk
+          cp gat-dash/android/app/build/outputs/apk/debug/app-debug.apk GAT_DASH_ANDROID_1.2.0.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: gat-dash-android
-          path: GAT_DASH_ANDROID_1.1.1.apk
+          name: gat-dash-android-1.2.0
+          path: GAT_DASH_ANDROID_1.2.0.apk
 
   publish:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [windows, android]
+    needs: android
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: gat-dash-pc
-          path: dist/pc
-      - uses: actions/download-artifact@v4
-        with:
-          name: gat-dash-android
+          name: gat-dash-android-1.2.0
           path: dist/android
-      - name: Publish GAT DASH 1.1.1
+      - name: Publish Android 1.2.0 and preserve PC 1.1.1
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p releases
-          cp dist/pc/GAT_DASH_PC_SETUP_1.1.1.exe releases/GAT_DASH_PC_SETUP_1.1.1.exe
-          cp dist/android/GAT_DASH_ANDROID_1.1.1.apk releases/GAT_DASH_ANDROID_1.1.1.apk
-          PC_SHA=$(sha256sum releases/GAT_DASH_PC_SETUP_1.1.1.exe | awk '{print $1}')
-          APK_SHA=$(sha256sum releases/GAT_DASH_ANDROID_1.1.1.apk | awk '{print $1}')
-          cat > gat_dash_version.json <<JSON
-          {
-            "app":"GAT DASH",
-            "version":"1.1.1",
-            "display_version":"GAT DASH 1.1.1 PC + ANDROID",
-            "notes":"Android 1.1.1 limpa e desativa o cache do WebView e usa URL versionada para garantir a nova tela sem mapa, com Canal GAT, Meu Video e Canal Web. PC permanece no hotfix x64 1.1.1.",
-            "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.1.1.exe",
-            "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.1.1.apk",
-            "pc_sha256":"$PC_SHA",
-            "android_sha256":"$APK_SHA"
-          }
-          JSON
+          cp dist/android/GAT_DASH_ANDROID_1.2.0.apk releases/GAT_DASH_ANDROID_1.2.0.apk
+          export APK_SHA=$(sha256sum releases/GAT_DASH_ANDROID_1.2.0.apk | awk '{print $1}')
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path('gat_dash_version.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          data['app'] = 'GAT DASH'
+          data['version'] = '1.2.0'
+          data['android_version'] = '1.2.0'
+          data['pc_version'] = '1.1.1'
+          data['display_version'] = 'GAT DASH Android 1.2.0 • PC 1.1.1'
+          data['notes'] = 'Android 1.2.0 recebe o novo GAT DASH mobile focado em telemetria, rota, viagem e condição do caminhão, sem GAT Rádio. A versão PC permanece 1.1.1 sem alterações.'
+          data['android_url'] = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.2.0.apk'
+          data['android_sha256'] = os.environ['APK_SHA']
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
           git config user.name 'GAT DASH Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add -f releases/GAT_DASH_PC_SETUP_1.1.1.exe releases/GAT_DASH_ANDROID_1.1.1.apk gat_dash_version.json
-          git commit -m 'Publish GAT DASH 1.1.1 PC + Android'
+          git add -f releases/GAT_DASH_ANDROID_1.2.0.apk gat_dash_version.json
+          git commit -m 'Publish GAT DASH Android 1.2.0'
           git pull --rebase -X theirs origin main
           git push origin main

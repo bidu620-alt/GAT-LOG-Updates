@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#020914">
+  <title>GAT DASH</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <section id="loginScreen" class="screen login-screen">
+    <div class="login-card">
+      <div class="brand-kicker">ETS2 TELEMETRIA EM OUTRO NÍVEL</div>
+      <div class="brand-title"><b>GAT</b><span>DASH</span></div>
+      <div class="brand-sub">Seu caminhão. Sua rota. Sua telemetria.</div>
+      <form id="loginForm" autocomplete="off">
+        <label>Motorista</label>
+        <input id="loginUser" type="text" autocapitalize="none" autocomplete="username" placeholder="seu usuário GAT" maxlength="32" required>
+        <label>Senha</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="mesma senha da GAT Telemetria" maxlength="128" required>
+        <button id="loginButton" type="submit">ENTRAR NO GAT DASH</button>
+        <div id="loginStatus" class="login-status">Use o mesmo usuário e senha da GAT Telemetria.</div>
+      </form>
+      <div class="login-foot">Sem cadastro neste aplicativo • sua senha não é salva</div>
+    </div>
+  </section>
+
+  <section id="dashScreen" class="screen dash-screen hidden">
+    <header class="topbar">
+      <div class="brand-inline"><b>GAT</b><span>DASH</span><small>ETS2 TELEMETRIA</small></div>
+      <div class="top-status"><span id="gameDot" class="dot"></span><div><b id="gameStatus">ETS2 aguardando</b><small id="driverName">Motorista</small></div></div>
+      <button id="settingsBtn" class="icon-btn" title="Configurações">☰</button>
+    </header>
+
+    <main class="dashboard">
+      <section class="speed-hero">
+        <div class="hero-glow"></div>
+        <div class="indicator-row">
+          <span id="highBeam" class="indicator">◉</span>
+          <span id="blinkLeft" class="indicator green">◀</span>
+          <span id="parkBrake" class="indicator red">Ⓟ</span>
+          <span id="blinkRight" class="indicator green">▶</span>
+        </div>
+        <div id="speedGauge" class="speed-gauge">
+          <div class="gauge-ring"></div>
+          <div class="gauge-ticks"></div>
+          <div class="gauge-inner">
+            <div id="speedValue" class="speed-value">0</div>
+            <div class="speed-unit">km/h</div>
+            <div class="gauge-bottom"><span id="gearValue" class="gear">N</span><span><b id="rpmValue">0</b> RPM</span></div>
+          </div>
+        </div>
+        <div id="overspeedAlert" class="overspeed-alert hidden">⚠ ACIMA DO LIMITE</div>
+        <div id="speedNotice" class="speed-notice">
+          <span id="speedLimitSign" class="speed-limit-small">—</span>
+          <div><b id="speedNoticeTitle">Limite atual</b><small id="gpsInstruction">Aguardando rota</small></div>
+        </div>
+      </section>
+
+      <section class="telemetry-strip">
+        <div class="quick-card"><span>⛽</span><div><small>Combustível</small><b id="fuelPct">0%</b><em id="fuelLiters">0 / 0 L</em></div></div>
+        <div class="quick-card"><span>⚙</span><div><small>Marcha</small><b id="gearMirror">N</b><em>Automática</em></div></div>
+        <div id="cruiseBox" class="quick-card"><span>◴</span><div><small>Cruise</small><b id="cruiseValue">OFF</b><em>Controle</em></div></div>
+      </section>
+
+      <section class="card route-panel">
+        <div class="card-title"><span>🛣</span><b>ROTA ATUAL</b><em>AO VIVO</em></div>
+        <div class="route-grid">
+          <div class="route-path">
+            <div class="route-city"><span class="route-node start"></span><div><small>Origem</small><b id="sourceCity">—</b></div></div>
+            <div class="route-line"></div>
+            <div class="route-city"><span class="route-node end"></span><div><small>Destino</small><b id="destinationCity">—</b></div></div>
+          </div>
+          <div class="route-stats">
+            <div><span>🛣</span><small>Distância restante</small><b id="remainingKm">0 km</b></div>
+            <div><span>◷</span><small>Chegada estimada</small><b id="etaText">—</b></div>
+            <div><span>📦</span><small>Carga</small><b id="cargoName">Sem carga</b><em id="cargoMass">0 t</em></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card trip-panel">
+        <div class="trip-bg"></div>
+        <div class="trip-shade"></div>
+        <div class="trip-head"><span>🛣</span><b>VIAGEM EM ANDAMENTO</b><em id="tripStatus">AGUARDANDO</em></div>
+        <div class="trip-copy">
+          <span class="trip-kicker">ESTRADA É LIBERDADE EM MOVIMENTO</span>
+          <b id="tripDestination">Sem destino definido</b>
+          <small id="tripCargo">Aguardando carga</small>
+        </div>
+        <div class="trip-footer"><span>📍 <b id="tripDistance">—</b> restantes</span><span id="tripRoad">GAT LOG • ETS2</span></div>
+      </section>
+
+      <section class="card condition-panel">
+        <div class="card-title"><span>🔧</span><b>CONDIÇÃO DO CAMINHÃO</b><em id="conditionText">Sem avarias</em></div>
+        <div class="condition-summary"><b id="overallCondition">100%</b><span>condição geral</span></div>
+        <div class="wear-grid">
+          <div><span>⚙</span><small>Motor</small><b id="wearEngine">100%</b><i></i></div>
+          <div><span>⚙</span><small>Transmissão</small><b id="wearTransmission">100%</b><i></i></div>
+          <div><span>▣</span><small>Cabine</small><b id="wearCabin">100%</b><i></i></div>
+          <div><span>━</span><small>Chassi</small><b id="wearChassis">100%</b><i></i></div>
+          <div><span>◉</span><small>Pneus</small><b id="wearWheels">100%</b><i></i></div>
+        </div>
+      </section>
+
+      <section class="system-row">
+        <div><span>♨</span><small>Temperatura</small><b id="waterTemp">0°C</b></div>
+        <div><span>🔋</span><small>Sistema elétrico</small><b id="batteryVoltage">0 V</b></div>
+        <div><span>◉</span><small>Telemetria</small><b id="telemetryStatus">Aguardando...</b></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <div class="active"><span>⌂</span><small>Início</small></div>
+      <div><span>⌖</span><small>Rota</small></div>
+      <div><span>🚛</span><small>Caminhão</small></div>
+      <div><span>▥</span><small>Estatísticas</small></div>
+      <div><span>•••</span><small>Mais</small></div>
+    </nav>
+
+    <div class="hidden" aria-hidden="true">
+      <div id="gpsPanel"></div><span id="gpsDestination"></span><span id="gpsDistance"></span><span id="gpsRemain"></span><span id="gpsEta"></span><span id="gpsRoad"></span><span id="truckArrow"></span>
+    </div>
+  </section>
+
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-title">CONFIGURAÇÕES <button id="closeSettings">✕</button></div>
+      <label>PC do ETS2 / GAT Telemetria</label>
+      <input id="telemetryHost" type="text" placeholder="192.168.1.100 ou 100.x.x.x">
+      <small>No celular, informe o IP do PC na rede local ou Tailscale.</small>
+      <label class="check-row"><input id="voiceToggle" type="checkbox" checked> Alertas de limite por voz</label>
+      <label>Tolerância do radar</label>
+      <select id="speedTolerance"><option value="0">0 km/h</option><option value="3" selected>3 km/h</option><option value="5">5 km/h</option><option value="10">10 km/h</option></select>
+      <button id="saveSettings" class="primary">SALVAR E CONECTAR</button>
+      <button id="logoutBtn" class="danger">SAIR DA CONTA</button>
+      <div class="version-note">GAT DASH Android 1.2.0 • sem GAT Rádio</div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
