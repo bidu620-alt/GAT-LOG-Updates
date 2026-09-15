@@ -3,7 +3,7 @@
   const $ = id => document.getElementById(id);
   const MODE_KEY='gat_dash_media_mode_v1', HIDDEN_KEY='gat_dash_media_hidden_v1';
   const native = window.chrome && window.chrome.webview ? 'windows' : (window.GatAndroid ? 'android' : 'web');
-  const state={mode:localStorage.getItem(MODE_KEY)||'gat',hidden:localStorage.getItem(HIDDEN_KEY)==='1',media:null,error:'',embed:''};
+  const state={mode:localStorage.getItem(MODE_KEY)||'gat',hidden:localStorage.getItem(HIDDEN_KEY)==='1',media:null,error:'',embed:'',active:true};
   function post(payload){try{if(native==='windows')window.chrome.webview.postMessage(payload);else if(native==='android')window.GatAndroid.postMessage(JSON.stringify(payload));}catch{}}
   function youtubeEmbed(url){
     try{
@@ -27,16 +27,18 @@
     if(!$('mediaGat'))return;
     $('mediaGat').classList.toggle('active',state.mode==='gat'); $('mediaMine').classList.toggle('active',state.mode==='mine'); $('mediaWeb').classList.toggle('active',state.mode==='web');
     const c=choice(), frame=$('mediaFrame'), empty=$('mediaEmpty'); $('mediaSourceName').textContent=c.name; $('toggleVideoBtn').textContent=state.hidden?'MOSTRAR VÍDEO':'OCULTAR VÍDEO';
-    if(state.hidden){frame.classList.add('hidden');empty.classList.remove('hidden');$('mediaEmptyTitle').textContent='Vídeo oculto';$('mediaEmptyText').textContent='Toque em MOSTRAR VÍDEO para voltar ao player.';$('mediaStatus').textContent='Player oculto pelo motorista';return}
+    if(!state.active){frame.removeAttribute('src');frame.classList.add('hidden');empty.classList.remove('hidden');$('mediaEmptyTitle').textContent='Player pausado';$('mediaEmptyText').textContent='O áudio está ativo em outro módulo do GAT Telemetria.';$('mediaStatus').textContent='Mídia pausada para evitar áudio duplicado';state.embed='';return}
+    if(state.hidden){frame.removeAttribute('src');frame.classList.add('hidden');empty.classList.remove('hidden');$('mediaEmptyTitle').textContent='Vídeo oculto';$('mediaEmptyText').textContent='Toque em MOSTRAR VÍDEO para voltar ao player.';$('mediaStatus').textContent='Player oculto pelo motorista';state.embed='';return}
     const url=c.url.trim();
     if(!c.enabled||!url){frame.removeAttribute('src');frame.classList.add('hidden');empty.classList.remove('hidden');$('mediaEmptyTitle').textContent=state.mode==='gat'?'Canal GAT sem programação':'Nenhuma fonte configurada';$('mediaEmptyText').textContent=state.error||'Configure esta fonte na Rádio/TV GAT do Telemetria no PC.';$('mediaStatus').textContent=state.error||'Aguardando GAT Telemetria';state.embed='';return}
     const embed=state.mode==='web'?url:(youtubeEmbed(url)||url);
     if(embed!==state.embed){state.embed=embed;frame.src=embed}
     frame.classList.remove('hidden');empty.classList.add('hidden');$('mediaStatus').textContent=state.mode==='web'?'Canal Web • a página pode bloquear incorporação':'Fonte sincronizada pelo GAT Telemetria';
   }
-  window.gatDashPushMedia=payload=>{let m=payload;if(typeof m==='string'){try{m=JSON.parse(m)}catch{return}}if(!m||typeof m!=='object')return;state.media=m;state.error='';render()};
+  window.gatDashPushMedia=payload=>{let m=payload;if(typeof m==='string'){try{m=JSON.parse(m)}catch{return}}if(!m||typeof m!=='object')return;if(['gat','mine','web'].includes(String(m.activeMode||''))){state.mode=String(m.activeMode);localStorage.setItem(MODE_KEY,state.mode)}state.media=m;state.error='';render()};
   window.gatDashMediaError=message=>{state.error='GAT Telemetria: '+(message||'ponte de mídia indisponível');render()};
-  function setMode(mode){state.mode=mode;localStorage.setItem(MODE_KEY,mode);state.embed='';render()}
+  window.gatDashSetMediaActive042=enabled=>{state.active=!!enabled;state.embed='';render()};
+  function setMode(mode){state.mode=mode;localStorage.setItem(MODE_KEY,mode);state.embed='';post({type:'mediaMode',mode});render()}
   $('mediaGat').onclick=()=>setMode('gat'); $('mediaMine').onclick=()=>setMode('mine'); $('mediaWeb').onclick=()=>setMode('web');
   $('toggleVideoBtn').onclick=()=>{state.hidden=!state.hidden;localStorage.setItem(HIDDEN_KEY,state.hidden?'1':'0');render()};
   function poll(){if(native!=='web')post({type:'mediaRefresh'})}
