@@ -91,10 +91,10 @@ $helpers = @'
     private const int HTBOTTOMLEFT_061 = 16;
     private const int HTBOTTOMRIGHT_061 = 17;
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", EntryPoint = "ReleaseCapture")]
     private static extern bool ReleaseCapture061();
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", EntryPoint = "SendMessage")]
     private static extern IntPtr SendMessage061(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
     protected override void WndProc(ref Message m)
@@ -123,8 +123,9 @@ $helpers = @'
     $videoText = $videoText.Insert($helperIndex, $helpers)
 }
 
-# Substitui o HTML do player por uma barra GAT propria com minimizar/fechar.
-$htmlPattern = '(?s)    private static string Html\(\)\s*\{.*?\r?\n    \}\s*\r?\n\}'
+# Substitui somente o metodo Html(), independentemente de outros metodos que
+# tenham sido adicionados depois dele por patches anteriores.
+$htmlPattern = '(?s)    private static string Html\(\)\s*\{\s*return\s+@".*?";\s*\}'
 if (-not [regex]::IsMatch($videoText, $htmlPattern)) { throw 'Metodo Html do overlay de video nao encontrado.' }
 $newHtml = @'
     private static string Html()
@@ -134,12 +135,11 @@ $newHtml = @'
 const state={mode:'gat',media:null,embed:''};const post=o=>{try{chrome.webview.postMessage(o)}catch{}};function yt(url){try{const u=new URL(url),h=u.hostname.toLowerCase(),list=u.searchParams.get('list');const s='&autoplay=1&rel=0&playsinline=1';if(list)return 'https://www.youtube.com/embed/videoseries?list='+encodeURIComponent(list)+s;let id=h==='youtu.be'?u.pathname.slice(1).split('/')[0]:u.searchParams.get('v')||'';if(!id){const p=u.pathname.split('/').filter(Boolean);if(p.length>1)id=p[1]}return /^[A-Za-z0-9_-]{11}$/.test(id)?'https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0&playsinline=1':''}catch{return ''}}function pick(){const m=state.media||{};if(state.mode==='mine')return(m.myVideo||{}).url||'';return(m.channelGat&&m.channelGat.enabled)?m.channelGat.url||'':''}function render(){['gat','mine'].forEach(x=>document.getElementById(x).classList.toggle('on',x===state.mode));const url=String(pick()||'').trim(),f=document.getElementById('frame'),e=document.getElementById('empty');if(!url){f.classList.add('hidden');e.classList.remove('hidden');e.textContent='Nenhuma fonte ativa na Rádio/TV GAT.';return}const src=yt(url)||url;if(src!==state.embed){state.embed=src;f.src=src}f.classList.remove('hidden');e.classList.add('hidden')}window.pushMedia=p=>{let m=p;if(typeof m==='string'){try{m=JSON.parse(m)}catch{return}}state.media=m;const mode=String(m.activeMode||'');state.mode=mode==='mine'?'mine':'gat';render()};window.mediaError=()=>{document.getElementById('empty').textContent='Abra o GAT Telemetria e confira a Rádio GAT.'};['gat','mine'].forEach(x=>document.getElementById(x).onclick=()=>{state.mode=x;post({type:'mediaMode',mode:x});render()});document.getElementById('min').onclick=e=>{e.stopPropagation();post({type:'windowMinimize'})};document.getElementById('close').onclick=e=>{e.stopPropagation();post({type:'windowClose'})};const bar=document.getElementById('bar');bar.addEventListener('pointerdown',e=>{if(e.button===0&&!e.target.closest('button'))post({type:'windowDrag'})});bar.addEventListener('dblclick',e=>{if(!e.target.closest('button'))post({type:'windowToggleMax'})});post({type:'mediaRefresh'});setInterval(()=>post({type:'mediaRefresh'}),3000);
 </script></body></html>";
     }
-}
 '@
 $videoText = [regex]::Replace($videoText, $htmlPattern, $newHtml, 1)
 
 if ($mainText -notlike '*CurrentVersion = "1.0.61.0"*') { throw 'Versao 1.0.61 nao aplicada.' }
-foreach ($m in @('GAT_VIDEO_BORDERLESS_061','FormBorderStyle = FormBorderStyle.None','windowMinimize','windowClose','windowDrag','WM_NCHITTEST_061','Canal GAT','Meu Vídeo')) {
+foreach ($m in @('GAT_VIDEO_BORDERLESS_061','FormBorderStyle = FormBorderStyle.None','windowMinimize','windowClose','windowDrag','WM_NCHITTEST_061','EntryPoint = "ReleaseCapture"','EntryPoint = "SendMessage"','Canal GAT','Meu Vídeo')) {
     if ($videoText -notlike "*$m*") { throw "Overlay de video 1.0.61 sem $m" }
 }
 if ($videoText -like '*Canal Web*') { throw 'Canal Web reapareceu no overlay de video.' }
