@@ -22,7 +22,7 @@ internal sealed partial class MainForm
         {
             base.OnPaint(e);
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            int d = Math.Min(Width, Height) - 6;
+            int d = Math.Max(20, Math.Min(Width, Height) - 6);
             var r = new Rectangle((Width - d) / 2, (Height - d) / 2, d, d);
             using (var b = new SolidBrush(Color.FromArgb(12, 91, 164))) e.Graphics.FillEllipse(b, r);
             using (var p = new Pen(Color.FromArgb(36, 167, 255), 2f)) e.Graphics.DrawEllipse(p, r);
@@ -115,15 +115,14 @@ internal sealed partial class MainForm
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         page.Controls.Add(root);
 
-        var head = new Label
+        root.Controls.Add(new Label
         {
             Dock = DockStyle.Fill,
             Text = "INÍCIO\r\nSeu perfil, sua viagem e o ecossistema GAT LOG em um só lugar.",
             ForeColor = Color.White,
             Font = new Font("Segoe UI Semibold", 12f, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleLeft
-        };
-        root.Controls.Add(head, 0, 0);
+        }, 0, 0);
 
         var top = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty };
         top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 31));
@@ -132,11 +131,13 @@ internal sealed partial class MainForm
         root.Controls.Add(top, 0, 1);
 
         var profile = Card042("PERFIL DO MOTORISTA");
-        _avatar042 = new DriverAvatar042 { Left = 16, Top = 54, Width = 86, Height = 86, Anchor = AnchorStyles.Top | AnchorStyles.Left };
-        _profileName042 = new Label { Left = 118, Top = 57, Width = 210, Height = 32, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 16f, FontStyle.Bold), Text = "Motorista GAT" };
-        _profileMeta042 = new Label { Left = 118, Top = 94, Width = 220, Height = 88, ForeColor = Color.FromArgb(159, 187, 214), Font = new Font("Segoe UI", 9.5f), Text = "Conta GAT aguardando..." };
-        var badge = new Label { Left = 16, Top = 157, Width = 92, Height = 27, Text = "GAT LOG", TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.FromArgb(10, 76, 130), ForeColor = Color.FromArgb(177, 224, 255), Font = new Font("Segoe UI Semibold", 8.5f, FontStyle.Bold) };
-        profile.Controls.Add(_avatar042); profile.Controls.Add(_profileName042); profile.Controls.Add(_profileMeta042); profile.Controls.Add(badge);
+        _avatar042 = new DriverAvatar042 { Left = 16, Top = 54, Width = 86, Height = 86 };
+        _profileName042 = new Label { Left = 118, Top = 57, Width = 220, Height = 32, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 16f, FontStyle.Bold), Text = "Motorista GAT" };
+        _profileMeta042 = new Label { Left = 118, Top = 94, Width = 230, Height = 88, ForeColor = Color.FromArgb(159, 187, 214), Font = new Font("Segoe UI", 9.5f), Text = "Conta GAT aguardando..." };
+        profile.Controls.Add(_avatar042);
+        profile.Controls.Add(_profileName042);
+        profile.Controls.Add(_profileMeta042);
+        profile.Controls.Add(new Label { Left = 16, Top = 157, Width = 92, Height = 27, Text = "GAT LOG", TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.FromArgb(10, 76, 130), ForeColor = Color.FromArgb(177, 224, 255), Font = new Font("Segoe UI Semibold", 8.5f, FontStyle.Bold) });
         top.Controls.Add(profile, 0, 0);
 
         var trip = Card042("ETS2 / VIAGEM ATUAL");
@@ -155,30 +156,33 @@ internal sealed partial class MainForm
             using (var pen = new Pen(Color.FromArgb(23, 92, 148), 1f))
                 e.Graphics.DrawRectangle(pen, 0, 0, Math.Max(1, banner.Width - 1), Math.Max(1, banner.Height - 1));
         };
-        var brand = new Label
+        banner.Controls.Add(new Label
         {
             Text = "GAT LOG ETS2\r\nCONEXÃO QUE MOVE DISTÂNCIAS",
             Left = 28,
             Top = 36,
-            Width = 430,
+            Width = 500,
             Height = 86,
             ForeColor = Color.White,
             Font = new Font("Segoe UI Semibold", 20f, FontStyle.Bold)
-        };
-        var sub = new Label
+        });
+        banner.Controls.Add(new Label
         {
             Text = "Telemetria • comunidade • rádio • dashboard • GPS • comboios\r\nTudo integrado no mesmo GAT Telemetria.",
             Left = 30,
             Top = 132,
-            Width = 520,
+            Width = 540,
             Height = 50,
             ForeColor = Color.FromArgb(112, 171, 220),
             Font = new Font("Segoe UI", 10f)
-        };
-        var truck = new TruckOutline { Width = 330, Height = 130, Top = 32, Anchor = AnchorStyles.Top | AnchorStyles.Right };
-        var gatTruck = new Label { Text = "GAT LOG", Width = 150, Height = 34, Top = 154, TextAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.Top | AnchorStyles.Right, ForeColor = Color.FromArgb(70, 182, 255), Font = new Font("Segoe UI Black", 16f, FontStyle.Bold | FontStyle.Italic) };
+        });
+
+        var truck = new TruckOutline { Width = 330, Height = 130, Top = 28, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+        var gatTruck = new Label { Text = "GAT LOG", Width = 150, Height = 34, Top = 150, TextAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.Top | AnchorStyles.Right, ForeColor = Color.FromArgb(70, 182, 255), Font = new Font("Segoe UI Black", 16f, FontStyle.Bold | FontStyle.Italic) };
         _connect042 = new Label { Width = 300, Height = 62, Top = 52, TextAlign = ContentAlignment.MiddleRight, Anchor = AnchorStyles.Top | AnchorStyles.Right, ForeColor = Color.FromArgb(143, 180, 214), Font = new Font("Segoe UI Semibold", 9.5f) };
-        banner.Controls.Add(brand); banner.Controls.Add(sub); banner.Controls.Add(truck); banner.Controls.Add(gatTruck); banner.Controls.Add(_connect042);
+        banner.Controls.Add(truck);
+        banner.Controls.Add(gatTruck);
+        banner.Controls.Add(_connect042);
         banner.Resize += delegate
         {
             truck.Left = Math.Max(560, banner.ClientSize.Width - 360);
@@ -195,11 +199,7 @@ internal sealed partial class MainForm
             string user = !string.IsNullOrWhiteSpace(_accountUser) ? _accountUser : "Motorista GAT";
             string driver = !string.IsNullOrWhiteSpace(_driver) ? _driver : user;
             if (_profileName042 != null) _profileName042.Text = driver;
-            if (_avatar042 != null)
-            {
-                _avatar042.Initials = Initials042(driver);
-                _avatar042.Invalidate();
-            }
+            if (_avatar042 != null) { _avatar042.Initials = Initials042(driver); _avatar042.Invalidate(); }
             if (_profileMeta042 != null)
                 _profileMeta042.Text = AccountReady
                     ? "@" + user + "\r\nConta GAT conectada\r\nPC vinculado a esta instalação"
@@ -207,12 +207,11 @@ internal sealed partial class MainForm
 
             if (_trip042 != null)
             {
-                string cargo = Safe041(lblCargo, "Carga: Sem carga");
-                string rota = Safe041(lblRoute, "Rota: -");
-                string dist = Safe041(lblDistance, "Restante: -");
-                string speed = Safe041(lblSpeed, "Velocidade: 0 km/h");
-                string truck = Safe041(lblTruck, "TruckSim GPS: aguardando");
-                _trip042.Text = truck + "\r\n\r\n" + cargo + "\r\n" + rota + "\r\n" + dist + "\r\n" + speed;
+                _trip042.Text = Safe041(lblTruck, "TruckSim GPS: aguardando") + "\r\n\r\n" +
+                                Safe041(lblCargo, "Carga: Sem carga") + "\r\n" +
+                                Safe041(lblRoute, "Rota: -") + "\r\n" +
+                                Safe041(lblDistance, "Restante: -") + "\r\n" +
+                                Safe041(lblSpeed, "Velocidade: 0 km/h");
             }
 
             if (_radio042 != null)
@@ -226,9 +225,7 @@ internal sealed partial class MainForm
             }
 
             if (_connect042 != null)
-            {
                 _connect042.Text = Safe041(lblTelemetry, "Central GAT: aguardando") + "\r\n" + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.42 TESTE";
-            }
         }
         catch { }
     }
@@ -261,14 +258,12 @@ internal sealed partial class MainForm
         foreach (Control c in page.Controls)
         {
             var tools = c as Panel;
-            if (tools != null && tools != _hubDash041 && tools.Top >= 50 && tools.Top <= 70)
+            if (tools != null && tools.Top >= 50 && tools.Top <= 70)
             {
                 tools.Top = 50;
                 tools.Height = 46;
                 foreach (Control child in tools.Controls)
-                {
                     if (child is Button) { child.Top = 5; child.Height = 34; }
-                }
             }
         }
         _hubDash041.Top = 102;
@@ -288,8 +283,7 @@ internal sealed partial class MainForm
         double expanded = 100.0 / zoom;
         string z = zoom.ToString("0.000", CultureInfo.InvariantCulture);
         string e = expanded.ToString("0.0", CultureInfo.InvariantCulture);
-        string js = "document.documentElement.style.overflow='hidden';document.body.style.zoom='" + z + "';document.body.style.width='" + e + "%';document.body.style.height='" + e + "%';";
-        await DashJs041(js);
+        await DashJs041("document.documentElement.style.overflow='hidden';document.body.style.zoom='" + z + "';document.body.style.width='" + e + "%';document.body.style.height='" + e + "%';");
         _lastDashSize042 = _hubDash041.ClientSize;
     }
 
@@ -309,10 +303,11 @@ internal sealed partial class MainForm
         Panel dash;
         if (_hubPages041.TryGetValue("dash", out dash) && dash != null)
         {
-            foreach (Button b in FindControls042<Button>(dash))
+            foreach (Control container in dash.Controls)
             {
-                if (string.Equals(b.Text, "SOBREPOR VÍDEO", StringComparison.OrdinalIgnoreCase))
+                foreach (Button b in container.Controls.OfType<Button>())
                 {
+                    if (!string.Equals(b.Text, "SOBREPOR VÍDEO", StringComparison.OrdinalIgnoreCase)) continue;
                     b.Click += async delegate
                     {
                         try { _hubRadio041?.HubPause042(); } catch { }
@@ -352,13 +347,5 @@ internal sealed partial class MainForm
     {
         if (!_hubDashReady041) return;
         await DashJs041("if(window.gatDashSetMediaActive042)window.gatDashSetMediaActive042(" + (active ? "true" : "false") + ");");
-    }
-
-    private static T[] FindControls042<T>(Control root) where T : Control
-    {
-        return root.Controls.Cast<Control>()
-            .SelectMany(c => new[] { c }.Concat(FindControls042<Control>(c)))
-            .OfType<T>()
-            .ToArray();
     }
 }
