@@ -36,8 +36,6 @@ $css += @'
 .condition-panel{grid-area:condition!important;min-width:0!important;overflow:hidden!important}
 .media-tabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 
-/* Em janelas que entram neste breakpoint por causa de 125/150% de escala,
-   continua em tres colunas em vez de jogar a Radio/TV para baixo. */
 @media(max-width:980px){
   .dashboard-grid{
     grid-template-columns:minmax(0,31%) minmax(0,44%) minmax(0,25%)!important;
@@ -77,7 +75,6 @@ $css += @'
   .mini-card{min-height:46px!important}.mini-card>span{font-size:13px!important}.mini-card b{font-size:10px!important}.mini-card small{font-size:6px!important}
 }
 
-/* So empilha de verdade se a area CSS ficar extremamente estreita. */
 @media(max-width:560px){
   .dashboard-grid{
     grid-template-columns:minmax(0,36%) minmax(0,64%)!important;
@@ -87,18 +84,27 @@ $css += @'
   }
   .media-panel{min-height:190px!important}
 }
+
+/* GAT_DESKTOP_EMBED_055
+   Dentro do GAT Telemetria o viewport e uma janela do PC, nao um celular.
+   Portanto a mensagem de girar o telefone nunca deve bloquear o dashboard. */
+.rotate-notice{display:none!important}
+@media(orientation:portrait) and (max-width:800px){
+  .rotate-notice{display:none!important}
+  .screen,.modal{visibility:visible!important}
+}
 '@
 }
 
 # Cache bust para obrigar o WebView a pegar o CSS novo.
-$index = [regex]::Replace($index, 'href="app\.css(?:\?v=[^"]*)?"', 'href="app.css?v=1054"')
-$index = [regex]::Replace($index, 'src="app\.js(?:\?v=[^"]*)?"', 'src="app.js?v=1054"')
-$index = [regex]::Replace($index, 'src="media\.js(?:\?v=[^"]*)?"', 'src="media.js?v=1054"')
+$index = [regex]::Replace($index, 'href="app\.css(?:\?v=[^"]*)?"', 'href="app.css?v=1055"')
+$index = [regex]::Replace($index, 'src="app\.js(?:\?v=[^"]*)?"', 'src="app.js?v=1055"')
+$index = [regex]::Replace($index, 'src="media\.js(?:\?v=[^"]*)?"', 'src="media.js?v=1055"')
 
-foreach($m in @('GAT_RESPONSIVE_054','grid-template-columns:minmax(0,31%) minmax(0,44%) minmax(0,25%)','@media(max-width:560px)')) {
-    if ($css -notlike "*$m*") { throw "CSS responsivo 1.0.54 sem $m" }
+foreach($m in @('GAT_RESPONSIVE_054','GAT_DESKTOP_EMBED_055','grid-template-columns:minmax(0,31%) minmax(0,44%) minmax(0,25%)','@media(max-width:560px)')) {
+    if ($css -notlike "*$m*") { throw "CSS responsivo desktop sem $m" }
 }
 
 Set-Content $cssPath $css -Encoding UTF8
 Set-Content $indexPath $index -Encoding UTF8
-Write-Host 'GAT DASH 1.0.54: tres paineis permanecem visiveis em janelas menores/DPI alto; empilhamento apenas em largura extrema.'
+Write-Host 'GAT DASH desktop: tres paineis responsivos e bloqueio de rotacao de celular desativado dentro do GAT Telemetria.'
