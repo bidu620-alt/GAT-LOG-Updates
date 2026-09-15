@@ -67,7 +67,7 @@ jobs:
           if($mt -notlike '*CurrentVersion = "1.0.61.0"*'){throw 'Versao 1.0.61 incorreta'}
           foreach($m in @('ABRIR DASH COMPLETO','OpenDashOverlay060','DashTargetReady060')){if($ht -notlike "*$m*"){throw "Hub 1.0.61 sem $m"}}
           foreach($m in @('DesignWidth = 1600','DesignHeight = 700','_web.ZoomFactor = scale')){if($dt -notlike "*$m*"){throw "DASH completo 1.0.61 sem $m"}}
-          foreach($m in @('GAT_VIDEO_BORDERLESS_061','FormBorderStyle = FormBorderStyle.None','windowMinimize','windowClose','windowDrag','WM_NCHITTEST_061','Padding = new Padding(5)')){if($vt -notlike "*$m*"){throw "Video overlay 1.0.61 sem $m"}}
+          foreach($m in @('FormBorderStyle = FormBorderStyle.None','windowMinimize061','windowToggleMax061','dragStart044','dragMove044','dragEnd044','closeWindow044','WM_NCHITTEST_044','Padding = new Padding(5)')){if($vt -notlike "*$m*"){throw "Video overlay 1.0.61 sem $m"}}
           if($vt -like '*Canal Web*'){throw 'Canal Web presente no video overlay 1.0.61'}
 
           msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
