@@ -1,0 +1,86 @@
+name: Publish GAT Telemetria 1.0.50 TESTE
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-telemetria-1.0.50.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download tested 1.0.50 artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf publish150
+          mkdir -p publish150
+          gh run download 35022805756 -n GAT-Telemetria-Hub-1.0.50-TESTE -D publish150
+          test -f publish150/GAT_TELEMETRIA_SETUP_1.0.50.exe
+
+      - name: Publish installer, updater metadata and site card
+        run: |
+          mkdir -p releases
+          cp publish150/GAT_TELEMETRIA_SETUP_1.0.50.exe releases/GAT_TELEMETRIA_SETUP_1.0.50.exe
+          SHA256=$(sha256sum releases/GAT_TELEMETRIA_SETUP_1.0.50.exe | awk '{print $1}')
+          export SHA256
+          python - <<'PY'
+          import json, os, pathlib, re
+
+          root = pathlib.Path('.')
+          meta = {
+              "app": "GAT Telemetria BETA",
+              "channel": "test-dotnet",
+              "version": "1.0.50.0",
+              "display_version": "TESTE 1.0.50 • GAT DASH + OVERLAY MÓVEL",
+              "notas": "Remove o Canal Web da aba GAT DASH e do player flutuante, mantendo somente Canal GAT e Meu Vídeo. Corrige a sobreposição do caminhão para permitir arrastar pelo topo, como no vídeo, preservando tolerância, velocidade, ETA e os recursos da versão 1.0.49.",
+              "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.50.exe",
+              "sha256": os.environ["SHA256"]
+          }
+          (root / 'client_dotnet_version.json').write_text(json.dumps(meta, ensure_ascii=False, indent=4) + '\n', encoding='utf-8')
+
+          p = root / 'docs' / 'index.html'
+          html = p.read_text(encoding='utf-8')
+          pattern = re.compile(
+              r'<a class="download-mini" href="https://raw\.githubusercontent\.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_[^"]+\.exe">'
+              r'<strong>GAT Telemetria [^<]+</strong><span>.*?</span><b>BAIXAR GAT TELEMETRIA</b></a>',
+              re.S
+          )
+          replacement = (
+              '<a class="download-mini" href="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.50.exe">'
+              '<strong>GAT Telemetria 1.0.50 TESTE • PC</strong>'
+              '<span>Remove o Canal Web do GAT DASH e corrige a sobreposição do caminhão para você arrastar pelo topo, como a janela de vídeo. Mantém os recursos da 1.0.49.</span>'
+              '<b>BAIXAR GAT TELEMETRIA</b></a>'
+          )
+          html2, count = pattern.subn(replacement, html, count=1)
+          if count != 1:
+              raise SystemExit('Card do GAT Telemetria não foi localizado no site')
+          p.write_text(html2, encoding='utf-8')
+
+          log = root / 'docs' / 'ATUALIZACOES.md'
+          text = log.read_text(encoding='utf-8') if log.exists() else ''
+          entry = '''\n## 2026-09-15 — GAT Telemetria TESTE 1.0.50\n- Removido o Canal Web da aba GAT DASH; permanecem Canal GAT e Meu Vídeo.\n- Removido o Canal Web residual do player flutuante.\n- Corrigida a sobreposição do caminhão para ser arrastada pelo topo, inclusive ao clicar nos textos do cabeçalho.\n- Mantidos recursos da 1.0.49, além das correções de velocidade, distância e ETA anteriores.\n'''
+          if 'GAT Telemetria TESTE 1.0.50' not in text:
+              log.write_text(text + entry, encoding='utf-8')
+          PY
+
+      - name: Commit public 1.0.50 test release
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_TELEMETRIA_SETUP_1.0.50.exe client_dotnet_version.json docs/index.html docs/ATUALIZACOES.md
+          if git diff --cached --quiet; then
+            echo 'Nada novo para publicar.'
+            exit 0
+          fi
+          git commit -m 'Publish GAT Telemetria 1.0.50 TESTE'
+          git push origin HEAD:main
