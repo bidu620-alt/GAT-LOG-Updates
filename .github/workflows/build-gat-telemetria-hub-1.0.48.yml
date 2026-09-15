@@ -78,9 +78,7 @@ jobs:
 
           $mainText = Get-Content $main.FullName -Raw
           $hub41Text = Get-Content $hub41.FullName -Raw
-          foreach($m in @('CurrentVersion = "1.0.48.0"')) {
-            if ($mainText -notlike "*$m*") { throw "Cliente 1.0.48 sem $m" }
-          }
+          if ($mainText -notlike '*CurrentVersion = "1.0.48.0"*') { throw 'Cliente 1.0.48 sem versao correta.' }
           foreach($m in @('bool radioAlive','SendToBack()','TryGetValue("radio"')) {
             if ($hub41Text -notlike "*$m*") { throw "Radio persistente 1.0.48 sem $m" }
           }
@@ -100,17 +98,33 @@ jobs:
           Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.47.exe' -OutFile $base
           if (-not (Test-Path $base) -or (Get-Item $base).Length -lt 1000000) { throw 'Instalador base 1.0.47 nao foi baixado.' }
 
+          $installed = Join-Path $PWD 'installed147'
           $stage = Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging-hub148'
-          if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
-          New-Item -ItemType Directory -Force -Path $stage | Out-Null
-          $args = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR=' + '"' + $stage + '"'))
+          foreach ($p in @($installed,$stage)) { if (Test-Path $p) { Remove-Item $p -Recurse -Force } }
+          New-Item -ItemType Directory -Force -Path $installed,$stage,(Join-Path $stage 'gat'),(Join-Path $stage 'trucksim') | Out-Null
+
+          $args = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR=' + '"' + $installed + '"'))
           $p = Start-Process -FilePath $base -ArgumentList $args -Wait -PassThru
           if ($p.ExitCode -ne 0) { throw "Instalador base 1.0.47 retornou $($p.ExitCode)" }
-          if (-not (Test-Path (Join-Path $stage 'GAT_TELEMETRIA_APP.exe'))) { throw 'Stage 1.0.47 nao foi extraido corretamente.' }
+          if (-not (Test-Path (Join-Path $installed 'GAT_TELEMETRIA_APP.exe'))) { throw 'Base 1.0.47 nao foi instalada corretamente.' }
 
+          # Estrutura de staging esperada pelo .iss: launcher/app na raiz, runtime em gat/ e TruckSim em trucksim/.
+          Copy-Item (Join-Path $installed 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA.exe') -Force
           Copy-Item $env:GAT148_EXE (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
           if ($env:GAT148_CFG -and (Test-Path $env:GAT148_CFG)) { Copy-Item $env:GAT148_CFG (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force }
-          "STAGE148=$stage" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+          $truckInstalled = Join-Path $installed 'TruckSimGPS'
+          if (Test-Path $truckInstalled) { Copy-Item "$truckInstalled/*" (Join-Path $stage 'trucksim') -Recurse -Force }
+
+          $skip = @('GAT_TELEMETRIA.exe','GAT_TELEMETRIA_APP.exe','GAT_TELEMETRIA_APP.exe.config','TruckSimGPS')
+          Get-ChildItem $installed -Force | Where-Object {
+            $_.Name -notin $skip -and $_.Name -notlike 'unins*'
+          } | ForEach-Object {
+            Copy-Item $_.FullName (Join-Path $stage 'gat') -Recurse -Force
+          }
+
+          if (-not (Get-ChildItem (Join-Path $stage 'gat') -Force | Select-Object -First 1)) { throw 'Pasta gat do stage ficou vazia.' }
+          if (-not (Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))) { throw 'TruckSimGPS nao foi preservado no stage.' }
 
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress
