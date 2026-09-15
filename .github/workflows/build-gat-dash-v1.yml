@@ -40,8 +40,8 @@ jobs:
           test -f gat-dash/android/app/src/main/assets/app.js
           test -f gat-dash/android/app/src/main/assets/truck_trip.svg
           grep -q 'GAT DASH Android 1.2.0' gat-dash/android/app/src/main/assets/index.html
-          if grep -Eiq 'GAT Rádio|GAT Radio|Rádio/TV|Radio/TV' gat-dash/android/app/src/main/assets/index.html gat-dash/android/app/src/main/assets/app.js; then
-            echo 'GAT Radio ainda presente nos assets Android' >&2
+          if grep -Eiq 'id="[^"]*(radio|media)|class="[^"]*(radio|media)|media\.js|<audio|<video|CANAL GAT|MEU VÍDEO|CANAL WEB' gat-dash/android/app/src/main/assets/index.html gat-dash/android/app/src/main/assets/app.js; then
+            echo 'Controle de radio/media ainda presente na interface Android' >&2
             exit 1
           fi
       - name: Build Android APK 1.2.0
