@@ -52,3 +52,9 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - Distância restante agora aparece corretamente no overlay estreito.
 - Tempo estimado (ETA) volta a ser calculado com distância restante e velocidade média válidas.
 - Mantidos tolerância salva e botão de mutar/desmutar o alerta de velocidade.
+
+## 2026-09-15 — GAT Telemetria TESTE 1.0.50
+- Removido o Canal Web da aba GAT DASH; permanecem Canal GAT e Meu Vídeo.
+- Removido o Canal Web residual do player flutuante.
+- Corrigida a sobreposição do caminhão para ser arrastada pelo topo, inclusive ao clicar nos textos do cabeçalho.
+- Mantidos recursos da 1.0.49, além das correções de velocidade, distância e ETA anteriores.

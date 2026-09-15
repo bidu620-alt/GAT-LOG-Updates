@@ -1,10 +1,9 @@
 {
     "app": "GAT Telemetria BETA",
-    "channel": "stable-dotnet",
-    "version": "1.0.47.0",
-    "display_version": "BETA 1.0.47 • CORREÇÃO DO OVERLAY E ETA",
-    "notas": "Corrige leitura numérica da telemetria no Windows/pt-BR, evitando velocidades absurdas; corrige velocidade média, distância restante e cálculo do tempo estimado na sobreposição do caminhão. Mantém nova Home, tolerância salva e botão de mutar/desmutar o alerta.",
-    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.47.exe",
-    "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip",
-    "sha256": "d197c2b6e5c28c13dd76a2139be91fe7fed4bc41f837f30c9af63a497046d96d"
+    "channel": "test-dotnet",
+    "version": "1.0.50.0",
+    "display_version": "TESTE 1.0.50 • GAT DASH + OVERLAY MÓVEL",
+    "notas": "Remove o Canal Web da aba GAT DASH e do player flutuante, mantendo somente Canal GAT e Meu Vídeo. Corrige a sobreposição do caminhão para permitir arrastar pelo topo, como no vídeo, preservando tolerância, velocidade, ETA e os recursos da versão 1.0.49.",
+    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.50.exe",
+    "sha256": "64bc9635153eb5364fba584666ab5e59e28acdba697aa3c0b39d4d0022ecb5fa"
 }
