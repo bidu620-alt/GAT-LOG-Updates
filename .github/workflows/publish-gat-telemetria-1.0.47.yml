@@ -1,0 +1,89 @@
+name: Publish GAT Telemetria 1.0.47
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-telemetria-1.0.47.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download tested 1.0.47 artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf publish147
+          mkdir -p publish147
+          gh run download 35001811714 -n GAT-Telemetria-Hub-1.0.47-TESTE -D publish147
+          test -f publish147/GAT_TELEMETRIA_SETUP_1.0.47.exe
+          test -f publish147/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip
+
+      - name: Publish installer, updater metadata and site card
+        run: |
+          mkdir -p releases
+          cp publish147/GAT_TELEMETRIA_SETUP_1.0.47.exe releases/GAT_TELEMETRIA_SETUP_1.0.47.exe
+          cp publish147/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip releases/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip
+          SHA256=$(sha256sum releases/GAT_TELEMETRIA_SETUP_1.0.47.exe | awk '{print $1}')
+          export SHA256
+          python - <<'PY'
+          import json, os, pathlib
+
+          root = pathlib.Path('.')
+          meta = {
+              "app": "GAT Telemetria BETA",
+              "channel": "stable-dotnet",
+              "version": "1.0.47.0",
+              "display_version": "BETA 1.0.47 • CORREÇÃO DO OVERLAY E ETA",
+              "notas": "Corrige leitura numérica da telemetria no Windows/pt-BR, evitando velocidades absurdas; corrige velocidade média, distância restante e cálculo do tempo estimado na sobreposição do caminhão. Mantém nova Home, tolerância salva e botão de mutar/desmutar o alerta.",
+              "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.47.exe",
+              "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip",
+              "sha256": os.environ["SHA256"]
+          }
+          (root / 'client_dotnet_version.json').write_text(json.dumps(meta, ensure_ascii=False, indent=4) + '\n', encoding='utf-8')
+
+          p = root / 'docs' / 'index.html'
+          html = p.read_text(encoding='utf-8')
+          html = html.replace(
+              'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.46.exe',
+              'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.47.exe'
+          )
+          html = html.replace('GAT Telemetria 1.0.46 • PC', 'GAT Telemetria 1.0.47 • PC')
+          html = html.replace(
+              'Versão atual para Windows com nova tela Início, motoristas online/em rota, sobreposição completa do caminhão, tolerância salva e botão para mutar/desmutar o alerta de velocidade.',
+              'Versão atual para Windows com correção da velocidade, velocidade média, distância restante e tempo estimado no overlay; mantém nova tela Início, tolerância salva e mute do alerta.'
+          )
+          if 'GAT Telemetria 1.0.47 • PC' not in html:
+              raise SystemExit('Card da versão 1.0.47 não foi aplicado ao site')
+          p.write_text(html, encoding='utf-8')
+
+          log = root / 'docs' / 'ATUALIZACOES.md'
+          text = log.read_text(encoding='utf-8')
+          entry = '''\n## 2026-09-15 — GAT Telemetria BETA 1.0.47\n- Corrigida leitura de números decimais em Windows configurado para pt-BR, evitando valores como 8110 km/h.\n- Velocidade média validada para não gerar números absurdos.\n- Distância restante agora aparece corretamente no overlay estreito.\n- Tempo estimado (ETA) volta a ser calculado com distância restante e velocidade média válidas.\n- Mantidos tolerância salva e botão de mutar/desmutar o alerta de velocidade.\n'''
+          if 'GAT Telemetria BETA 1.0.47' not in text:
+              text += entry
+              log.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit public 1.0.47 release
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_TELEMETRIA_SETUP_1.0.47.exe \
+                  releases/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip \
+                  client_dotnet_version.json docs/index.html docs/ATUALIZACOES.md
+          if git diff --cached --quiet; then
+            echo 'Nada novo para publicar.'
+            exit 0
+          fi
+          git commit -m 'Publish GAT Telemetria 1.0.47'
+          git push origin HEAD:main
