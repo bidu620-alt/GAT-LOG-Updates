@@ -45,3 +45,10 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - Sobreposição do caminhão expandida com carga, destino, peso, distância restante, ETA e danos.
 - Tolerância do alerta de velocidade agora é persistida.
 - Botão rápido para mutar/desmutar o alerta por voz, com estado salvo.
+
+## 2026-09-15 — GAT Telemetria BETA 1.0.47
+- Corrigida leitura de números decimais em Windows configurado para pt-BR, evitando valores como 8110 km/h.
+- Velocidade média validada para não gerar números absurdos.
+- Distância restante agora aparece corretamente no overlay estreito.
+- Tempo estimado (ETA) volta a ser calculado com distância restante e velocidade média válidas.
+- Mantidos tolerância salva e botão de mutar/desmutar o alerta de velocidade.

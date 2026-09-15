@@ -1,10 +1,10 @@
 {
     "app": "GAT Telemetria BETA",
     "channel": "stable-dotnet",
-    "version": "1.0.46.0",
-    "display_version": "BETA 1.0.46 • NOVA HOME + OVERLAY + MUTE DO ALERTA",
-    "notas": "Nova tela Início com motoristas online/em rota, sobreposição do caminhão expandida com carga, destino, peso, distância, ETA e danos, tolerância de velocidade persistente e botão rápido para mutar/desmutar os alertas por voz.",
-    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.46.exe",
-    "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.46_SOURCE.zip",
-    "sha256": "c8c4f0f5384006c6ef461d722dd3ffa2e806b12b2e46debb7a38e383356056e0"
+    "version": "1.0.47.0",
+    "display_version": "BETA 1.0.47 • CORREÇÃO DO OVERLAY E ETA",
+    "notas": "Corrige leitura numérica da telemetria no Windows/pt-BR, evitando velocidades absurdas; corrige velocidade média, distância restante e cálculo do tempo estimado na sobreposição do caminhão. Mantém nova Home, tolerância salva e botão de mutar/desmutar o alerta.",
+    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.47.exe",
+    "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip",
+    "sha256": "d197c2b6e5c28c13dd76a2139be91fe7fed4bc41f837f30c9af63a497046d96d"
 }
