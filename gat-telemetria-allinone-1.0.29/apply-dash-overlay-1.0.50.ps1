@@ -36,10 +36,7 @@ foreach ($name in @('hub41Text','hub44Text','hub45Text','radioText')) {
     Set-Variable $name $v
 }
 
-# ---------------------------------------------------------------------------
 # GAT DASH / HUB: Canal Web deixa de existir. Mantem somente Canal GAT e Meu Video.
-# Tambem impede que um modo "web" antigo salvo volte a ser selecionado.
-# ---------------------------------------------------------------------------
 $hub41Text = $hub41Text.Replace('Canal GAT, Meu Vídeo e Canal Web', 'Canal GAT e Meu Vídeo')
 $hub41Text = $hub41Text.Replace('if (mode == "gat" || mode == "mine" || mode == "web") File.WriteAllText(Path.Combine(Application.LocalUserAppDataPath, "radio-active-mode.txt"), mode);', 'if (mode == "gat" || mode == "mine") File.WriteAllText(Path.Combine(Application.LocalUserAppDataPath, "radio-active-mode.txt"), mode); else if (mode == "web") File.WriteAllText(Path.Combine(Application.LocalUserAppDataPath, "radio-active-mode.txt"), "gat");')
 
@@ -47,9 +44,7 @@ $hub41Text = $hub41Text.Replace('if (mode == "gat" || mode == "mine" || mode == 
 $bridgeText = [regex]::Replace($bridgeText, '(?m)^\s*\["web"\]\s*=\s*new JObject \{ \["url"\] = ReadLocal\("radio-web-url\.txt"\) \},\r?\n', '')
 $bridgeText = $bridgeText.Replace('return mode == "mine" || mode == "web" ? mode : "gat";', 'return mode == "mine" ? "mine" : "gat";')
 
-# ---------------------------------------------------------------------------
 # VIDEO flutuante: remove qualquer botao/rota residual do Canal Web.
-# ---------------------------------------------------------------------------
 $videoText = $videoText.Replace('if (mode == "gat" || mode == "mine" || mode == "web")', 'if (mode == "gat" || mode == "mine")')
 $videoText = $videoText.Replace("<button id='web' class='tab'>Canal Web</button>", '')
 $videoText = $videoText.Replace("if(state.mode==='web')return(m.web||{}).url||'';", '')
@@ -57,11 +52,7 @@ $videoText = $videoText.Replace("['gat','mine','web'].forEach", "['gat','mine'].
 $videoText = $videoText.Replace("const src=state.mode==='web'?url:(yt(url)||url);", "const src=(yt(url)||url);")
 $videoText = $videoText.Replace("if(['gat','mine','web'].includes(String(m.activeMode||'')))state.mode=String(m.activeMode);", "if(['gat','mine'].includes(String(m.activeMode||'')))state.mode=String(m.activeMode);else if(String(m.activeMode||'')==='web')state.mode='gat';")
 
-# ---------------------------------------------------------------------------
 # SOBREPOSICAO DO CAMINHAO: movimento igual a uma janela normal/flutuante.
-# O hit-test do formulario nao recebia o clique quando ele caia nos Labels do topo.
-# Agora o cabecalho e seus textos iniciam o arraste explicitamente.
-# ---------------------------------------------------------------------------
 if ($truckText -notmatch 'using System\.Runtime\.InteropServices;') {
     $truckText = $truckText.Replace('using System.Net.Http;', "using System.Net.Http;`r`nusing System.Runtime.InteropServices;")
 }
@@ -115,7 +106,7 @@ foreach ($m in @('GAT_DRAG_050','EnableDrag050(_header)','ReleaseCapture()','Sen
     if ($truckText -notlike "*$m*") { throw "Overlay 1.0.50 sem $m" }
 }
 if ($hub41Text -like '*Canal GAT, Meu Vídeo e Canal Web*') { throw 'Hub ainda exibe Canal Web.' }
-if ($videoText -like "*id='web' class='tab'*" -or $videoText -like "*['gat','mine','web']*") { throw 'Overlay de video ainda contem Canal Web.' }
+if ($videoText.Contains("id='web' class='tab'") -or $videoText.Contains("['gat','mine','web']")) { throw 'Overlay de video ainda contem Canal Web.' }
 if ($bridgeText -like '*radio-web-url.txt*') { throw 'Bridge do DASH ainda publica Canal Web.' }
 
 Set-Content $main.FullName $mainText -Encoding UTF8
