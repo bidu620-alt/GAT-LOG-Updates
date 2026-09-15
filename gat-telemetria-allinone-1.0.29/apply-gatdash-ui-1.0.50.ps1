@@ -24,8 +24,8 @@ $js = $js.Replace("$('mediaStatus').textContent=state.mode==='web'?'Canal Web â€
 $js = $js.Replace("if(['gat','mine','web'].includes(String(m.activeMode||''))){state.mode=String(m.activeMode);localStorage.setItem(MODE_KEY,state.mode)}", "if(['gat','mine'].includes(String(m.activeMode||''))){state.mode=String(m.activeMode);localStorage.setItem(MODE_KEY,state.mode)}else if(String(m.activeMode||'')==='web'){state.mode='gat';localStorage.setItem(MODE_KEY,'gat')}")
 $js = $js.Replace("$('mediaGat').onclick=()=>setMode('gat'); $('mediaMine').onclick=()=>setMode('mine'); $('mediaWeb').onclick=()=>setMode('web');", "$('mediaGat').onclick=()=>setMode('gat'); $('mediaMine').onclick=()=>setMode('mine');")
 
-if ($html -like '*id="mediaWeb"*' -or $html -like '*CANAL WEB*') { throw 'index.html ainda contem Canal Web.' }
-if ($js -like "*$('mediaWeb')*" -or $js -like "*state.mode==='web'*" -or $js -like "*['gat','mine','web']*") { throw 'media.js ainda contem logica ativa do Canal Web.' }
+if ($html.Contains('id="mediaWeb"') -or $html.Contains('CANAL WEB')) { throw 'index.html ainda contem Canal Web.' }
+if ($js.Contains('mediaWeb') -or $js.Contains("['gat','mine','web']") -or $js.Contains("name:'Canal Web'")) { throw 'media.js ainda contem interface ativa do Canal Web.' }
 
 Set-Content $index $html -Encoding UTF8
 Set-Content $media $js -Encoding UTF8
