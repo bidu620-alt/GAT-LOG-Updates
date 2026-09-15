@@ -24,11 +24,6 @@ $videoText = Get-Content $video.FullName -Raw
 if ($hubText.Contains('`r`n') -or $truckText.Contains('`r`n') -or $videoText.Contains('`r`n')) { throw 'Ainda existem quebras literais apos hotfix 1.0.55.' }
 
 # HOTFIX_DASH_HOST_055
-# Page041 ganhou AutoScroll na 1.0.55 para monitores menores. Isso interfere no
-# Anchor dos controles do GAT DASH quando a pagina nasce pequena e depois e
-# redimensionada. O resultado era exatamente o visto no teste: barra de ferramentas
-# e WebView ficavam estreitos no canto esquerdo e o DASH acreditava estar em modo
-# retrato de celular. Na pagina DASH, desliga o AutoScroll e dimensiona explicitamente.
 $dashHead = 'var p = Page041(); p.Controls.Add(Head041("GAT DASH", "O dashboard que já usamos, agora dentro do GAT Telemetria."));'
 $dashHeadNew = 'var p = Page041(); p.AutoScroll = false; p.AutoScrollMinSize = Size.Empty; p.Controls.Add(Head041("GAT DASH", "O dashboard que já usamos, agora dentro do GAT Telemetria."));'
 if ($hubText.Contains($dashHead)) {
@@ -58,14 +53,11 @@ if ([regex]::IsMatch($hubText, $webPattern)) {
     throw 'Criacao do WebView do GAT DASH nao encontrada para hotfix 1.0.55.'
 }
 
-# A barra de titulo ainda podia herdar 1.0.50 do instalador-base. Corrige o texto
-# visual sem alterar o canal/versao interna do cliente.
 $hubText = [regex]::Replace($hubText, 'Text\s*=\s*"GAT Telemetria BETA 1\.0\.\d+";', 'Text = "GAT Telemetria BETA 1.0.55";', 1)
 
-foreach ($marker in @('HOTFIX_DASH_HOST_055','p.AutoScroll = false; p.AutoScrollMinSize = Size.Empty','tools.SetBounds(0, 55, Math.Max(1, p.ClientSize.Width), 55)','GAT Telemetria BETA 1.0.55')) {
-    if ($marker -eq 'HOTFIX_DASH_HOST_055') { continue }
+foreach ($marker in @('p.AutoScroll = false; p.AutoScrollMinSize = Size.Empty','tools.SetBounds(0, 55, Math.Max(1, p.ClientSize.Width), 55)','GAT Telemetria BETA 1.0.55')) {
     if ($hubText -notlike "*$marker*") { throw "Hotfix GAT DASH 1.0.55 sem $marker" }
 }
 
 Set-Content $hub.FullName $hubText -Encoding UTF8
-Write-Host 'Hotfix 1.0.55: quebras normalizadas; pagina GAT DASH ocupa toda a largura/altura e titulo corrigido.'
+Write-Host 'Hotfix 1.0.55 v2: GAT DASH ocupa toda a area util; orientacao mobile nao interfere no desktop.'
