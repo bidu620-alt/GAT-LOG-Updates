@@ -1,10 +1,12 @@
 {
-  "app":"GAT DASH",
-  "version":"1.1.1",
-  "display_version":"GAT DASH 1.1.1 PC + ANDROID",
-  "notes":"Android 1.1.1 limpa e desativa o cache do WebView e usa URL versionada para garantir a nova tela sem mapa, com Canal GAT, Meu Video e Canal Web. PC permanece no hotfix x64 1.1.1.",
-  "pc_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.1.1.exe",
-  "android_url":"https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.1.1.apk",
-  "pc_sha256":"fee1f0d98314a4b24b92c9fef06e322408b167f8f7a42ae3bd5324292263e3c8",
-  "android_sha256":"e33f989b13ef33cb2140caca1056a04299d5db925f3983d0755e9e8f57facaea"
+  "app": "GAT DASH",
+  "version": "1.2.0",
+  "display_version": "GAT DASH Android 1.2.0 • PC 1.1.1",
+  "notes": "Android 1.2.0 recebe o novo GAT DASH mobile focado em telemetria, rota, viagem e condição do caminhão, sem GAT Rádio. A versão PC permanece 1.1.1 sem alterações.",
+  "pc_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_PC_SETUP_1.1.1.exe",
+  "android_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.2.0.apk",
+  "pc_sha256": "fee1f0d98314a4b24b92c9fef06e322408b167f8f7a42ae3bd5324292263e3c8",
+  "android_sha256": "48cbecef0ffa211ff217ea974118e4b93bcf4bfc7fe745b839d22c22dd33e65b",
+  "android_version": "1.2.0",
+  "pc_version": "1.1.1"
 }
