@@ -1,0 +1,130 @@
+name: Build GAT Telemetria Hub 1.0.55 v2
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/apply-window-layout-1.0.55-pre.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-window-layout-1.0.55.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-window-layout-1.0.55-fix.ps1'
+      - '.github/workflows/build-gat-telemetria-hub-1.0.55-v2.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gat-telemetria-hub-155-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Reconstruct and compile GAT Telemetria 1.0.55
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias e encontrei $($parts.Count)" }
+          $zip = Join-Path $PWD 'gat155-source.zip'
+          $out = [IO.File]::Create($zip)
+          try { $out.Write($first, 0, $first.Length); foreach ($part in $parts) { $bytes=[IO.File]::ReadAllBytes($part.FullName); $out.Write($bytes,0,$bytes.Length) } } finally { $out.Dispose() }
+          if (Test-Path 'gat155-build') { Remove-Item 'gat155-build' -Recurse -Force }
+          Expand-Archive $zip 'gat155-build' -Force
+          Get-ChildItem 'gat155-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object { $txt=Get-Content $_.FullName -Raw; if($txt -like '*1.0.28*'){ Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8 } }
+
+          $r="$PWD/gat155-build"
+          ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-beta-brand-1.0.32.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.33.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.34.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-radio-overlay-1.0.35.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-radio-personal-1.0.36.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-radio-stream-1.0.37.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-youtube-referrer-1.0.39.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-dash-media-1.0.40.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-hub-1.0.41.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-hub-fixes-1.0.42.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-startup-fix-1.0.43.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-modern-ui-1.0.44.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-hub-1.0.45.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-mute-alert-1.0.46.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-overlay-fix-1.0.47.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-radio-background-1.0.48.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-radio-home-1.0.49.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-radio-home-1.0.49-fix.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-dash-overlay-1.0.50.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-responsive-ui-1.0.51.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-responsive-ui-1.0.52.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-ui-overlay-1.0.53.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-overlay-independent-1.0.54.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-window-layout-1.0.55-pre.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-window-layout-1.0.55.ps1 -Root $r
+          ./gat-telemetria-allinone-1.0.29/apply-window-layout-1.0.55-fix.ps1 -Root $r
+
+          $main=Get-ChildItem $r -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          $hub=Get-ChildItem $r -Filter 'MainForm.Hub041.cs' -Recurse | Select-Object -First 1
+          $truck=Get-ChildItem $r -Filter 'TruckOverlay041.cs' -Recurse | Select-Object -First 1
+          $video=Get-ChildItem $r -Filter 'VideoOverlay041.cs' -Recurse | Select-Object -First 1
+          $project=Get-ChildItem $r -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if(-not $main -or -not $hub -or -not $truck -or -not $video -or -not $project){throw 'Fonte 1.0.55 incompleto.'}
+          $mt=Get-Content $main.FullName -Raw; $ht=Get-Content $hub.FullName -Raw; $tt=Get-Content $truck.FullName -Raw; $vt=Get-Content $video.FullName -Raw
+          if($mt -notlike '*CurrentVersion = "1.0.55.0"*'){throw 'Versao 1.0.55 incorreta.'}
+          if($ht -like '*FECHAR OVERLAYS*'){throw 'Botao FECHAR OVERLAYS ainda existe.'}
+          foreach($m in @('MinimumSize = new Size(720, 480)','AutoScrollMinSize = new Size(680, 400)','GAT_NAV_WIDTH_055','GAT_HEADER_055','GAT_FIT_SCREEN_055')){if($ht -notlike "*$m*"){throw "Layout geral 1.0.55 sem $m"}}
+          foreach($m in @('FormBorderStyle = FormBorderStyle.Sizable','ShowInTaskbar = true','MinimizeBox = true','ControlBox = true')){if($tt -notlike "*$m*" -or $vt -notlike "*$m*"){throw "Overlay 1.0.55 sem $m"}}
+
+          msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
+          if($LASTEXITCODE -ne 0){throw 'Falha na compilacao 1.0.55'}
+          $projectDir=Split-Path $project.FullName -Parent
+          $exe=Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if(-not $exe){throw 'Executavel 1.0.55 nao gerado'}
+          "GAT155_EXE=$($exe.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          $cfg=Join-Path $exe.Directory.FullName 'GAT_TELEMETRIA.exe.config'; if(Test-Path $cfg){"GAT155_CFG=$cfg" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append}
+
+      - name: Prepare 1.0.55 stage from public 1.0.50
+        run: |
+          $base=Join-Path $PWD 'GAT_TELEMETRIA_SETUP_1.0.50_BASE.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.50.exe' -OutFile $base
+          if(-not(Test-Path $base) -or (Get-Item $base).Length -lt 1000000){throw 'Base 1.0.50 nao baixada'}
+          $installed=Join-Path $PWD 'installed150'; $stage=Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging-hub155'
+          foreach($p in @($installed,$stage)){if(Test-Path $p){Remove-Item $p -Recurse -Force}}
+          New-Item -ItemType Directory -Force -Path $installed,$stage,(Join-Path $stage 'gat'),(Join-Path $stage 'trucksim') | Out-Null
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR='+'"'+$installed+'"')); $p=Start-Process -FilePath $base -ArgumentList $args -Wait -PassThru; if($p.ExitCode -ne 0){throw "Base retornou $($p.ExitCode)"}
+          Copy-Item (Join-Path $installed 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA.exe') -Force
+          Copy-Item $env:GAT155_EXE (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
+          if($env:GAT155_CFG -and (Test-Path $env:GAT155_CFG)){Copy-Item $env:GAT155_CFG (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force}
+          $truckInstalled=Join-Path $installed 'TruckSimGPS'; if(Test-Path $truckInstalled){Copy-Item "$truckInstalled/*" (Join-Path $stage 'trucksim') -Recurse -Force}
+          $skip=@('GAT_TELEMETRIA.exe','GAT_TELEMETRIA_APP.exe','GAT_TELEMETRIA_APP.exe.config','TruckSimGPS'); Get-ChildItem $installed -Force | Where-Object{$_.Name -notin $skip -and $_.Name -notlike 'unins*'} | ForEach-Object{Copy-Item $_.FullName (Join-Path $stage 'gat') -Recurse -Force}
+          $dash=Join-Path $stage 'gat/gatdash-www'; if(-not(Test-Path (Join-Path $dash 'app.css'))){throw 'GAT DASH nao preservado'}
+          ./gat-telemetria-allinone-1.0.29/apply-gatdash-responsive-1.0.52.ps1 -Root $dash
+          ./gat-telemetria-allinone-1.0.29/apply-gatdash-1.0.53.ps1 -Root $dash
+          ./gat-telemetria-allinone-1.0.29/apply-gatdash-responsive-1.0.54.ps1 -Root $dash
+          if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer 1.0.55
+        run: |
+          $issSource='gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'; $iss='gat-telemetria-allinone-1.0.29/GAT_Telemetria_Hub_1.0.55.iss'
+          $text=Get-Content $issSource -Raw; $text=$text.Replace('1.0.29','1.0.55').Replace('staging','staging-hub155'); $text=$text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA').Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA'); $text=$text.Replace('Name: "{group}\GAT Telemetria";','Name: "{group}\GAT Telemetria BETA";').Replace('Name: "{group}\Desinstalar GAT Telemetria";','Name: "{group}\Desinstalar GAT Telemetria BETA";').Replace('Name: "{autodesktop}\GAT Telemetria";','Name: "{autodesktop}\GAT Telemetria BETA";').Replace('Description: "Abrir GAT Telemetria";','Description: "Abrir GAT Telemetria BETA";'); Set-Content $iss $text -Encoding UTF8
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss; if($LASTEXITCODE -ne 0){throw 'Falha ao gerar instalador 1.0.55'}
+          $setup='gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_SETUP_1.0.55.exe'; if(-not(Test-Path $setup)){throw 'Setup 1.0.55 nao gerado'}; New-Item -ItemType Directory -Force -Path releases | Out-Null; Copy-Item $setup 'releases/GAT_TELEMETRIA_SETUP_1.0.55.exe' -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Telemetria-Hub-1.0.55-TESTE
+          path: releases/GAT_TELEMETRIA_SETUP_1.0.55.exe
+          if-no-files-found: error
