@@ -31,14 +31,16 @@ if ($truckText -notlike '*GAT_OVERLAY_BOUNDS_053*') {
     if (-not $truckText.Contains($locNeedle)) { throw 'Localizacao inicial do overlay do caminhao nao encontrada.' }
     $restoreCall = @'
         RestoreOverlayBounds053("truck-overlay-bounds-v1.txt");
-'@.TrimEnd().Replace('\"','"')
+'@.TrimEnd()
+    $restoreCall = $restoreCall.Replace('\"','"')
     $truckText = $truckText.Replace($locNeedle, $locNeedle + "`r`n" + $restoreCall)
 
     $closeNeedle = '        FormClosed += delegate { _timer.Stop(); _timer.Dispose(); _http.Dispose(); };'
     if (-not $truckText.Contains($closeNeedle)) { throw 'Fechamento do overlay do caminhao nao encontrado.' }
     $saveCall = @'
         FormClosing += delegate { SaveOverlayBounds053("truck-overlay-bounds-v1.txt"); };
-'@.TrimEnd().Replace('\"','"')
+'@.TrimEnd()
+    $saveCall = $saveCall.Replace('\"','"')
     $truckText = $truckText.Replace($closeNeedle, $saveCall + "`r`n" + $closeNeedle)
 
     $marker = '    private void BuildUi()'
