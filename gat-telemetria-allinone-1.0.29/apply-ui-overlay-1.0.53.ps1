@@ -29,11 +29,17 @@ $hubText = $hubText.Replace('Cliente 1.0.52 TESTE', 'Cliente 1.0.53 TESTE')
 if ($truckText -notlike '*GAT_OVERLAY_BOUNDS_053*') {
     $locNeedle = '        Location = new Point(Math.Max(0, Screen.PrimaryScreen.WorkingArea.Right - 690), 70);'
     if (-not $truckText.Contains($locNeedle)) { throw 'Localizacao inicial do overlay do caminhao nao encontrada.' }
-    $truckText = $truckText.Replace($locNeedle, $locNeedle + "`r`n        RestoreOverlayBounds053(\"truck-overlay-bounds-v1.txt\");")
+    $restoreCall = @'
+        RestoreOverlayBounds053("truck-overlay-bounds-v1.txt");
+'@.TrimEnd().Replace('\"','"')
+    $truckText = $truckText.Replace($locNeedle, $locNeedle + "`r`n" + $restoreCall)
 
     $closeNeedle = '        FormClosed += delegate { _timer.Stop(); _timer.Dispose(); _http.Dispose(); };'
     if (-not $truckText.Contains($closeNeedle)) { throw 'Fechamento do overlay do caminhao nao encontrado.' }
-    $truckText = $truckText.Replace($closeNeedle, '        FormClosing += delegate { SaveOverlayBounds053("truck-overlay-bounds-v1.txt"); };' + "`r`n" + $closeNeedle)
+    $saveCall = @'
+        FormClosing += delegate { SaveOverlayBounds053("truck-overlay-bounds-v1.txt"); };
+'@.TrimEnd().Replace('\"','"')
+    $truckText = $truckText.Replace($closeNeedle, $saveCall + "`r`n" + $closeNeedle)
 
     $marker = '    private void BuildUi()'
     $idx = $truckText.IndexOf($marker)
