@@ -39,3 +39,9 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - Trabalho 30 permite criar uma carga personalizada pelo nome detectado no ETS2.
 - Cards visuais do catálogo publicados na área Trabalho Atual.
 - Corrigido o topo de Trabalho Atual para não voltar a exibir textos antigos de homologação, 800 km ou World of Trucks exclusivo.
+
+## 2026-09-15 — GAT Telemetria BETA 1.0.46
+- Nova tela Início com motoristas online e em rota.
+- Sobreposição do caminhão expandida com carga, destino, peso, distância restante, ETA e danos.
+- Tolerância do alerta de velocidade agora é persistida.
+- Botão rápido para mutar/desmutar o alerta por voz, com estado salvo.
