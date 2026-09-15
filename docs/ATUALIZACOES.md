@@ -58,3 +58,10 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - Removido o Canal Web residual do player flutuante.
 - Corrigida a sobreposição do caminhão para ser arrastada pelo topo, inclusive ao clicar nos textos do cabeçalho.
 - Mantidos recursos da 1.0.49, além das correções de velocidade, distância e ETA anteriores.
+
+## 2026-09-15 — GAT Telemetria BETA 1.0.61
+- GAT DASH completo agora abre em uma janela independente com proporção preservada ao aumentar ou diminuir.
+- Melhor compatibilidade com monitores e resoluções diferentes, sem cortar ou deformar o DASH.
+- Sobreposição de vídeo sem a barra branca do Windows; a barra GAT própria permite mover, minimizar e fechar.
+- Redimensionamento pelas bordas e salvamento da última posição/tamanho continuam disponíveis.
+- Rádio/TV mantém somente Canal GAT e Meu Vídeo.
