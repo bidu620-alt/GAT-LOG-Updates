@@ -1,0 +1,234 @@
+name: Build GAT Telemetria Hub 1.0.47
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/apply-overlay-fix-1.0.47.ps1'
+      - '.github/workflows/build-gat-telemetria-hub-1.0.47.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gat-telemetria-hub-147-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Reconstruct and compile GAT Telemetria 1.0.47
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias do fonte e encontrei $($parts.Count)" }
+          $zip = Join-Path $PWD 'gat147-source.zip'
+          $out = [IO.File]::Create($zip)
+          try {
+            $out.Write($first, 0, $first.Length)
+            foreach ($part in $parts) {
+              $bytes = [IO.File]::ReadAllBytes($part.FullName)
+              $out.Write($bytes, 0, $bytes.Length)
+            }
+          } finally { $out.Dispose() }
+
+          if (Test-Path 'gat147-build') { Remove-Item 'gat147-build' -Recurse -Force }
+          Expand-Archive $zip 'gat147-build' -Force
+          Get-ChildItem 'gat147-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+            $txt = Get-Content $_.FullName -Raw
+            if ($txt -like '*1.0.28*') { Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8 }
+          }
+
+          ./gat-telemetria-allinone-1.0.29/apply-offline-queue.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-trip-sensor-v2.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-stability-1.0.32.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-beta-brand-1.0.32.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.33.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-1.0.34.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-overlay-1.0.35.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-personal-1.0.36.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-radio-stream-1.0.37.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-youtube-referrer-1.0.39.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-dash-media-1.0.40.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-hub-1.0.41.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-hub-fixes-1.0.42.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-startup-fix-1.0.43.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-modern-ui-1.0.44.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-hub-1.0.45.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-mute-alert-1.0.46.ps1 -Root "$PWD/gat147-build"
+          ./gat-telemetria-allinone-1.0.29/apply-overlay-fix-1.0.47.ps1 -Root "$PWD/gat147-build"
+
+          $main = Get-ChildItem 'gat147-build' -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          $hub41 = Get-ChildItem 'gat147-build' -Filter 'MainForm.Hub041.cs' -Recurse | Select-Object -First 1
+          $hub45 = Get-ChildItem 'gat147-build' -Filter 'MainForm.Hub045.cs' -Recurse | Select-Object -First 1
+          $truck = Get-ChildItem 'gat147-build' -Filter 'TruckOverlay041.cs' -Recurse | Select-Object -First 1
+          $project = Get-ChildItem 'gat147-build' -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if (-not $main -or -not $hub41 -or -not $hub45 -or -not $truck -or -not $project) { throw 'Fonte 1.0.47 incompleto.' }
+
+          $mainText = Get-Content $main.FullName -Raw
+          $hub41Text = Get-Content $hub41.FullName -Raw
+          $truckText = Get-Content $truck.FullName -Raw
+          foreach($m in @('CurrentVersion = "1.0.47.0"','ApplyHub045();')) {
+            if ($mainText -notlike "*$m*") { throw "Cliente 1.0.47 sem $m" }
+          }
+          foreach($m in @('type == "stopSpeech"','SaveDashSettings045(m)')) {
+            if ($hub41Text -notlike "*$m*") { throw "Handler de mute 1.0.47 sem $m" }
+          }
+          foreach($m in @('JTokenType.Integer','IsValidRoadSpeed047','DIST. RESTANTE')) {
+            if ($truckText -notlike "*$m*") { throw "Overlay 1.0.47 sem $m" }
+          }
+
+          msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilacao do GAT Telemetria 1.0.47' }
+          $projectDir = Split-Path $project.FullName -Parent
+          $exe = Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if (-not $exe) { throw 'GAT_TELEMETRIA.exe nao foi gerado' }
+          $gatOut = $exe.Directory.FullName
+
+          $dashOut = Join-Path $gatOut 'gatdash-www'
+          New-Item -ItemType Directory -Force -Path $dashOut | Out-Null
+          Copy-Item 'gat-dash/shared/*' $dashOut -Recurse -Force
+
+          # Mantem o botao rapido para mutar/desmutar o alerta de velocidade da 1.0.46.
+          $indexPath = Join-Path $dashOut 'index.html'
+          $index = Get-Content $indexPath -Raw
+          $oldSettings = '<button id="settingsBtn" class="icon-btn" title="Configurações">⚙</button>'
+          $newSettings = '<div class="top-actions"><button id="muteSpeedBtn" class="icon-btn mute-speed-btn" title="Mutar alerta de velocidade"><span id="muteSpeedIcon">🔊</span><span class="mute-label"> ALERTA</span></button><button id="settingsBtn" class="icon-btn" title="Configurações">⚙</button></div>'
+          if (-not $index.Contains($oldSettings)) { throw 'Botao de configuracoes do DASH nao encontrado.' }
+          $index = $index.Replace($oldSettings, $newSettings)
+          $index = $index.Replace('href="app.css"', 'href="app.css?v=1047"')
+          $index = $index.Replace('src="app.js"', 'src="app.js?v=1047"')
+          Set-Content $indexPath $index -Encoding UTF8
+
+          $appPath = Join-Path $dashOut 'app.js'
+          $app = Get-Content $appPath -Raw
+          $marker = '  function openSettings(){'
+          if (-not $app.Contains($marker)) { throw 'Marcador openSettings nao encontrado.' }
+          $voiceFunctions = @'
+          function syncVoiceUi(){
+            const muted=!state.voice, b=$('muteSpeedBtn'), icon=$('muteSpeedIcon'), badge=$('voiceBadge'), toggle=$('voiceToggle');
+            if(b){b.classList.toggle('muted',muted);b.title=muted?'Ativar alerta de velocidade':'Mutar alerta de velocidade';const label=b.querySelector('.mute-label');if(label)label.textContent=muted?' MUTADO':' ALERTA';}
+            if(icon)icon.textContent=muted?'🔇':'🔊';
+            if(badge){badge.textContent=muted?'🔇 VOZ MUTADA':'🔊 VOZ ATIVA';badge.classList.toggle('muted',muted);}
+            if(toggle)toggle.checked=state.voice;
+          }
+          function toggleSpeedVoice(){
+            state.voice=!state.voice;
+            if(!state.voice)nativePost({type:'stopSpeech'});
+            syncVoiceUi();
+            nativePost({type:'setSettings',host:state.host,voice:state.voice,tolerance:state.tolerance});
+          }
+          '@
+          $app = $app.Replace($marker, $voiceFunctions.TrimEnd() + "`n`n" + $marker)
+          $oldHandlers = "  `$('settingsBtn').onclick=openSettings; `$('closeSettings').onclick=closeSettings;"
+          $newHandlers = "  `$('muteSpeedBtn').onclick=toggleSpeedVoice; `$('settingsBtn').onclick=openSettings; `$('closeSettings').onclick=closeSettings;"
+          if (-not $app.Contains($oldHandlers)) { throw 'Handlers de configuracao do DASH nao encontrados.' }
+          $app = $app.Replace($oldHandlers, $newHandlers)
+          $oldSave = "  `$('saveSettings').onclick=()=>{state.host=`$('telemetryHost').value.trim(); state.voice=`$('voiceToggle').checked; state.tolerance=Number(`$('speedTolerance').value||3); nativePost({type:'setSettings',host:state.host,voice:state.voice,tolerance:state.tolerance}); closeSettings();};"
+          $newSave = "  `$('saveSettings').onclick=()=>{state.host=`$('telemetryHost').value.trim(); state.voice=`$('voiceToggle').checked; state.tolerance=Number(`$('speedTolerance').value||3); syncVoiceUi(); nativePost({type:'setSettings',host:state.host,voice:state.voice,tolerance:state.tolerance}); closeSettings();};"
+          if (-not $app.Contains($oldSave)) { throw 'Salvar configuracoes do DASH nao encontrado.' }
+          $app = $app.Replace($oldSave, $newSave)
+          $oldSettingsFn = "  window.gatDashSettings = function(s){if(!s)return;state.host=s.host||'';state.voice=s.voice!==false;state.tolerance=Number(s.tolerance??3);};"
+          $newSettingsFn = "  window.gatDashSettings = function(s){if(!s)return;state.host=s.host||'';state.voice=s.voice!==false;state.tolerance=Number(s.tolerance??3);syncVoiceUi();};"
+          if (-not $app.Contains($oldSettingsFn)) { throw 'gatDashSettings nao encontrado.' }
+          $app = $app.Replace($oldSettingsFn, $newSettingsFn)
+          Set-Content $appPath $app -Encoding UTF8
+
+          $cssPath = Join-Path $dashOut 'app.css'
+          $css = Get-Content $cssPath -Raw
+          $css = $css.Replace('grid-template-columns:1.2fr 1fr 1.2fr 48px', 'grid-template-columns:1.2fr 1fr 1.2fr 150px')
+          $iconRule = '.icon-btn{border:1px solid #0d6ba8;background:#06192a;color:#fff;border-radius:9px;font-size:22px;height:40px;cursor:pointer}'
+          $extraRule = '.top-actions{display:flex;gap:6px;justify-content:flex-end;align-items:center}.top-actions .icon-btn{min-width:40px;padding:0 9px}.mute-speed-btn{min-width:98px!important;font-size:12px!important;font-weight:800;color:#72f4ad!important;border-color:#138958!important}.mute-speed-btn.muted{color:#ff9aa4!important;border-color:#9d3443!important;background:#281018!important}.voice-badge.muted{color:#ff9aa4;border-color:#9d3443}.mute-label{font-size:10px;letter-spacing:.4px}'
+          if (-not $css.Contains($iconRule)) { throw 'Regra icon-btn nao encontrada.' }
+          $css = $css.Replace($iconRule, $iconRule + $extraRule)
+          $css = $css.Replace('.topbar{grid-template-columns:1fr 1fr 42px}', '.topbar{grid-template-columns:1fr 1fr 88px}.mute-label{display:none}.mute-speed-btn{min-width:40px!important;padding:0!important}')
+          Set-Content $cssPath $css -Encoding UTF8
+
+          foreach($check in @('muteSpeedBtn','toggleSpeedVoice','stopSpeech')) {
+            if ((Get-Content $indexPath -Raw) -notlike "*$check*" -and (Get-Content $appPath -Raw) -notlike "*$check*") { throw "DASH 1.0.47 sem $check" }
+          }
+
+          $hero64 = Get-Content 'gat-telemetria-allinone-1.0.29/home-hero-1.0.44.b64' -Raw
+          $heroPath = Join-Path $gatOut 'gat-home-hero-1.0.44.jpg'
+          [IO.File]::WriteAllBytes($heroPath, [Convert]::FromBase64String($hero64.Trim()))
+          if (-not (Test-Path $heroPath) -or (Get-Item $heroPath).Length -lt 10000) { throw 'Imagem da Home nao foi gerada corretamente.' }
+          "GAT_OUT=$gatOut" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build TruckSim GPS GAT dependency
+        run: |
+          if (Test-Path 'trucksim-hub147-build') { Remove-Item 'trucksim-hub147-build' -Recurse -Force }
+          git clone --depth 1 https://github.com/TruckSim-GPS/trucksim-gps-server.git trucksim-hub147-build
+          Remove-Item 'trucksim-hub147-build/.git' -Recurse -Force
+          ./trucksim-gps-gat/apply-patch.ps1 -Root "$PWD/trucksim-hub147-build"
+          nuget restore trucksim-hub147-build/source/Funbit.Ets.Telemetry.sln -NonInteractive
+          msbuild trucksim-hub147-build/source/Funbit.Ets.Telemetry.sln /m /t:Rebuild /p:Configuration=Release /p:Platform="Mixed Platforms"
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar TruckSim GPS GAT' }
+          $truckOut = Join-Path $PWD 'trucksim-hub147-build/source/Funbit.Ets.Telemetry.Server/bin/Release'
+          if (-not (Test-Path (Join-Path $truckOut 'TruckSimGPS_Server.exe'))) { throw 'TruckSimGPS_Server.exe nao foi gerado' }
+          "TRUCK_OUT=$truckOut" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Stage application and launcher
+        run: |
+          $stage = Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging-hub147'
+          if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $stage, "$stage/gat", "$stage/trucksim" | Out-Null
+          Copy-Item "$env:GAT_OUT/*" "$stage/gat" -Recurse -Force
+          Copy-Item (Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
+          $cfg = Join-Path $env:GAT_OUT 'GAT_TELEMETRIA.exe.config'
+          if (Test-Path $cfg) { Copy-Item $cfg (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force }
+          Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe') -Force -ErrorAction SilentlyContinue
+          Remove-Item (Join-Path $stage 'gat/GAT_TELEMETRIA.exe.config') -Force -ErrorAction SilentlyContinue
+          Copy-Item "$env:TRUCK_OUT/*" "$stage/trucksim" -Recurse -Force
+          $launcherText = Get-Content 'gat-telemetria-allinone-1.0.29/Launcher.cs' -Raw
+          $launcherText = $launcherText.Replace('"GAT Telemetria"', '"GAT Telemetria BETA"')
+          $patched = Join-Path $PWD 'Launcher.Hub147.cs'
+          Set-Content $patched $launcherText -Encoding UTF8
+          $csc = "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+          & $csc /nologo /target:winexe /optimize+ /reference:System.Windows.Forms.dll "/out:$stage/GAT_TELEMETRIA.exe" $patched
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar launcher integrado' }
+          Invoke-WebRequest 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile "$stage/vc_redist.x64.exe"
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer 1.0.47
+        run: |
+          $issSource = 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
+          $iss = 'gat-telemetria-allinone-1.0.29/GAT_Telemetria_Hub_1.0.47.iss'
+          $text = Get-Content $issSource -Raw
+          $text = $text.Replace('1.0.29','1.0.47').Replace('staging','staging-hub147')
+          $text = $text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA').Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
+          $text = $text.Replace('Name: "{group}\GAT Telemetria";','Name: "{group}\GAT Telemetria BETA";').Replace('Name: "{group}\Desinstalar GAT Telemetria";','Name: "{group}\Desinstalar GAT Telemetria BETA";').Replace('Name: "{autodesktop}\GAT Telemetria";','Name: "{autodesktop}\GAT Telemetria BETA";').Replace('Description: "Abrir GAT Telemetria";','Description: "Abrir GAT Telemetria BETA";')
+          Set-Content $iss $text -Encoding UTF8
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao gerar instalador 1.0.47' }
+          $setup = 'gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_SETUP_1.0.47.exe'
+          if (-not (Test-Path $setup)) { throw 'Setup 1.0.47 nao foi gerado' }
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          Copy-Item $setup 'releases/GAT_TELEMETRIA_SETUP_1.0.47.exe' -Force
+
+      - name: Package GPL source for TruckSim GPS GAT
+        run: |
+          $sourceZip = 'releases/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip'
+          if (Test-Path $sourceZip) { Remove-Item $sourceZip -Force }
+          Compress-Archive -Path 'trucksim-hub147-build/*' -DestinationPath $sourceZip -CompressionLevel Optimal
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Telemetria-Hub-1.0.47-TESTE
+          path: |
+            releases/GAT_TELEMETRIA_SETUP_1.0.47.exe
+            releases/TruckSimGPS_GAT_DANOS_1.0.47_SOURCE.zip
+          if-no-files-found: error
