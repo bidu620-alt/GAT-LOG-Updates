@@ -20,31 +20,27 @@ $hubText = $hubText.Replace('GAT Telemetria BETA 1.0.51', 'GAT Telemetria BETA 1
 $hubText = $hubText.Replace('Cliente 1.0.51 TESTE', 'Cliente 1.0.52 TESTE')
 
 # 1.0.51 diminuia o WebView inteiro pelo menor eixo (inclusive a altura),
-# deixando o dashboard minúsculo em uma janela larga e baixa. Em 1.0.52 o
+# deixando o dashboard minusculo em uma janela larga e baixa. Em 1.0.52 o
 # WebView fica sempre em 100%; a responsividade passa a ser feita pelo CSS do DASH.
-$oldZoom = @'
-            // O layout visual foi desenhado para aproximadamente 1280x720.
-            // Reduz ou amplia proporcionalmente para caber no espaco real do monitor/janela.
-            double zoom = Math.Min(w / 1280.0, h / 720.0);
-            zoom = Math.Max(0.62, Math.Min(1.15, zoom));
-            if (Math.Abs(_hubDash041.ZoomFactor - zoom) > 0.015)
-                _hubDash041.ZoomFactor = zoom;
-'@.TrimEnd()
+$zoomPattern = '(?s)\s*// O layout visual foi desenhado para aproximadamente 1280x720\.\s*// Reduz ou amplia proporcionalmente para caber no espaco real do monitor/janela\.\s*double zoom = Math\.Min\(w / 1280\.0, h / 720\.0\);\s*zoom = Math\.Max\(0\.62, Math\.Min\(1\.15, zoom\)\);\s*if \(Math\.Abs\(_hubDash041\.ZoomFactor - zoom\) > 0\.015\)\s*_hubDash041\.ZoomFactor = zoom;'
 $newZoom = @'
+
             // GAT_RESPONSIVE_052: nao escala a pagina inteira. O CSS reorganiza
             // o conteudo conforme largura/altura do WebView, mantendo textos legiveis.
             const double zoom = 1.0;
             if (Math.Abs(_hubDash041.ZoomFactor - zoom) > 0.001)
                 _hubDash041.ZoomFactor = zoom;
-'@.TrimEnd()
-if ($hubText.Contains($oldZoom)) {
-    $hubText = $hubText.Replace($oldZoom, $newZoom)
-} elseif ($hubText -notlike '*GAT_RESPONSIVE_052*') {
+'@
+$replaced = [regex]::Replace($hubText, $zoomPattern, $newZoom.TrimEnd(), 1)
+if ($replaced -eq $hubText -and $hubText -notlike '*GAT_RESPONSIVE_052*') {
     throw 'Bloco de zoom da 1.0.51 nao encontrado.'
 }
+$hubText = $replaced
 
 # Mantem chamada no Resize apenas para garantir zoom 100% apos WebView2 recriar viewport.
-$hubText = $hubText.Replace('// GAT_RESPONSIVE_051', '// GAT_RESPONSIVE_051`r`n    // GAT_RESPONSIVE_052: conteudo interno responsivo sem miniaturizar o WebView')
+if ($hubText -notlike '*GAT_RESPONSIVE_052: conteudo interno responsivo*') {
+    $hubText = $hubText.Replace('// GAT_RESPONSIVE_051', "// GAT_RESPONSIVE_051`r`n    // GAT_RESPONSIVE_052: conteudo interno responsivo sem miniaturizar o WebView")
+}
 
 if ($mainText -notlike '*CurrentVersion = "1.0.52.0"*') { throw 'Versao 1.0.52 nao aplicada.' }
 foreach ($m in @('GAT_RESPONSIVE_052','const double zoom = 1.0','MinimumSize = new Size(820, 540)','ArrangeDashTools051')) {
