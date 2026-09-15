@@ -1,0 +1,89 @@
+name: Publish GAT Telemetria 1.0.46
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-telemetria-1.0.46.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download tested 1.0.46 artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf publish146
+          mkdir -p publish146
+          gh run download 34997783053 -n GAT-Telemetria-Hub-1.0.46-TESTE -D publish146
+          test -f publish146/GAT_TELEMETRIA_SETUP_1.0.46.exe
+          test -f publish146/TruckSimGPS_GAT_DANOS_1.0.46_SOURCE.zip
+
+      - name: Publish installer, updater metadata and site card
+        run: |
+          mkdir -p releases
+          cp publish146/GAT_TELEMETRIA_SETUP_1.0.46.exe releases/GAT_TELEMETRIA_SETUP_1.0.46.exe
+          cp publish146/TruckSimGPS_GAT_DANOS_1.0.46_SOURCE.zip releases/TruckSimGPS_GAT_DANOS_1.0.46_SOURCE.zip
+          SHA256=$(sha256sum releases/GAT_TELEMETRIA_SETUP_1.0.46.exe | awk '{print $1}')
+          export SHA256
+          python - <<'PY'
+          import json, os, pathlib
+
+          root = pathlib.Path('.')
+          meta = {
+              "app": "GAT Telemetria BETA",
+              "channel": "stable-dotnet",
+              "version": "1.0.46.0",
+              "display_version": "BETA 1.0.46 • NOVA HOME + OVERLAY + MUTE DO ALERTA",
+              "notas": "Nova tela Início com motoristas online/em rota, sobreposição do caminhão expandida com carga, destino, peso, distância, ETA e danos, tolerância de velocidade persistente e botão rápido para mutar/desmutar os alertas por voz.",
+              "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.46.exe",
+              "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0.46_SOURCE.zip",
+              "sha256": os.environ["SHA256"]
+          }
+          (root / 'client_dotnet_version.json').write_text(json.dumps(meta, ensure_ascii=False, indent=4) + '\n', encoding='utf-8')
+
+          p = root / 'docs' / 'index.html'
+          html = p.read_text(encoding='utf-8')
+          html = html.replace(
+              'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.44.exe',
+              'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.46.exe'
+          )
+          html = html.replace('GAT Telemetria 1.0.44 • PC', 'GAT Telemetria 1.0.46 • PC')
+          html = html.replace(
+              'Versão atual para Windows com GAT DASH integrado, Rádio/TV GAT, perfil do motorista, viagem atual e sobreposições de vídeo e informações do caminhão.',
+              'Versão atual para Windows com nova tela Início, motoristas online/em rota, sobreposição completa do caminhão, tolerância salva e botão para mutar/desmutar o alerta de velocidade.'
+          )
+          if 'GAT Telemetria 1.0.46 • PC' not in html:
+              raise SystemExit('Card da versão 1.0.46 não foi aplicado ao site')
+          p.write_text(html, encoding='utf-8')
+
+          log = root / 'docs' / 'ATUALIZACOES.md'
+          text = log.read_text(encoding='utf-8')
+          entry = '''\n## 2026-09-15 — GAT Telemetria BETA 1.0.46\n- Nova tela Início com motoristas online e em rota.\n- Sobreposição do caminhão expandida com carga, destino, peso, distância restante, ETA e danos.\n- Tolerância do alerta de velocidade agora é persistida.\n- Botão rápido para mutar/desmutar o alerta por voz, com estado salvo.\n'''
+          if 'GAT Telemetria BETA 1.0.46' not in text:
+              text += entry
+              log.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit public 1.0.46 release
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_TELEMETRIA_SETUP_1.0.46.exe \
+                  releases/TruckSimGPS_GAT_DANOS_1.0.46_SOURCE.zip \
+                  client_dotnet_version.json docs/index.html docs/ATUALIZACOES.md
+          if git diff --cached --quiet; then
+            echo 'Nada novo para publicar.'
+            exit 0
+          fi
+          git commit -m 'Publish GAT Telemetria 1.0.46'
+          git push origin HEAD:main
