@@ -24,7 +24,7 @@ jobs:
           name: GAT-Telemetria-Hub-1.0.69-TESTE
           path: publish169
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: 22207364366
+          run-id: 35153717963
 
       - name: Prepare updater files
         shell: bash
@@ -40,7 +40,7 @@ jobs:
           {
             "version": "1.0.69",
             "name": "GAT Telemetria BETA 1.0.69",
-            "url": "https://api.github.com/repos/bidu620-alt/GAT-LOG-Updates/actions/runs/22207364366/artifacts",
+            "url": "https://api.github.com/repos/bidu620-alt/GAT-LOG-Updates/actions/runs/35153717963/artifacts",
             "sha256": "${sha}",
             "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
           }
@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          api='https://api.github.com/repos/bidu620-alt/GAT-LOG-Updates/actions/runs/22207364366/artifacts'
+          api='https://api.github.com/repos/bidu620-alt/GAT-LOG-Updates/actions/runs/35153717963/artifacts'
           artifact_id="$(curl -fsSL \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
