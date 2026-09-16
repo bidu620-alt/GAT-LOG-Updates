@@ -1,0 +1,48 @@
+name: Publish GAT Voice Model Link
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-voice-model-link.yml'
+      - 'docs/GAT_MODELO_PACOTE_VOZ_v1.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add voice model download card
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('docs/index.html')
+          html = p.read_text(encoding='utf-8')
+          if 'GAT_MODELO_PACOTE_VOZ_v1.txt' not in html:
+              marker = '<a class="download-mini" href="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.2.0.apk">'
+              if marker not in html:
+                  raise SystemExit('Card Android não localizado')
+              card = (
+                  '<a class="download-mini" href="GAT_MODELO_PACOTE_VOZ_v1.txt" download>'
+                  '<strong>Modelo de Voz GAT • TXT</strong>'
+                  '<span>Baixe as 122 falas, 12 limites, IDs e grupos para criar sua própria voz e importar no GAT Telemetria.</span>'
+                  '<b>BAIXAR MODELO DE VOZ</b></a>'
+              )
+              html = html.replace(marker, card + marker, 1)
+              p.write_text(html, encoding='utf-8')
+          PY
+      - name: Commit site voice model link
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/index.html
+          if git diff --cached --quiet; then
+            echo 'Link já está no site.'
+            exit 0
+          fi
+          git commit -m 'Add voice model download to GAT site'
+          git push origin HEAD:main
