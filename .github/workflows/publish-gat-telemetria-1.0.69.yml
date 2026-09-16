@@ -1,0 +1,110 @@
+name: Publish GAT Telemetria 1.0.69 updater
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-telemetria-1.0.69.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download successful 1.0.69 build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: GAT-Telemetria-Hub-1.0.69-TESTE
+          path: publish169
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: 22207364366
+
+      - name: Prepare updater files
+        shell: bash
+        run: |
+          set -euo pipefail
+          setup='publish169/GAT_TELEMETRIA_SETUP_1.0.69.exe'
+          test -s "$setup"
+          sha="$(sha256sum "$setup" | awk '{print $1}')"
+          bytes="$(stat -c%s "$setup")"
+          echo "GAT 1.0.69 sha256=$sha bytes=$bytes"
+
+          cat > latest-template.json <<EOF
+          {
+            "version": "1.0.69",
+            "name": "GAT Telemetria BETA 1.0.69",
+            "url": "https://api.github.com/repos/bidu620-alt/GAT-LOG-Updates/actions/runs/22207364366/artifacts",
+            "sha256": "${sha}",
+            "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
+          }
+          EOF
+
+          cat > latest.json <<EOF
+          {
+            "version": "1.0.69",
+            "name": "GAT Telemetria BETA 1.0.69",
+            "url": "https://api.github.com/repos/bidu620-alt/GAT-LOG-Updates/actions/artifacts/ARTIFACT_ID/zip",
+            "sha256": "${sha}",
+            "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
+          }
+          EOF
+
+      - name: Resolve artifact ID and finalize metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          api='https://api.github.com/repos/bidu620-alt/GAT-LOG-Updates/actions/runs/22207364366/artifacts'
+          artifact_id="$(curl -fsSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$api" \
+            | python3 -c 'import json,sys; d=json.load(sys.stdin); a=[x for x in d.get("artifacts",[]) if x.get("name")=="GAT-Telemetria-Hub-1.0.69-TESTE"]; print(a[0]["id"] if a else "")')"
+          test -n "$artifact_id"
+          sed -i "s/ARTIFACT_ID/$artifact_id/g" latest.json
+          grep 'actions/artifacts/' latest.json
+
+      - name: Publish updater metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in latest.json latest-template.json; do
+            if gh api "repos/${GITHUB_REPOSITORY}/contents/$f" >/dev/null 2>&1; then
+              sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/$f" --jq .sha)"
+              payload="$(python3 - "$f" "$sha" <<'PY'
+          import base64, json, pathlib, sys
+          f, sha = sys.argv[1], sys.argv[2]
+          print(json.dumps({
+              "message": f"publish GAT Telemetria 1.0.69 updater ({f})",
+              "content": base64.b64encode(pathlib.Path(f).read_bytes()).decode(),
+              "sha": sha,
+              "branch": "main",
+          }))
+          PY
+          )"
+              printf '%s' "$payload" | gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/$f" --input -
+            else
+              payload="$(python3 - "$f" <<'PY'
+          import base64, json, pathlib, sys
+          f = sys.argv[1]
+          print(json.dumps({
+              "message": f"publish GAT Telemetria 1.0.69 updater ({f})",
+              "content": base64.b64encode(pathlib.Path(f).read_bytes()).decode(),
+              "branch": "main",
+          }))
+          PY
+          )"
+              printf '%s' "$payload" | gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/$f" --input -
+            fi
+          done
