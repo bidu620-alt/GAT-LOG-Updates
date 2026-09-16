@@ -1,0 +1,86 @@
+name: Publish GAT Telemetria 1.0.66
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-telemetria-1.0.66.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download approved 1.0.66 build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf publish166
+          mkdir -p publish166
+          gh run download 35116714242 -n GAT-Telemetria-Hub-1.0.66-TESTE -D publish166
+          test -f publish166/GAT_TELEMETRIA_SETUP_1.0.66.exe
+
+      - name: Publish installer, updater metadata and site card
+        run: |
+          mkdir -p releases
+          cp publish166/GAT_TELEMETRIA_SETUP_1.0.66.exe releases/GAT_TELEMETRIA_SETUP_1.0.66.exe
+          SHA256=$(sha256sum releases/GAT_TELEMETRIA_SETUP_1.0.66.exe | awk '{print $1}')
+          export SHA256
+          python - <<'PY'
+          import json, os, pathlib, re
+
+          root = pathlib.Path('.')
+          meta = {
+              "app": "GAT Telemetria BETA",
+              "channel": "test-dotnet",
+              "version": "1.0.66.0",
+              "display_version": "BETA 1.0.66 • VOZ AYRES INDIVIDUAL + LIMITES",
+              "notas": "Nova arquitetura de voz: 122 falas gerais e 12 limites usam arquivos individuais, sem recorte do MP3 longo. Eventos de batida, combustível, entrega e demais categorias passam a chamar somente o grupo correto. Mantém volume independente, mute, GAT DASH proporcional e vídeo sem borda. O pacote voicepack166 já instalado é preservado durante a atualização.",
+              "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.66.exe",
+              "sha256": os.environ["SHA256"]
+          }
+          (root / 'client_dotnet_version.json').write_text(json.dumps(meta, ensure_ascii=False, indent=4) + '\n', encoding='utf-8')
+
+          p = root / 'docs' / 'index.html'
+          html = p.read_text(encoding='utf-8')
+          pattern = re.compile(
+              r'<a class="download-mini" href="https://raw\.githubusercontent\.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_[^"]+\.exe">'
+              r'<strong>GAT Telemetria [^<]+</strong><span>.*?</span><b>BAIXAR GAT TELEMETRIA</b></a>',
+              re.S
+          )
+          replacement = (
+              '<a class="download-mini" href="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.66.exe">'
+              '<strong>GAT Telemetria 1.0.66 • PC</strong>'
+              '<span>Nova arquitetura de voz com falas individuais por evento, limites 20–130 km/h, volume independente e mute. Mantém GAT DASH proporcional e vídeo sem borda.</span>'
+              '<b>BAIXAR GAT TELEMETRIA</b></a>'
+          )
+          html2, count = pattern.subn(replacement, html, count=1)
+          if count != 1:
+              raise SystemExit('Card do GAT Telemetria não foi localizado no site')
+          p.write_text(html2, encoding='utf-8')
+
+          log = root / 'docs' / 'ATUALIZACOES.md'
+          text = log.read_text(encoding='utf-8') if log.exists() else ''
+          entry = '''\n## 2026-09-16 — GAT Telemetria BETA 1.0.66\n- Nova arquitetura de voz com 122 falas gerais em arquivos individuais, eliminando a seleção por cortes de tempo do áudio longo.\n- 12 avisos individuais de limite de velocidade, de 20 a 130 km/h.\n- Cada evento escolhe somente falas do seu grupo: batida, combustível, abastecimento, entrega, chuva, radar, piadas e demais categorias.\n- Detecção de batida mais sensível ao aumento de dano.\n- Controle de volume da voz e mute continuam independentes da Rádio GAT e do ETS2.\n- GAT DASH completo proporcional e sobreposição de vídeo sem borda preservados.\n- A pasta voicepack166 existente em AppData é preservada durante a atualização.\n'''
+          if 'GAT Telemetria BETA 1.0.66' not in text:
+              log.write_text(text + entry, encoding='utf-8')
+          PY
+
+      - name: Commit public 1.0.66 release
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_TELEMETRIA_SETUP_1.0.66.exe client_dotnet_version.json docs/index.html docs/ATUALIZACOES.md
+          if git diff --cached --quiet; then
+            echo 'Nada novo para publicar.'
+            exit 0
+          fi
+          git commit -m 'Publish GAT Telemetria 1.0.66'
+          git push origin HEAD:main
