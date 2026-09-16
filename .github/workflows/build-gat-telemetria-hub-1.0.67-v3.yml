@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'gat-telemetria-allinone-1.0.29/apply-voice-manager-1.0.67-v2.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-voice-manager-1.0.67-fix-helpers.ps1'
       - '.github/workflows/build-gat-telemetria-hub-1.0.67-v3.yml'
 
 permissions:
@@ -51,7 +52,7 @@ jobs:
             'apply-window-layout-1.0.55-fix.ps1','apply-full-responsive-1.0.56.ps1','apply-version-only-1.0.57.ps1','apply-version-only-1.0.58.ps1',
             'apply-version-only-1.0.59.ps1','apply-full-dash-overlay-1.0.60.ps1','apply-video-borderless-1.0.61.ps1',
             'apply-voice-pack-1.0.62.ps1','apply-voice-sync-1.0.63.ps1','apply-voice-sync-1.0.64.ps1','apply-speed-limits-1.0.65.ps1',
-            'apply-individual-voice-1.0.66.ps1','apply-voice-manager-1.0.67-v2.ps1'
+            'apply-individual-voice-1.0.66.ps1','apply-voice-manager-1.0.67-v2.ps1','apply-voice-manager-1.0.67-fix-helpers.ps1'
           )
           foreach($p in $patches){ & (Join-Path "$PWD/gat-telemetria-allinone-1.0.29" $p) -Root $r }
           $main=Get-ChildItem $r -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
@@ -64,7 +65,7 @@ jobs:
           $mt=Get-Content $main.FullName -Raw; $ht=Get-Content $hub.FullName -Raw; $vt=Get-Content $voice.FullName -Raw; $dt=Get-Content $dashOverlay.FullName -Raw; $vid=Get-Content $video.FullName -Raw
           if($mt -notlike '*CurrentVersion = "1.0.67.0"*'){throw 'Versao 1.0.67 incorreta'}
           foreach($m in @('ABRIR DASH COMPLETO','OpenDashOverlay060','DashTargetReady060','BuildVoiceSettings062(p)','VoiceHandleDashSpeak062(t);','VoiceSyncDashSetting062(m)')){if($ht -notlike "*$m*"){throw "Hub 1.0.67 sem $m"}}
-          foreach($m in @('Volume da voz','ObserveDamageDisplay064','VoiceTriggerCrash064','VoiceIndividualDir166','VoiceSpeedDir166','VoiceFindIndividual166','VoicePlayFile166','SUBSTITUIR VOZ','ADICIONAR FALAS','BAIXAR MODELO TXT','RESTAURAR BACKUP','VoiceReplacePackage167','VoiceAddExtras167','VoiceExtraFiles167','VoiceOpenTemplate167','voz extra 1.0.67')){if($vt -notlike "*$m*"){throw "Voice 1.0.67 sem $m"}}
+          foreach($m in @('Volume da voz','ObserveDamageDisplay064','VoiceTriggerCrash064','VoiceIndividualRoot166','VoiceIndividualDir166','VoiceSpeedDir166','VoiceFindIndividual166','VoiceFindSpeed166','VoicePlayFile166','SUBSTITUIR VOZ','ADICIONAR FALAS','BAIXAR MODELO TXT','RESTAURAR BACKUP','VoiceReplacePackage167','VoiceAddExtras167','VoiceExtraFiles167','VoiceOpenTemplate167','voz extra 1.0.67')){if($vt -notlike "*$m*"){throw "Voice 1.0.67 sem $m"}}
           if($mt -notlike '*ObserveDamageDisplay064(d.CargoDamage*'){throw 'Painel de danos nao ligado a voz 1.0.67'}
           foreach($m in @('DesignWidth = 1600','DesignHeight = 700','_web.ZoomFactor = scale')){if($dt -notlike "*$m*"){throw "DASH completo 1.0.67 sem $m"}}
           foreach($m in @('FormBorderStyle = FormBorderStyle.None','windowMinimize061','windowToggleMax061','WM_NCHITTEST_044','Padding = new Padding(5)')){if($vid -notlike "*$m*"){throw "Video overlay 1.0.67 sem $m"}}
