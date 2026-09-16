@@ -114,3 +114,5 @@ jobs:
           name: GAT-Telemetria-Hub-1.0.69-TESTE
           path: releases/GAT_TELEMETRIA_SETUP_1.0.69.exe
           if-no-files-found: error
+
+# republish trigger 2026-09-16
