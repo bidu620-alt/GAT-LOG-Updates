@@ -1,9 +1,9 @@
 {
     "app": "GAT Telemetria BETA",
     "channel": "test-dotnet",
-    "version": "1.0.66.0",
-    "display_version": "BETA 1.0.66 • VOZ AYRES INDIVIDUAL + LIMITES",
-    "notas": "Nova arquitetura de voz: 122 falas gerais e 12 limites usam arquivos individuais, sem recorte do MP3 longo. Eventos de batida, combustível, entrega e demais categorias passam a chamar somente o grupo correto. Mantém volume independente, mute, GAT DASH proporcional e vídeo sem borda. O pacote voicepack166 já instalado é preservado durante a atualização.",
-    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.66.exe",
-    "sha256": "4fd6f0bbb4404b379ab4d0d53f4e4d11af833425a7e368b2cfbe5f7805405e75"
+    "version": "1.0.67.0",
+    "display_version": "BETA 1.0.67 • GERENCIADOR DE PACOTES DE VOZ",
+    "notas": "Gerenciador de voz dentro do GAT: substitua falas por outro pacote, acrescente novas falas por grupo sem substituir as existentes, baixe o modelo TXT com as 122 falas e 12 limites e restaure o backup anterior. Mantém MP3s individuais, volume independente, mute, GAT DASH proporcional e vídeo sem borda. Pacotes personalizados existentes são preservados durante a atualização.",
+    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.67.exe",
+    "sha256": "f17dbd8c3a008c82c5e5d974a49ccc434388c26e1740b7250e6134e81397ed9e"
 }

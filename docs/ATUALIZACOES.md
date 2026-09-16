@@ -74,3 +74,12 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - Controle de volume da voz e mute continuam independentes da Rádio GAT e do ETS2.
 - GAT DASH completo proporcional e sobreposição de vídeo sem borda preservados.
 - A pasta voicepack166 existente em AppData é preservada durante a atualização.
+
+## 2026-09-16 — GAT Telemetria BETA 1.0.67
+- Novo gerenciador de pacotes em Configurações > Voz e alertas.
+- SUBSTITUIR VOZ permite trocar os MP3s mantendo a numeração dos eventos.
+- ADICIONAR FALAS permite incluir novas variações por grupo, sem substituir as falas existentes.
+- BAIXAR MODELO TXT abre o modelo oficial com 122 falas gerais, 12 limites e estrutura dos grupos.
+- RESTAURAR BACKUP recupera o pacote anterior após uma substituição.
+- Pacotes personalizados existentes são preservados durante atualizações.
+- Mantidos volume independente, mute, GAT DASH proporcional e sobreposição de vídeo sem borda.
