@@ -65,3 +65,12 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - Sobreposição de vídeo sem a barra branca do Windows; a barra GAT própria permite mover, minimizar e fechar.
 - Redimensionamento pelas bordas e salvamento da última posição/tamanho continuam disponíveis.
 - Rádio/TV mantém somente Canal GAT e Meu Vídeo.
+
+## 2026-09-16 — GAT Telemetria BETA 1.0.66
+- Nova arquitetura de voz com 122 falas gerais em arquivos individuais, eliminando a seleção por cortes de tempo do áudio longo.
+- 12 avisos individuais de limite de velocidade, de 20 a 130 km/h.
+- Cada evento escolhe somente falas do seu grupo: batida, combustível, abastecimento, entrega, chuva, radar, piadas e demais categorias.
+- Detecção de batida mais sensível ao aumento de dano.
+- Controle de volume da voz e mute continuam independentes da Rádio GAT e do ETS2.
+- GAT DASH completo proporcional e sobreposição de vídeo sem borda preservados.
+- A pasta voicepack166 existente em AppData é preservada durante a atualização.

@@ -1,9 +1,9 @@
 {
     "app": "GAT Telemetria BETA",
     "channel": "test-dotnet",
-    "version": "1.0.61.0",
-    "display_version": "BETA 1.0.61 • DASH COMPLETO + VÍDEO SEM BORDA",
-    "notas": "GAT DASH completo em janela independente com proporção preservada em qualquer resolução. A sobreposição de vídeo agora usa barra GAT própria, sem a faixa branca do Windows, mantendo mover, redimensionar, minimizar, fechar e a última posição salva.",
-    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.61.exe",
-    "sha256": "ebba618e30cc59c904a8259ab5baab00c4b3ecbd971468b23eb3176b7b22c178"
+    "version": "1.0.66.0",
+    "display_version": "BETA 1.0.66 • VOZ AYRES INDIVIDUAL + LIMITES",
+    "notas": "Nova arquitetura de voz: 122 falas gerais e 12 limites usam arquivos individuais, sem recorte do MP3 longo. Eventos de batida, combustível, entrega e demais categorias passam a chamar somente o grupo correto. Mantém volume independente, mute, GAT DASH proporcional e vídeo sem borda. O pacote voicepack166 já instalado é preservado durante a atualização.",
+    "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.66.exe",
+    "sha256": "4fd6f0bbb4404b379ab4d0d53f4e4d11af833425a7e368b2cfbe5f7805405e75"
 }
