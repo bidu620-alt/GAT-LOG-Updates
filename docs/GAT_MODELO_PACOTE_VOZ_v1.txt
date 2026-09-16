@@ -1,0 +1,172 @@
+GAT TELEMETRIA — MODELO DE PACOTE DE VOZ v1
+
+COMO USAR
+1. Gere cada fala abaixo em MP3.
+2. Para substituir uma fala, mantenha o número do arquivo na frente (001 a 122). O texto depois do número pode ter qualquer nome.
+3. Os limites usam os nomes exatos limite_020.mp3 até limite_130.mp3.
+4. No GAT Telemetria: Configurações > Voz e alertas > SUBSTITUIR VOZ.
+5. Para ACRESCENTAR frases sem substituir as existentes, coloque os MP3s em extras/<grupo>/ e use ADICIONAR FALAS.
+
+ESTRUTURA PARA SUBSTITUIÇÃO
+pacote/
+  general/
+    001_qualquer_nome.mp3
+    ...
+    122_qualquer_nome.mp3
+  limits/
+    limite_020.mp3
+    ...
+    limite_130.mp3
+
+GRUPOS ACEITOS PARA FALAS EXTRAS
+startup, cargo_start, trip, speed, radar, fine, crash, damage, fuel_low, refuel, fatigue, arriving, delivery, perfect, rain, night, lights, toll, service, random
+
+Exemplo para acrescentar novas falas de batida:
+pacote_extras/
+  extras/
+    crash/
+      minha_batida_01.mp3
+      minha_batida_02.mp3
+
+=== 122 FALAS GERAIS ===
+001 | startup | GAT Telemetria iniciado. Bora trabalhar, motorista.
+002 | startup | Tudo certo por aqui. Pode ligar o caminhão.
+003 | startup | Telemetria conectada. Hoje eu tô de olho em você.
+004 | startup | Pronta para a viagem. Tenta não fazer besteira.
+005 | startup | Bom, você chegou. Vamos ver o que apronta hoje.
+006 | cargo_start | Carga confirmada. Bora pra estrada.
+007 | cargo_start | Tem trabalho, motorista. Vamos entregar isso.
+008 | cargo_start | Carga engatada. Agora é só não destruir no caminho.
+009 | cargo_start | Destino definido. Pé na estrada.
+010 | cargo_start | Pegou a carga. Agora não inventa moda.
+011 | trip | Boa viagem, motorista.
+012 | trip | Partiu. Eu cuido dos alertas e você tenta dirigir.
+013 | trip | Estrada liberada. Bora.
+014 | trip | Lá vamos nós de novo.
+015 | trip | Caminhão na estrada. Que Deus tenha misericórdia dessa carga.
+016 | speed | Atenção. Você está acima do limite.
+017 | speed | Reduza a velocidade.
+018 | speed | Tá com pressa pra quê?
+019 | speed | Calma aí, piloto de Fórmula 1.
+020 | speed | Vai devagar, a carga não tem seguro emocional.
+021 | speed | Motorista, tira o pé.
+022 | speed | Desse jeito a multa vem antes da entrega.
+023 | radar | Radar à frente.
+024 | radar | Olha o radar, motorista.
+025 | radar | Radar chegando. Depois não diz que eu não avisei.
+026 | radar | Fiscalização à frente. Comporte-se.
+027 | radar | Diminui aí. O governo agradece se você não diminuir.
+028 | fine | Multa recebida. De você eu só esperava isso mesmo.
+029 | fine | Parabéns. Mais dinheiro jogado fora.
+030 | fine | Tomou multa. Eu avisei.
+031 | fine | Muito bem, motorista. Excelente investimento.
+032 | fine | A multa chegou. Quem poderia imaginar?
+033 | fine | De você eu só esperava isso mesmo.
+034 | crash | Motorista derrubado!
+035 | crash | De você eu só esperava isso mesmo.
+036 | crash | Você bateu. Surpresa nenhuma.
+037 | crash | Fi de rapariga, não olha no retrovisor?
+038 | crash | Era uma estrada inteira e você achou justamente isso pra bater.
+039 | crash | O caminhão sentiu. Eu também.
+040 | crash | Vamos fingir que ninguém viu isso.
+041 | crash | Um minuto de silêncio para o para-choque.
+042 | crash | Motorista, pelo amor de Deus.
+043 | crash | Quem roda é os trouxa. Eu nunca menti.
+044 | damage | O caminhão não está muito feliz com você.
+045 | damage | Dano alto detectado. Oficina, motorista.
+046 | damage | Acho melhor procurar uma oficina.
+047 | damage | Esse caminhão já sofreu demais nas suas mãos.
+048 | damage | Vamos dobrar a meta. De prejuízo, pelo jeito.
+049 | fuel_low | Combustível baixo. Procure um posto.
+050 | fuel_low | Motorista, estamos ficando sem diesel.
+051 | fuel_low | Abastece logo antes que a gente fique no acostamento.
+052 | fuel_low | Tanque quase vazio.
+053 | fuel_low | Você lembrou da carga e esqueceu do combustível, né?
+054 | fuel_low | Posto. Agora. Não negocia comigo.
+055 | refuel | Abastecendo. Aproveita e estica as pernas.
+056 | refuel | Tanque enchendo. Finalmente uma decisão sensata.
+057 | refuel | Combustível entrando. Podemos continuar vivendo.
+058 | refuel | Pronto. Agora temos diesel e esperança.
+059 | refuel | Tanque cheio. Bora gastar tudo de novo.
+060 | fatigue | Motorista cansado. Procure um lugar para descansar.
+061 | fatigue | Você precisa dormir.
+062 | fatigue | Olha o sono chegando.
+063 | fatigue | Encosta e vai dormir antes que você invente de dormir dirigindo.
+064 | fatigue | Descansa, motorista. Amanhã você bate de novo.
+065 | arriving | Estamos chegando ao destino.
+066 | arriving | Quase lá. Não bate agora.
+067 | arriving | Destino próximo.
+068 | arriving | Últimos quilômetros. Segura a emoção.
+069 | arriving | Chegamos quase inteiros. Já é uma vitória.
+070 | delivery | Cheguei, cheguei, lá lá lá!
+071 | delivery | Carga entregue. Missão cumprida.
+072 | delivery | Entrega concluída. Sobrevivemos.
+073 | delivery | Muito bem, motorista. Dessa vez deu certo.
+074 | delivery | Carga entregue sem chamar o guincho. Parabéns.
+075 | delivery | Chegamos! Pode comemorar.
+076 | delivery | Fim da viagem. Agora pega outra.
+077 | delivery | Uma carga a menos e muitos quilômetros pela frente.
+078 | perfect | Carga perfeita. Aí sim!
+079 | perfect | Zero dano. Finalmente estou orgulhosa.
+080 | perfect | Entrega perfeita. Quem é você e o que fez com o motorista?
+081 | perfect | Excelente viagem. Pode repetir.
+082 | perfect | Hoje você dirigiu bonito.
+083 | rain | Começou a chover. Redobre a atenção.
+084 | rain | Pista molhada. Vai com calma.
+085 | rain | Chuva na estrada. Não precisa provar nada pra ninguém.
+086 | rain | Pista molhada, motorista. Menos velocidade.
+087 | night | Anoiteceu. Boa estrada.
+088 | night | Noite na estrada. Liga os faróis.
+089 | night | Dirigir de noite é bonito até aparecer uma curva do nada.
+090 | night | Só você, o caminhão e vários quilômetros pela frente.
+091 | lights | Faróis, motorista.
+092 | lights | Tá escuro. Liga o farol.
+093 | lights | Você pretende enxergar por telepatia?
+094 | lights | Farol desligado. Colabora comigo.
+095 | toll | Pedágio à frente.
+096 | toll | Prepara o bolso.
+097 | toll | Pedágio. Porque viajar de graça seria bom demais.
+098 | toll | Mais uma cabine querendo seu dinheiro.
+099 | service | Oficina encontrada.
+100 | service | Seu caminhão pediu socorro.
+101 | service | Hora de consertar o estrago.
+102 | service | Vamos deixar esse caminhão apresentável de novo.
+103 | random | Posso contar uma piada? Qual é o caminhão mais educado? O que sempre dá passagem.
+104 | random | Por que o caminhoneiro levou uma escada? Porque disseram que a carga estava em outro nível.
+105 | random | Sabe qual é o maior medo do GPS? Você decidir pegar um atalho.
+106 | random | Tenho uma pergunta. Você dirige assim na vida real também? Não precisa responder.
+107 | random | Silêncio demais. Isso normalmente significa que você está planejando alguma coisa.
+108 | random | Se eu tivesse mãos, estaria segurando no banco agora.
+109 | random | Não quero te pressionar, mas a carga está confiando em você.
+110 | random | Bebe uma água. Até motorista virtual precisa se cuidar.
+111 | random | Já conferiu o combustível? Só perguntando.
+112 | random | Estamos há alguns minutos sem bater. Novo recorde?
+113 | random | Hoje eu acordei otimista. Não estraga isso.
+114 | random | Se tudo der errado, a culpa é do GPS.
+115 | random | Eu nunca menti. Só omiti alguns acidentes.
+116 | random | Vamos dobrar a meta.
+117 | random | A estrada está tranquila demais. Estou desconfiada.
+118 | random | Motorista, você está vivo aí?
+119 | random | Só queria lembrar que retrovisor existe.
+120 | random | Eu podia estar descansando, mas estou aqui cuidando de você.
+121 | random | Mais uma viagem e você já pode pedir música.
+122 | random | Não faça nada que eu precise explicar para a seguradora.
+
+=== 12 LIMITES DE VELOCIDADE ===
+limite_020.mp3 | Atenção, Limite de velocidade: vinte quilômetros por hora.
+limite_030.mp3 | Atenção, Limite de velocidade: trinta quilômetros por hora.
+limite_040.mp3 | Atenção, Limite de velocidade: quarenta quilômetros por hora.
+limite_050.mp3 | Atenção, Limite de velocidade: cinquenta quilômetros por hora.
+limite_060.mp3 | Atenção, Limite de velocidade: sessenta quilômetros por hora.
+limite_070.mp3 | Atenção, Limite de velocidade: setenta quilômetros por hora.
+limite_080.mp3 | Atenção, Limite de velocidade: oitenta quilômetros por hora.
+limite_090.mp3 | Atenção, Limite de velocidade: noventa quilômetros por hora.
+limite_100.mp3 | Atenção, Limite de velocidade: cem quilômetros por hora.
+limite_110.mp3 | Atenção, Limite de velocidade: cento e dez quilômetros por hora.
+limite_120.mp3 | Atenção, Limite de velocidade: cento e vinte quilômetros por hora.
+limite_130.mp3 | Atenção, Limite de velocidade: cento e trinta quilômetros por hora.
+
+OBSERVAÇÃO
+Você pode trocar a voz, sotaque e interpretação. O importante é manter os IDs/nomes para substituição.
+Falas extras podem ter qualquer nome de arquivo, desde que estejam dentro da pasta extras/<grupo>/ correspondente.
+Adicionar novas frases a grupos já existentes não exige nova atualização do GAT Telemetria.
