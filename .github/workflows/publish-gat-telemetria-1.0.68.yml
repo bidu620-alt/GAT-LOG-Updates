@@ -1,0 +1,68 @@
+name: Publish GAT Telemetria 1.0.68
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-telemetria-1.0.68.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download approved 1.0.68 build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf publish168
+          mkdir -p publish168
+          gh run download 35142717334 -n GAT-Telemetria-Hub-1.0.68-TESTE -D publish168
+          test -f publish168/GAT_TELEMETRIA_SETUP_1.0.68.exe
+
+      - name: Publish installer and updater metadata
+        run: |
+          mkdir -p releases
+          cp publish168/GAT_TELEMETRIA_SETUP_1.0.68.exe releases/GAT_TELEMETRIA_SETUP_1.0.68.exe
+          SHA256=$(sha256sum releases/GAT_TELEMETRIA_SETUP_1.0.68.exe | awk '{print $1}')
+          export SHA256
+          python - <<'PY'
+          import json, os, pathlib
+
+          root = pathlib.Path('.')
+          meta = {
+              "app": "GAT Telemetria BETA",
+              "channel": "test-dotnet",
+              "version": "1.0.68.0",
+              "display_version": "BETA 1.0.68 • EVENTOS DE VOZ POR CARGA",
+              "notas": "Ajuste das falas automáticas: mensagens aleatórias agora são disparadas a cada 500 km rodados dentro da carga atual; ao entregar/cancelar e pegar outra carga a contagem recomeça do zero e evita repetir imediatamente a mesma fala. Falas de batida só disparam após aumento acumulado de pelo menos 1% no dano do caminhão/reboque. O sistema de velocidade/limite da rodovia foi preservado sem alterações.",
+              "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.68.exe",
+              "sha256": os.environ["SHA256"]
+          }
+          (root / 'client_dotnet_version.json').write_text(json.dumps(meta, ensure_ascii=False, indent=4) + '\n', encoding='utf-8')
+
+          log = root / 'docs' / 'ATUALIZACOES.md'
+          text = log.read_text(encoding='utf-8') if log.exists() else ''
+          entry = '''\n## 2026-09-16 — GAT Telemetria BETA 1.0.68\n- Falas aleatórias deixaram de usar o temporizador de 15–30 minutos.\n- Durante uma carga, uma fala aleatória é liberada a cada 500 km realmente percorridos.\n- Ao entregar/cancelar e iniciar outra carga, a contagem volta para 0 km.\n- O sorteio evita repetir imediatamente a mesma fala aleatória da viagem anterior.\n- Falas de batida agora exigem aumento acumulado de pelo menos 1% no dano do caminhão/reboque.\n- Dano da carga não é tratado como batida do caminhão.\n- Alertas de velocidade e limite da rodovia permanecem com a lógica da 1.0.67.\n'''
+          if 'GAT Telemetria BETA 1.0.68' not in text:
+              log.write_text(text + entry, encoding='utf-8')
+          PY
+
+      - name: Commit public 1.0.68 update
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_TELEMETRIA_SETUP_1.0.68.exe client_dotnet_version.json docs/ATUALIZACOES.md
+          if git diff --cached --quiet; then
+            echo 'Nada novo para publicar.'
+            exit 0
+          fi
+          git commit -m 'Publish GAT Telemetria 1.0.68'
+          git push origin HEAD:main
