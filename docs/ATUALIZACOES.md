@@ -83,3 +83,12 @@ O Servidor deve preservar `%LOCALAPPDATA%\GAT-LOG`. O Cliente deve preservar `se
 - RESTAURAR BACKUP recupera o pacote anterior após uma substituição.
 - Pacotes personalizados existentes são preservados durante atualizações.
 - Mantidos volume independente, mute, GAT DASH proporcional e sobreposição de vídeo sem borda.
+
+## 2026-09-16 — GAT Telemetria BETA 1.0.68
+- Falas aleatórias deixaram de usar o temporizador de 15–30 minutos.
+- Durante uma carga, uma fala aleatória é liberada a cada 500 km realmente percorridos.
+- Ao entregar/cancelar e iniciar outra carga, a contagem volta para 0 km.
+- O sorteio evita repetir imediatamente a mesma fala aleatória da viagem anterior.
+- Falas de batida agora exigem aumento acumulado de pelo menos 1% no dano do caminhão/reboque.
+- Dano da carga não é tratado como batida do caminhão.
+- Alertas de velocidade e limite da rodovia permanecem com a lógica da 1.0.67.
