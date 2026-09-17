@@ -30,7 +30,7 @@ if ($hub45Text) {
 # Bloqueio central: nenhum grupo de voz toca, exceto speed.
 $groupGuard = 'if (!string.Equals(group, "speed", StringComparison.OrdinalIgnoreCase)) return false;'
 if ($voiceText -notlike "*$groupGuard*") {
-    $groupPattern = '(private bool VoicePlayGroup062\(string group\)\s*\{)'
+    $groupPattern = '(private bool VoicePlayGroup062\(string group, bool interrupt = true\)\s*\{)'
     if (-not [regex]::IsMatch($voiceText, $groupPattern)) { throw 'VoicePlayGroup062 nao encontrado.' }
     $groupReplacement = @'
 $1
