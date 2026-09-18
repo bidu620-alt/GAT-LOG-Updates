@@ -22,8 +22,9 @@ $hub45Text = if ($hub45) { Get-Content $hub45.FullName -Raw } else { '' }
 # - Usa truck.speed + navigation.speedLimit com tolerancia fixa ZERO.
 # - Regra exata: limite 40 permite 40; a partir de 41 dispara o alerta.
 # - Repete no maximo a cada 15 s enquanto continuar acima; ao normalizar e exceder novamente, alerta de imediato.
-# - Instala/semeia automaticamente os 12 MP3s limite_020 ... limite_130.
-# - Preserva MP3s personalizados existentes: so copia o padrao se estiver faltando.
+# - A versao 1.0.71 NAO embute audio: o motorista importa os MP3s pelas Configuracoes.
+# - Aceita 1 ou varios arquivos limite_020.mp3 ... limite_130.mp3.
+# - Reimportar o mesmo limite substitui somente aquela fala, permitindo voz personalizada.
 # ---------------------------------------------------------------------------
 
 $mainText = $mainText.Replace('CurrentVersion = "1.0.70.0"', 'CurrentVersion = "1.0.71.0"')
@@ -36,16 +37,10 @@ if ($hub45Text) {
     $hub45Text = $hub45Text.Replace('Cliente: 1.0.70 TESTE', 'Cliente: 1.0.71 TESTE')
 }
 
-if ($voiceText -notlike '*VoiceSeedDefaultLimits171();*') {
-    $seedNeedle = '        VoiceTryAutoImportSpeed065();'
-    if ($voiceText.Contains($seedNeedle)) {
-        $voiceText = $voiceText.Replace($seedNeedle, $seedNeedle + "`r`n        VoiceSeedDefaultLimits171();")
-    } else {
-        $seedFallback = '        VoiceTryAutoImport062();'
-        if (-not $voiceText.Contains($seedFallback)) { throw 'Inicializacao de voz nao encontrada para 1.0.71.' }
-        $voiceText = $voiceText.Replace($seedFallback, $seedFallback + "`r`n        VoiceSeedDefaultLimits171();")
-    }
-}
+# Ajusta a interface de voz para importacao manual dos limites.
+$voiceText = $voiceText.Replace('var replace = HubButton041("SUBSTITUIR VOZ", 135);', 'var replace = HubButton041("IMPORTAR LIMITES", 135);')
+$voiceText = $voiceText.Replace('replace.Click += delegate { VoiceReplacePackage167(); };', 'replace.Click += delegate { VoiceImportLimits171(); };')
+$voiceText = $voiceText.Replace('test.Click += delegate { if (!VoicePlayGroup062("startup")) MessageBox.Show("Nenhuma voz pronta para teste.", "Voz GAT", MessageBoxButtons.OK, MessageBoxIcon.Information); };', 'test.Click += delegate { VoiceTestLimit171(); };')
 
 if ($voiceText -notlike '*_voiceLastRoadAlert171*') {
     $fieldNeedle = '    private DateTime _voiceLastObserve062 = DateTime.MinValue;'
@@ -69,29 +64,82 @@ if ($voiceText -notlike '*private void VoiceObserveRoadSpeed171*') {
     if (-not $voiceText.Contains($methodNeedle)) { throw 'ObserveVoiceTelemetry062 nao encontrado.' }
 
     $methods = @'
-    private void VoiceSeedDefaultLimits171()
+    private void VoiceTestLimit171()
     {
         try
         {
-            string src = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "voice-defaults", "limits");
-            if (!Directory.Exists(src)) return;
-
-            string dest = VoiceSpeedDir166();
-            int copied = 0;
-            foreach (int limit in new int[] {20,30,40,50,60,70,80,90,100,110,120,130})
+            foreach (int limit in new int[] {80,60,40,30,50,70,90,100,110,120,130,20})
             {
-                string name = "limite_" + limit.ToString("D3", CultureInfo.InvariantCulture) + ".mp3";
-                string from = Path.Combine(src, name);
-                string to = Path.Combine(dest, name);
-                if (!File.Exists(from) || File.Exists(to)) continue;
-                File.Copy(from, to, false);
-                copied++;
+                string file = VoiceFindSpeed166(limit);
+                if (string.IsNullOrWhiteSpace(file) || !File.Exists(file)) continue;
+                if (!VoicePlaySpeedLimit065(limit))
+                    MessageBox.Show("Nao foi possivel tocar a voz de " + limit + " km/h.", "Voz GAT", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            if (copied > 0) ClientStore.Log("voz 1.0.71: " + copied + " limites padrao instalados");
+            MessageBox.Show("Nenhuma voz de limite instalada. Clique em IMPORTAR LIMITES e selecione os MP3s.", "Voz GAT", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            try { ClientStore.Log("voz 1.0.71: falha ao instalar limites padrao: " + ex.Message); } catch { }
+            MessageBox.Show("Nao foi possivel testar a voz: " + ex.Message, "Voz GAT", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void VoiceImportLimits171()
+    {
+        using (var dlg = new OpenFileDialog())
+        {
+            dlg.Title = "Selecione as falas de limite de velocidade";
+            dlg.Filter = "Arquivos MP3 (*.mp3)|*.mp3";
+            dlg.Multiselect = true;
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+            int imported = 0;
+            int ignored = 0;
+            int firstLimit = 0;
+            try
+            {
+                VoiceStop062();
+                VoiceBackupCurrent167();
+                string dest = VoiceSpeedDir166();
+
+                foreach (string src in dlg.FileNames ?? new string[0])
+                {
+                    int limit = VoiceLimitId167(src);
+                    if (limit <= 0)
+                    {
+                        ignored++;
+                        continue;
+                    }
+
+                    string name = "limite_" + limit.ToString("D3", CultureInfo.InvariantCulture) + ".mp3";
+                    File.Copy(src, Path.Combine(dest, name), true);
+                    if (firstLimit == 0) firstLimit = limit;
+                    imported++;
+                }
+
+                VoiceRefreshUi062();
+
+                if (imported <= 0)
+                {
+                    MessageBox.Show(
+                        "Nenhum MP3 reconhecido. Use nomes como limite_020.mp3, limite_040.mp3, limite_080.mp3 ate limite_130.mp3.",
+                        "Voz GAT", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                ClientStore.Log("voz 1.0.71: " + imported + " limite(s) importado(s), " + ignored + " ignorado(s)");
+                MessageBox.Show(
+                    imported + " fala(s) de limite importada(s)." +
+                    (ignored > 0 ? "\n" + ignored + " arquivo(s) ignorado(s) por nome invalido." : "") +
+                    "\n\nPara trocar uma fala depois, importe outro MP3 com o mesmo nome.",
+                    "Voz GAT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (firstLimit > 0) VoicePlaySpeedLimit065(firstLimit);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nao foi possivel importar as falas: " + ex.Message, "Voz GAT", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 
@@ -202,7 +250,8 @@ foreach ($m in @('CurrentVersion = "1.0.71.0"','Cliente 1.0.71')) {
     if ($mainText -notlike "*$m*") { throw "MainForm 1.0.71 sem $m" }
 }
 foreach ($m in @(
-    'VoiceSeedDefaultLimits171',
+    'VoiceImportLimits171',
+    'VoiceTestLimit171',
     'VoiceObserveRoadSpeed171',
     'VoicePathNumber171',
     'VoiceTolerance171',
@@ -220,4 +269,4 @@ Set-Content $hub.FullName $hubText -Encoding UTF8
 Set-Content $voice.FullName $voiceText -Encoding UTF8
 if ($hub45) { Set-Content $hub45.FullName $hub45Text -Encoding UTF8 }
 
-Write-Host 'GAT Telemetria 1.0.71: alerta direto com tolerancia ZERO + 12 vozes padrao aplicado.'
+Write-Host 'GAT Telemetria 1.0.71: alerta direto, tolerancia ZERO e importacao manual de vozes aplicada.'
