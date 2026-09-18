@@ -1,7 +1,7 @@
 {
-  "version": "1.0.71",
-  "name": "GAT Telemetria 1.0.71 SPEED ALERT FIX",
-  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.71.exe",
-  "sha256": "6b650156c77d63faaf0f5eed5854c96770eca646538aba9ba81d67f6b05c1d07",
+  "version": "1.0.72",
+  "name": "GAT Telemetria 1.0.72 VOICE IMPORT HOTFIX",
+  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.72.exe",
+  "sha256": "0650896167ce055abf2564000654ad0a6310723f517e3cb3057f4906f1573b8e",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }
