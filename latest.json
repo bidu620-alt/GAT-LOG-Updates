@@ -1,7 +1,7 @@
 {
-  "version": "1.0.70",
-  "name": "GAT Telemetria 1.0.70 SPEED ONLY",
-  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.70.exe",
-  "sha256": "7a239e2d582a1ca3ce201820fd9562ef99b494c53ce7ef29fc0a173ef070c6ea",
+  "version": "1.0.71",
+  "name": "GAT Telemetria 1.0.71 SPEED ALERT FIX",
+  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.71.exe",
+  "sha256": "6b650156c77d63faaf0f5eed5854c96770eca646538aba9ba81d67f6b05c1d07",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }
