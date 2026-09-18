@@ -1,0 +1,85 @@
+name: Publish GAT Voice Pack 1.0.71
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/voice-defaults/limits-1.0.71.zip.b64.part*'
+      - '.github/workflows/publish-gat-voice-pack-1.0.71.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild and validate voice ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p releases
+          base='gat-telemetria-allinone-1.0.29/voice-defaults'
+          cat "$base"/limits-1.0.71.zip.b64.part* | tr -d '\r\n' | base64 -d > releases/GAT_VOZ_LIMITES_20_A_130.zip
+
+          test "$(stat -c%s releases/GAT_VOZ_LIMITES_20_A_130.zip)" = "125288"
+          echo "b4297f4913e6cfeab834809661343ef337745658cf80ea46ea69462fc730883c  releases/GAT_VOZ_LIMITES_20_A_130.zip" | sha256sum -c -
+
+          python - <<'PY'
+          import zipfile
+          p='releases/GAT_VOZ_LIMITES_20_A_130.zip'
+          expected=[f'limite_{n:03d}.mp3' for n in range(20,131,10)]
+          with zipfile.ZipFile(p) as z:
+              names=z.namelist()
+              if names != expected:
+                  raise SystemExit(f'Arquivos inesperados no pacote: {names}')
+              bad=z.testzip()
+              if bad:
+                  raise SystemExit(f'ZIP corrompido em: {bad}')
+              for name in expected:
+                  if z.getinfo(name).file_size < 5000:
+                      raise SystemExit(f'Audio muito pequeno: {name}')
+          print('Pacote de voz validado com 12 MP3s.')
+          PY
+
+      - name: Add voice pack download to site
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p=Path('docs/index.html')
+          s=p.read_text(encoding='utf-8')
+
+          voice_url='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_VOZ_LIMITES_20_A_130.zip'
+          voice_card=(
+              '<a class="download-mini" href="'+voice_url+'">'
+              '<strong>Pacote de Voz • Limites 20 a 130 km/h</strong>'
+              '<span>12 falas prontas para a GAT Telemetria 1.0.71. Baixe o ZIP, extraia e em Configurações → Voz use IMPORTAR LIMITES para selecionar os MP3s.</span>'
+              '<b>BAIXAR PACOTE DE VOZ</b></a>'
+          )
+
+          if voice_url not in s:
+              marker='<b>BAIXAR GAT TELEMETRIA</b></a>'
+              if marker not in s:
+                  raise SystemExit('Card da GAT Telemetria nao encontrado')
+              s=s.replace(marker, marker+voice_card, 1)
+
+          p.write_text(s, encoding='utf-8')
+
+      - name: Publish voice pack and site
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_VOZ_LIMITES_20_A_130.zip docs/index.html
+          if git diff --cached --quiet; then
+            echo 'Nada para publicar.'
+            exit 0
+          fi
+          git commit -m 'Publish GAT 1.0.71 voice pack'
+          git push
