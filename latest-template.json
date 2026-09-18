@@ -1,7 +1,7 @@
 {
-  "version": "1.0.72",
-  "name": "GAT Telemetria 1.0.72 VOICE IMPORT HOTFIX",
-  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.72.exe",
-  "sha256": "0650896167ce055abf2564000654ad0a6310723f517e3cb3057f4906f1573b8e",
+  "version": "1.0.68",
+  "name": "GAT Telemetria 1.0.68",
+  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.68.exe",
+  "sha256": "5733bb5622e7a758dd9042a73c6808f7c4c59c3404a6e7141d04b069dee9aa53",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }
