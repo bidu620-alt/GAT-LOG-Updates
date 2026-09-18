@@ -6,7 +6,6 @@ on:
     branches: [main]
     paths:
       - 'gat-telemetria-allinone-1.0.29/apply-speed-alert-fix-1.0.71.ps1'
-      - 'gat-telemetria-allinone-1.0.29/voice-defaults/limits-1.0.71.zip'
       - '.github/workflows/build-gat-telemetria-hub-1.0.71.yml'
 
 permissions:
@@ -88,7 +87,8 @@ jobs:
           if($mt -notlike '*CurrentVersion = "1.0.71.0"*'){throw 'Versao 1.0.71 incorreta'}
           foreach($m in @(
             'VoiceObserveRoadSpeed171',
-            'VoiceSeedDefaultLimits171',
+            'VoiceImportLimits171',
+            'VoiceTestLimit171',
             'VoiceFindSpeed166',
             'navigation.speedLimit',
             'truck.speed',
@@ -110,7 +110,7 @@ jobs:
             "GAT171_CFG=$cfg" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
           }
 
-      - name: Prepare 1.0.71 stage and bundled speed voices
+      - name: Prepare 1.0.71 stage
         run: |
           $base=Join-Path $PWD 'GAT_TELEMETRIA_SETUP_1.0.50_BASE.exe'
           Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.50.exe' -OutFile $base
@@ -159,27 +159,6 @@ jobs:
 
           if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
 
-          $voiceZip='gat-telemetria-allinone-1.0.29/voice-defaults/limits-1.0.71.zip'
-          if(-not(Test-Path $voiceZip) -or (Get-Item $voiceZip).Length -lt 50000){
-            throw 'Pacote de audio 1.0.71 ausente ou invalido'
-          }
-
-          $voiceDir=Join-Path $stage 'gat/voice-defaults/limits'
-          New-Item -ItemType Directory -Force -Path $voiceDir | Out-Null
-          Expand-Archive $voiceZip $voiceDir -Force
-
-          $expected=20,30,40,50,60,70,80,90,100,110,120,130
-          foreach($limit in $expected){
-            $name='limite_'+$limit.ToString('D3')+'.mp3'
-            $file=Join-Path $voiceDir $name
-            if(-not(Test-Path $file) -or (Get-Item $file).Length -lt 5000){
-              throw "Audio ausente ou invalido: $name"
-            }
-          }
-
-          $count=(Get-ChildItem $voiceDir -Filter 'limite_*.mp3').Count
-          if($count -ne 12){throw "Esperava 12 limites e encontrei $count"}
-
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress
 
@@ -223,7 +202,7 @@ jobs:
           $docs=$docs.Replace($oldUrl,$newUrl)
           $docs=$docs.Replace('<strong>GAT Telemetria 1.0.70 SPEED ONLY</strong>','<strong>GAT Telemetria 1.0.71 SPEED ALERT FIX</strong>')
           $oldDesc='Versão 1.0.70 SPEED ONLY: mantém somente os alertas de limite e velocidade da rodovia. As demais falas automáticas ficam desativadas.'
-          $newDesc='Versão 1.0.71: alerta de velocidade direto pela telemetria, tolerância fixa 0 (limite exato) e 12 vozes de limite de 20 a 130 km/h instaladas automaticamente.'
+          $newDesc='Versão 1.0.71: alerta de velocidade direto pela telemetria, tolerância fixa 0 (limite exato) e importação manual de vozes de limite pelas Configurações.'
           $docs=$docs.Replace($oldDesc,$newDesc)
           Set-Content 'docs/index.html' $docs -Encoding UTF8
 
