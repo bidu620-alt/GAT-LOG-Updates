@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - 'gat-telemetria-allinone-1.0.29/apply-speed-alert-fix-1.0.71.ps1'
-      - 'gat-telemetria-allinone-1.0.29/voice-defaults/limits-1.0.71.zip.b64.part*'
+      - 'gat-telemetria-allinone-1.0.29/voice-defaults/limits-1.0.71.zip'
       - '.github/workflows/build-gat-telemetria-hub-1.0.71.yml'
 
 permissions:
@@ -159,17 +159,10 @@ jobs:
 
           if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
 
-          $encodedDir='gat-telemetria-allinone-1.0.29/voice-defaults'
-          $parts=Get-ChildItem $encodedDir -Filter 'limits-1.0.71.zip.b64.part*' | Sort-Object Name
-          if($parts.Count -ne 6){throw "Esperava 6 partes de audio e encontrei $($parts.Count)"}
-
-          $sb=New-Object System.Text.StringBuilder
-          foreach($part in $parts){
-            [void]$sb.Append((Get-Content $part.FullName -Raw).Trim())
+          $voiceZip='gat-telemetria-allinone-1.0.29/voice-defaults/limits-1.0.71.zip'
+          if(-not(Test-Path $voiceZip) -or (Get-Item $voiceZip).Length -lt 50000){
+            throw 'Pacote de audio 1.0.71 ausente ou invalido'
           }
-
-          $voiceZip=Join-Path $env:RUNNER_TEMP 'gat-limits-1.0.71.zip'
-          [IO.File]::WriteAllBytes($voiceZip,[Convert]::FromBase64String($sb.ToString()))
 
           $voiceDir=Join-Path $stage 'gat/voice-defaults/limits'
           New-Item -ItemType Directory -Force -Path $voiceDir | Out-Null
