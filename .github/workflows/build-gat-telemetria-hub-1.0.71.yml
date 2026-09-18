@@ -161,7 +161,7 @@ jobs:
 
           $encodedDir='gat-telemetria-allinone-1.0.29/voice-defaults'
           $parts=Get-ChildItem $encodedDir -Filter 'limits-1.0.71.zip.b64.part*' | Sort-Object Name
-          if($parts.Count -ne 8){throw "Esperava 8 partes de audio e encontrei $($parts.Count)"}
+          if($parts.Count -ne 6){throw "Esperava 6 partes de audio e encontrei $($parts.Count)"}
 
           $sb=New-Object System.Text.StringBuilder
           foreach($part in $parts){
@@ -230,7 +230,7 @@ jobs:
           $docs=$docs.Replace($oldUrl,$newUrl)
           $docs=$docs.Replace('<strong>GAT Telemetria 1.0.70 SPEED ONLY</strong>','<strong>GAT Telemetria 1.0.71 SPEED ALERT FIX</strong>')
           $oldDesc='Versão 1.0.70 SPEED ONLY: mantém somente os alertas de limite e velocidade da rodovia. As demais falas automáticas ficam desativadas.'
-          $newDesc='Versão 1.0.71: alerta de velocidade corrigido diretamente pela telemetria, respeita a tolerância e já instala as 12 vozes de limite de 20 a 130 km/h.'
+          $newDesc='Versão 1.0.71: alerta de velocidade direto pela telemetria, tolerância fixa 0 (limite exato) e 12 vozes de limite de 20 a 130 km/h instaladas automaticamente.'
           $docs=$docs.Replace($oldDesc,$newDesc)
           Set-Content 'docs/index.html' $docs -Encoding UTF8
 
