@@ -19,9 +19,9 @@ $hub45Text = if ($hub45) { Get-Content $hub45.FullName -Raw } else { '' }
 # ---------------------------------------------------------------------------
 # 1.0.71 SPEED ALERT FIX
 # - Alerta de excesso passa a ser detectado diretamente pela telemetria.
-# - Usa truck.speed + navigation.speedLimit e a tolerancia salva no DASH.
-# - Repete no maximo a cada 15 s enquanto continuar acima do limite+tolerancia.
-# - Quando normaliza e excede novamente, alerta de imediato.
+# - Usa truck.speed + navigation.speedLimit com tolerancia fixa ZERO.
+# - Regra exata: limite 40 permite 40; a partir de 41 dispara o alerta.
+# - Repete no maximo a cada 15 s enquanto continuar acima; ao normalizar e exceder novamente, alerta de imediato.
 # - Instala/semeia automaticamente os 12 MP3s limite_020 ... limite_130.
 # - Preserva MP3s personalizados existentes: so copia o padrao se estiver faltando.
 # ---------------------------------------------------------------------------
@@ -113,19 +113,11 @@ if ($voiceText -notlike '*private void VoiceObserveRoadSpeed171*') {
         return double.NaN;
     }
 
-    private double VoiceTolerance171()
+    private static double VoiceTolerance171()
     {
-        double tolerance = 3.0;
-        try
-        {
-            JObject settings = JObject.Parse(DashSettingsJson045());
-            JToken token = settings["tolerance"];
-            double parsed;
-            if (token != null && double.TryParse(Convert.ToString(token), NumberStyles.Any, CultureInfo.InvariantCulture, out parsed))
-                tolerance = parsed;
-        }
-        catch { }
-        return Math.Max(0.0, Math.Min(20.0, tolerance));
+        // 1.0.71: tolerancia fixa ZERO. O limite e exato:
+        // 40 km/h = normal; 41 km/h = excesso.
+        return 0.0;
     }
 
     private static int VoiceNormalizeRoadLimit171(double limit)
@@ -228,4 +220,4 @@ Set-Content $hub.FullName $hubText -Encoding UTF8
 Set-Content $voice.FullName $voiceText -Encoding UTF8
 if ($hub45) { Set-Content $hub45.FullName $hub45Text -Encoding UTF8 }
 
-Write-Host 'GAT Telemetria 1.0.71: alerta direto limite+tolerancia + 12 vozes padrao aplicado.'
+Write-Host 'GAT Telemetria 1.0.71: alerta direto com tolerancia ZERO + 12 vozes padrao aplicado.'
