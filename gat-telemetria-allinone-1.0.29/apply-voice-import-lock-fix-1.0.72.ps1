@@ -87,7 +87,7 @@ $new = @'
 '@
 
 if ($voiceText -notlike '*VoiceReplaceLimitFile172*') {
-    if ($voiceText -notlike "*$old*") { throw 'Trecho do importador 1.0.71 nao encontrado' }
+    if (-not $voiceText.Contains($old)) { throw 'Trecho do importador 1.0.71 nao encontrado' }
     $voiceText = $voiceText.Replace($old, $new)
 
     $catchNeedle = @'
@@ -160,7 +160,7 @@ if ($voiceText -notlike '*VoiceReplaceLimitFile172*') {
     private static double VoicePathNumber171
 '@
 
-    if ($voiceText -notlike "*$catchNeedle*") { throw 'Final do importador 1.0.71 nao encontrado' }
+    if (-not $voiceText.Contains($catchNeedle)) { throw 'Final do importador 1.0.71 nao encontrado' }
     $voiceText = $voiceText.Replace($catchNeedle, $catchNew)
 }
 
