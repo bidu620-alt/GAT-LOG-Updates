@@ -92,8 +92,9 @@ jobs:
             'VoiceCleanSpeedLimit1681',
             'VoicePlaySpeedLimit065(limit)',
             'AppDomain.CurrentDomain.BaseDirectory, "voz", "limites"',
-            'VOZ 1.0.68.6 tocando',
-            'return; // 1.0.68.6: bloqueia chuva/dano/random/fuel/arriving antigos.',
+            'VOZ 1.0.68.6 WAV tocando',
+            'System.Media.SoundPlayer',
+            'VoiceSpeakClean1686',
             'o DASH e somente visual',
             'configuracao de voz e local do GAT Telemetria'
           )) { if($vt -notlike "*$m*"){throw "Voice062 sem $m"} }
@@ -223,6 +224,12 @@ jobs:
 
           if($ht -notlike '*VoiceRoadInitialize1683();*'){throw 'AUDITORIA: motor de velocidade nao inicia com o app.'}
           Write-Host 'AUDITORIA OK: motor de velocidade inicia junto com o GAT.'
+
+          $road=[regex]::Match($vt,'(?s)private void VoiceCleanObserveRoad1683\(JObject tele, DateTime now\).*?\n    \}')
+          if(-not $road.Success){throw 'AUDITORIA: VoiceCleanObserveRoad1683 nao encontrado'}
+          if($road.Value -match 'VoicePlayFile166'){throw 'AUDITORIA: alerta de velocidade ainda passa pelo player MP3 antigo'}
+          if($road.Value -notmatch 'VoicePlaySpeedLimit065\(limit\)'){throw 'AUDITORIA: alerta nao chama o player WAV oficial'}
+          Write-Host 'AUDITORIA OK: velocidade usa somente o player WAV oficial.'
 
           $m=[regex]::Match($vt,'(?s)private void ObserveVoiceTelemetry062\(JObject tele\).*?\n    \}')
           if(-not $m.Success){throw 'AUDITORIA: ObserveVoiceTelemetry062 nao encontrado'}
