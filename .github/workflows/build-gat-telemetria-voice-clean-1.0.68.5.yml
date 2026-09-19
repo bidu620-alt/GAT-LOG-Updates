@@ -239,15 +239,8 @@ jobs:
           $mp3=Join-Path $voiceDir 'limite_080.mp3'
           if(-not(Test-Path $mp3)){throw 'AUDITORIA: limite_080.mp3 nao instalado'}
 
-          Add-Type @"
-using System;
-using System.Runtime.InteropServices;
-using System.Text;
-public static class GatMciAudit {
-    [DllImport("winmm.dll", CharSet=CharSet.Auto)]
-    public static extern int mciSendString(string command, StringBuilder ret, int len, IntPtr hwnd);
-}
-"@
+          $mciType='using System; using System.Runtime.InteropServices; using System.Text; public static class GatMciAudit { [DllImport("winmm.dll", CharSet=CharSet.Auto)] public static extern int mciSendString(string command, StringBuilder ret, int len, IntPtr hwnd); }'
+          Add-Type -TypeDefinition $mciType
           $alias='gataudit1685'
           $safe=$mp3.Replace('"','')
           $rc=[GatMciAudit]::mciSendString('open "'+$safe+'" type mpegvideo alias '+$alias,$null,0,[IntPtr]::Zero)
