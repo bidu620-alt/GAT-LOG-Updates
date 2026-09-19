@@ -221,12 +221,7 @@ $cleanMethods = @'
         bool due = !_voiceCleanOverspeed1681 || (now - _voiceCleanLastRoadAlert1681).TotalSeconds >= 15.0;
         if (due)
         {
-            bool played = false;
-            string direct = VoiceFindSpeed166(limit);
-            if (!string.IsNullOrWhiteSpace(direct))
-                played = VoicePlayFile166(direct, true);
-            if (!played)
-                played = VoicePlaySpeedLimit065(limit);
+            bool played = VoicePlaySpeedLimit065(limit);
 
             if (played)
             {
