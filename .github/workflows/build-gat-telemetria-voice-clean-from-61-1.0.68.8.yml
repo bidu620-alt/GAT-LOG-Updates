@@ -219,7 +219,7 @@ jobs:
           $text=$text.Replace('staging\','staging-voice-clean-1688\')
           $text=$text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA')
           $text=$text.Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
-          $text=$text.Replace('OutputBaseFilename=GAT_TELEMETRIA_SETUP_{#AppVersion}','OutputBaseFilename=GAT_TELEMETRIA_1.0.68.8_VOZ_LIMPA_TESTE')
+          $text=$text.Replace('OutputBaseFilename=GAT_TELEMETRIA_SETUP_{#AppVersion}','OutputBaseFilename=GAT_TELEMETRIA_1.0.68.8_VOZ_NOVA_LIMPA')
           Set-Content $iss $text -Encoding UTF8
 
           & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss
