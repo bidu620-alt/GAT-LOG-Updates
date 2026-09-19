@@ -476,38 +476,7 @@ $replacedSpeed1684 = [regex]::Replace($voiceText, $patternSpeed1684, $newSpeed16
 if ($replacedSpeed1684 -eq $voiceText) { throw 'VoicePlaySpeedLimit065 nao encontrado para limpeza 1.0.68.4.' }
 $voiceText = $replacedSpeed1684
 
-# Inicio/fim de trabalho deixam de depender dos pacotes antigos.
-$groupStart1684 = '    private bool VoicePlayGroup062(string group, bool interrupt = true)'
-$groupEnd1684 = '    private bool VoicePlayId062(int id, bool interrupt = true)'
-$groupClean1684 = @'
-    private bool VoicePlayGroup062(string group, bool interrupt = true)
-    {
-        if (_voiceMuted062 || _voiceVolume062 <= 0) return true;
-
-        string g = (group ?? string.Empty).Trim().ToLowerInvariant();
-        string phrase = null;
-        if (g == "cargo_start") phrase = "Trabalho iniciado.";
-        else if (g == "delivery") phrase = "Trabalho finalizado.";
-        else return true;
-
-        try
-        {
-            if (_voice == null) _voice = new System.Speech.Synthesis.SpeechSynthesizer();
-            _voice.Volume = Math.Max(0, Math.Min(100, _voiceVolume062));
-            if (interrupt) _voice.SpeakAsyncCancelAll();
-            _voice.SpeakAsync(phrase);
-            ClientStore.Log("VOZ 1.0.68.4 TTS: " + phrase);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            ClientStore.Log("VOZ 1.0.68.4 TTS falhou: " + ex.Message);
-            return false;
-        }
-    }
-'@
-$voiceText = Replace-Between1681 $voiceText $groupStart1684 $groupEnd1684 $groupClean1684
-
+# Inicio/fim permanecem filtrados pela base 1.0.68; esta revisao limpa especificamente o alerta de velocidade.
 # O observador interno fica apenas com inicio/fim; velocidade e lida exclusivamente no polling direto TruckSim.
 $obsStart1684 = $voiceText.IndexOf('    private void VoiceCleanObserve1681(JObject tele, DateTime now)')
 if ($obsStart1684 -ge 0) {
