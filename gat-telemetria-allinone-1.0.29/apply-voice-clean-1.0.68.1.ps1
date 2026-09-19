@@ -68,15 +68,7 @@ $legacyHandler = @'
 '@
 $voiceText = Replace-Between1681 $voiceText '    private bool VoiceHandleLegacySpeak062(string text, string logLabel)' '    private bool VoiceHandleDashSpeak062(string text)' $legacyHandler
 
-# Desliga o detector visual antigo de batida e qualquer protecao associada a ele.
-$damageNoop = @'
-    private void ObserveDamageDisplay064(string cargo, string engine, string transmission, string cabin, string chassis, string wheels, string trailer, string speedText)
-    {
-        // 1.0.68.1 VOZ LIMPA: eventos de dano ficam desativados neste teste.
-    }
-'@
-$voiceText = Replace-Between1681 $voiceText '    private void ObserveDamageDisplay064(string cargo, string engine, string transmission, string cabin, string chassis, string wheels, string trailer, string speedText)' '    private void VoiceTriggerCrash064(DateTime now, double rise)' $damageNoop
-
+# Desliga a fala de batida antiga sem depender da assinatura do detector visual.
 $crashNoop = @'
     private void VoiceTriggerCrash064(DateTime now, double rise)
     {
@@ -101,7 +93,7 @@ $fields = @'
 }
 
 # Helpers do motor limpo: limite vem direto do TruckSim GPS/telemetria.
-$cleanMarker = '    private void ObserveDamageDisplay064(string cargo, string engine, string transmission, string cabin, string chassis, string wheels, string trailer, string speedText)'
+$cleanMarker = '    private void VoiceSyncDashSetting062(JObject message)'
 if ($voiceText.Contains($cleanMarker) -and $voiceText -notlike '*private void VoiceCleanObserve1681*') {
 $cleanMethods = @'
     private static int VoiceCleanSpeedLimit1681(JObject tele)
