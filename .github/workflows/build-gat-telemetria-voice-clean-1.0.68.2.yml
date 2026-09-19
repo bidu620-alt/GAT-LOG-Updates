@@ -88,8 +88,8 @@ jobs:
           )) { if($mt -notlike "*$m*"){throw "MainForm sem $m"} }
 
           foreach($m in @(
-            'VoiceCleanObserve1682',
-            'VoiceCleanSpeedLimit1682',
+            'VoiceCleanObserve1681',
+            'VoiceCleanSpeedLimit1681',
             'VoicePlaySpeedLimit065(limit)',
             'return; // 1.0.68.2: bloqueia chuva/dano/random/fuel/arriving antigos.',
             'o DASH e somente visual',
