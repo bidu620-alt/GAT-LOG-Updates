@@ -47,7 +47,7 @@ $dashHandler = @'
         return true;
     }
 '@
-$voiceText = Replace-Between1681 $voiceText '    private bool VoiceHandleDashSpeak062(string text)' '    private void VoiceSyncDashSetting062(JObject message)' $dashHandler
+$voiceText = Replace-Between1681 $voiceText '    private bool VoiceHandleDashSpeak062(string text)' '    private static double VoiceParsePercent064(string text)' $dashHandler
 
 # O DASH tambem nao pode mutar/desmutar a voz principal.
 $dashSettings = @'
