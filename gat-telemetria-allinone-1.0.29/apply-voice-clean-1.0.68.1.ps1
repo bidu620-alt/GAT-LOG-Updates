@@ -68,14 +68,21 @@ $legacyHandler = @'
 '@
 $voiceText = Replace-Between1681 $voiceText '    private bool VoiceHandleLegacySpeak062(string text, string logLabel)' '    private bool VoiceHandleDashSpeak062(string text)' $legacyHandler
 
-# Desliga a fala de batida antiga sem depender da assinatura do detector visual.
-$crashNoop = @'
-    private void VoiceTriggerCrash064(DateTime now, double rise)
+# Filtro central: somente inicio/fim de trabalho usam grupos; velocidade usa o MP3 numerico direto.
+$groupHead = @'
+    private bool VoicePlayGroup062(string group, bool interrupt = true)
     {
-        // 1.0.68.1 VOZ LIMPA: nenhuma fala de batida nesta revisao.
-    }
 '@
-$voiceText = Replace-Between1681 $voiceText '    private void VoiceTriggerCrash064(DateTime now, double rise)' '    private void VoiceSyncDashSetting062(JObject message)' $crashNoop
+if ($voiceText.Contains($groupHead) -and $voiceText -notlike '*VOZ LIMPA: grupos permitidos*') {
+    $groupHeadNew = @'
+    private bool VoicePlayGroup062(string group, bool interrupt = true)
+    {
+        // VOZ LIMPA: grupos permitidos neste teste.
+        string cleanGroup1681 = (group ?? string.Empty).ToLowerInvariant();
+        if (cleanGroup1681 != "cargo_start" && cleanGroup1681 != "delivery") return true;
+'@
+    $voiceText = $voiceText.Replace($groupHead, $groupHeadNew)
+}
 
 # Estado unico do motor limpo.
 $fieldMarker = '    [DllImport("winmm.dll", CharSet = CharSet.Auto)]'
@@ -199,7 +206,7 @@ foreach ($m in @('CurrentVersion = "1.0.68.1"')) {
 foreach ($m in @('VoiceHandleDashSpeak062(t);')) {
     if ($hubText -notlike "*$m*") { throw "Hub VOZ LIMPA sem $m" }
 }
-foreach ($m in @('VoiceCleanObserve1681','VoiceCleanSpeedLimit1681','return true;','VoicePlaySpeedLimit065(limit)','trabalho iniciado','trabalho finalizado','bloqueia chuva/dano/random/fuel/arriving antigos')) {
+foreach ($m in @('VoiceCleanObserve1681','VoiceCleanSpeedLimit1681','VoicePlaySpeedLimit065(limit)','VoicePlaySpeedLimit065(80)','VOZ LIMPA: grupos permitidos','trabalho iniciado','trabalho finalizado','bloqueia chuva/dano/random/fuel/arriving antigos')) {
     if ($voiceText -notlike "*$m*") { throw "Voice062 VOZ LIMPA sem $m" }
 }
 
