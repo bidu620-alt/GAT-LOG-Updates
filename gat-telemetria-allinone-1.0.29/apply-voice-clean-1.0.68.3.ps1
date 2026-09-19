@@ -140,6 +140,50 @@ $cleanMethods = @'
         return 0;
     }
 
+    private void VoiceRoadInitialize1683()
+    {
+        if (_voiceRoadTimer1683 != null) return;
+
+        _voiceRoadHttp1683 = new System.Net.Http.HttpClient { Timeout = TimeSpan.FromSeconds(2) };
+        _voiceRoadTimer1683 = new System.Windows.Forms.Timer { Interval = 450 };
+        _voiceRoadTimer1683.Tick += async delegate
+        {
+            if (_voiceRoadBusy1683) return;
+            _voiceRoadBusy1683 = true;
+            try
+            {
+                string json1683 = await _voiceRoadHttp1683.GetStringAsync("http://127.0.0.1:31377/api/ets2/telemetry");
+                JObject raw1683 = JObject.Parse(json1683);
+                VoiceCleanObserveRoad1683(raw1683, DateTime.UtcNow);
+
+                if (!_voiceRoadConnectedLogged1683)
+                {
+                    _voiceRoadConnectedLogged1683 = true;
+                    ClientStore.Log("VOZ LIMPA 1.0.68.3 TruckSim direto conectado");
+                }
+            }
+            catch (Exception ex1683)
+            {
+                if ((DateTime.UtcNow - _voiceRoadLastError1683).TotalSeconds >= 15)
+                {
+                    _voiceRoadLastError1683 = DateTime.UtcNow;
+                    try { ClientStore.Log("VOZ LIMPA 1.0.68.3 TruckSim indisponivel: " + ex1683.Message); } catch { }
+                }
+            }
+            finally
+            {
+                _voiceRoadBusy1683 = false;
+            }
+        };
+        _voiceRoadTimer1683.Start();
+
+        FormClosed += delegate
+        {
+            try { _voiceRoadTimer1683?.Stop(); _voiceRoadTimer1683?.Dispose(); } catch { }
+            try { _voiceRoadHttp1683?.Dispose(); } catch { }
+        };
+    }
+
     private void VoiceCleanObserveRoad1683(JObject tele, DateTime now)
     {
         if (tele == null || _voiceMuted062 || _voiceVolume062 <= 0) return;
@@ -356,6 +400,13 @@ if ($voiceText.Contains($voiceClose1683) -and $voiceText -notlike '*_voiceRoadHt
     )
 }
 
+# Garante que o motor de velocidade inicie junto com o GAT Telemetria, mesmo sem abrir o DASH.
+if ($hubText -notlike '*VoiceRoadInitialize1683();*') {
+    $voiceInitHub1683 = '        VoiceInitialize062();'
+    if (-not $hubText.Contains($voiceInitHub1683)) { throw 'VoiceInitialize062 do Hub nao encontrado para 1.0.68.3.' }
+    $hubText = $hubText.Replace($voiceInitHub1683, $voiceInitHub1683 + "`r`n        VoiceRoadInitialize1683();")
+}
+
 # O observador antigo continua sendo o ponto de entrada, mas retorna apos o motor limpo.
 $observeNeedle = '        _voiceSeenTelemetry062 = true;'
 if ($voiceText.Contains($observeNeedle) -and $voiceText -notlike '*VoiceCleanObserve1681(tele, now);*') {
@@ -375,10 +426,10 @@ $voiceText = $voiceText.Replace('Pacote ativo â€¢ " + general + " falas gerais â
 foreach ($m in @('CurrentVersion = "1.0.68.3"')) {
     if ($mainText -notlike "*$m*") { throw "MainForm VOZ LIMPA sem $m" }
 }
-foreach ($m in @('VoiceHandleDashSpeak062(t);')) {
+foreach ($m in @('VoiceHandleDashSpeak062(t);','VoiceRoadInitialize1683();')) {
     if ($hubText -notlike "*$m*") { throw "Hub VOZ LIMPA sem $m" }
 }
-foreach ($m in @('VoiceCleanObserve1681','VoiceCleanObserveRoad1683','VoiceCleanPathNumber1681','VoiceCleanSpeedLimit1681','_voiceRoadTimer1683','127.0.0.1:31377','VoicePlaySpeedLimit065(limit)','VoicePlaySpeedLimit065(80)','VOZ LIMPA: grupos permitidos','trabalho iniciado','trabalho finalizado','bloqueia chuva/dano/random/fuel/arriving antigos')) {
+foreach ($m in @('VoiceRoadInitialize1683','VoiceCleanObserve1681','VoiceCleanObserveRoad1683','VoiceCleanPathNumber1681','VoiceCleanSpeedLimit1681','_voiceRoadTimer1683','127.0.0.1:31377','VoicePlaySpeedLimit065(limit)','VoicePlaySpeedLimit065(80)','VOZ LIMPA: grupos permitidos','trabalho iniciado','trabalho finalizado','bloqueia chuva/dano/random/fuel/arriving antigos')) {
     if ($voiceText -notlike "*$m*") { throw "Voice062 VOZ LIMPA sem $m" }
 }
 
