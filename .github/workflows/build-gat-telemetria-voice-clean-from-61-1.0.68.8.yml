@@ -172,8 +172,7 @@ jobs:
           $dashJs=Join-Path $stage 'gat/gatdash-www/app.js'
           if(Test-Path $dashJs){
             $js=Get-Content $dashJs -Raw
-            $js=$js.Replace("nativePost({type:'speak',text}); return true;","return false;")
-            $js=[regex]::Replace($js,"if\(over && state\.voice && Date\.now\(\)-state\.lastSpoken>12000\)\{[^}]*nativePost\(\{type:'speak',text:[^;]+;\}\);?\}","",1)
+            $js=$js.Replace("type:'speak'","type:'noopVoiceDisabled'")
             Set-Content $dashJs $js -Encoding UTF8
             $check=Get-Content $dashJs -Raw
             if($check -like "*nativePost({type:'speak'*"){throw 'AUDITORIA: DASH instalado ainda envia speak'}
