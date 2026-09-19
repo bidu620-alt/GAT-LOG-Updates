@@ -6,7 +6,7 @@ on:
       - 'test/voice-clean-1681'
     paths:
       - 'gat-telemetria-allinone-1.0.29/apply-voice-clean-from-61-1.0.68.8.ps1'
-      - '.github/workflows/build-gat-telemetria-voice-clean-1.0.68.8.yml'
+      - '.github/workflows/build-gat-telemetria-voice-clean-from-61-1.0.68.8.yml'
   workflow_dispatch:
 
 permissions:
