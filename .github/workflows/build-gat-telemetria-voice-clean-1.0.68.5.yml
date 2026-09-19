@@ -182,6 +182,98 @@ jobs:
           Copy-Item $setup 'releases-test/GAT_TELEMETRIA_1.0.68.5_VOZ_LIMPA_TESTE.exe' -Force
           Get-FileHash 'releases-test/GAT_TELEMETRIA_1.0.68.5_VOZ_LIMPA_TESTE.exe' -Algorithm SHA256 | Format-List
 
+      - name: Audit source voice architecture
+        run: |
+          $root="$PWD/gat1685-build"
+          $voice=Get-ChildItem $root -Filter 'Voice062.cs' -Recurse | Select-Object -First 1
+          $hub=Get-ChildItem $root -Filter 'MainForm.Hub041.cs' -Recurse | Select-Object -First 1
+          if(-not $voice -or -not $hub){throw 'Fonte de auditoria nao encontrada'}
+          $vt=Get-Content $voice.FullName -Raw
+          $ht=Get-Content $hub.FullName -Raw
+
+          $required=@(
+            'Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "voz", "limites")',
+            'voice-volume-clean-1.0.68.5.txt',
+            'VoicePlaySpeedLimit065(80)',
+            'http://127.0.0.1:31377/api/ets2/telemetry',
+            'VoiceCleanObserveRoad1683',
+            'VoiceRoadInitialize1683'
+          )
+          foreach($m in $required){if($vt -notlike "*$m*" -and $ht -notlike "*$m*"){throw "AUDITORIA: marcador ausente: $m"}}
+
+          if($vt -match 'private bool VoiceHandleDashSpeak062\(string text\)\s*\{(?s:.*?)return true;\s*\}'){
+            Write-Host 'AUDITORIA OK: DASH nao fala.'
+          } else { throw 'AUDITORIA: DASH ainda pode acionar voz.' }
+
+          if($vt -match 'private bool VoicePlayFile166\(string file, bool interrupt = true\)\s*\{(?s:.*?)if \(_voiceMuted062 \|\| _voiceVolume062 <= 0\) return false;'){
+            Write-Host 'AUDITORIA OK: player nao mascara volume zero.'
+          } else { throw 'AUDITORIA: VoicePlayFile166 ainda mascara silencio.' }
+
+          if($ht -notlike '*VoiceRoadInitialize1683();*'){throw 'AUDITORIA: motor de velocidade nao inicia com o app.'}
+          Write-Host 'AUDITORIA OK: motor de velocidade inicia junto com o GAT.'
+
+          # Mostra o trecho apontado pelo warning de codigo inalcançavel para revisao.
+          $lines=Get-Content $voice.FullName
+          $from=[Math]::Max(0,1284)
+          $to=[Math]::Min($lines.Count-1,1306)
+          Write-Host '--- Voice062.cs linhas proximas do warning ---'
+          for($i=$from;$i -le $to;$i++){Write-Host ("{0}: {1}" -f ($i+1),$lines[$i])}
+
+      - name: Audit installer and MP3 with Windows MCI
+        run: |
+          $setup=Join-Path $PWD 'releases-test/GAT_TELEMETRIA_1.0.68.5_VOZ_LIMPA_TESTE.exe'
+          $audit=Join-Path $PWD 'audit-install-1685'
+          if(Test-Path $audit){Remove-Item $audit -Recurse -Force}
+          New-Item -ItemType Directory -Force -Path $audit | Out-Null
+
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR='+'"'+$audit+'"'))
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru
+          if($p.ExitCode -ne 0){throw "AUDITORIA: instalador retornou $($p.ExitCode)"}
+
+          $voiceDir=Join-Path $audit 'voz/limites'
+          $files=Get-ChildItem $voiceDir -Filter 'limite_*.mp3' -File -ErrorAction Stop | Sort-Object Name
+          if($files.Count -ne 12){throw "AUDITORIA: instalacao tem $($files.Count) MP3s, esperado 12"}
+          Write-Host 'AUDITORIA OK: 12 MP3s instalados.'
+          $files | Select-Object Name,Length | Format-Table -AutoSize
+
+          $mp3=Join-Path $voiceDir 'limite_080.mp3'
+          if(-not(Test-Path $mp3)){throw 'AUDITORIA: limite_080.mp3 nao instalado'}
+
+          Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
+public static class GatMciAudit {
+    [DllImport("winmm.dll", CharSet=CharSet.Auto)]
+    public static extern int mciSendString(string command, StringBuilder ret, int len, IntPtr hwnd);
+}
+"@
+          $alias='gataudit1685'
+          $safe=$mp3.Replace('"','')
+          $rc=[GatMciAudit]::mciSendString('open "'+$safe+'" type mpegvideo alias '+$alias,$null,0,[IntPtr]::Zero)
+          if($rc -ne 0){throw "AUDITORIA: Windows MCI nao conseguiu abrir limite_080.mp3 (codigo $rc)"}
+          try {
+            $sb=New-Object Text.StringBuilder 64
+            $rc2=[GatMciAudit]::mciSendString('set '+$alias+' time format milliseconds',$null,0,[IntPtr]::Zero)
+            if($rc2 -ne 0){throw "AUDITORIA: MCI nao aceitou time format (codigo $rc2)"}
+            $rc3=[GatMciAudit]::mciSendString('status '+$alias+' length',$sb,$sb.Capacity,[IntPtr]::Zero)
+            if($rc3 -ne 0){throw "AUDITORIA: MCI nao leu duracao (codigo $rc3)"}
+            [int]$duration=0
+            if(-not [int]::TryParse($sb.ToString().Trim(),[ref]$duration) -or $duration -lt 100){throw "AUDITORIA: duracao MP3 invalida: $($sb.ToString())"}
+            Write-Host "AUDITORIA OK: limite_080.mp3 reconhecido pelo Windows MCI; duracao=$duration ms"
+          } finally {
+            [void][GatMciAudit]::mciSendString('close '+$alias,$null,0,[IntPtr]::Zero)
+          }
+
+          $sample=Join-Path $audit 'TruckSimGPS/dev/Ets2TestTelemetry.json'
+          if(Test-Path $sample){
+            $j=Get-Content $sample -Raw | ConvertFrom-Json
+            if($null -eq $j.truck.speed -or $null -eq $j.navigation.speedLimit){throw 'AUDITORIA: formato de telemetria nao possui truck.speed/navigation.speedLimit'}
+            Write-Host "AUDITORIA OK: TruckSim usa truck.speed=$($j.truck.speed), navigation.speedLimit=$($j.navigation.speedLimit)"
+          } else {
+            Write-Host 'AUDITORIA: sample TruckSim nao veio no pacote; endpoint ja foi validado no codigo.'
+          }
+
       - uses: actions/upload-artifact@v4
         with:
           name: GAT-Telemetria-1.0.68.5-VOZ-LIMPA-TESTE
