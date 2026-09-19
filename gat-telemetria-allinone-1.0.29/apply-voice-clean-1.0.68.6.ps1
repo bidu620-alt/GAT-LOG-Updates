@@ -423,7 +423,22 @@ if ($hubText -notlike '*VoiceRoadInitialize1683();*') {
 }
 
 # O observador de telemetria fica realmente limpo: somente eventos de trabalho da nova rotina.
-$observePattern1686 = '(?s)    private void ObserveVoiceTelemetry062\(JObject tele\)\s*\{.*?\r?\n    \}\r?\n\r?\n    private '
+$observeSignature1686 = '    private void ObserveVoiceTelemetry062(JObject tele)'
+$observeStart1686 = $voiceText.IndexOf($observeSignature1686, [StringComparison]::Ordinal)
+if ($observeStart1686 -lt 0) { throw 'ObserveVoiceTelemetry062 nao encontrado para limpeza real 1.0.68.6.' }
+$braceStart1686 = $voiceText.IndexOf('{', $observeStart1686)
+if ($braceStart1686 -lt 0) { throw 'Chave inicial ObserveVoiceTelemetry062 nao encontrada.' }
+$depth1686 = 0
+$observeEnd1686 = -1
+for ($i1686 = $braceStart1686; $i1686 -lt $voiceText.Length; $i1686++) {
+    $ch1686 = $voiceText[$i1686]
+    if ($ch1686 -eq '{') { $depth1686++ }
+    elseif ($ch1686 -eq '}') {
+        $depth1686--
+        if ($depth1686 -eq 0) { $observeEnd1686 = $i1686 + 1; break }
+    }
+}
+if ($observeEnd1686 -lt 0) { throw 'Chave final ObserveVoiceTelemetry062 nao encontrada.' }
 $observeReplacement1686 = @'
     private void ObserveVoiceTelemetry062(JObject tele)
     {
@@ -434,12 +449,8 @@ $observeReplacement1686 = @'
         _voiceSeenTelemetry062 = true;
         VoiceCleanObserve1681(tele, now);
     }
-
-    private 
 '@
-$cleanedObserver1686 = [regex]::Replace($voiceText, $observePattern1686, $observeReplacement1686, 1)
-if ($cleanedObserver1686 -eq $voiceText) { throw 'ObserveVoiceTelemetry062 nao encontrado para limpeza real 1.0.68.6.' }
-$voiceText = $cleanedObserver1686
+$voiceText = $voiceText.Substring(0, $observeStart1686) + $observeReplacement1686.TrimEnd() + $voiceText.Substring($observeEnd1686)
 
 # O botao TESTAR VOZ usa a mesma funcao numerica do jogo: limite de 80 km/h.
 $voiceText = [regex]::Replace(
