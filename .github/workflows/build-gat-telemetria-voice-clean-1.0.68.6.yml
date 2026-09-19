@@ -1,0 +1,269 @@
+name: Build GAT Telemetria 1.0.68.6 VOZ LIMPA TESTE
+
+on:
+  push:
+    branches:
+      - 'test/voice-clean-1681'
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/apply-voice-clean-1.0.68.6.ps1'
+      - '.github/workflows/build-gat-telemetria-voice-clean-1.0.68.6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gat-telemetria-voice-clean-1686-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Reconstruct 1.0.68 and apply VOZ LIMPA
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias e encontrei $($parts.Count)" }
+
+          $zip = Join-Path $PWD 'gat1686-source.zip'
+          $out = [IO.File]::Create($zip)
+          try {
+            $out.Write($first,0,$first.Length)
+            foreach($part in $parts) {
+              $bytes=[IO.File]::ReadAllBytes($part.FullName)
+              $out.Write($bytes,0,$bytes.Length)
+            }
+          } finally { $out.Dispose() }
+
+          if(Test-Path 'gat1686-build'){Remove-Item 'gat1686-build' -Recurse -Force}
+          Expand-Archive $zip 'gat1686-build' -Force
+
+          Get-ChildItem 'gat1686-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+            $txt=Get-Content $_.FullName -Raw
+            if($txt -like '*1.0.28*'){Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8}
+          }
+
+          $r="$PWD/gat1686-build"
+          $patches=@(
+            'apply-offline-queue.ps1','apply-trip-sensor-v2.ps1','apply-stability-1.0.32.ps1','apply-beta-brand-1.0.32.ps1',
+            'apply-radio-1.0.33.ps1','apply-radio-1.0.34.ps1','apply-radio-overlay-1.0.35.ps1','apply-radio-personal-1.0.36.ps1',
+            'apply-radio-stream-1.0.37.ps1','apply-youtube-referrer-1.0.39.ps1','apply-dash-media-1.0.40.ps1','apply-hub-1.0.41.ps1',
+            'apply-hub-fixes-1.0.42.ps1','apply-startup-fix-1.0.43.ps1','apply-modern-ui-1.0.44.ps1','apply-hub-1.0.45.ps1',
+            'apply-mute-alert-1.0.46.ps1','apply-overlay-fix-1.0.47.ps1','apply-radio-background-1.0.48.ps1','apply-radio-home-1.0.49.ps1',
+            'apply-radio-home-1.0.49-fix.ps1','apply-dash-overlay-1.0.50.ps1','apply-responsive-ui-1.0.51.ps1','apply-responsive-ui-1.0.52.ps1',
+            'apply-ui-overlay-1.0.53.ps1','apply-overlay-independent-1.0.54.ps1','apply-window-layout-1.0.55-pre.ps1','apply-window-layout-1.0.55.ps1',
+            'apply-window-layout-1.0.55-fix.ps1','apply-full-responsive-1.0.56.ps1','apply-version-only-1.0.57.ps1','apply-version-only-1.0.58.ps1',
+            'apply-version-only-1.0.59.ps1','apply-full-dash-overlay-1.0.60.ps1','apply-video-borderless-1.0.61.ps1',
+            'apply-voice-pack-1.0.62.ps1','apply-voice-sync-1.0.63.ps1','apply-voice-sync-1.0.64.ps1','apply-speed-limits-1.0.65.ps1',
+            'apply-individual-voice-1.0.66.ps1','apply-voice-manager-1.0.67-v2.ps1','apply-voice-manager-1.0.67-fix-helpers.ps1',
+            'apply-voice-events-1.0.68.ps1','apply-voice-clean-1.0.68.6.ps1'
+          )
+          foreach($p in $patches){ & (Join-Path "$PWD/gat-telemetria-allinone-1.0.29" $p) -Root $r }
+
+          $main=Get-ChildItem $r -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          $hub=Get-ChildItem $r -Filter 'MainForm.Hub041.cs' -Recurse | Select-Object -First 1
+          $voice=Get-ChildItem $r -Filter 'Voice062.cs' -Recurse | Select-Object -First 1
+          $project=Get-ChildItem $r -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if(-not $main -or -not $hub -or -not $voice -or -not $project){throw 'Fonte 1.0.68.6 incompleto'}
+
+          $mt=Get-Content $main.FullName -Raw
+          $ht=Get-Content $hub.FullName -Raw
+          $vt=Get-Content $voice.FullName -Raw
+
+          foreach($m in @(
+            'CurrentVersion = "1.0.68.6"',
+            'ObserveVoiceTelemetry062(tele)'
+          )) { if($mt -notlike "*$m*"){throw "MainForm sem $m"} }
+
+          foreach($m in @(
+            'VoiceCleanObserve1681',
+            'VoiceCleanSpeedLimit1681',
+            'VoicePlaySpeedLimit065(limit)',
+            'AppDomain.CurrentDomain.BaseDirectory, "voz", "limites"',
+            'VOZ 1.0.68.6 tocando',
+            'return; // 1.0.68.6: bloqueia chuva/dano/random/fuel/arriving antigos.',
+            'o DASH e somente visual',
+            'configuracao de voz e local do GAT Telemetria'
+          )) { if($vt -notlike "*$m*"){throw "Voice062 sem $m"} }
+
+          msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
+          if($LASTEXITCODE -ne 0){throw 'Falha na compilacao 1.0.68.6 VOZ LIMPA'}
+
+          $projectDir=Split-Path $project.FullName -Parent
+          $exe=Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if(-not $exe){throw 'Executavel 1.0.68.6 nao gerado'}
+
+          "GAT1686_EXE=$($exe.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          $cfg=Join-Path $exe.Directory.FullName 'GAT_TELEMETRIA.exe.config'
+          if(Test-Path $cfg){"GAT1686_CFG=$cfg" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append}
+
+      - name: Prepare stage from stable 1.0.68
+        run: |
+          $base=Join-Path $PWD 'GAT_TELEMETRIA_SETUP_1.0.68_BASE.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.68.exe' -OutFile $base
+          if(-not(Test-Path $base) -or (Get-Item $base).Length -lt 1000000){throw 'Base 1.0.68 nao baixada'}
+
+          $installed=Join-Path $PWD 'installed168'
+          $stage=Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging-voice-clean-1686'
+          foreach($p in @($installed,$stage)){if(Test-Path $p){Remove-Item $p -Recurse -Force}}
+          New-Item -ItemType Directory -Force -Path $installed,$stage,(Join-Path $stage 'gat'),(Join-Path $stage 'trucksim') | Out-Null
+
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR='+'"'+$installed+'"'))
+          $proc=Start-Process -FilePath $base -ArgumentList $args -Wait -PassThru
+          if($proc.ExitCode -ne 0){throw "Base 1.0.68 retornou $($proc.ExitCode)"}
+
+          Copy-Item (Join-Path $installed 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA.exe') -Force
+          Copy-Item $env:GAT1686_EXE (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
+          if($env:GAT1686_CFG -and (Test-Path $env:GAT1686_CFG)){Copy-Item $env:GAT1686_CFG (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force}
+
+          $truckInstalled=Join-Path $installed 'TruckSimGPS'
+          if(Test-Path $truckInstalled){Copy-Item "$truckInstalled/*" (Join-Path $stage 'trucksim') -Recurse -Force}
+
+          $skip=@('GAT_TELEMETRIA.exe','GAT_TELEMETRIA_APP.exe','GAT_TELEMETRIA_APP.exe.config','TruckSimGPS')
+          Get-ChildItem $installed -Force | Where-Object{$_.Name -notin $skip -and $_.Name -notlike 'unins*'} | ForEach-Object{
+            Copy-Item $_.FullName (Join-Path $stage 'gat') -Recurse -Force
+          }
+
+          # Pacote oficial: converte os 12 MP3s para WAV PCM durante a build.
+          # O aplicativo final nao depende de MCI/codec MP3.
+          $voiceZip=Join-Path $PWD 'releases/GAT_VOZ_LIMITES_20_A_130.zip'
+          if(-not(Test-Path $voiceZip)){throw 'Pacote oficial GAT_VOZ_LIMITES_20_A_130.zip nao encontrado'}
+          $voiceSrc=Join-Path $PWD 'voice-src-1686'
+          $voiceDir=Join-Path $stage 'gat/voz/limites'
+          foreach($p2 in @($voiceSrc,$voiceDir)){if(Test-Path $p2){Remove-Item $p2 -Recurse -Force}; New-Item -ItemType Directory -Force -Path $p2 | Out-Null}
+          Expand-Archive $voiceZip $voiceSrc -Force
+
+          if(-not(Get-Command ffmpeg -ErrorAction SilentlyContinue)){
+            choco install ffmpeg -y --no-progress
+          }
+          $ff=(Get-Command ffmpeg -ErrorAction Stop).Source
+          $expected=@(20,30,40,50,60,70,80,90,100,110,120,130)
+          foreach($n in $expected){
+            $src=Join-Path $voiceSrc ("limite_"+$n.ToString("D3")+".mp3")
+            $dst=Join-Path $voiceDir ("limite_"+$n.ToString("D3")+".wav")
+            if(-not(Test-Path $src)){throw "MP3 fonte ausente: $src"}
+            & $ff -hide_banner -loglevel error -y -i $src -ac 1 -ar 22050 -c:a pcm_s16le $dst
+            if($LASTEXITCODE -ne 0 -or -not(Test-Path $dst) -or (Get-Item $dst).Length -lt 2000){throw "Falha ao gerar WAV: $dst"}
+          }
+          $count=(Get-ChildItem $voiceDir -Filter 'limite_*.wav' -File).Count
+          if($count -ne 12){throw "Esperava 12 WAVs de limite e encontrei $count"}
+
+          if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
+          if(-not(Test-Path (Join-Path $stage 'GAT_TELEMETRIA_APP.exe'))){throw 'APP VOZ LIMPA ausente'}
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer 1.0.68.6 VOZ LIMPA
+        run: |
+          $issSource='gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
+          $iss='gat-telemetria-allinone-1.0.29/GAT_Telemetria_Voz_Limpa_1.0.68.6.iss'
+          $text=Get-Content $issSource -Raw
+          $text=$text.Replace('#define AppVersion "1.0.29"','#define AppVersion "1.0.68.6"')
+          $text=$text.Replace('staging\','staging-voice-clean-1686\')
+          $text=$text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA')
+          $text=$text.Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
+          $text=$text.Replace('OutputBaseFilename=GAT_TELEMETRIA_SETUP_{#AppVersion}','OutputBaseFilename=GAT_TELEMETRIA_1.0.68.6_VOZ_LIMPA_TESTE')
+          Set-Content $iss $text -Encoding UTF8
+
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss
+          if($LASTEXITCODE -ne 0){throw 'Falha ao gerar instalador VOZ LIMPA'}
+
+          $setup='gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_1.0.68.6_VOZ_LIMPA_TESTE.exe'
+          if(-not(Test-Path $setup)){throw 'Setup VOZ LIMPA nao gerado'}
+
+          $voiceStage='gat-telemetria-allinone-1.0.29/staging-voice-clean-1686/gat/voz/limites'
+          if((Get-ChildItem $voiceStage -Filter 'limite_*.wav' -File).Count -ne 12){throw 'Setup sem as 12 vozes WAV oficiais'}
+
+          New-Item -ItemType Directory -Force -Path releases-test | Out-Null
+          Copy-Item $setup 'releases-test/GAT_TELEMETRIA_1.0.68.6_VOZ_LIMPA_TESTE.exe' -Force
+          Get-FileHash 'releases-test/GAT_TELEMETRIA_1.0.68.6_VOZ_LIMPA_TESTE.exe' -Algorithm SHA256 | Format-List
+
+      - name: Audit source voice architecture
+        run: |
+          $root="$PWD/gat1686-build"
+          $voice=Get-ChildItem $root -Filter 'Voice062.cs' -Recurse | Select-Object -First 1
+          $hub=Get-ChildItem $root -Filter 'MainForm.Hub041.cs' -Recurse | Select-Object -First 1
+          if(-not $voice -or -not $hub){throw 'Fonte de auditoria nao encontrada'}
+          $vt=Get-Content $voice.FullName -Raw
+          $ht=Get-Content $hub.FullName -Raw
+
+          $required=@(
+            'Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "voz", "limites")',
+            'voice-volume-clean-1.0.68.6.txt',
+            'VoicePlaySpeedLimit065(80)',
+            'System.Media.SoundPlayer',
+            'limite_" + limit.ToString("D3", CultureInfo.InvariantCulture) + ".wav"',
+            'VoiceSpeakClean1686',
+            'http://127.0.0.1:31377/api/ets2/telemetry',
+            'VoiceCleanObserveRoad1683',
+            'VoiceRoadInitialize1683'
+          )
+          foreach($m in $required){if($vt -notlike "*$m*" -and $ht -notlike "*$m*"){throw "AUDITORIA: marcador ausente: $m"}}
+
+          if($vt -match 'private bool VoiceHandleDashSpeak062\(string text\)\s*\{(?s:.*?)return true;\s*\}'){
+            Write-Host 'AUDITORIA OK: DASH nao fala.'
+          } else { throw 'AUDITORIA: DASH ainda pode acionar voz.' }
+
+          if($vt -match 'private bool VoicePlayFile166\(string file, bool interrupt = true\)\s*\{(?s:.*?)if \(_voiceMuted062 \|\| _voiceVolume062 <= 0\) return false;'){
+            Write-Host 'AUDITORIA OK: player nao mascara volume zero.'
+          } else { throw 'AUDITORIA: VoicePlayFile166 ainda mascara silencio.' }
+
+          if($ht -notlike '*VoiceRoadInitialize1683();*'){throw 'AUDITORIA: motor de velocidade nao inicia com o app.'}
+          Write-Host 'AUDITORIA OK: motor de velocidade inicia junto com o GAT.'
+
+          $m=[regex]::Match($vt,'(?s)private void ObserveVoiceTelemetry062\(JObject tele\).*?\n    \}')
+          if(-not $m.Success){throw 'AUDITORIA: ObserveVoiceTelemetry062 nao encontrado'}
+          if($m.Value -match 'VoiceObserveDamage168|VoiceObserveJobRandom168|return; //'){throw 'AUDITORIA: codigo legado ainda ficou dentro de ObserveVoiceTelemetry062'}
+          Write-Host 'AUDITORIA OK: observador antigo foi realmente limpo.'
+
+      - name: Audit installer and WAV player
+        run: |
+          $setup=Join-Path $PWD 'releases-test/GAT_TELEMETRIA_1.0.68.6_VOZ_LIMPA_TESTE.exe'
+          $audit=Join-Path $PWD 'audit-install-1686'
+          if(Test-Path $audit){Remove-Item $audit -Recurse -Force}
+          New-Item -ItemType Directory -Force -Path $audit | Out-Null
+
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR='+'"'+$audit+'"'))
+          $p=Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru
+          if($p.ExitCode -ne 0){throw "AUDITORIA: instalador retornou $($p.ExitCode)"}
+
+          $voiceDir=Join-Path $audit 'voz/limites'
+          $files=Get-ChildItem $voiceDir -Filter 'limite_*.wav' -File -ErrorAction Stop | Sort-Object Name
+          if($files.Count -ne 12){throw "AUDITORIA: instalacao tem $($files.Count) WAVs, esperado 12"}
+          Write-Host 'AUDITORIA OK: 12 WAVs instalados.'
+          $files | Select-Object Name,Length | Format-Table -AutoSize
+
+          $wav=Join-Path $voiceDir 'limite_080.wav'
+          if(-not(Test-Path $wav)){throw 'AUDITORIA: limite_080.wav nao instalado'}
+          $sp=New-Object System.Media.SoundPlayer $wav
+          $sp.Load()
+          if(-not $sp.IsLoadCompleted){throw 'AUDITORIA: SoundPlayer nao carregou limite_080.wav'}
+          Write-Host "AUDITORIA OK: SoundPlayer carregou limite_080.wav ($((Get-Item $wav).Length) bytes)"
+
+          $sample=Join-Path $audit 'TruckSimGPS/dev/Ets2TestTelemetry.json'
+          if(Test-Path $sample){
+            $j=Get-Content $sample -Raw | ConvertFrom-Json
+            if($null -eq $j.truck.speed -or $null -eq $j.navigation.speedLimit){throw 'AUDITORIA: formato de telemetria nao possui truck.speed/navigation.speedLimit'}
+            Write-Host "AUDITORIA OK: TruckSim usa truck.speed=$($j.truck.speed), navigation.speedLimit=$($j.navigation.speedLimit)"
+          } else {
+            Write-Host 'AUDITORIA: sample TruckSim nao veio no pacote; endpoint validado no codigo.'
+          }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Telemetria-1.0.68.6-VOZ-LIMPA-TESTE
+          path: releases-test/GAT_TELEMETRIA_1.0.68.6_VOZ_LIMPA_TESTE.exe
+          if-no-files-found: error
