@@ -31,6 +31,9 @@ internal sealed partial class MainForm
     private string _voiceActiveAlias062 = string.Empty;
     private DateTime _voiceNextRandom062 = DateTime.UtcNow.AddMinutes(20);
     private DateTime _voiceLastObserve062 = DateTime.MinValue;
+    private DateTime _voiceLastRoadAlert1689 = DateTime.MinValue;
+    private int _voiceLastRoadLimit1689;
+    private bool _voiceOverspeed1689;
     private DateTime _voiceLastCrash062 = DateTime.MinValue;
     private DateTime _voiceLastFuelAlert062 = DateTime.MinValue;
     private DateTime _voiceLastRain062 = DateTime.MinValue;
@@ -98,12 +101,6 @@ internal sealed partial class MainForm
             string f = VoiceVolumeFile062();
             int v;
             if (File.Exists(f) && int.TryParse(File.ReadAllText(f).Trim(), out v)) _voiceVolume062 = Math.Max(0, Math.Min(100, v));
-        }
-        catch { }
-        try
-        {
-            JObject o = JObject.Parse(DashSettingsJson045());
-            if (o["voice"] != null) _voiceMuted062 = !Convert.ToBoolean(o["voice"]);
         }
         catch { }
     }
@@ -331,7 +328,9 @@ internal sealed partial class MainForm
 
     private static string VoiceIndividualRoot166()
     {
-        string dir = Path.Combine(VoiceDataDir062(), "voicepack166");
+        // 1.0.68.9 preserva a arquitetura VOZ NOVA LIMPA da 1.0.68.8:
+        // os audios pertencem ao proprio GAT Telemetria e nunca ao GAT DASH.
+        string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "voz");
         Directory.CreateDirectory(dir);
         return dir;
     }
@@ -1218,6 +1217,85 @@ internal sealed partial class MainForm
         return max;
     }
 
+    private static double VoicePathNumber1689(JObject root, params string[] paths)
+    {
+        if (root == null) return double.NaN;
+        foreach (string path in paths ?? new string[0])
+        {
+            try
+            {
+                JToken token = root.SelectToken(path, false);
+                if (token == null) continue;
+                double value;
+                if (double.TryParse(Convert.ToString(token), NumberStyles.Any, CultureInfo.InvariantCulture, out value))
+                    return value;
+            }
+            catch { }
+        }
+        return double.NaN;
+    }
+
+    private static int VoiceNormalizeRoadLimit1689(double limit)
+    {
+        if (double.IsNaN(limit) || double.IsInfinity(limit) || limit <= 0) return 0;
+        int rounded = (int)Math.Round(limit, MidpointRounding.AwayFromZero);
+        int[] allowed = new int[] {20,30,40,50,60,70,80,90,100,110,120,130};
+        if (allowed.Contains(rounded)) return rounded;
+        int nearest = (int)Math.Round(limit / 10.0, MidpointRounding.AwayFromZero) * 10;
+        return allowed.Contains(nearest) && Math.Abs(limit - nearest) <= 1.5 ? nearest : 0;
+    }
+
+    private void VoiceObserveRoadSpeed1689(JObject tele, DateTime now)
+    {
+        try
+        {
+            double speed = VoicePathNumber1689(tele, "truck.speed", "Truck.Speed");
+            double roadLimit = VoicePathNumber1689(tele, "navigation.speedLimit", "Navigation.SpeedLimit");
+            if (double.IsNaN(speed) || double.IsNaN(roadLimit) || roadLimit <= 0)
+            {
+                _voiceOverspeed1689 = false;
+                return;
+            }
+
+            speed = Math.Abs(speed);
+            int limit = VoiceNormalizeRoadLimit1689(roadLimit);
+            if (limit <= 0)
+            {
+                _voiceOverspeed1689 = false;
+                return;
+            }
+
+            bool over = speed > roadLimit; // tolerancia zero: 40 e 40; 41 ja e excesso.
+            bool limitChanged = _voiceLastRoadLimit1689 > 0 && limit != _voiceLastRoadLimit1689;
+            if (!over)
+            {
+                _voiceOverspeed1689 = false;
+                _voiceLastRoadLimit1689 = limit;
+                return;
+            }
+            if (limitChanged) _voiceOverspeed1689 = false;
+
+            bool due = !_voiceOverspeed1689 || (now - _voiceLastRoadAlert1689).TotalSeconds >= 15.0;
+            if (due)
+            {
+                string direct = VoiceFindSpeed166(limit);
+                bool played = !string.IsNullOrWhiteSpace(direct) && VoicePlayFile166(direct, true);
+                if (played)
+                {
+                    _voiceLastRoadAlert1689 = now;
+                    _voiceOverspeed1689 = true;
+                    ClientStore.Log("voz limpa 1.0.68.9: limite " + limit.ToString(CultureInfo.InvariantCulture) +
+                        " km/h | velocidade " + Math.Round(speed).ToString(CultureInfo.InvariantCulture));
+                }
+            }
+            _voiceLastRoadLimit1689 = limit;
+        }
+        catch (Exception ex)
+        {
+            try { ClientStore.Log("voz limpa 1.0.68.9 indisponivel: " + ex.Message); } catch { }
+        }
+    }
+
     private void ObserveVoiceTelemetry062(JObject tele)
     {
         if (tele == null) return;
@@ -1225,6 +1303,7 @@ internal sealed partial class MainForm
         if ((now - _voiceLastObserve062).TotalMilliseconds < 650) return;
         _voiceLastObserve062 = now;
         _voiceSeenTelemetry062 = true;
+        VoiceObserveRoadSpeed1689(tele, now);
 
         double damage = VoiceTruckDamage168(tele);
         if (!double.IsNaN(damage) && damage >= 0)
