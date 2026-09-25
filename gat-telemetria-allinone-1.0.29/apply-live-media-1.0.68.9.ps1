@@ -41,7 +41,7 @@ $homeStart = $hubText.IndexOf('    private Panel Home041()')
 $homeEnd = $hubText.IndexOf('    private Label StatusCard041(', $homeStart)
 if ($homeStart -lt 0 -or $homeEnd -lt 0) { throw 'Home041 nao encontrado.' }
 $homeBlock = $hubText.Substring($homeStart, $homeEnd - $homeStart)
-$homeBlock = [regex]::Replace($home, '(?s)\s*p\.Controls\.Add\(new Label \{ Left = 0, Top = 445,.*?\}\);', '')
+$homeBlock = [regex]::Replace($homeBlock, '(?s)\s*p\.Controls\.Add\(new Label \{ Left = 0, Top = 445,.*?\}\);', '')
 if ($homeBlock -notlike '*BuildLiveHome1689(p);*') {
     $returnIndex = $homeBlock.LastIndexOf('        return p;')
     if ($returnIndex -lt 0) { throw 'return p da Home041 nao encontrado.' }
