@@ -55,8 +55,89 @@ jobs:
           Copy-Item 'dev/1689-assets/radio' 'build-1689/radio' -Recurse
           Copy-Item 'dev/1689-assets/transmissao' 'build-1689/transmissao' -Recurse
 
+      - name: Prepare full 1.0.68.9 staging
+        run: |
+          $base=Join-Path $PWD 'GAT_TELEMETRIA_SETUP_1.0.68_BASE.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1.0.68.exe' -OutFile $base
+          if(-not(Test-Path $base) -or (Get-Item $base).Length -lt 1000000){throw 'Base 1.0.68 nao baixada'}
+
+          $installed=Join-Path $PWD 'installed168'
+          $stage=Join-Path $PWD 'staging-live1689'
+          foreach($p in @($installed,$stage)){
+            if(Test-Path $p){Remove-Item $p -Recurse -Force}
+            New-Item -ItemType Directory -Force -Path $p | Out-Null
+          }
+
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR='+'"'+$installed+'"'))
+          $proc=Start-Process -FilePath $base -ArgumentList $args -Wait -PassThru
+          if($proc.ExitCode -ne 0){throw "Base 1.0.68 retornou $($proc.ExitCode)"}
+
+          New-Item -ItemType Directory -Force -Path (Join-Path $stage 'gat'),(Join-Path $stage 'trucksim'),(Join-Path $stage 'voz/limites') | Out-Null
+          Copy-Item (Join-Path $installed 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA.exe') -Force
+          Copy-Item 'build-1689/GAT_TELEMETRIA_APP.exe' (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
+          if(Test-Path 'build-1689/GAT_TELEMETRIA_APP.exe.config'){
+            Copy-Item 'build-1689/GAT_TELEMETRIA_APP.exe.config' (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force
+          }
+
+          $truck=Join-Path $installed 'TruckSimGPS'
+          if(Test-Path $truck){Copy-Item "$truck/*" (Join-Path $stage 'trucksim') -Recurse -Force}
+
+          $skip=@('GAT_TELEMETRIA.exe','GAT_TELEMETRIA_APP.exe','GAT_TELEMETRIA_APP.exe.config','TruckSimGPS','radio','transmissao','voz')
+          Get-ChildItem $installed -Force | Where-Object{$_.Name -notin $skip -and $_.Name -notlike 'unins*'} | ForEach-Object {
+            Copy-Item $_.FullName (Join-Path $stage 'gat') -Recurse -Force
+          }
+
+          Copy-Item 'dev/1689-assets/radio' (Join-Path $stage 'gat/radio') -Recurse -Force
+          Copy-Item 'dev/1689-assets/transmissao' (Join-Path $stage 'gat/transmissao') -Recurse -Force
+
+          $voiceZip='gat-telemetria-allinone-1.0.29/voice-defaults/limits-1.0.71.zip'
+          if(Test-Path $voiceZip){
+            $voiceTmp=Join-Path $PWD 'voice1689'
+            if(Test-Path $voiceTmp){Remove-Item $voiceTmp -Recurse -Force}
+            Expand-Archive $voiceZip $voiceTmp -Force
+            $mp3=Get-ChildItem $voiceTmp -Recurse -Filter '*.mp3'
+            foreach($v in $mp3){Copy-Item $v.FullName (Join-Path $stage 'voz/limites' $v.Name) -Force}
+          }
+          if((Get-ChildItem (Join-Path $stage 'voz/limites') -Filter '*.mp3').Count -lt 10){throw 'Pacote padrao de limites incompleto'}
+
+          if(-not(Test-Path (Join-Path $stage 'gat/radio/player.html'))){throw 'Modulo Radio GAT ausente'}
+          if(-not(Test-Path (Join-Path $stage 'gat/transmissao/live.html'))){throw 'Modulo Transmissao ausente'}
+          if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build full 1.0.68.9 test installer
+        run: |
+          $src='gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
+          $iss='gat-telemetria-allinone-1.0.29/GAT_Telemetria_1.0.68.9_RadioLive.iss'
+          $text=Get-Content $src -Raw
+          $text=$text.Replace('1.0.29','1.0.68.9').Replace('staging','staging-live1689')
+          $text=$text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA')
+          $text=$text.Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
+          $text=$text.Replace('Name: "{group}\GAT Telemetria";','Name: "{group}\GAT Telemetria BETA";')
+          $text=$text.Replace('Name: "{group}\Desinstalar GAT Telemetria";','Name: "{group}\Desinstalar GAT Telemetria BETA";')
+          $text=$text.Replace('Name: "{autodesktop}\GAT Telemetria";','Name: "{autodesktop}\GAT Telemetria BETA";')
+          $text=$text.Replace('Description: "Abrir GAT Telemetria";','Description: "Abrir GAT Telemetria BETA";')
+
+          $nl=[Environment]::NewLine
+          $voiceFiles='Source: "..\..\staging-live1689\voz\*"; DestDir: "{app}\voz"; Flags: ignoreversion recursesubdirs createallsubdirs onlyifdoesntexist'
+          $dirs='[Dirs]'+$nl+'Name: "{app}\voz"; Permissions: users-modify'+$nl+'Name: "{app}\voz\limites"; Permissions: users-modify'+$nl+$nl
+          $text=$text.Replace('[Icons]', $voiceFiles+$nl+$nl+$dirs+'[Icons]')
+          Set-Content $iss $text -Encoding UTF8
+
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss
+          if($LASTEXITCODE -ne 0){throw 'Falha ao gerar instalador 1.0.68.9'}
+
+          $setup='gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_SETUP_1.0.68.9.exe'
+          if(-not(Test-Path $setup)){throw 'Setup 1.0.68.9 nao gerado'}
+          New-Item -ItemType Directory -Force -Path 'test-release-1689' | Out-Null
+          Copy-Item $setup 'test-release-1689/GAT_TELEMETRIA_1.0.68.9_RADIO_LIVE_TESTE.exe' -Force
+          $sha=(Get-FileHash 'test-release-1689/GAT_TELEMETRIA_1.0.68.9_RADIO_LIVE_TESTE.exe' -Algorithm SHA256).Hash.ToLowerInvariant()
+          Set-Content 'test-release-1689/SHA256.txt' ($sha+'  GAT_TELEMETRIA_1.0.68.9_RADIO_LIVE_TESTE.exe') -Encoding ASCII
+
       - uses: actions/upload-artifact@v4
         with:
-          name: GAT-Telemetria-1.0.68.9-compile
-          path: build-1689
+          name: GAT-Telemetria-1.0.68.9-Radio-Live-TESTE
+          path: test-release-1689
           if-no-files-found: error
