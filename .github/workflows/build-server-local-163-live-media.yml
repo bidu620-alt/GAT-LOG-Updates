@@ -106,7 +106,7 @@ jobs:
           s=p.read_text(encoding='utf-8')
           s=s.replace('GAT_SERVER_LOCAL_1.0.56.zip','GAT_SERVER_LOCAL_1.0.63.zip')
           s=s.replace('GAT Servidor 1.0.56 - hotfix de ranking automatico','GAT Servidor 1.0.63 - Radio GAT YouTube + Radio Online')
-          s=s.replace('&&version!="1.0.56.0")throw','&&version!="1.0.56.0"&&version!="1.0.57.0"&&version!="1.0.58.0"&&version!="1.0.59.0"&&version!="1.0.60.0"&&version!="1.0.61.0"&&version!="1.0.63.0")throw')
+          s=s.replace('&&version!="1.0.56.0")throw','&&version!="1.0.56.0"&&version!="1.0.57.0"&&version!="1.0.58.0"&&version!="1.0.59.0"&&version!="1.0.60.0"&&version!="1.0.61.0"&&version!="1.0.62.0"&&version!="1.0.63.0")throw')
           s=s.replace('versoes 1.0.39 a 1.0.56','versoes 1.0.39 a 1.0.63')
           s=s.replace('Instalando o hotfix da Central 1.0.56 sem alterar o andamento das viagens...','Instalando a Central 1.0.63 com Radio GAT YouTube/Radio Online sem alterar o andamento das viagens...')
           start='MessageBox.Show(this,"Hotfix do GAT Servidor 1.0.56 instalado.'
