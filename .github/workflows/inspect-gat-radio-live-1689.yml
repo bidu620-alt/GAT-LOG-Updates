@@ -59,6 +59,18 @@ jobs:
           )
           foreach($p in $patches){ & (Join-Path "$PWD/gat-telemetria-allinone-1.0.29" $p) -Root $r }
 
+      - name: Snapshot reconstructed source
+        run: |
+          $project = Get-ChildItem "$PWD/gat168-inspect" -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if(-not $project){ throw 'Projeto GAT_TELEMETRIA.csproj nao encontrado' }
+          $projectDir = Split-Path $project.FullName -Parent
+          $dest = "$PWD/dev/1689-base"
+          if(Test-Path $dest){ Remove-Item $dest -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Get-ChildItem $projectDir -Force | Where-Object { $_.Name -notin @('bin','obj','.vs') } | ForEach-Object {
+            Copy-Item $_.FullName $dest -Recurse -Force
+          }
+
       - name: Generate inspection report
         run: |
           $r="$PWD/gat168-inspect"
@@ -81,7 +93,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/inspect-live-1689.txt
+          git add docs/inspect-live-1689.txt dev/1689-base
           if (git diff --cached --quiet) { exit 0 }
           git commit -m "Inspect GAT 1.0.68 for Radio Live 1.0.68.9"
           git pull --rebase origin feature/gat-radio-live-1.0.68.9
