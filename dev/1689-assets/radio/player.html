@@ -15,14 +15,14 @@ html,body{margin:0;width:100%;height:100%;background:#020711;overflow:hidden;fon
 <div id="streamPane"><div class="radioCard"><div class="radioIcon">📻</div><div class="radioTitle">GAT RÁDIO • AO VIVO</div><div class="radioSub">Programação oficial sincronizada pelo GAT Telemetria.</div><div id="streamUrl" class="radioUrl"></div></div><audio id="streamAudio" preload="none"></audio></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let player=null,ytReady=false,pendingType="",pendingId="",pendingSeconds=0,currentType="";
+let player=null,ytReady=false,pendingType="",pendingId="",pendingVideoId="",pendingSeconds=0,currentType="";
 const audio=document.getElementById("streamAudio"),playerBox=document.getElementById("player"),streamPane=document.getElementById("streamPane"),streamUrl=document.getElementById("streamUrl");
 function post(o){try{chrome.webview.postMessage(o)}catch(e){}}
 function showYoutube(){playerBox.style.display="block";streamPane.style.display="none"}
 function showStream(url){playerBox.style.display="none";streamPane.style.display="flex";streamUrl.textContent=url||""}
 function stopYoutube(){if(ytReady&&player){try{player.pauseVideo()}catch(e){}}}
 function stopStream(clear){try{audio.pause();if(clear){audio.removeAttribute("src");audio.load()}}catch(e){}}
-function loadPending(){if(!ytReady||!pendingId)return;const t=pendingType,id=pendingId,sec=pendingSeconds;pendingType="";pendingId="";pendingSeconds=0;if(t==="videoat")gatLoadVideoAt(id,sec);else if(t==="video")gatLoadVideo(id);else if(t==="playlist")gatLoadPlaylist(id)}
+function loadPending(){if(!ytReady||!pendingId)return;const t=pendingType,id=pendingId,vid=pendingVideoId,sec=pendingSeconds;pendingType="";pendingId="";pendingVideoId="";pendingSeconds=0;if(t==="videoat")gatLoadVideoAt(id,sec);else if(t==="playlistat")gatLoadPlaylistAt(id,vid,sec);else if(t==="video")gatLoadVideo(id);else if(t==="playlist")gatLoadPlaylist(id)}
 function onYouTubeIframeAPIReady(){
  player=new YT.Player("player",{width:"100%",height:"100%",playerVars:{controls:1,disablekb:0,fs:1,playsinline:1,rel:0,origin:"https://radio.gatlogets2.local",widget_referrer:"https://radio.gatlogets2.local/"},events:{
   onReady:function(){ytReady=true;loadPending()},
@@ -31,9 +31,27 @@ function onYouTubeIframeAPIReady(){
  }})
 }
 function gatLoadPlaylist(id){currentType="playlist";stopStream(true);showYoutube();if(!ytReady){pendingType="playlist";pendingId=id;return}try{player.loadPlaylist({listType:"playlist",list:id,index:0,startSeconds:0})}catch(e){post({type:"error",code:"load"})}}
+function gatLoadPlaylistAt(id,videoId,seconds){
+ currentType="playlist";stopStream(true);showYoutube();const sec=Math.max(0,Number(seconds)||0);
+ if(!ytReady){pendingType="playlistat";pendingId=id;pendingVideoId=videoId||"";pendingSeconds=sec;return}
+ try{
+  player.cuePlaylist({listType:"playlist",list:id,index:0,startSeconds:0});
+  let tries=0;
+  const find=function(){
+   tries++;
+   try{
+    const list=player.getPlaylist?player.getPlaylist():[];
+    const idx=Array.isArray(list)?list.indexOf(videoId):-1;
+    if(idx>=0){player.playVideoAt(idx);setTimeout(function(){try{player.seekTo(sec,true)}catch(e){}},350);return}
+   }catch(e){}
+   if(tries<20)setTimeout(find,250);else{try{player.loadPlaylist({listType:"playlist",list:id,index:0,startSeconds:0})}catch(e){post({type:"error",code:"load"})}}
+  };
+  setTimeout(find,250);
+ }catch(e){post({type:"error",code:"load"})}
+}
 function gatLoadVideo(id){return gatLoadVideoAt(id,0)}
 function gatLoadVideoAt(id,seconds){currentType="video";stopStream(true);showYoutube();const sec=Math.max(0,Number(seconds)||0);if(!ytReady){pendingType="videoat";pendingId=id;pendingSeconds=sec;return}try{player.loadVideoById({videoId:id,startSeconds:sec})}catch(e){post({type:"error",code:"load"})}}
-function gatLoadStream(url){currentType="stream";pendingType="";pendingId="";stopYoutube();showStream(url);try{audio.pause();audio.src=url;audio.load();audio.play().catch(function(){post({type:"error",code:900})})}catch(e){post({type:"error",code:900})}}
+function gatLoadStream(url){currentType="stream";pendingType="";pendingId="";pendingVideoId="";stopYoutube();showStream(url);try{audio.pause();audio.src=url;audio.load();audio.play().catch(function(){post({type:"error",code:900})})}catch(e){post({type:"error",code:900})}}
 function gatPause(){if(currentType==="stream")stopStream(false);else stopYoutube()}
 function gatVolume(v){const n=Math.max(0,Math.min(100,Number(v)||0));if(ytReady&&player){try{player.setVolume(n)}catch(e){}}audio.volume=n/100}
 audio.addEventListener("playing",function(){post({type:"track",title:"Rádio online • AO VIVO"})});
