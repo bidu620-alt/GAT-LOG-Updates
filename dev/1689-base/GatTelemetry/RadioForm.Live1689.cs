@@ -136,8 +136,14 @@ internal sealed partial class RadioForm
             double elapsed = (DateTime.UtcNow - _serverLivePositionAt1689).TotalSeconds;
             if (elapsed > 0 && elapsed < 60) seconds += elapsed;
         }
-        string jsId = JsonConvert.SerializeObject(_serverLiveVideoId1689);
-        return "gatLoadVideoAt(" + jsId + "," + Math.Max(0, seconds).ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + ")";
+        string jsVideoId = JsonConvert.SerializeObject(_serverLiveVideoId1689);
+        string jsSeconds = Math.Max(0, seconds).ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        if (sourceType == "playlist")
+        {
+            string jsPlaylistId = JsonConvert.SerializeObject(_serverSourceId);
+            return "gatLoadPlaylistAt(" + jsPlaylistId + "," + jsVideoId + "," + jsSeconds + ")";
+        }
+        return "gatLoadVideoAt(" + jsVideoId + "," + jsSeconds + ")";
     }
 
     private async Task SaveChannelPosition1689Async(JObject msg)
