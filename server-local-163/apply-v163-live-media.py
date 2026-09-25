@@ -20,6 +20,10 @@ if MARKER not in worker:
     elif "const VERSION='1.0.42-cloudflare';" in worker:
         worker = worker.replace("const VERSION='1.0.42-cloudflare';", "const VERSION='1.0.43-cloudflare';", 1)
 
+    # WebView2 usa origem virtual local para o player WebRTC.
+    if "'https://live.gatlogets2.local'" not in worker and "const ORIGINS=new Set([" in worker:
+        worker = worker.replace("const ORIGINS=new Set([", "const ORIGINS=new Set(['https://live.gatlogets2.local',", 1)
+
     anchor = 'async function route(req,env){const u=new URL(req.url),p=u.pathname,m=req.method;'
     if anchor not in worker:
         raise SystemExit('Roteador HTTP nao encontrado.')
