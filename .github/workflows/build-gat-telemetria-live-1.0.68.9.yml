@@ -90,7 +90,7 @@ jobs:
           Copy-Item 'dev/1689-assets/radio' (Join-Path $stage 'gat/radio') -Recurse -Force
           Copy-Item 'dev/1689-assets/transmissao' (Join-Path $stage 'gat/transmissao') -Recurse -Force
 
-          $voiceZip='gat-telemetria-allinone-1.0.29/voice-defaults/limits-1.0.71.zip'
+          $voiceZip='releases/GAT_VOZ_LIMITES_20_A_130.zip'
           if(Test-Path $voiceZip){
             $voiceTmp=Join-Path $PWD 'voice1689'
             if(Test-Path $voiceTmp){Remove-Item $voiceTmp -Recurse -Force}
