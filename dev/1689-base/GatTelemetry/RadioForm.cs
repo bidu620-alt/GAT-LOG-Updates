@@ -360,8 +360,7 @@ internal sealed partial class RadioForm : Form
     private bool CanEditChannel049()
     {
         return string.Equals(_accountRole049, "owner", StringComparison.OrdinalIgnoreCase) ||
-               string.Equals(_accountRole049, "admin", StringComparison.OrdinalIgnoreCase) ||
-               string.Equals(_accountRole049, "moderator", StringComparison.OrdinalIgnoreCase);
+               string.Equals(_accountRole049, "admin", StringComparison.OrdinalIgnoreCase);
     }
 
     private async Task RefreshAccountRole049()
