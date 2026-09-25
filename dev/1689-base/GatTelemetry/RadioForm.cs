@@ -80,11 +80,11 @@ internal sealed partial class RadioForm : Form
         BuildUi();
         LoadSavedPersonalSource();
         LoadSavedWebUrl();
-        string sharedMode041 = ReadSharedMediaMode041();
-        _personalMode = sharedMode041 == "mine";
+        // 1.0.68.9: a Rádio GAT é sempre o canal oficial em segundo plano.
+        // "Meu Vídeo" permanece isolado no módulo/sobreposição de vídeo.
+        _personalMode = false;
         _webMode = false;
-        if (_personalMode) _personalInput.Text = _personalSourceUrl;
-        
+        SaveSharedMediaMode041("gat");
         ApplyModeUi();
 
         Shown += async delegate
@@ -132,7 +132,8 @@ internal sealed partial class RadioForm : Form
         Controls.Add(_channelGat);
 
         SetupButton(_myRadio, "🎬 MEU VÍDEO", 178, 82, 155);
-        _myRadio.Click += async delegate { await SwitchModeAsync(true); };
+        _myRadio.Visible = false;
+        _myRadio.Enabled = false;
         Controls.Add(_myRadio);
 
         SetupButton(_siteWeb, "🌐 CANAL WEB", 342, 82, 145);
@@ -707,13 +708,8 @@ internal sealed partial class RadioForm : Form
 
     private async Task SyncSharedMediaMode041()
     {
-        string mode = ReadSharedMediaMode041();
-        if (mode == "mine")
-        {
-            if (!_personalMode || _webMode) await SwitchModeAsync(true);
-            return;
-        }
         if (_personalMode || _webMode) await SwitchModeAsync(false);
+        SaveSharedMediaMode041("gat");
     }
     internal string HubNowPlaying042
     {
