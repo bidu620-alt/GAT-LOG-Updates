@@ -8,7 +8,7 @@
   function injectStyle(){
     if(document.getElementById('gatGamificationStyle'))return;
     const s=document.createElement('style');s.id='gatGamificationStyle';s.textContent=`
-.gat-game-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}.gat-game-card{border:1px solid #1d3146;border-radius:14px;background:linear-gradient(180deg,#0c1721,#081018);padding:14px}.gat-game-card small{display:block;color:#71869b;font-size:8px;font-weight:950}.gat-game-card b{display:block;margin-top:7px;font-size:19px;color:#eef6ff}.gat-game-card.good b{color:#63ddb3}.gat-game-card.bad b{color:#ff8da5}.gat-game-card.blue b{color:#75bdff}.gat-game-card.gold b{color:#ffd46b}.gat-game-list{display:grid;gap:8px}.gat-game-row{display:grid;grid-template-columns:minmax(0,1.6fr) 100px 110px 110px 110px;gap:8px;align-items:center;border:1px solid #1a2c3e;border-radius:12px;background:#0b141d;padding:11px}.gat-game-row strong{font-size:11px}.gat-game-row span{font-size:9px;color:#8093a8}.gat-game-row .bad{color:#ff8da5;font-weight:900}.gat-game-row .good{color:#67ddb5;font-weight:900}.gat-achievements{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.gat-achievement{border:1px solid #20344a;border-radius:15px;background:#0b151f;padding:16px;opacity:.48}.gat-achievement.unlocked{opacity:1;border-color:#315f88;background:linear-gradient(180deg,#102338,#0a151f)}.gat-achievement .medal{font-size:28px}.gat-achievement b{display:block;margin:8px 0 5px}.gat-achievement small{color:#7f92a8;line-height:1.4}.gat-safety-score{display:flex;align-items:center;justify-content:space-between;border:1px solid #24425e;border-radius:16px;background:linear-gradient(135deg,#0b1b29,#0a1119);padding:16px;margin-bottom:14px}.gat-safety-score strong{font-size:30px;color:#79c1ff}.gat-safety-score span{color:#7f93a9;font-size:10px}.gat-perfect{color:#ffd46b!important;font-weight:950}.gat-game-empty{padding:22px;border:1px dashed #263b51;border-radius:13px;text-align:center;color:#74889e;font-size:10px}@media(max-width:900px){.gat-game-grid{grid-template-columns:repeat(2,1fr)}.gat-achievements{grid-template-columns:1fr 1fr}.gat-game-row{grid-template-columns:1fr 80px 90px}.gat-game-row span:nth-child(4),.gat-game-row span:nth-child(5){display:none}}@media(max-width:600px){.gat-game-grid,.gat-achievements{grid-template-columns:1fr}.gat-game-row{grid-template-columns:1fr 72px}.gat-game-row span:nth-child(3){display:none}}
+.gat-game-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}.gat-game-card{border:1px solid #1d3146;border-radius:14px;background:linear-gradient(180deg,#0c1721,#081018);padding:14px}.gat-game-card small{display:block;color:#71869b;font-size:8px;font-weight:950}.gat-game-card b{display:block;margin-top:7px;font-size:19px;color:#eef6ff}.gat-game-card.good b{color:#63ddb3}.gat-game-card.bad b{color:#ff8da5}.gat-game-card.blue b{color:#75bdff}.gat-game-card.gold b{color:#ffd46b}.gat-game-list{display:grid;gap:8px}.gat-game-row{display:grid;grid-template-columns:minmax(0,1.6fr) 100px 110px 110px 110px;gap:8px;align-items:center;border:1px solid #1a2c3e;border-radius:12px;background:#0b141d;padding:11px}.gat-game-row strong{font-size:11px}.gat-game-row span{font-size:9px;color:#8093a8}.gat-game-row .bad{color:#ff8da5;font-weight:900}.gat-game-row .good{color:#67ddb5;font-weight:900}.gat-achievements{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.gat-achievement{border:1px solid #20344a;border-radius:15px;background:#0b151f;padding:16px;opacity:.48}.gat-achievement.unlocked{opacity:1;border-color:#315f88;background:linear-gradient(180deg,#102338,#0a151f)}.gat-achievement .medal{font-size:28px;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:#101b26;border:1px solid #2a4056;box-shadow:inset 0 0 0 4px #0a1118}.gat-achievement.unlocked .medal{border-color:#4777a0;background:#10273a}.gat-achievement.halloween-achievement{border-color:#6a391c;background:radial-gradient(circle at 12% 18%,rgba(255,105,0,.12),transparent 28%),linear-gradient(180deg,#19100c,#0b1016)}.gat-achievement.halloween-achievement.unlocked{border-color:#e27624;box-shadow:0 0 24px rgba(255,103,0,.12)}.gat-achievement.halloween-achievement .medal{width:64px;height:64px;border-radius:50%;border:2px solid #e06d20;background:radial-gradient(circle,#512005,#1b0c05 68%);box-shadow:inset 0 0 0 5px #100804,0 0 20px rgba(255,91,0,.22);font-size:31px}.gat-achievement-progress{height:6px;border-radius:999px;background:#19212b;overflow:hidden;margin-top:11px}.gat-achievement-progress i{display:block;height:100%;background:linear-gradient(90deg,#ff6a00,#9b50ff);border-radius:inherit}.gat-achievement-date{display:block;color:#d69563;font-size:8px;margin-top:7px}.gat-achievement b{display:block;margin:8px 0 5px}.gat-achievement small{color:#7f92a8;line-height:1.4}.gat-safety-score{display:flex;align-items:center;justify-content:space-between;border:1px solid #24425e;border-radius:16px;background:linear-gradient(135deg,#0b1b29,#0a1119);padding:16px;margin-bottom:14px}.gat-safety-score strong{font-size:30px;color:#79c1ff}.gat-safety-score span{color:#7f93a9;font-size:10px}.gat-perfect{color:#ffd46b!important;font-weight:950}.gat-game-empty{padding:22px;border:1px dashed #263b51;border-radius:13px;text-align:center;color:#74889e;font-size:10px}@media(max-width:900px){.gat-game-grid{grid-template-columns:repeat(2,1fr)}.gat-achievements{grid-template-columns:1fr 1fr}.gat-game-row{grid-template-columns:1fr 80px 90px}.gat-game-row span:nth-child(4),.gat-game-row span:nth-child(5){display:none}}@media(max-width:600px){.gat-game-grid,.gat-achievements{grid-template-columns:1fr}.gat-game-row{grid-template-columns:1fr 72px}.gat-game-row span:nth-child(3){display:none}}
 `;
     document.head.appendChild(s);
   }
@@ -37,14 +37,38 @@
     return {deliveries:p.length,speed_fines:fines,penalty_points:lost,penalty_xp:lost,perfect_trips:perfect,clean_trips:clean,no_fine_km:noFineKm,avg_cargo_damage_pct:avgC,avg_truck_damage_pct:avgT,score};
   }
 
+  const HALLOWEEN_EVENT_START=Date.parse('2026-09-30T00:00:00-03:00');
+  const HALLOWEEN_EVENT_END=Date.parse('2026-11-01T00:00:00-03:00');
+  const HALLOWEEN_CARGOS=[
+    'Logs','Lumber','Sawdust Panels','Wood Shavings','Potatoes','Sugar','Beef','Diesel','Petrol','Kerosene',
+    'LPG','Fuel Tanker','Chemicals','Hot Chemicals','Acid','Arsenic','Chlorine','Hydrochloric Acid','Pesticides',
+    'Sulphuric Acid','Hospital Waste','Scrap Metals','Used Car Batteries','Cement','Iron Pipes (large)',
+    'Glass Panels','Coal','Ore','Low Bed Semi-trailers','Excavator'
+  ];
+  const normEvent=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  function halloweenProgress(history){
+    const found=new Map();
+    for(const d of Array.isArray(history)?history:[]){
+      const t=Date.parse(d?.delivered_at||d?.completed_at||d?.date||'');
+      if(!Number.isFinite(t)||t<HALLOWEEN_EVENT_START||t>=HALLOWEEN_EVENT_END)continue;
+      const cargo=normEvent(d?.cargo||d?.cargo_name||d?.name);
+      for(const official of HALLOWEEN_CARGOS){
+        if(cargo===normEvent(official)&&!found.has(official))found.set(official,t);
+      }
+    }
+    const completedAt=found.size===HALLOWEEN_CARGOS.length?Math.max(...found.values()):null;
+    return {count:found.size,completedAt};
+  }
   function achievementsFallback(p,st){
+    const hw=halloweenProgress(p?.deliveries);
     return [
-      {title:'Primeira Entrega',description:'Conclua sua primeira entrega GAT.',unlocked:n(p?.total_deliveries)>=1},
-      {title:'Na Estrada',description:'Conclua 10 entregas GAT.',unlocked:n(p?.total_deliveries)>=10},
-      {title:'Direção de Ouro',description:'Conclua 10 viagens perfeitas.',unlocked:n(st?.perfect_trips)>=10},
-      {title:'Pé Leve',description:'Percorra 5.000 km em entregas sem multa.',unlocked:n(st?.no_fine_km)>=5000},
-      {title:'30 Entregas',description:'Complete 30 entregas ao longo da sua carreira GAT.',unlocked:n(p?.total_deliveries)>=30},
-      {title:'Veterano GAT',description:'Ultrapasse 50.000 km acumulados.',unlocked:n(p?.total_km)>=50000}
+      {title:'Primeira Entrega',description:'Conclua sua primeira entrega GAT.',unlocked:n(p?.total_deliveries)>=1,medal:'🚚'},
+      {title:'Na Estrada',description:'Conclua 10 entregas GAT.',unlocked:n(p?.total_deliveries)>=10,medal:'🛣️'},
+      {title:'Direção de Ouro',description:'Conclua 10 viagens perfeitas.',unlocked:n(st?.perfect_trips)>=10,medal:'🥇'},
+      {title:'Pé Leve',description:'Percorra 5.000 km em entregas sem multa.',unlocked:n(st?.no_fine_km)>=5000,medal:'🪽'},
+      {title:'30 Entregas',description:'Complete 30 entregas ao longo da sua carreira GAT.',unlocked:n(p?.total_deliveries)>=30,medal:'📦'},
+      {title:'Veterano GAT',description:'Ultrapasse 50.000 km acumulados.',unlocked:n(p?.total_km)>=50000,medal:'⭐'},
+      {title:'Halloween 2026 • 30/30',description:hw.count>=30?'Evento concluído. As 30 cargas foram entregues.':'Complete as 30 cargas do Evento Halloween. Progresso: '+hw.count+'/30.',unlocked:hw.count>=30,medal:'🎃',kind:'halloween',progress:hw.count,completedAt:hw.completedAt}
     ];
   }
 
@@ -60,7 +84,7 @@
       const longest=parsed.reduce((a,b)=>b.distance>(a?.distance||0)?b:a,null),avg=parsed.length?parsed.reduce((s,x)=>s+x.distance,0)/parsed.length:0;
       stats.innerHTML=`<div class="gat-game-grid"><article class="gat-game-card blue"><small>KM TOTAL</small><b>${km2(p.total_km)}</b></article><article class="gat-game-card"><small>MÉDIA POR ENTREGA</small><b>${km2(avg)}</b></article><article class="gat-game-card"><small>MAIOR VIAGEM</small><b>${longest?km2(longest.distance):'—'}</b></article><article class="gat-game-card gold"><small>VIAGENS PERFEITAS</small><b>${fmt(st.perfect_trips)}</b></article><article class="gat-game-card good"><small>KM SEM MULTA</small><b>${km2(st.no_fine_km)}</b></article></div><div class="gat-game-grid"><article class="gat-game-card gold"><small>PONTOS GAT DO MÊS</small><b>${fmt(p.points)}</b></article><article class="gat-game-card"><small>ENTREGAS</small><b>${fmt(p.total_deliveries)}</b></article><article class="gat-game-card"><small>XP TOTAL</small><b>${fmt(p.xp)}</b></article><article class="gat-game-card bad"><small>PONTOS PERDIDOS</small><b>-${fmt(lost)}</b></article><article class="gat-game-card gold"><small>TAXA PERFEITA</small><b>${pct(n(st.deliveries)?n(st.perfect_trips)/n(st.deliveries)*100:0)}</b></article></div>`;
     }
-    const ach=document.getElementById('gat-achievements-body');if(ach){const list=Array.isArray(p.achievements)?p.achievements:achievementsFallback(p,st);ach.innerHTML='<div class="gat-achievements">'+list.map(a=>`<article class="gat-achievement ${a.unlocked?'unlocked':''}"><div class="medal">${a.unlocked?'🏆':'🔒'}</div><b>${esc2(a.title||'Conquista')}</b><small>${esc2(a.description||'')}</small></article>`).join('')+'</div>'}
+    const ach=document.getElementById('gat-achievements-body');if(ach){const list=Array.isArray(p.achievements)?p.achievements:achievementsFallback(p,st);ach.innerHTML='<div class="gat-achievements">'+list.map(a=>{const kind=a.kind==='halloween'?' halloween-achievement':'';const medal=a.unlocked?(a.medal||'🏆'):'🔒';const pctEvent=a.kind==='halloween'?Math.min(100,Math.round((n(a.progress)/30)*100)):null;const date=a.kind==='halloween'&&a.unlocked&&a.completedAt?'<span class="gat-achievement-date">Concluída em '+new Date(a.completedAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+'</span>':'';const progress=a.kind==='halloween'?'<div class="gat-achievement-progress"><i style="width:'+pctEvent+'%"></i></div>':'';return `<article class="gat-achievement ${a.unlocked?'unlocked':''}${kind}"><div class="medal">${medal}</div><b>${esc2(a.title||'Conquista')}</b><small>${esc2(a.description||'')}</small>${progress}${date}</article>`}).join('')+'</div>'}
   }
 
   injectStyle();ensureTabs();
