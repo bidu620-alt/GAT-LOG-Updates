@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GatTelemetry;
 
-internal sealed class RadioForm : Form
+internal sealed partial class RadioForm : Form
 {
     private const string RadioEndpoint = "https://api.gatlogets2.com.br/api/public/radio";
     private const string VirtualHost = "radio.gatlogets2.local";
@@ -236,9 +236,10 @@ internal sealed class RadioForm : Form
         _siteWeb.Enabled = false;
 
         Control volumeLabel = Controls["volumeLabel"];
-        _personalLabel.Visible = true;
-        _personalInput.Visible = true;
-        _loadPersonal.Visible = true;
+        bool showSourceEditor1689 = _personalMode || CanEditChannel049();
+        _personalLabel.Visible = showSourceEditor1689;
+        _personalInput.Visible = showSourceEditor1689;
+        _loadPersonal.Visible = showSourceEditor1689;
         _toggle.Visible = true;
         _openYoutube.Visible = true;
         _fullScreen.Visible = true;
@@ -573,11 +574,16 @@ internal sealed class RadioForm : Form
         if (_browserReady) return;
         try
         {
-            string root = Path.Combine(Path.GetTempPath(), "GAT-LOG", "Telemetria", "Radio-1.0.50");
+            string root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GAT-LOG", "GAT-Telemetria", "Radio-1.0.68.9");
             string webViewData = Path.Combine(root, "WebView2");
-            string pageFolder = Path.Combine(root, "player");
+            string pageFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "radio");
             Directory.CreateDirectory(webViewData);
-            Directory.CreateDirectory(pageFolder);
+            if (!Directory.Exists(pageFolder) || !File.Exists(Path.Combine(pageFolder, "player.html")))
+            {
+                pageFolder = Path.Combine(root, "player");
+                Directory.CreateDirectory(pageFolder);
+                File.WriteAllText(Path.Combine(pageFolder, "player.html"), PlayerHtml());
+            }
             string probe = Path.Combine(webViewData, "write-test.tmp");
             File.WriteAllText(probe, "ok");
             File.Delete(probe);
@@ -605,7 +611,6 @@ internal sealed class RadioForm : Form
                 }
                 catch { }
             };
-            File.WriteAllText(Path.Combine(pageFolder, "index.html"), PlayerHtml());
             _web.CoreWebView2.SetVirtualHostNameToFolderMapping(VirtualHost, pageFolder, CoreWebView2HostResourceAccessKind.Allow);
             _web.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
             _web.CoreWebView2.Settings.AreDevToolsEnabled = false;
@@ -614,7 +619,7 @@ internal sealed class RadioForm : Form
             _web.CoreWebView2.NavigationStarting += WebNavigationStarting;
             _web.CoreWebView2.NavigationCompleted += WebNavigationCompleted;
             _web.CoreWebView2.NewWindowRequested += WebNewWindowRequested;
-            _web.Source = new Uri("https://" + VirtualHost + "/index.html?v=149");
+            _web.Source = new Uri("https://" + VirtualHost + "/player.html?v=1689");
             _browserReady = true;
             ApplyModeUi();
         }
@@ -645,6 +650,10 @@ internal sealed class RadioForm : Form
             {
                 string name = Convert.ToString(msg["title"]);
                 if (!string.IsNullOrWhiteSpace(name)) _track.Text = "Tocando agora: " + name;
+            }
+            else if (type == "position")
+            {
+                if (!_personalMode && !_webMode && CanEditChannel049()) _ = SaveChannelPosition1689Async(msg);
             }
             else if (type == "error")
             {
