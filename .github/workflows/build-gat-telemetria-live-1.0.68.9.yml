@@ -1,0 +1,62 @@
+name: Build GAT Telemetria 1.0.68.9 Radio Live TESTE
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/gat-radio-live-1.0.68.9
+    paths:
+      - 'dev/1689-base/**'
+      - 'dev/1689-assets/**'
+      - '.github/workflows/build-gat-telemetria-live-1.0.68.9.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gat-telemetria-live-1689-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/gat-radio-live-1.0.68.9
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Validate separate modules
+        run: |
+          if(-not(Test-Path 'dev/1689-assets/radio/player.html')){throw 'radio/player.html ausente'}
+          if(-not(Test-Path 'dev/1689-assets/transmissao/live.html')){throw 'transmissao/live.html ausente'}
+          $voice=Get-Content 'dev/1689-base/GatTelemetry/Voice062.cs' -Raw
+          $dash=Get-Content 'dev/1689-base/GatTelemetry/MainForm.Hub041.cs' -Raw
+          if($voice -notlike '*AppDomain.CurrentDomain.BaseDirectory, "voz"*'){throw 'Voz limpa nao aponta para pasta propria'}
+          if($voice -notlike '*VoiceObserveRoadSpeed1689*'){throw 'Alerta de limite direto ausente'}
+          if($dash -like '*VoiceHandleDashSpeak062(t);*'){throw 'GAT DASH ainda controla voz'}
+
+      - name: Compile GAT Telemetria 1.0.68.9
+        run: |
+          msbuild 'dev/1689-base/GAT_TELEMETRIA.csproj' /restore /t:Rebuild /p:Configuration=Release
+          if($LASTEXITCODE -ne 0){throw 'Falha na compilacao'}
+          $exe=Get-ChildItem 'dev/1689-base' -Recurse -Filter 'GAT_TELEMETRIA.exe' | Where-Object {$_.FullName -match 'bin\\Release'} | Select-Object -First 1
+          if(-not $exe){throw 'GAT_TELEMETRIA.exe nao encontrado'}
+          New-Item -ItemType Directory -Force -Path 'build-1689' | Out-Null
+          Copy-Item $exe.FullName 'build-1689/GAT_TELEMETRIA_APP.exe'
+          $cfg=$exe.FullName+'.config'
+          if(Test-Path $cfg){Copy-Item $cfg 'build-1689/GAT_TELEMETRIA_APP.exe.config'}
+          Copy-Item 'dev/1689-assets/radio' 'build-1689/radio' -Recurse
+          Copy-Item 'dev/1689-assets/transmissao' 'build-1689/transmissao' -Recurse
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Telemetria-1.0.68.9-compile
+          path: build-1689
+          if-no-files-found: error
