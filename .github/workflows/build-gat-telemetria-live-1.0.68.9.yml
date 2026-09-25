@@ -62,7 +62,7 @@ jobs:
           if(-not(Test-Path $base) -or (Get-Item $base).Length -lt 1000000){throw 'Base 1.0.68 nao baixada'}
 
           $installed=Join-Path $PWD 'installed168'
-          $stage=Join-Path $PWD 'staging-live1689'
+          $stage=Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging-live1689'
           foreach($p in @($installed,$stage)){
             if(Test-Path $p){Remove-Item $p -Recurse -Force}
             New-Item -ItemType Directory -Force -Path $p | Out-Null
@@ -121,7 +121,7 @@ jobs:
           $text=$text.Replace('Description: "Abrir GAT Telemetria";','Description: "Abrir GAT Telemetria BETA";')
 
           $nl=[Environment]::NewLine
-          $voiceFiles='Source: "..\..\staging-live1689\voz\*"; DestDir: "{app}\voz"; Flags: ignoreversion recursesubdirs createallsubdirs onlyifdoesntexist'
+          $voiceFiles='Source: "staging-live1689\voz\*"; DestDir: "{app}\voz"; Flags: ignoreversion recursesubdirs createallsubdirs onlyifdoesntexist'
           $dirs='[Dirs]'+$nl+'Name: "{app}\voz"; Permissions: users-modify'+$nl+'Name: "{app}\voz\limites"; Permissions: users-modify'+$nl+$nl
           $text=$text.Replace('[Icons]', $voiceFiles+$nl+$nl+$dirs+'[Icons]')
           Set-Content $iss $text -Encoding UTF8
