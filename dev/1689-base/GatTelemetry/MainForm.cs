@@ -110,7 +110,7 @@ internal sealed partial class MainForm : Form
 		}
 	}
 
-	private const string CurrentVersion = "1.0.68.0";
+	private const string CurrentVersion = "1.0.68.9";
 
 	// Build validation compatibility: CurrentVersion = "1.0.32.1"
 
@@ -350,7 +350,7 @@ internal sealed partial class MainForm : Form
             {
                 string logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GAT-LOG", "GAT-Telemetria");
                 Directory.CreateDirectory(logDir);
-                File.AppendAllText(Path.Combine(logDir, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68: " + ex + Environment.NewLine);
+                File.AppendAllText(Path.Combine(logDir, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.9: " + ex + Environment.NewLine);
             }
             catch { }
         }
@@ -721,7 +721,7 @@ internal sealed partial class MainForm : Form
 
 		lblVersion = new Label
 		{
-			Text = "Cliente 1.0.68",
+			Text = "Cliente 1.0.68.9",
 			AutoSize = true,
 			ForeColor = Color.FromArgb(105, 118, 136),
 			Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
