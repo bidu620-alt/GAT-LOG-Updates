@@ -1,0 +1,87 @@
+name: Inspect GAT 1.0.68 for Radio Live 1.0.68.9
+
+on:
+  push:
+    branches:
+      - feature/gat-radio-live-1.0.68.9
+    paths:
+      - '.github/workflows/inspect-gat-radio-live-1689.yml'
+      - 'gat-telemetria-allinone-1.0.29/inspect-live-1689.trigger'
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/gat-radio-live-1.0.68.9
+
+      - name: Reconstruct GAT Telemetria 1.0.68 source
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          $zip = Join-Path $PWD 'gat168-inspect.zip'
+          $out = [IO.File]::Create($zip)
+          try {
+            $out.Write($first,0,$first.Length)
+            foreach($part in $parts){
+              $bytes=[IO.File]::ReadAllBytes($part.FullName)
+              $out.Write($bytes,0,$bytes.Length)
+            }
+          } finally { $out.Dispose() }
+          Expand-Archive $zip 'gat168-inspect' -Force
+          Get-ChildItem 'gat168-inspect' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+            $txt=Get-Content $_.FullName -Raw
+            if($txt -like '*1.0.28*'){ Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8 }
+          }
+          $r="$PWD/gat168-inspect"
+          $patches=@(
+            'apply-offline-queue.ps1','apply-trip-sensor-v2.ps1','apply-stability-1.0.32.ps1','apply-beta-brand-1.0.32.ps1',
+            'apply-radio-1.0.33.ps1','apply-radio-1.0.34.ps1','apply-radio-overlay-1.0.35.ps1','apply-radio-personal-1.0.36.ps1',
+            'apply-radio-stream-1.0.37.ps1','apply-youtube-referrer-1.0.39.ps1','apply-dash-media-1.0.40.ps1','apply-hub-1.0.41.ps1',
+            'apply-hub-fixes-1.0.42.ps1','apply-startup-fix-1.0.43.ps1','apply-modern-ui-1.0.44.ps1','apply-hub-1.0.45.ps1',
+            'apply-mute-alert-1.0.46.ps1','apply-overlay-fix-1.0.47.ps1','apply-radio-background-1.0.48.ps1','apply-radio-home-1.0.49.ps1',
+            'apply-radio-home-1.0.49-fix.ps1','apply-dash-overlay-1.0.50.ps1','apply-responsive-ui-1.0.51.ps1','apply-responsive-ui-1.0.52.ps1',
+            'apply-ui-overlay-1.0.53.ps1','apply-overlay-independent-1.0.54.ps1','apply-window-layout-1.0.55-pre.ps1','apply-window-layout-1.0.55.ps1',
+            'apply-window-layout-1.0.55-fix.ps1','apply-full-responsive-1.0.56.ps1','apply-version-only-1.0.57.ps1','apply-version-only-1.0.58.ps1',
+            'apply-version-only-1.0.59.ps1','apply-full-dash-overlay-1.0.60.ps1','apply-video-borderless-1.0.61.ps1',
+            'apply-voice-pack-1.0.62.ps1','apply-voice-sync-1.0.63.ps1','apply-voice-sync-1.0.64.ps1','apply-speed-limits-1.0.65.ps1',
+            'apply-individual-voice-1.0.66.ps1','apply-voice-manager-1.0.67-v2.ps1','apply-voice-manager-1.0.67-fix-helpers.ps1',
+            'apply-voice-events-1.0.68.ps1'
+          )
+          foreach($p in $patches){ & (Join-Path "$PWD/gat-telemetria-allinone-1.0.29" $p) -Root $r }
+
+      - name: Generate inspection report
+        run: |
+          $r="$PWD/gat168-inspect"
+          $outFile="$PWD/docs/inspect-live-1689.txt"
+          "GAT 1.0.68 source inspection for 1.0.68.9" | Set-Content $outFile -Encoding UTF8
+          foreach($f in Get-ChildItem $r -Recurse -Include *.cs,*.csproj){
+            $lines=Get-Content $f.FullName
+            $hits=for($i=0;$i -lt $lines.Count;$i++){
+              if($lines[$i] -match '(?i)account|token|session|login|password|RadioForm|VoiceDataDir062|VoiceSpeedDir166|ObserveVoiceTelemetry062|DashMessage041|WebView2|CurrentVersion'){
+                $start=[Math]::Max(0,$i-3);$end=[Math]::Min($lines.Count-1,$i+6)
+                "=== $($f.Name) line $($i+1) ==="
+                for($j=$start;$j -le $end;$j++){"{0,5}: {1}" -f ($j+1),$lines[$j]}
+                ""
+              }
+            }
+            if($hits){$hits | Add-Content $outFile -Encoding UTF8}
+          }
+
+      - name: Commit inspection report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/inspect-live-1689.txt
+          if (git diff --cached --quiet) { exit 0 }
+          git commit -m "Inspect GAT 1.0.68 for Radio Live 1.0.68.9"
+          git push origin HEAD:feature/gat-radio-live-1.0.68.9
