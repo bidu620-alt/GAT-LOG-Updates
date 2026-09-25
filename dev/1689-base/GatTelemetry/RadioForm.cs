@@ -777,6 +777,7 @@ internal sealed partial class RadioForm : Form
             _serverSourceId = sourceId;
             _serverSourceUrl = sourceUrl;
             _serverRevision = revision;
+            ReadLiveRadioState1689(radio);
 
             if (!_personalMode && !_webMode)
             {
@@ -825,8 +826,11 @@ internal sealed partial class RadioForm : Form
         string id = ActiveSourceId();
         if (!_playerReady || string.IsNullOrWhiteSpace(id)) return;
         string type = ActiveSourceType();
-        string command;
-        if (type == "stream")
+        string command = BuildSyncedLoadCommand1689(type);
+        if (!string.IsNullOrWhiteSpace(command))
+        {
+        }
+        else if (type == "stream")
         {
             string jsUrl = Newtonsoft.Json.JsonConvert.SerializeObject(ActiveSourceUrl());
             command = "gatLoadStream(" + jsUrl + ")";
