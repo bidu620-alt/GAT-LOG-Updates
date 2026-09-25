@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<style>
+html,body{margin:0;width:100%;height:100%;background:#020711;overflow:hidden;font-family:Segoe UI,Arial,sans-serif;color:#eaf2ff}
+#player,#streamPane{width:100%;height:100%}
+#streamPane{display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#0d3155 0,#06192c 45%,#020711 100%)}
+.radioCard{text-align:center;max-width:86%;padding:28px}.radioIcon{font-size:64px;margin-bottom:14px}.radioTitle{font-size:25px;font-weight:700}.radioSub{margin-top:8px;color:#9eb6d1;font-size:14px}.radioUrl{margin-top:16px;color:#6f8daa;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:680px}
+</style>
+</head>
+<body>
+<div id="player"></div>
+<div id="streamPane"><div class="radioCard"><div class="radioIcon">📻</div><div class="radioTitle">GAT RÁDIO • AO VIVO</div><div class="radioSub">Programação oficial sincronizada pelo GAT Telemetria.</div><div id="streamUrl" class="radioUrl"></div></div><audio id="streamAudio" preload="none"></audio></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+let player=null,ytReady=false,pendingType="",pendingId="",pendingSeconds=0,currentType="";
+const audio=document.getElementById("streamAudio"),playerBox=document.getElementById("player"),streamPane=document.getElementById("streamPane"),streamUrl=document.getElementById("streamUrl");
+function post(o){try{chrome.webview.postMessage(o)}catch(e){}}
+function showYoutube(){playerBox.style.display="block";streamPane.style.display="none"}
+function showStream(url){playerBox.style.display="none";streamPane.style.display="flex";streamUrl.textContent=url||""}
+function stopYoutube(){if(ytReady&&player){try{player.pauseVideo()}catch(e){}}}
+function stopStream(clear){try{audio.pause();if(clear){audio.removeAttribute("src");audio.load()}}catch(e){}}
+function loadPending(){if(!ytReady||!pendingId)return;const t=pendingType,id=pendingId,sec=pendingSeconds;pendingType="";pendingId="";pendingSeconds=0;if(t==="videoat")gatLoadVideoAt(id,sec);else if(t==="video")gatLoadVideo(id);else if(t==="playlist")gatLoadPlaylist(id)}
+function onYouTubeIframeAPIReady(){
+ player=new YT.Player("player",{width:"100%",height:"100%",playerVars:{controls:1,disablekb:0,fs:1,playsinline:1,rel:0,origin:"https://radio.gatlogets2.local",widget_referrer:"https://radio.gatlogets2.local/"},events:{
+  onReady:function(){ytReady=true;loadPending()},
+  onStateChange:function(e){if(e.data===YT.PlayerState.PLAYING){const d=player.getVideoData()||{};post({type:"track",title:d.title||""})}},
+  onError:function(e){post({type:"error",code:e.data});if(currentType==="playlist"&&(e.data===100||e.data===101||e.data===150)){setTimeout(function(){try{player.nextVideo()}catch(x){}},700)}}
+ }})
+}
+function gatLoadPlaylist(id){currentType="playlist";stopStream(true);showYoutube();if(!ytReady){pendingType="playlist";pendingId=id;return}try{player.loadPlaylist({listType:"playlist",list:id,index:0,startSeconds:0})}catch(e){post({type:"error",code:"load"})}}
+function gatLoadVideo(id){return gatLoadVideoAt(id,0)}
+function gatLoadVideoAt(id,seconds){currentType="video";stopStream(true);showYoutube();const sec=Math.max(0,Number(seconds)||0);if(!ytReady){pendingType="videoat";pendingId=id;pendingSeconds=sec;return}try{player.loadVideoById({videoId:id,startSeconds:sec})}catch(e){post({type:"error",code:"load"})}}
+function gatLoadStream(url){currentType="stream";pendingType="";pendingId="";stopYoutube();showStream(url);try{audio.pause();audio.src=url;audio.load();audio.play().catch(function(){post({type:"error",code:900})})}catch(e){post({type:"error",code:900})}}
+function gatPause(){if(currentType==="stream")stopStream(false);else stopYoutube()}
+function gatVolume(v){const n=Math.max(0,Math.min(100,Number(v)||0));if(ytReady&&player){try{player.setVolume(n)}catch(e){}}audio.volume=n/100}
+audio.addEventListener("playing",function(){post({type:"track",title:"Rádio online • AO VIVO"})});
+audio.addEventListener("waiting",function(){post({type:"track",title:"Rádio online • conectando..."})});
+audio.addEventListener("stalled",function(){post({type:"error",code:901})});
+audio.addEventListener("error",function(){post({type:"error",code:900})});
+setInterval(function(){try{if(ytReady&&player&&player.getPlayerState()===YT.PlayerState.PLAYING){const d=player.getVideoData()||{};post({type:"position",videoId:d.video_id||"",seconds:Number(player.getCurrentTime()||0),title:d.title||""})}}catch(e){}},4000);
+setTimeout(function(){post({type:"ready"})},0);
+</script>
+</body>
+</html>
