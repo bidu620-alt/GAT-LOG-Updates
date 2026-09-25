@@ -22,34 +22,10 @@
 
 <main class="event-shell">
 <section class="event-hero">
-  <div class="hero-noise"></div>
-  <svg class="hero-sky-art" viewBox="0 0 900 520" aria-hidden="true">
-    <defs>
-      <radialGradient id="moonGlow"><stop offset="0" stop-color="#fff6ff"/><stop offset=".52" stop-color="#d9cadf"/><stop offset="1" stop-color="#6f5878"/></radialGradient>
-      <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#17101d"/><stop offset="1" stop-color="#070608"/></linearGradient>
-      <filter id="softGlow"><feGaussianBlur stdDeviation="7"/></filter>
-    </defs>
-    <circle cx="735" cy="104" r="78" fill="#9a6bc8" opacity=".2" filter="url(#softGlow)"/>
-    <circle cx="735" cy="104" r="64" fill="url(#moonGlow)"/>
-    <path d="M0 438 C140 355 248 365 350 406 C470 454 610 390 900 335 L900 520 L0 520Z" fill="url(#hill)"/>
-    <path d="M650 365 v-110 h42 v110 M665 255 v-48 h13 v48 M640 308 h82 v18 h-82Z" fill="#060507"/>
-    <path d="M662 208 l10-29 10 29Z M642 255 l29-35 28 35Z" fill="#060507"/>
-    <g fill="#ff7417" opacity=".82"><rect x="663" y="276" width="7" height="11" rx="1"/><rect x="682" y="276" width="7" height="11" rx="1"/><rect x="673" y="313" width="7" height="11" rx="1"/></g>
-    <g fill="#070608" opacity=".9">
-      <path d="M560 104 q18-22 36 0 q18-22 36 0 q-19-8-36 10 q-18-18-36-10Z"/>
-      <path d="M805 145 q12-15 24 0 q13-15 25 0 q-13-5-25 7 q-11-12-24-7Z"/>
-      <path d="M618 74 q9-12 19 0 q9-12 18 0 q-9-4-18 5 q-9-9-19-5Z"/>
-    </g>
-    <g stroke="#24142b" stroke-width="5" fill="none" opacity=".9">
-      <path d="M820 445 Q825 316 790 240 M817 350 L765 290 M815 325 L856 266"/>
-      <path d="M104 462 Q96 352 128 265 M109 372 L69 316 M108 338 L149 296"/>
-    </g>
-  </svg>
-
-  <div class="event-hero-copy">
+  <div class="hero-photo-layer"></div><div class="event-hero-copy">
     <span class="event-kicker">EVENTO DO MÊS</span>
     <h1>HALLOWEEN</h1>
-    <p>30 cargas diferentes para completar durante o evento. Sem disputa por quilômetros: o objetivo é fechar a coleção 30/30.</p>
+    <p>30 cargas para completar durante o mês.</p>
     <div class="hero-badges">
       <span class="badge-orange"><i></i>TODAS AS CARGAS LIBERADAS</span>
       <span class="badge-purple" id="eventState">AGUARDANDO INÍCIO</span>
@@ -65,16 +41,9 @@
     </article>
   </div>
 
-  <div class="event-truck-stage" aria-hidden="true">
-    <div class="truck-halo"></div>
-    <div class="event-truck"></div>
-    <div class="road-glow"></div>
-    <div class="pumpkin-decor pumpkin-one"></div>
-    <div class="pumpkin-decor pumpkin-two"></div>
-  </div>
-</section>
+  </section>
 
-<section id="eventLocked" class="event-countdown" hidden>
+<section id="eventLocked" class="event-countdown" hidden aria-hidden="true">
   <div class="countdown-copy">
     <span class="event-kicker">A ESTRADA ABRE À MEIA-NOITE</span>
     <h2>O Evento Halloween começa em</h2>
