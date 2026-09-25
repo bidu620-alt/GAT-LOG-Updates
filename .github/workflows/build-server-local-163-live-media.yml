@@ -68,7 +68,7 @@ jobs:
           python server-local-159/apply-v159-gat-radio.py server-local/runtime
           node --test server-local-159/gat-radio-v159.test.mjs
           python server-local-161/apply-v161-radio-video.py server-local/runtime
-          python server-local-162/apply-v162-live-media.py server-local/runtime
+          python server-local-162/apply-v162-radio-stream.py server-local/runtime
           python server-local-163/apply-v163-live-media.py server-local/runtime
           node --check server-local/runtime/worker.js
           grep -q "type:'stream'" server-local/runtime/worker.js
