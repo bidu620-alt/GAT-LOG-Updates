@@ -84,4 +84,5 @@ jobs:
           git add docs/inspect-live-1689.txt
           if (git diff --cached --quiet) { exit 0 }
           git commit -m "Inspect GAT 1.0.68 for Radio Live 1.0.68.9"
+          git pull --rebase origin feature/gat-radio-live-1.0.68.9
           git push origin HEAD:feature/gat-radio-live-1.0.68.9
