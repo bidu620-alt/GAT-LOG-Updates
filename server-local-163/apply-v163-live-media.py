@@ -17,8 +17,8 @@ if MARKER not in worker:
     worker = once(worker, "const VERSION='1.0.62-local';", "const VERSION='1.0.63-local';", 'versao 1.0.62')
 
     # Programacao oficial da radio e locucao ficam somente para owner/admin.
-    radio_admin_old = "if(p==='/api/site/admin/radio'&&m==='POST'){\\n  const b=await body(req),s=await requireAdmin(req,env,b),current=await gatRadioState(env);"
-    radio_admin_new = "if(p==='/api/site/admin/radio'&&m==='POST'){\\n  const b=await body(req),s=await requireAdmin(req,env,b,true),current=await gatRadioState(env);"
+    radio_admin_old = "if(p==='/api/site/admin/radio'&&m==='POST'){\n  const b=await body(req),s=await requireAdmin(req,env,b),current=await gatRadioState(env);"
+    radio_admin_new = "if(p==='/api/site/admin/radio'&&m==='POST'){\n  const b=await body(req),s=await requireAdmin(req,env,b,true),current=await gatRadioState(env);"
     worker = once(worker, radio_admin_old, radio_admin_new, 'permissao administrativa da Radio GAT')
 
     # WebView2 local HTTPS origin used by the live-media page.
