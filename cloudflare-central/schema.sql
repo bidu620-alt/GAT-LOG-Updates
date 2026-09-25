@@ -199,3 +199,27 @@ CREATE TABLE IF NOT EXISTS meta (
 );
 INSERT OR IGNORE INTO meta(key,value) VALUES ('operation_mode','official');
 INSERT OR IGNORE INTO meta(key,value) VALUES ('season','2026-09');
+
+
+-- GAT_LIVE_MEDIA_V163
+CREATE TABLE IF NOT EXISTS live_stream_sessions (
+  stream_id TEXT PRIMARY KEY,
+  account_user TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK(kind IN ('route','radio_mic')),
+  active INTEGER NOT NULL DEFAULT 1,
+  started_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_live_stream_sessions_active
+  ON live_stream_sessions(active,updated_at);
+
+CREATE TABLE IF NOT EXISTS live_stream_signals (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  stream_id TEXT NOT NULL,
+  from_user TEXT NOT NULL,
+  to_user TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_live_stream_signals_target
+  ON live_stream_signals(stream_id,to_user,id);
