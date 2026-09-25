@@ -1,0 +1,1 @@
+(()=>{const START=Date.parse('2026-09-30T00:00:00-03:00');function apply(){document.querySelectorAll('.event-month-link').forEach(a=>a.style.display=Date.now()>=START?'':'none')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();setInterval(apply,60000)})();
