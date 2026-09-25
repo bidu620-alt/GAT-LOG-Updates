@@ -27,20 +27,23 @@ internal sealed partial class MainForm
     {
         if (_hub045Applied) return;
         _hub045Applied = true;
-        Text = "GAT Telemetria BETA 1.0.68";
+        Text = "GAT Telemetria BETA 1.0.68.9";
 
         ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
         BuildHome045();
+        ApplyLive1689();
 
         _hubStatusTimer041.Tick += async delegate
         {
             SyncHome045();
             await RefreshDrivers045(false);
+            await LiveTick1689(false);
         };
         Shown += async delegate
         {
             SyncHome045();
             await RefreshDrivers045(true);
+            await LiveTick1689(true);
         };
     }
 
@@ -58,7 +61,7 @@ internal sealed partial class MainForm
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 2,
+            RowCount = 3,
             Margin = Padding.Empty,
             Padding = Padding.Empty,
             BackColor = page.BackColor
@@ -66,6 +69,7 @@ internal sealed partial class MainForm
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 205));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 92));
         page.Controls.Add(root);
 
         var top = new TableLayoutPanel
@@ -147,6 +151,7 @@ internal sealed partial class MainForm
         middle.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 43));
         middle.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 57));
         root.Controls.Add(middle, 0, 1);
+        root.Controls.Add(BuildRadioHome1689(), 0, 2);
 
         var hero = new HeroPanel044
         {
@@ -248,6 +253,9 @@ internal sealed partial class MainForm
         g.Columns.Add(new DataGridViewTextBoxColumn { Name = "destination", HeaderText = "DESTINO", FillWeight = 105 });
         g.Columns.Add(new DataGridViewTextBoxColumn { Name = "speed", HeaderText = "VELOCIDADE", FillWeight = 90 });
         g.Columns.Add(new DataGridViewTextBoxColumn { Name = "remaining", HeaderText = "RESTANTE", FillWeight = 80 });
+        g.Columns.Add(new DataGridViewTextBoxColumn { Name = "account", HeaderText = "CONTA", Visible = false });
+        g.Columns.Add(new DataGridViewButtonColumn { Name = "live", HeaderText = "AO VIVO", FillWeight = 78, FlatStyle = FlatStyle.Flat });
+        g.CellContentClick += DriversLiveClick1689;
 
         g.CellFormatting += delegate(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -300,7 +308,7 @@ internal sealed partial class MainForm
                 _homeSystem045.Text =
                     "● " + central + "\r\n" +
                     "● " + server + "\r\n" +
-                    "● Cliente: 1.0.68 TESTE\r\n\r\n" +
+                    "● Cliente: 1.0.68.9 • RÁDIO LIVE\r\n\r\n" +
                     (AccountReady ? "✓ Ecossistema GAT conectado." : "Aguardando Conta GAT.");
                 _homeSystem045.ForeColor = AccountReady ? Color.FromArgb(125, 231, 154) : Color.FromArgb(191, 219, 242);
             }
@@ -316,6 +324,7 @@ internal sealed partial class MainForm
         _homeDriversLast045 = DateTime.UtcNow;
         try
         {
+            await RefreshLiveStreams1689();
             var liveRows = new List<JObject>();
             try
             {
@@ -372,14 +381,18 @@ internal sealed partial class MainForm
 
                 onlineCount++;
                 if (inRoute) routeCount++;
-                _homeDrivers045.Rows.Add(
+                string account1689 = (Convert.ToString(item["account_user"]) ?? string.Empty).Trim();
+                int row1689 = _homeDrivers045.Rows.Add(
                     name,
                     inRoute ? "● Em rota" : "● Online",
                     cargo,
                     destination,
                     speedText,
-                    remainingText
+                    remainingText,
+                    account1689,
+                    RouteLiveLabel1689(account1689, name)
                 );
+                StyleLiveCell1689(_homeDrivers045.Rows[row1689], account1689, name);
             }
 
             // Fallback local: evita uma tela vazia durante uma oscilacao curta da Central.
@@ -393,11 +406,14 @@ internal sealed partial class MainForm
                 bool inRoute = !string.IsNullOrWhiteSpace(cargo) &&
                                cargo.IndexOf("Sem carga", StringComparison.OrdinalIgnoreCase) < 0 &&
                                cargo != "-" && cargo != "—";
-                _homeDrivers045.Rows.Add(current, inRoute ? "● Em rota" : "● Online",
+                int row1689 = _homeDrivers045.Rows.Add(current, inRoute ? "● Em rota" : "● Online",
                     string.IsNullOrWhiteSpace(cargo) ? "Sem carga" : cargo,
                     string.IsNullOrWhiteSpace(destination) ? "—" : destination,
                     string.IsNullOrWhiteSpace(speed) ? "0 km/h" : speed,
-                    string.IsNullOrWhiteSpace(remaining) ? "—" : remaining);
+                    string.IsNullOrWhiteSpace(remaining) ? "—" : remaining,
+                    _accountUser,
+                    RouteLiveLabel1689(_accountUser, current));
+                StyleLiveCell1689(_homeDrivers045.Rows[row1689], _accountUser, current);
                 onlineCount = 1;
                 if (inRoute) routeCount = 1;
             }
