@@ -45,7 +45,7 @@ internal sealed partial class MainForm
         _hubServerCard041 = old.OfType<ModernCard>().FirstOrDefault(x => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
         Controls.Clear();
 
-        Text = "GAT Telemetria BETA 1.0.68";
+        Text = "GAT Telemetria BETA 1.0.68.9";
         MinimumSize = new Size(740, 500);
         AutoScaleMode = AutoScaleMode.Dpi;
         var work051 = Screen.FromControl(this).WorkingArea;
@@ -615,9 +615,9 @@ var tools = FindControl051<Panel>(this, "dashTools051");
             else if (type == "login") await DashSession041();
             else if (type == "mediaRefresh") await DashMedia041();
             else if (type == "mediaMode") { SaveMediaMode041(Convert.ToString(m["mode"])); try { _hubRadio041?.HubSyncMode042(); } catch { } await DashMedia041(); }
-            else if (type == "speak") { string t = (Convert.ToString(m["text"]) ?? "").Trim(); if (t.Length > 0 && t.Length < 240) VoiceHandleDashSpeak062(t); }
-            else if (type == "stopSpeech") { VoiceStop062(); try { if (_voice != null) _voice.SpeakAsyncCancelAll(); } catch { } }
-            else if (type == "setSettings") { VoiceSyncDashSetting062(m); SaveDashSettings045(m); await DashJs041("window.gatDashSettings(" + DashSettingsJson045() + ")"); }
+            else if (type == "speak") { /* 1.0.68.9 VOZ LIMPA: o GAT DASH nao controla a voz do Telemetria. */ }
+            else if (type == "stopSpeech") { /* isolado: nenhum comando de voz vem do DASH */ }
+            else if (type == "setSettings") { SaveDashSettings045(m); await DashJs041("window.gatDashSettings(" + DashSettingsJson045() + ")"); }
         }
         catch { }
     }
