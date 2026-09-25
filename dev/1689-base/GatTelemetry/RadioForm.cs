@@ -84,7 +84,6 @@ internal sealed partial class RadioForm : Form
         // "Meu Vídeo" permanece isolado no módulo/sobreposição de vídeo.
         _personalMode = false;
         _webMode = false;
-        SaveSharedMediaMode041("gat");
         ApplyModeUi();
 
         Shown += async delegate
@@ -158,7 +157,11 @@ internal sealed partial class RadioForm : Form
 
         SetupButton(_loadPersonal, "CARREGAR", ClientSize.Width - 154, 145, 130);
         _loadPersonal.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        _loadPersonal.Click += async delegate { if (_personalMode) await LoadPersonalFromInputAsync(); else await SaveChannel049Async(); };
+        _loadPersonal.Click += async delegate
+        {
+            if (CanEditChannel049()) await SaveChannel049Async();
+            else await LoadPersonalFromInputAsync();
+        };
         Controls.Add(_loadPersonal);
 
         _web.Left = 24; _web.Top = 190; _web.Width = ClientSize.Width - 48; _web.Height = 350;
@@ -237,10 +240,10 @@ internal sealed partial class RadioForm : Form
         _siteWeb.Enabled = false;
 
         Control volumeLabel = Controls["volumeLabel"];
-        bool showSourceEditor1689 = _personalMode || CanEditChannel049();
-        _personalLabel.Visible = showSourceEditor1689;
-        _personalInput.Visible = showSourceEditor1689;
-        _loadPersonal.Visible = showSourceEditor1689;
+        // Clientes veem somente o campo MEU VÍDEO; owner/admin veem a programação oficial.
+        _personalLabel.Visible = true;
+        _personalInput.Visible = true;
+        _loadPersonal.Visible = true;
         _toggle.Visible = true;
         _openYoutube.Visible = true;
         _fullScreen.Visible = true;
@@ -249,14 +252,24 @@ internal sealed partial class RadioForm : Form
 
         if (channelMode)
         {
-            _description.Text = "CANAL GAT toca para todos os motoristas. Admin/Moderador define a programação aqui no Telemetria.";
-            _personalLabel.Text = CanEditChannel049()
-                ? "Link do CANAL GAT para todos (YouTube vídeo/playlist ou Rádio Online MP3/AAC):"
-                : "CANAL GAT • programação compartilhada com todos os motoristas:";
-            _personalInput.Enabled = CanEditChannel049();
-            _loadPersonal.Enabled = CanEditChannel049();
-            _loadPersonal.Text = "SALVAR P/ TODOS";
-            if (!_personalInput.Focused) _personalInput.Text = _serverSourceUrl ?? string.Empty;
+            if (CanEditChannel049())
+            {
+                _description.Text = "CANAL GAT toca ao vivo para todos. Somente owner/ADM altera a programação oficial.";
+                _personalLabel.Text = "Link do CANAL GAT para todos (YouTube vídeo/playlist ou Rádio Online MP3/AAC):";
+                _personalInput.Enabled = true;
+                _loadPersonal.Enabled = true;
+                _loadPersonal.Text = "SALVAR P/ TODOS";
+                if (!_personalInput.Focused) _personalInput.Text = _serverSourceUrl ?? string.Empty;
+            }
+            else
+            {
+                _description.Text = "A Rádio GAT toca em segundo plano. O link abaixo é somente do seu MEU VÍDEO.";
+                _personalLabel.Text = "MEU VÍDEO • cole seu link do YouTube (somente neste PC):";
+                _personalInput.Enabled = true;
+                _loadPersonal.Enabled = true;
+                _loadPersonal.Text = "SALVAR MEU VÍDEO";
+                if (!_personalInput.Focused) _personalInput.Text = _personalSourceUrl ?? string.Empty;
+            }
         }
         else
         {
@@ -463,10 +476,14 @@ internal sealed partial class RadioForm : Form
         _personalSourceUrl = canonical;
         _personalInput.Text = canonical;
         SavePersonalSource(canonical);
-        _personalMode = true;
+        // Meu Vídeo é independente da Rádio GAT. Salvar o link nunca interrompe a rádio.
+        SaveSharedMediaMode041("mine");
+        _personalMode = false;
+        _webMode = false;
         ApplyModeUi();
-
-        if (_listening && _playerReady) await LoadActiveSourceAsync();
+        _state.Text = "Meu Vídeo salvo ✓ • abra a SOBREPOSIÇÃO DE VÍDEO para assistir.";
+        _state.ForeColor = Color.FromArgb(130, 224, 69);
+        await Task.Delay(1);
     }
 
     private async Task LoadWebFromInputAsync()
@@ -707,8 +724,9 @@ internal sealed partial class RadioForm : Form
 
     private async Task SyncSharedMediaMode041()
     {
-        if (_personalMode || _webMode) await SwitchModeAsync(false);
-        SaveSharedMediaMode041("gat");
+        // 1.0.68.9: a escolha GAT/Meu Vídeo pertence apenas à sobreposição.
+        // A Rádio GAT continua oficial e ao vivo, sem ser interrompida por Meu Vídeo.
+        await Task.Delay(1);
     }
     internal string HubNowPlaying042
     {
