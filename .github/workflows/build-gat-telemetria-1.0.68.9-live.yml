@@ -66,7 +66,7 @@ jobs:
           if(-not $main -or -not $hub -or -not $voice -or -not $dashOverlay -or -not $video -or -not $project){throw 'Fonte 1.0.68.9 incompleta'}
           $mt=Get-Content $main.FullName -Raw; $ht=Get-Content $hub.FullName -Raw; $vt=Get-Content $voice.FullName -Raw; $dt=Get-Content $dashOverlay.FullName -Raw; $vid=Get-Content $video.FullName -Raw
           if($mt -notlike '*CurrentVersion = "1.0.68.9"*'){throw 'Versao 1.0.68.9 incorreta'}
-          foreach($m in @('ABRIR DASH COMPLETO','OpenDashOverlay060','DashTargetReady060','BuildVoiceSettings062(p)','VoiceHandleDashSpeak062(t);','VoiceSyncDashSetting062(m)')){if($ht -notlike "*$m*"){throw "Hub 1.0.68.9 sem $m"}}
+          foreach($m in @('ABRIR DASH COMPLETO','OpenDashOverlay060','DashTargetReady060','BuildVoiceSettings062(p)','voz pertence ao GAT Telemetria')){if($ht -notlike "*$m*"){throw "Hub 1.0.68.9 sem $m"}}
           foreach($m in @('VoiceIndividualRoot166','VoiceExtraFiles167','VoiceObserveJobRandom168','VoicePlayRandom168','VoiceTruckDamage168','VoiceObserveDamage168','_voiceNextRandomKm168 = 500.0','rise < 0.01','_voiceRandomTimer062.Enabled = false')){if($vt -notlike "*$m*"){throw "Voice 1.0.68.9 sem $m"}}
           if($mt -notlike '*ObserveDamageDisplay064(d.CargoDamage*'){throw 'Painel de danos nao ligado a voz 1.0.68.9'}
           foreach($m in @('DesignWidth = 1600','DesignHeight = 700','_web.ZoomFactor = scale')){if($dt -notlike "*$m*"){throw "DASH completo 1.0.68.9 sem $m"}}
