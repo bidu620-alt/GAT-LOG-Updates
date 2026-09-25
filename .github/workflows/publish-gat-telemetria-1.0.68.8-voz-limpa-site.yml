@@ -1,0 +1,95 @@
+name: Publish GAT Telemetria 1.0.68.8 Voz Limpa on Site
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-telemetria-1.0.68.8-voz-limpa-site.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download exact 1.0.68.8 VOZ NOVA LIMPA artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: GAT-Telemetria-1.0.68.8-VOZ-NOVA-LIMPA
+          path: artifact-1688
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 35476021714
+
+      - name: Verify and publish exact executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="artifact-1688/GAT_TELEMETRIA_1.0.68.8_VOZ_NOVA_LIMPA.exe"
+          test -f "$src"
+          echo "b3f4af83414024c9c25d750c249f18a8e5c3f47ad30b40b3e07140520bef8025  $src" | sha256sum -c -
+          cp "$src" "releases/GAT_TELEMETRIA_1.0.68.8_VOZ_NOVA_LIMPA.exe"
+
+      - name: Replace site downloads
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path("docs/index.html")
+          s = p.read_text(encoding="utf-8")
+
+          new_card = (
+              '<a class="download-mini" '
+              'href="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.8_VOZ_NOVA_LIMPA.exe">'
+              '<strong>GAT Telemetria 1.0.68.8 • VOZ NOVA LIMPA</strong>'
+              '<span>Versão estável com o sistema de voz limpo e independente do GAT DASH.</span>'
+              '<b>BAIXAR GAT TELEMETRIA</b></a>'
+          )
+
+          s, n1 = re.subn(
+              r'<a class="download-mini" href="https://raw\.githubusercontent\.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_SETUP_1\.0\.68\.exe">.*?</a>',
+              new_card,
+              s,
+              count=1,
+              flags=re.S,
+          )
+          s, n2 = re.subn(
+              r'<a class="download-mini" href="https://raw\.githubusercontent\.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_VOZ_LIMITES_20_A_130\.zip">.*?</a>',
+              '',
+              s,
+              count=1,
+              flags=re.S,
+          )
+
+          if n1 != 1:
+              raise SystemExit("Nao encontrei exatamente um card do GAT Telemetria 1.0.68.")
+          if n2 != 1:
+              raise SystemExit("Nao encontrei exatamente um card do pacote de voz.")
+
+          if "GAT_TELEMETRIA_SETUP_1.0.68.exe" in s:
+              raise SystemExit("Link antigo 1.0.68 ainda presente no site.")
+          if "GAT_VOZ_LIMITES_20_A_130.zip" in s:
+              raise SystemExit("Pacote de voz ainda presente no site.")
+          if "GAT_TELEMETRIA_1.0.68.8_VOZ_NOVA_LIMPA.exe" not in s:
+              raise SystemExit("Novo link 1.0.68.8 Voz Nova Limpa nao foi aplicado.")
+
+          p.write_text(s, encoding="utf-8")
+
+      - name: Commit site and exact build
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "GAT Site Publish"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/index.html releases/GAT_TELEMETRIA_1.0.68.8_VOZ_NOVA_LIMPA.exe
+          git commit -m "Publish GAT Telemetria 1.0.68.8 Voz Nova Limpa on site"
+          git pull --rebase -X theirs
+          git push
