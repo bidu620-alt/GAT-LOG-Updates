@@ -84,6 +84,7 @@ jobs:
           grep -q "p==='/api/live/list'" server-local/runtime/worker.js
           grep -q "p==='/api/live/signal'" server-local/runtime/worker.js
           grep -q "p==='/api/site/admin/radio/position'" server-local/runtime/worker.js
+          grep -q "requireAdmin(req,env,b,true),current=await gatRadioState" server-local/runtime/worker.js
           grep -q "CREATE TABLE IF NOT EXISTS live_streams" server-local/runtime/schema.sql
 
       - name: Add Radio page and stream controls to server panel
