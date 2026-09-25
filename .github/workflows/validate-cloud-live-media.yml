@@ -1,0 +1,30 @@
+name: Validate GAT Cloud Live Media
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/gat-telemetria-1.0.68.9-live]
+    paths:
+      - 'cloudflare-central/worker.js'
+      - 'cloudflare-central/schema.sql'
+      - '.github/workflows/validate-cloud-live-media.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate Worker and live media schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check cloudflare-central/worker.js
+          grep -q "const VERSION='1.0.43-cloudflare'" cloudflare-central/worker.js
+          grep -q "/api/public/live" cloudflare-central/worker.js
+          grep -q "/api/live/start" cloudflare-central/worker.js
+          grep -q "kind==='radio_mic'?await requireAdmin" cloudflare-central/worker.js
+          grep -q "live_stream_sessions" cloudflare-central/schema.sql
+          grep -q "live_stream_signals" cloudflare-central/schema.sql
