@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GAT Ao Vivo</title>
+<style>
+:root{color-scheme:dark;font-family:"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#020914;color:#edf6ff}
+body{display:flex;align-items:stretch;justify-content:stretch}
+.wrap{width:100%;height:100%;display:flex;flex-direction:column;padding:14px;gap:10px;background:radial-gradient(circle at 20% 0,#092b4c 0,#031323 42%,#020914 100%)}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px}.title{font-weight:800;font-size:18px}.live{font-size:12px;font-weight:800;border:1px solid #ff4d5e;border-radius:999px;padding:6px 10px;color:#ff8994;background:#321019}
+.status{color:#a9bfd7;font-size:13px;min-height:20px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{border:1px solid #3b89e8;background:#0c3760;color:#eef7ff;border-radius:8px;padding:10px 16px;font-weight:800;cursor:pointer}
+button.stop{border-color:#ff5563;background:#4a1520}button:disabled{opacity:.5;cursor:default}
+.stage{position:relative;flex:1;min-height:180px;background:#000;border:1px solid #173e62;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+video{width:100%;height:100%;object-fit:contain;background:#000}.placeholder{text-align:center;color:#819bb7;padding:30px}.big{font-size:42px;margin-bottom:10px}
+.quality{font-size:12px;color:#6f8eac}.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><div class="title" id="title">GAT • AO VIVO</div><div class="live" id="badge">PRONTO</div></div>
+  <div class="status" id="status">Aguardando...</div>
+  <div class="actions" id="actions"></div>
+  <div class="stage" id="stage">
+    <div class="placeholder" id="placeholder"><div class="big">📡</div><div>Transmissão GAT</div></div>
+    <video id="video" autoplay playsinline class="hidden"></video>
+    <audio id="audio" autoplay></audio>
+  </div>
+  <div class="quality" id="quality"></div>
+</div>
+<script>
+const API="https://api.gatlogets2.com.br";
+let cfg=null,localStream=null,streamId="",heartbeatTimer=0,pollTimer=0,viewerPc=null,viewerStream=null;
+const peers=new Map();
+const $=id=>document.getElementById(id);
+function post(type,extra={}){try{chrome.webview.postMessage(Object.assign({type},extra))}catch(e){}}
+function status(t,badge){$("status").textContent=t||"";if(badge)$("badge").textContent=badge}
+async function api(path,payload={}){
+ const data=Object.assign({},payload,{token:cfg.token});
+ const r=await fetch(API+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data),cache:"no-store"});
+ let j={};try{j=await r.json()}catch(e){}
+ if(!r.ok||j.ok!==true)throw new Error(j.error||("HTTP "+r.status));
+ return j;
+}
+function btn(text,cls,fn){const b=document.createElement("button");b.textContent=text;if(cls)b.className=cls;b.onclick=fn;$("actions").appendChild(b);return b}
+function rtc(){return new RTCPeerConnection({iceServers:[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302"]}]})}
+function waitIce(pc){if(pc.iceGatheringState==="complete")return Promise.resolve();return new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;pc.removeEventListener("icegatheringstatechange",check);resolve()};const check=()=>{if(pc.iceGatheringState==="complete")finish()};pc.addEventListener("icegatheringstatechange",check);setTimeout(finish,4500)})}
+function stopTimers(){clearInterval(heartbeatTimer);clearInterval(pollTimer);heartbeatTimer=pollTimer=0}
+async function stopBroadcast(send=true){
+ stopTimers();
+ for(const pc of peers.values()){try{pc.close()}catch(e){}}peers.clear();
+ if(localStream){for(const t of localStream.getTracks())try{t.stop()}catch(e){}localStream=null}
+ if(send&&streamId&&cfg){try{await api("/api/live/stop",{stream_id:streamId})}catch(e){}}
+ streamId="";$("video").srcObject=null;$("video").classList.add("hidden");$("placeholder").classList.remove("hidden");
+ status("Transmissão encerrada.","OFF");post("broadcastStopped");render();
+}
+async function startBroadcast(){
+ try{
+  status(cfg.kind==="radio_mic"?"Solicitando microfone...":"Escolha somente a janela do Euro Truck Simulator 2...","ABRINDO");
+  if(cfg.kind==="radio_mic"){
+   localStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+  }else{
+   const fps=cfg.quality==="economico"?24:30;
+   localStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1280},height:{ideal:720},frameRate:{ideal:fps,max:fps}},audio:false});
+   const vt=localStream.getVideoTracks()[0];if(vt){try{await vt.applyConstraints({width:{ideal:1280},height:{ideal:720},frameRate:{ideal:fps,max:fps}})}catch(e){}vt.addEventListener("ended",()=>stopBroadcast())}
+   $("video").srcObject=localStream;$("video").muted=true;$("video").classList.remove("hidden");$("placeholder").classList.add("hidden");
+  }
+  const r=await api("/api/live/start",{kind:cfg.kind,quality:cfg.quality,label:cfg.kind==="radio_mic"?"Locução GAT":"Rota de "+cfg.user});
+  streamId=r.stream.stream_id;
+  heartbeatTimer=setInterval(()=>api("/api/live/heartbeat",{stream_id:streamId}).catch(()=>stopBroadcast(false)),8000);
+  pollTimer=setInterval(pollBroadcaster,900);
+  status(cfg.kind==="radio_mic"?"Sua voz está AO VIVO na Rádio GAT.":"Sua rota está AO VIVO. Somente a janela escolhida está sendo capturada.","AO VIVO");
+  post("broadcastStarted",{streamId,kind:cfg.kind});render();
+ }catch(e){status("Não foi possível iniciar: "+e.message,"ERRO");post("error",{message:e.message});if(localStream){for(const t of localStream.getTracks())try{t.stop()}catch(x){}localStream=null}}
+}
+async function pollBroadcaster(){
+ if(!streamId)return;
+ try{
+  const r=await api("/api/live/poll",{stream_id:streamId});
+  for(const sig of (r.signals||[])){
+   if(sig.type!=="offer")continue;
+   const who=sig.sender;let pc=peers.get(who);
+   if(pc){try{pc.close()}catch(e){}}
+   pc=rtc();peers.set(who,pc);
+   for(const t of localStream.getTracks())pc.addTrack(t,localStream);
+   pc.onconnectionstatechange=()=>{if(["failed","closed","disconnected"].includes(pc.connectionState)){try{pc.close()}catch(e){}peers.delete(who)}};
+   await pc.setRemoteDescription(sig.payload);
+   const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await waitIce(pc);
+   await api("/api/live/signal",{stream_id:streamId,target:who,type:"answer",payload:pc.localDescription.toJSON()});
+  }
+ }catch(e){}
+}
+async function startViewer(){
+ try{
+  status("Conectando à transmissão...","CONECTANDO");
+  viewerPc=rtc();viewerStream=new MediaStream();
+  if(cfg.kind==="radio_mic")viewerPc.addTransceiver("audio",{direction:"recvonly"});
+  else{viewerPc.addTransceiver("video",{direction:"recvonly"});viewerPc.addTransceiver("audio",{direction:"recvonly"})}
+  viewerPc.ontrack=e=>{
+   for(const t of e.streams[0]?e.streams[0].getTracks():[e.track])if(!viewerStream.getTracks().some(x=>x.id===t.id))viewerStream.addTrack(t);
+   if(cfg.kind==="radio_mic"){$("audio").srcObject=viewerStream;$("audio").play().catch(()=>{})}
+   else{$("video").srcObject=viewerStream;$("video").classList.remove("hidden");$("placeholder").classList.add("hidden");$("video").play().catch(()=>{})}
+   status(cfg.kind==="radio_mic"?"LOCUÇÃO AO VIVO":"Assistindo "+cfg.owner+" • AO VIVO","AO VIVO");post("viewerConnected",{kind:cfg.kind});
+  };
+  viewerPc.onconnectionstatechange=()=>{if(["failed","closed","disconnected"].includes(viewerPc.connectionState)){status("Transmissão interrompida.","RECONECTANDO");post("viewerDisconnected",{kind:cfg.kind})}};
+  const offer=await viewerPc.createOffer();await viewerPc.setLocalDescription(offer);await waitIce(viewerPc);
+  await api("/api/live/signal",{stream_id:cfg.streamId,target:cfg.owner,type:"offer",payload:viewerPc.localDescription.toJSON()});
+  streamId=cfg.streamId;
+  pollTimer=setInterval(pollViewer,700);await pollViewer();
+ }catch(e){status("Não foi possível assistir: "+e.message,"ERRO");post("error",{message:e.message})}
+}
+async function pollViewer(){
+ try{
+  const r=await api("/api/live/poll",{stream_id:cfg.streamId});
+  for(const sig of (r.signals||[]))if(sig.type==="answer"&&viewerPc&&!viewerPc.currentRemoteDescription){await viewerPc.setRemoteDescription(sig.payload)}
+ }catch(e){clearInterval(pollTimer);status("Transmissão encerrada ou indisponível.","OFF");post("viewerDisconnected",{kind:cfg.kind})}
+}
+function render(){
+ $("actions").innerHTML="";
+ if(!cfg)return;
+ $("title").textContent=cfg.kind==="radio_mic"?"🎙 GAT RÁDIO • LOCUÇÃO":"🚛 GAT • TRANSMISSÃO DE ROTA";
+ $("quality").textContent=cfg.kind==="route"?"Qualidade: "+(cfg.quality==="economico"?"Econômico • 720p / 24 FPS":"Normal • 720p / 30 FPS"):"Microfone do ADM • áudio P2P";
+ if(cfg.mode==="broadcast"){
+  if(streamId)btn("⏹ PARAR TRANSMISSÃO","stop",()=>stopBroadcast());
+  else btn(cfg.kind==="radio_mic"?"🎙 ENTRAR AO VIVO":"🔴 INICIAR CAPTURA DO ETS2","",startBroadcast);
+ }else{
+  $("actions").classList.add("hidden");
+ }
+}
+window.gatConfigure=async function(c){
+ cfg=c||{};$("actions").classList.remove("hidden");render();
+ if(cfg.mode==="viewer")await startViewer();
+ else status(cfg.kind==="radio_mic"?"Clique em ENTRAR AO VIVO para liberar o microfone.":"Clique em INICIAR e selecione somente a janela do ETS2.","PRONTO");
+};
+window.addEventListener("beforeunload",()=>{if(cfg&&cfg.mode==="broadcast"&&streamId){try{navigator.sendBeacon(API+"/api/live/stop",new Blob([JSON.stringify({token:cfg.token,stream_id:streamId})],{type:"application/json"}))}catch(e){}}});
+post("ready");
+</script>
+</body>
+</html>
