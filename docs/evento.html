@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#120805">
+<title>Evento do Mês • Halloween • GAT-LOG</title>
+<meta name="description" content="Evento GAT-LOG Halloween: complete 30 cargas diferentes durante o evento.">
+<link rel="stylesheet" href="official-v4.css">
+<link rel="stylesheet" href="evento-halloween.css?v=1">
+</head>
+<body class="event-page">
+<header class="topbar event-topbar">
+  <a class="brand" href="index.html"><b>GAT-<span>LOG</span></b></a>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="motorista.html">Motorista</a>
+    <a href="mapa.html">Mapa</a>
+    <a href="index.html#ranking">Ranking</a>
+    <a class="active-nav" href="evento.html">Evento do Mês</a>
+    <a href="index.html#downloads">Downloads</a>
+  </nav>
+</header>
+
+<main class="event-shell">
+<section class="event-hero">
+  <div class="event-hero-copy">
+    <span class="event-kicker">EVENTO DO MÊS</span>
+    <h1>HALLOWEEN</h1>
+    <p>30 cargas diferentes para completar. Qualquer distância, qualquer cidade.</p>
+    <div class="hero-badges"><span>🎃 TODAS AS CARGAS LIBERADAS</span><span id="eventState">AGUARDANDO INÍCIO</span></div>
+    <article class="event-progress-card">
+      <div><small>SEU PROGRESSO</small><strong id="eventProgress">0/30</strong></div>
+      <div class="event-progress-track"><i id="eventProgressBar"></i></div>
+      <p id="eventAccountText">Entre na sua Conta GAT para acompanhar o progresso automaticamente.</p>
+    </article>
+  </div>
+  <div class="event-truck-stage" aria-hidden="true">
+    <div class="event-moon"></div><div class="event-bats">🦇　🦇　🦇</div><div class="event-truck"></div>
+    <div class="event-pumpkins">🎃　🎃　🎃</div>
+  </div>
+</section>
+
+<section id="eventLocked" class="event-countdown" hidden>
+  <span>🌙 A ESTRADA ABRE À MEIA-NOITE</span>
+  <h2>O Evento Halloween começa em</h2>
+  <strong id="eventCountdown">--d --h --m --s</strong>
+  <p>A página já está preparada. As 30 cargas serão liberadas automaticamente em 30/09/2026 às 00:00.</p>
+</section>
+
+<section class="event-rules">
+  <div class="event-rules-copy">
+    <span class="event-kicker">REGRAS DO EVENTO</span><h2>Simples: encontre a carga e conclua a entrega.</h2>
+    <div class="event-rule-list">
+      <div><b>🎃</b><span>Qualquer distância e qualquer cidade.</span></div>
+      <div><b>🎃</b><span>O que conta é concluir a entrega da carga do card.</span></div>
+      <div><b>🎃</b><span>Todas as 30 cargas ficam disponíveis desde o início.</span></div>
+      <div><b>🎃</b><span>O motorista decide se faz tudo em um dia ou ao longo do mês.</span></div>
+      <div><b>🎃</b><span>Cada carga diferente conta apenas 1 vez no progresso 30/30.</span></div>
+      <div><b>🎃</b><span>Viagens feitas antes da abertura do evento não contam para o 30/30.</span></div>
+    </div>
+    <p class="event-period">📅 Início: <b>30/09/2026 às 00:00</b> • Encerramento: <b>31/10/2026 às 23:59</b></p>
+  </div>
+  <div class="event-rules-art" aria-hidden="true"><span>👻</span><span>👻</span><span>🎃</span><span>🕯️</span></div>
+</section>
+
+<section class="event-cargos">
+  <div class="event-section-head"><div><span class="event-kicker">DESAFIO 30/30</span><h2>Cargas do Evento <em id="eventProgressTitle">(0/30)</em></h2></div><p>Complete as 30 e entre para o Hall do Evento.</p></div>
+  <div id="eventCargoGrid" class="event-cargo-grid"></div>
+</section>
+
+<section class="event-hall">
+  <span class="event-kicker">🏆 HALL DO EVENTO</span>
+  <h2>Motoristas que completaram 30/30</h2>
+  <div id="eventHall" class="event-hall-list"><span>Ainda sem concluídos.</span></div>
+  <p>Sem 1º, 2º ou 3º lugar. O objetivo é concluir o desafio.</p>
+</section>
+</main>
+<footer class="footer"><div class="shell">GAT-LOG • Evento do Mês • Halloween 2026</div></footer>
+<script src="evento-halloween.js?v=1"></script>
+</body>
+</html>
