@@ -40,14 +40,14 @@ if ($projectText -notmatch '<Project\s+Sdk=' -and $projectText -notmatch 'LiveMe
 $homeStart = $hubText.IndexOf('    private Panel Home041()')
 $homeEnd = $hubText.IndexOf('    private Label StatusCard041(', $homeStart)
 if ($homeStart -lt 0 -or $homeEnd -lt 0) { throw 'Home041 nao encontrado.' }
-$home = $hubText.Substring($homeStart, $homeEnd - $homeStart)
-$home = [regex]::Replace($home, '(?s)\s*p\.Controls\.Add\(new Label \{ Left = 0, Top = 445,.*?\}\);', '')
-if ($home -notlike '*BuildLiveHome1689(p);*') {
-    $returnIndex = $home.LastIndexOf('        return p;')
+$homeBlock = $hubText.Substring($homeStart, $homeEnd - $homeStart)
+$homeBlock = [regex]::Replace($home, '(?s)\s*p\.Controls\.Add\(new Label \{ Left = 0, Top = 445,.*?\}\);', '')
+if ($homeBlock -notlike '*BuildLiveHome1689(p);*') {
+    $returnIndex = $homeBlock.LastIndexOf('        return p;')
     if ($returnIndex -lt 0) { throw 'return p da Home041 nao encontrado.' }
-    $home = $home.Insert($returnIndex, '        BuildLiveHome1689(p);' + $nl)
+    $homeBlock = $homeBlock.Insert($returnIndex, '        BuildLiveHome1689(p);' + $nl)
 }
-$hubText = $hubText.Substring(0, $homeStart) + $home + $hubText.Substring($homeEnd)
+$hubText = $hubText.Substring(0, $homeStart) + $homeBlock + $hubText.Substring($homeEnd)
 
 if ($hubText -notlike '*await LiveMediaShown1689();*') {
     $shownNeedle = 'Shown += async delegate { SyncHub041(); await InitDash041(); };'
