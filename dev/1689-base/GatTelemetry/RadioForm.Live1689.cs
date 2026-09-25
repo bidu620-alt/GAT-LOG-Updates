@@ -57,7 +57,18 @@ internal sealed partial class RadioForm
 
     internal async Task HubRefresh1689Async()
     {
-        try { await RefreshRadioAsync(false); } catch { }
+        try
+        {
+            await RefreshRadioAsync(false);
+            if (!_personalMode && !_webMode && HubChannelAvailable1689 && !_listening)
+            {
+                _listening = true;
+                _toggle.Text = "PARAR RÁDIO";
+                UpdateActiveSourceUi();
+                if (_playerReady) await LoadActiveSourceAsync();
+            }
+        }
+        catch { }
     }
 
     internal void HubSetVolume1689(int value)
