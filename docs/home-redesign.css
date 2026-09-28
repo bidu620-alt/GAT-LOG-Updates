@@ -128,3 +128,18 @@ body{background:#060b12}.topbar{background:rgba(5,10,17,.94);backdrop-filter:blu
 .journey-step:nth-of-type(5) .journey-icon{animation:gatJourneyPulse 3.2s 1.05s ease-in-out infinite}
 .journey-route{animation:gatRouteGlow 2.5s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.journey-icon,.journey-route{animation:none!important}}
+
+
+.ecosystem-signoff{
+  margin-top:11px;color:#7fa8cc;font-size:10px;letter-spacing:.15px;
+  opacity:.92
+}
+.ecosystem-signoff b{
+  color:#dceeff;
+  background:linear-gradient(90deg,#dceeff,#70baff,#dceeff);
+  background-size:200% auto;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:gatSignoffShine 4.6s linear infinite
+}
+@keyframes gatSignoffShine{to{background-position:200% center}}
+@media(prefers-reduced-motion:reduce){.ecosystem-signoff b{animation:none;color:#dceeff;background:none}}
