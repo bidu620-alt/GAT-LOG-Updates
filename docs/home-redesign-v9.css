@@ -1,0 +1,151 @@
+/* Home GAT-LOG 2026 — foco em desafio, progresso e comunidade */
+:root{--gat-blue:#1988ff;--gat-blue2:#4eb0ff;--gat-panel:#0a1420;--gat-panel2:#0c1927;--gat-border:#1d3854;--gat-muted:#8094aa;--gat-green:#49dfa0;--gat-gold:#ffd45d}
+body{background:#060b12}.topbar{background:rgba(5,10,17,.94);backdrop-filter:blur(14px);border-bottom:1px solid #122238}.topbar .brand b{font-size:25px;letter-spacing:-1px}.topbar nav a{font-size:12px}.topbar nav a:first-child{color:#fff;position:relative}.topbar nav a:first-child:after{content:"";position:absolute;left:8px;right:8px;bottom:-15px;height:2px;border-radius:2px;background:var(--gat-blue)}
+.home-hero{position:relative;min-height:570px;display:flex;align-items:center;overflow:hidden;padding-top:66px;padding-bottom:64px}.home-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 35%,rgba(32,128,255,.16),transparent 35%),linear-gradient(90deg,#060b12 0%,rgba(6,11,18,.91) 38%,rgba(6,11,18,.26) 70%,rgba(6,11,18,.56) 100%);z-index:0}.home-hero .truck-scene{position:absolute;z-index:0}.hero-main{position:relative;z-index:2;max-width:670px;margin-left:clamp(36px,4vw,76px)}.hero-main .eyebrow{color:#4eafff;letter-spacing:2px}.hero-main h1{font-size:54px;line-height:1.03;letter-spacing:-2.05px;margin:15px 0 16px;max-width:700px}.hero-main h1 strong{color:#348eff}.hero-main .lead{max-width:590px;font-size:15.5px;line-height:1.65;color:#a8b9cb}.hero-actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:27px}.hero-actions .btn{min-height:44px;padding:0 18px;font-size:11px}.hero-actions .btn.primary{box-shadow:0 10px 34px #087cff3d}.hero-kicker{margin-top:23px;display:flex;gap:10px;align-items:center;color:#8fa4b8;font-size:10px}.hero-kicker b{color:#68baff}.live-dot{width:7px;height:7px;border-radius:50%;background:var(--gat-green);box-shadow:0 0 16px var(--gat-green)}
+.home-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(330px,.95fr);gap:16px;margin-top:-38px;position:relative;z-index:4}.season-panel,.ranking-hub,.why-card,.downloads-panel,.community-panel{border:1px solid var(--gat-border);background:linear-gradient(180deg,rgba(12,25,39,.96),rgba(7,14,23,.98));border-radius:20px;box-shadow:0 18px 46px rgba(0,0,0,.25)}.season-panel{padding:22px}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.panel-title small{font-size:10px;color:#8ea2b7;font-weight:900;letter-spacing:.7px}.panel-title span{font-size:9px;color:#6f8398}.season-content{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}.season-goals{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.goal-mini{min-height:126px;border-right:1px solid #172b40;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:9px}.goal-mini:last-child{border-right:0}.goal-icon{font-size:27px;color:#45a6ff;text-shadow:0 0 18px #1988ff66;line-height:1}.goal-mini b{font-size:29px;margin-top:11px}.goal-mini span{font-size:10px;color:#899db1;margin-top:4px}.progress-card{border:1px solid #213b57;border-radius:15px;background:linear-gradient(145deg,#0d1b2a,#0a1420);padding:17px 18px;min-height:126px}.progress-card small{font-size:9px;color:#9eb0c2;font-weight:900}.progress-number{display:flex;align-items:end;gap:6px;margin:12px 0}.progress-number b{font-size:34px;color:#d8e9f9}.progress-number span{font-size:11px;color:#8297ab;margin-bottom:5px}.progress-track{height:10px;border-radius:999px;background:#06101a;border:1px solid #17304a;overflow:hidden}.progress-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#157cff,#54b4ff);border-radius:999px;transition:width .4s ease}.progress-foot{display:flex;justify-content:space-between;gap:10px;margin-top:7px;color:#72869b;font-size:9px}.progress-foot strong{color:#77bdff}
+.ranking-hub{padding:19px}.ranking-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.ranking-head h2{font-size:18px;margin:0}.rank-tabs{display:flex;gap:5px;flex-wrap:wrap}.rank-tab{border:1px solid #24405d;background:#0a1724;color:#8fa3b8;border-radius:8px;padding:7px 10px;font-size:9px;cursor:pointer}.rank-tab.active{background:linear-gradient(135deg,#164f8d,#133a66);border-color:#3c8bd1;color:#fff;box-shadow:0 0 18px #168aff2a}.rank-list{display:grid;gap:2px;margin-top:8px}.rank-row{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:9px;padding:9px 6px;border-bottom:1px solid #14263a;text-decoration:none;color:inherit}.rank-row:hover{background:#0d1b2a}.rank-pos{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#132236;color:#8fa4b9;font-size:9px;font-weight:900}.rank-row:first-child .rank-pos{background:#4a3508;color:var(--gat-gold)}.rank-driver{display:flex;align-items:center;gap:8px;min-width:0}.rank-avatar2{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;background:#123b61;color:#80c4ff;font-weight:900;font-size:10px}.rank-name{min-width:0}.rank-name b{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rank-name small{display:block;color:#60768c;font-size:8px;margin-top:2px}.rank-score{text-align:right}.rank-score b{display:block;color:#d7e8f8;font-size:11px}.rank-score small{display:block;color:#74889d;font-size:8px;margin-top:2px}.rank-more{display:block;margin-top:11px;text-align:center;border:1px solid #1d3853;border-radius:9px;padding:9px;color:#75baff;text-decoration:none;font-size:9px;font-weight:900}.data-note{margin:7px 0 0;font-size:8px;color:#687f96;min-height:14px}
+.why-section{padding-top:34px}.why-title{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:17px}.why-title:before,.why-title:after{content:"";width:38px;height:1px;background:#237fd1}.why-title h2{font-size:15px;margin:0;color:#9eb0c3;letter-spacing:.5px}.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.why-card{padding:18px;min-height:112px}.why-card .why-icon{font-size:25px;color:#46a7ff}.why-card h3{font-size:13px;margin:12px 0 5px}.why-card p{font-size:10px;line-height:1.55;color:#7f94a9;margin:0}
+.lower-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:16px;margin-top:18px}.downloads-panel{padding:18px}.downloads-panel h2,.community-panel h2{font-size:15px;margin:0 0 12px}.downloads-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.download-mini{border:1px solid #1a3148;border-radius:12px;background:#0a1622;padding:12px;text-decoration:none;color:inherit}.download-mini strong{display:block;font-size:11px}.download-mini span{display:block;font-size:8px;color:#6f8499;line-height:1.4;margin:5px 0 10px}.download-mini b{display:block;text-align:center;border:1px solid #21486c;border-radius:7px;padding:7px;color:#78bdff;font-size:8px}.community-panel{position:relative;overflow:hidden;padding:24px;background:radial-gradient(circle at 85% 45%,rgba(32,108,255,.27),transparent 42%),linear-gradient(135deg,#102e69,#0b1e45 63%,#081527)}.community-panel:after{content:"GAT";position:absolute;right:22px;bottom:-15px;font-size:90px;font-weight:950;color:#fff;opacity:.035}.community-panel p{max-width:430px;font-size:10px;line-height:1.6;color:#b3c8df}.community-panel .btn{margin-top:8px}.home-footer-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0 34px;border:1px solid #172c42;border-radius:13px;background:#08121d;padding:12px}.home-footer-strip span{text-align:center;font-size:9px;color:#8196aa}.home-footer-strip i{color:#4fe1a0;font-style:normal;margin-right:5px}
+@media(max-width:1050px){.home-grid{grid-template-columns:1fr}.season-content{grid-template-columns:1fr}.home-hero .truck-scene{opacity:.55}.hero-main{margin-left:24px}.hero-main h1{font-size:47px}.lower-grid{grid-template-columns:1fr}}
+@media(max-width:820px){.why-grid{grid-template-columns:1fr 1fr}.downloads-mini{grid-template-columns:1fr}.season-goals{grid-template-columns:1fr 1fr}.goal-mini:nth-child(2){border-right:0}.home-footer-strip{grid-template-columns:1fr 1fr}.home-footer-strip span:last-child{grid-column:1/-1}.home-hero{min-height:520px}.hero-main{margin-left:18px}.hero-main h1{font-size:41px}.topbar nav a:after{display:none}}
+@media(max-width:560px){.home-hero{padding-top:36px;min-height:500px}.hero-main{margin-left:0}.hero-main h1{font-size:34px;letter-spacing:-1.3px}.hero-main .lead{font-size:13px}.home-grid{margin-top:-24px}.season-panel,.ranking-hub{padding:15px}.season-goals{grid-template-columns:1fr 1fr}.goal-mini{min-height:105px}.goal-mini b{font-size:24px}.why-grid{grid-template-columns:1fr}.home-footer-strip{grid-template-columns:1fr}.home-footer-strip span:last-child{grid-column:auto}.rank-tabs{width:100%}.rank-tab{flex:1}.community-panel{padding:20px}.topbar .brand b{font-size:21px}}
+
+
+/* Ranking mensal */
+.ranking-title-block{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rank-season-picker{display:flex;align-items:center;gap:6px}
+.rank-season-picker label{font-size:8px;font-weight:950;color:#6f8398;letter-spacing:.55px}
+.rank-season-picker select{appearance:none;border:1px solid #24405d;background:#0a1724;color:#d7e8f8;border-radius:8px;padding:7px 28px 7px 9px;font-size:9px;font-weight:800;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#75baff 50%),linear-gradient(135deg,#75baff 50%,transparent 50%);background-position:calc(100% - 12px) 50%,calc(100% - 8px) 50%;background-size:4px 4px,4px 4px;background-repeat:no-repeat}
+.rank-season-picker select:focus{outline:0;border-color:#3c8bd1;box-shadow:0 0 0 2px #168aff1f}
+.rank-season-picker select:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:560px){.ranking-head{align-items:flex-start;flex-direction:column}.ranking-title-block{width:100%;justify-content:space-between}.rank-season-picker select{max-width:170px}}
+
+
+/* Home pública — apresentação da plataforma */
+.platform-home{margin-top:-38px;position:relative;z-index:4}
+.platform-showcase{display:grid;grid-template-columns:1.08fr .92fr;gap:24px;padding:28px;border:1px solid var(--gat-border);border-radius:22px;background:linear-gradient(180deg,rgba(12,25,39,.97),rgba(7,14,23,.99));box-shadow:0 18px 48px rgba(0,0,0,.28)}
+.platform-copy h2{margin:8px 0 12px;font-size:34px;line-height:1.08;letter-spacing:-1px}
+.platform-copy h2 strong{color:#55afff}.platform-copy p{max-width:650px;margin:0;color:#8ea2b7;font-size:12px;line-height:1.7}
+.platform-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.platform-badges span{border:1px solid #254765;background:#0b1a28;color:#8fc9ff;border-radius:999px;padding:7px 10px;font-size:8px;font-weight:950;letter-spacing:.5px}
+.platform-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:9px;align-items:stretch}
+.platform-node{min-width:0;border:1px solid #203b55;border-radius:15px;background:linear-gradient(145deg,#0d1b2a,#09131d);padding:15px;display:flex;flex-direction:column;justify-content:center}
+.platform-node i{font-style:normal;color:#4eaaff;font-size:9px;font-weight:950}.platform-node b{display:block;margin:7px 0 6px;font-size:13px}.platform-node span{color:#71869a;font-size:9px;line-height:1.5}
+.platform-arrow{display:grid;place-items:center;color:#3b8cca;font-weight:950}
+.platform-nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:12px}
+.platform-nav-card{min-height:145px;display:grid;grid-template-columns:42px 1fr;grid-template-rows:1fr auto;gap:9px 12px;padding:17px;border:1px solid #1c334a;border-radius:17px;background:linear-gradient(180deg,#0b1622,#08111a);text-decoration:none;color:inherit;transition:.18s}
+.platform-nav-card:hover{transform:translateY(-3px);border-color:#3d7eb8;background:#0d1a28;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+.platform-nav-card>span{grid-row:1/3;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#123b61;color:#80c4ff;font-size:18px;font-weight:950}
+.platform-nav-card small{display:block;color:#6d8297;font-size:8px;font-weight:950;letter-spacing:.6px}.platform-nav-card b{display:block;margin-top:4px;font-size:15px}.platform-nav-card p{margin:5px 0 0;color:#71869a;font-size:9px;line-height:1.45}.platform-nav-card>strong{grid-column:2;color:#71baff;font-size:8px;letter-spacing:.4px}
+@media(max-width:1050px){.platform-showcase{grid-template-columns:1fr}.platform-nav-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.platform-flow{grid-template-columns:1fr}.platform-arrow{transform:rotate(90deg)}.platform-nav-grid{grid-template-columns:1fr}.platform-showcase{padding:20px}.platform-copy h2{font-size:28px}}
+
+
+/* Home pública — GAT Telemetria + Radar da Estrada */
+.home-information-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(330px,.85fr);gap:14px}
+.telemetry-showcase,.road-radar{border:1px solid var(--gat-border);border-radius:20px;background:linear-gradient(180deg,rgba(12,25,39,.97),rgba(7,14,23,.99));box-shadow:0 18px 48px rgba(0,0,0,.28)}
+.telemetry-showcase{padding:23px}.road-radar{padding:20px}
+.home-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.home-panel-head h2{font-size:25px;line-height:1.08;margin:5px 0 0}.home-panel-head h2 strong{color:#55afff}
+.telemetry-live{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid #215843;background:#0b241c;color:#67deb0;border-radius:999px;padding:7px 9px;font-size:8px;font-weight:950}
+.telemetry-live i{width:6px;height:6px;border-radius:50%;background:#4ce5aa;box-shadow:0 0 12px #4ce5aa}
+.telemetry-intro,.radar-intro{color:#7f94a9;font-size:10px;line-height:1.6;margin:10px 0 15px}
+.telemetry-data-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.telemetry-data-grid>div{min-width:0;min-height:94px;border:1px solid #1d344b;border-radius:13px;background:linear-gradient(145deg,#0c1824,#09121b);padding:11px;display:flex;flex-direction:column;justify-content:center}
+.telemetry-data-grid>div>span{font-size:19px;color:#5db2ff;line-height:1;margin-bottom:9px}.telemetry-data-grid>div:nth-child(4)>span{color:#ff6874}.telemetry-data-grid>div:nth-child(5)>span{color:#b177ff}.telemetry-data-grid>div:nth-child(9)>span,.telemetry-data-grid>div:nth-child(10)>span{color:#ffd05c}
+.telemetry-data-grid b{font-size:10px}.telemetry-data-grid small{display:block;color:#6d8297;font-size:8px;line-height:1.35;margin-top:4px}
+.radar-head{align-items:center}.radar-head h2{font-size:20px}.radar-head>a{border:1px solid #29455f;border-radius:8px;padding:7px 9px;color:#7ebeff;font-size:8px;font-weight:950}
+.radar-list{display:grid;gap:7px}.radar-list>a{display:grid;grid-template-columns:45px 1fr 16px;align-items:center;gap:9px;min-height:58px;padding:8px;border:1px solid #1c3045;border-radius:11px;background:#0a141f;text-decoration:none;color:inherit;transition:.16s}
+.radar-list>a:hover{border-color:#3d6f9d;background:#0d1b29;transform:translateX(2px)}
+.radar-list>a>div{min-width:0}.radar-list b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.radar-list small{display:block;margin-top:3px;color:#6f8498;font-size:8px;line-height:1.35}.radar-list>a>strong{color:#6d95bd;font-size:17px;text-align:center}
+.radar-tag{height:38px;border-radius:9px;display:grid;place-items:center;font-size:8px;font-weight:950;border:1px solid #2f4d68;background:#102438;color:#87c6ff}.radar-tag.ats{border-color:#5a4427;background:#251a0e;color:#ffc16a}.radar-tag.scs{border-color:#4f2d5f;background:#20102a;color:#d7a4ff}.radar-tag.promods{border-color:#71311d;background:#2b1109;color:#ff956b}.radar-tag.maps{border-color:#31563f;background:#102319;color:#83dba2}
+@media(max-width:1050px){.home-information-grid{grid-template-columns:1fr}.telemetry-data-grid{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:760px){.telemetry-data-grid{grid-template-columns:repeat(2,1fr)}.telemetry-data-grid>div:last-child{grid-column:1/-1}.home-panel-head{flex-direction:column}.telemetry-live{align-self:flex-start}}
+@media(max-width:460px){.telemetry-data-grid{grid-template-columns:1fr}.telemetry-data-grid>div:last-child{grid-column:auto}}
+
+
+/* Home — banner compacto Ecossistema GAT-LOG */
+.ecosystem-banner{
+  position:relative;overflow:hidden;min-height:250px;
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(420px,.95fr);
+  gap:28px;align-items:center;padding:28px 30px;
+  border:1px solid var(--gat-border);border-radius:22px;
+  background:
+    radial-gradient(circle at 82% 35%,rgba(35,123,255,.13),transparent 28%),
+    linear-gradient(135deg,rgba(11,23,35,.98),rgba(6,12,20,.99));
+  box-shadow:0 18px 48px rgba(0,0,0,.28);
+}
+.ecosystem-banner:before{
+  content:"";position:absolute;inset:auto -10% -45% 48%;height:180px;
+  border:2px solid rgba(71,154,255,.12);border-radius:50%;
+  transform:rotate(-7deg);pointer-events:none
+}
+.ecosystem-copy{position:relative;z-index:2;max-width:670px}
+.ecosystem-copy h2{margin:7px 0 11px;font-size:32px;line-height:1.06;letter-spacing:-1px}
+.ecosystem-copy h2 strong{color:#55afff}
+.ecosystem-copy p{margin:0;max-width:660px;color:#8ea2b7;font-size:11px;line-height:1.7}
+.ecosystem-copy blockquote{
+  margin:17px 0 0;padding:2px 0 2px 13px;border-left:3px solid #2f91ff;
+  color:#bcd5ee;font-size:12px;font-weight:850;line-height:1.5
+}
+.ecosystem-journey{
+  position:relative;z-index:2;display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;
+  gap:8px;align-items:center
+}
+.journey-route{
+  position:absolute;left:5%;right:5%;top:35%;height:2px;
+  background:linear-gradient(90deg,rgba(68,159,255,.1),rgba(68,159,255,.55),rgba(68,159,255,.1));
+  box-shadow:0 0 18px rgba(68,159,255,.2);z-index:-1
+}
+.journey-step{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;min-width:0}
+.journey-icon{
+  width:62px;height:62px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid #2e5f8d;background:radial-gradient(circle,#17395a,#0c1928 70%);
+  color:#7cc3ff;font-size:21px;font-weight:950;
+  box-shadow:0 0 20px rgba(37,139,255,.18)
+}
+.journey-step b{
+  width:100%;padding:7px 6px;border:1px solid #234761;border-radius:999px;
+  background:#0a1722;color:#9dcef8;font-size:8px;letter-spacing:.55px
+}
+.ecosystem-journey>i{font-style:normal;color:#4aa5f2;font-size:18px;font-weight:950}
+@media(max-width:1000px){
+  .ecosystem-banner{grid-template-columns:1fr;min-height:auto}
+  .ecosystem-journey{max-width:720px}
+}
+@media(max-width:650px){
+  .ecosystem-banner{padding:21px 18px;gap:22px}
+  .ecosystem-copy h2{font-size:27px}
+  .ecosystem-journey{grid-template-columns:1fr 1fr;gap:10px}
+  .ecosystem-journey>i,.journey-route{display:none}
+  .journey-icon{width:54px;height:54px}
+}
+
+@keyframes gatJourneyPulse{0%,100%{transform:translateY(0);box-shadow:0 0 18px rgba(37,139,255,.14)}50%{transform:translateY(-3px);box-shadow:0 0 28px rgba(37,139,255,.32)}}
+@keyframes gatRouteGlow{0%,100%{opacity:.35}50%{opacity:1}}
+.journey-step:nth-of-type(2) .journey-icon{animation:gatJourneyPulse 3.2s ease-in-out infinite}
+.journey-step:nth-of-type(3) .journey-icon{animation:gatJourneyPulse 3.2s .35s ease-in-out infinite}
+.journey-step:nth-of-type(4) .journey-icon{animation:gatJourneyPulse 3.2s .7s ease-in-out infinite}
+.journey-step:nth-of-type(5) .journey-icon{animation:gatJourneyPulse 3.2s 1.05s ease-in-out infinite}
+.journey-route{animation:gatRouteGlow 2.5s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.journey-icon,.journey-route{animation:none!important}}
+
+
+.ecosystem-signoff{
+  margin-top:11px;color:#7fa8cc;font-size:10px;letter-spacing:.15px;
+  opacity:.92
+}
+.ecosystem-signoff b{
+  color:#dceeff;
+  background:linear-gradient(90deg,#dceeff,#70baff,#dceeff);
+  background-size:200% auto;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:gatSignoffShine 4.6s linear infinite
+}
+@keyframes gatSignoffShine{to{background-position:200% center}}
+@media(prefers-reduced-motion:reduce){.ecosystem-signoff b{animation:none;color:#dceeff;background:none}}
+
+.journey-pumpkin{
+  display:none;width:58px;height:58px;flex:0 0 auto;
+  background:url("eventos/hallowin/assets/abobora-gat.svg") center/contain no-repeat;
+  filter:drop-shadow(0 0 10px rgba(255,106,0,.2));
+}
