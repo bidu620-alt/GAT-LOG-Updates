@@ -234,3 +234,46 @@ body.gat-halloween ::selection{background:#8c3ed0;color:#fff}
       url("eventos/hallowin/assets/hero-halloween.png") 64% top/cover no-repeat!important;
   }
 }
+
+
+/* Nova home pública e página dedicada de Ranking */
+body.gat-halloween .platform-showcase,
+body.gat-halloween .platform-nav-card,
+body.gat-halloween .ranking-hero,
+body.gat-halloween .ranking-board,
+body.gat-halloween .ranking-explain article{
+  border-color:#4b294f!important;
+  background:linear-gradient(180deg,rgba(20,11,25,.97),rgba(9,6,12,.99))!important;
+}
+body.gat-halloween .platform-copy h2 strong,
+body.gat-halloween .platform-node i,
+body.gat-halloween .platform-nav-card>strong,
+body.gat-halloween .ranking-hero-side span,
+body.gat-halloween .ranking-explain article>span{color:#ff9a4b!important}
+body.gat-halloween .platform-badges span,
+body.gat-halloween .ranking-hero-badges span{
+  border-color:#6a3a43!important;background:#2a1117!important;color:#ffc19a!important
+}
+body.gat-halloween .platform-node,
+body.gat-halloween .ranking-hero-side{
+  border-color:#4d3153!important;background:linear-gradient(145deg,#160d1b,#0d0911)!important
+}
+body.gat-halloween .platform-nav-card>span,
+body.gat-halloween .ranking-avatar{
+  background:linear-gradient(145deg,#5c2a76,#2e183d)!important;color:#f0d8ff!important
+}
+body.gat-halloween .platform-nav-card:hover,
+body.gat-halloween .ranking-row:hover{background:#170e1b!important;border-color:#8d4f79!important}
+body.gat-halloween .ranking-page{background:transparent}
+body.gat-halloween .ranking-hero{
+  background:
+    linear-gradient(90deg,rgba(8,5,10,.96),rgba(8,5,10,.72)),
+    url("eventos/hallowin/assets/hall2-halloween.jpg") center/cover no-repeat!important;
+}
+body.gat-halloween .ranking-controls select,
+body.gat-halloween .rank-tab{border-color:#50315a!important;background:#130c18!important;color:#c7b4cc!important}
+body.gat-halloween .rank-tab.active{
+  border-color:#b457ff!important;background:linear-gradient(135deg,#6b2d9c,#3c1b5b)!important;color:#fff!important
+}
+body.gat-halloween .ranking-columns,
+body.gat-halloween .ranking-row{border-bottom-color:#2b1a31!important}

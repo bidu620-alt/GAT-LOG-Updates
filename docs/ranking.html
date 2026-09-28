@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070a0f">
+<title>Ranking GAT • GAT-LOG</title>
+<meta name="description" content="Ranking mensal GAT-LOG, XP, nível, cargas perfeitas e histórico por mês.">
+<link rel="stylesheet" href="official-v4.css">
+<link rel="stylesheet" href="ranking-page.css?v=1">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><b>GAT-<span>LOG</span></b></a>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="motorista.html">Motorista</a>
+    <a href="mapa.html">Mapa</a>
+    <a class="active-nav" href="ranking.html">Ranking</a>
+    <a href="regras.html">Regras</a>
+    <a class="event-month-link" href="eventos/hallowin/" style="display:none">Evento do Mês</a>
+    <a href="index.html#downloads">Downloads</a>
+  </nav>
+  <a class="account-btn" href="motorista.html">MINHA CONTA</a>
+</header>
+
+<main class="ranking-page shell">
+<section class="ranking-hero">
+  <div>
+    <span class="eyebrow">CLASSIFICAÇÃO OFICIAL GAT-LOG</span>
+    <h1>Ranking GAT</h1>
+    <p>O Ranking GAT é mensal. A classificação do mês começa do zero, enquanto XP, nível, quilômetros e histórico de carreira continuam acumulados no perfil de cada motorista.</p>
+    <div class="ranking-hero-badges"><span>99 KM = 10 PONTOS</span><span>BÔNUS DE PESO</span><span>MULTAS E DANOS DESCONTAM</span><span>HISTÓRICO POR MÊS</span></div>
+  </div>
+  <div class="ranking-hero-side">
+    <small>PERÍODO SELECIONADO</small>
+    <b id="rankingSeasonTitle">Carregando…</b>
+    <span id="rankingSeasonState">Conectando à Central GAT</span>
+  </div>
+</section>
+
+<section class="ranking-board">
+  <header class="ranking-board-head">
+    <div>
+      <span class="eyebrow">CLASSIFICAÇÃO</span>
+      <h2>Motoristas GAT</h2>
+    </div>
+    <div class="ranking-controls">
+      <label>MÊS<select id="rankMonth" aria-label="Escolher mês do ranking"><option value="">Mês atual</option></select></label>
+      <div class="rank-tabs">
+        <button class="rank-tab active" type="button" data-rank-mode="gat">Pontos GAT</button>
+        <button class="rank-tab" type="button" data-rank-mode="xp">XP / Nível</button>
+        <button class="rank-tab" type="button" data-rank-mode="safe">Cargas Perfeitas</button>
+      </div>
+    </div>
+  </header>
+  <div id="rankingStatus" class="ranking-status">Carregando classificação...</div>
+  <div class="ranking-columns"><span>#</span><span>MOTORISTA</span><span>RESULTADO</span></div>
+  <div id="rankList" class="ranking-list"></div>
+</section>
+
+<section class="ranking-explain">
+  <article><span>01</span><div><small>RANKING GAT</small><b>Competição mensal</b><p>Pontos do mês atual, com histórico acessível pelo seletor de mês.</p></div></article>
+  <article><span>02</span><div><small>XP / NÍVEL</small><b>Carreira acumulada</b><p>Mostra a progressão geral do motorista e não zera na virada mensal.</p></div></article>
+  <article><span>03</span><div><small>CARGAS PERFEITAS</small><b>Qualidade de condução</b><p>Destaca entregas sem penalidades, multas ou danos relevantes.</p></div></article>
+</section>
+</main>
+
+<footer class="footer"><div class="shell">GAT-LOG • Ranking oficial da comunidade.</div></footer>
+<script src="ranking-page.js?v=1"></script>
+<script src="event-nav.js?v=3"></script>
+</body>
+</html>
