@@ -6,7 +6,7 @@ function preview(){try{return sessionStorage.getItem(PREVIEW_KEY)==='1'}catch(_)
 function theme(on){
   document.body?.classList.toggle('gat-halloween',on);
   let l=document.getElementById('gatHalloweenTheme');
-  if(on&&!l){l=document.createElement('link');l.id='gatHalloweenTheme';l.rel='stylesheet';l.href='halloween-theme.css?v=2';document.head.appendChild(l)}
+  if(on&&!l){l=document.createElement('link');l.id='gatHalloweenTheme';l.rel='stylesheet';l.href='halloween-theme.css?v=3';document.head.appendChild(l)}
   if(!on&&l)l.remove();
 }
 function apply(){

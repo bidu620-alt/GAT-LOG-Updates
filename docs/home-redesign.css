@@ -38,3 +38,26 @@ body{background:#060b12}.topbar{background:rgba(5,10,17,.94);backdrop-filter:blu
 .platform-nav-card small{display:block;color:#6d8297;font-size:8px;font-weight:950;letter-spacing:.6px}.platform-nav-card b{display:block;margin-top:4px;font-size:15px}.platform-nav-card p{margin:5px 0 0;color:#71869a;font-size:9px;line-height:1.45}.platform-nav-card>strong{grid-column:2;color:#71baff;font-size:8px;letter-spacing:.4px}
 @media(max-width:1050px){.platform-showcase{grid-template-columns:1fr}.platform-nav-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:720px){.platform-flow{grid-template-columns:1fr}.platform-arrow{transform:rotate(90deg)}.platform-nav-grid{grid-template-columns:1fr}.platform-showcase{padding:20px}.platform-copy h2{font-size:28px}}
+
+
+/* Home pública — GAT Telemetria + Radar da Estrada */
+.home-information-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(330px,.85fr);gap:14px}
+.telemetry-showcase,.road-radar{border:1px solid var(--gat-border);border-radius:20px;background:linear-gradient(180deg,rgba(12,25,39,.97),rgba(7,14,23,.99));box-shadow:0 18px 48px rgba(0,0,0,.28)}
+.telemetry-showcase{padding:23px}.road-radar{padding:20px}
+.home-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.home-panel-head h2{font-size:25px;line-height:1.08;margin:5px 0 0}.home-panel-head h2 strong{color:#55afff}
+.telemetry-live{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid #215843;background:#0b241c;color:#67deb0;border-radius:999px;padding:7px 9px;font-size:8px;font-weight:950}
+.telemetry-live i{width:6px;height:6px;border-radius:50%;background:#4ce5aa;box-shadow:0 0 12px #4ce5aa}
+.telemetry-intro,.radar-intro{color:#7f94a9;font-size:10px;line-height:1.6;margin:10px 0 15px}
+.telemetry-data-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.telemetry-data-grid>div{min-width:0;min-height:94px;border:1px solid #1d344b;border-radius:13px;background:linear-gradient(145deg,#0c1824,#09121b);padding:11px;display:flex;flex-direction:column;justify-content:center}
+.telemetry-data-grid>div>span{font-size:19px;color:#5db2ff;line-height:1;margin-bottom:9px}.telemetry-data-grid>div:nth-child(4)>span{color:#ff6874}.telemetry-data-grid>div:nth-child(5)>span{color:#b177ff}.telemetry-data-grid>div:nth-child(9)>span,.telemetry-data-grid>div:nth-child(10)>span{color:#ffd05c}
+.telemetry-data-grid b{font-size:10px}.telemetry-data-grid small{display:block;color:#6d8297;font-size:8px;line-height:1.35;margin-top:4px}
+.radar-head{align-items:center}.radar-head h2{font-size:20px}.radar-head>a{border:1px solid #29455f;border-radius:8px;padding:7px 9px;color:#7ebeff;font-size:8px;font-weight:950}
+.radar-list{display:grid;gap:7px}.radar-list>a{display:grid;grid-template-columns:45px 1fr 16px;align-items:center;gap:9px;min-height:58px;padding:8px;border:1px solid #1c3045;border-radius:11px;background:#0a141f;text-decoration:none;color:inherit;transition:.16s}
+.radar-list>a:hover{border-color:#3d6f9d;background:#0d1b29;transform:translateX(2px)}
+.radar-list>a>div{min-width:0}.radar-list b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.radar-list small{display:block;margin-top:3px;color:#6f8498;font-size:8px;line-height:1.35}.radar-list>a>strong{color:#6d95bd;font-size:17px;text-align:center}
+.radar-tag{height:38px;border-radius:9px;display:grid;place-items:center;font-size:8px;font-weight:950;border:1px solid #2f4d68;background:#102438;color:#87c6ff}.radar-tag.ats{border-color:#5a4427;background:#251a0e;color:#ffc16a}.radar-tag.scs{border-color:#4f2d5f;background:#20102a;color:#d7a4ff}.radar-tag.promods{border-color:#71311d;background:#2b1109;color:#ff956b}.radar-tag.maps{border-color:#31563f;background:#102319;color:#83dba2}
+@media(max-width:1050px){.home-information-grid{grid-template-columns:1fr}.telemetry-data-grid{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:760px){.telemetry-data-grid{grid-template-columns:repeat(2,1fr)}.telemetry-data-grid>div:last-child{grid-column:1/-1}.home-panel-head{flex-direction:column}.telemetry-live{align-self:flex-start}}
+@media(max-width:460px){.telemetry-data-grid{grid-template-columns:1fr}.telemetry-data-grid>div:last-child{grid-column:auto}}
