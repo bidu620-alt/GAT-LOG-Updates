@@ -364,3 +364,5 @@ body.gat-halloween .journey-pumpkin{
 @media(prefers-reduced-motion:reduce){
   body.gat-halloween .journey-pumpkin{animation:none!important}
 }
+
+@media(max-width:650px){body.gat-halloween .journey-pumpkin{display:none!important}}
