@@ -6,6 +6,11 @@ on:
     paths:
       - 'central-hotfix-10621/**'
       - '.github/workflows/build-central-hotfix-10621.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'central-hotfix-10621/**'
+      - '.github/workflows/build-central-hotfix-10621.yml'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +42,7 @@ jobs:
           Get-FileHash $f -Algorithm SHA256
 
       - name: Publish release file
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           mkdir -p releases
