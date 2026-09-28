@@ -143,3 +143,9 @@ body{background:#060b12}.topbar{background:rgba(5,10,17,.94);backdrop-filter:blu
 }
 @keyframes gatSignoffShine{to{background-position:200% center}}
 @media(prefers-reduced-motion:reduce){.ecosystem-signoff b{animation:none;color:#dceeff;background:none}}
+
+.journey-pumpkin{
+  display:none;width:58px;height:58px;flex:0 0 auto;
+  background:url("eventos/hallowin/assets/abobora-gat.svg") center/contain no-repeat;
+  filter:drop-shadow(0 0 10px rgba(255,106,0,.2));
+}
