@@ -340,3 +340,11 @@ body.gat-halloween .journey-step b{
   border-color:#60335f!important;background:#160d1a!important;color:#e2c6eb!important
 }
 body.gat-halloween .ecosystem-journey>i{color:#ff8b37!important}
+
+
+body.gat-halloween .ecosystem-signoff{color:#c39dbf!important}
+body.gat-halloween .ecosystem-signoff b{
+  background:linear-gradient(90deg,#ffd2ad,#ff7a22,#d7adff,#ffd2ad)!important;
+  background-size:220% auto!important;
+  -webkit-background-clip:text!important;background-clip:text!important;color:transparent!important
+}
