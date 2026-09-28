@@ -2,32 +2,82 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070a0f">
-<title>Regras Oficiais • GAT-LOG</title><meta name="description" content="Como funcionam histórico de carreira, XP e Pontos GAT no Euro Truck Simulator 2.">
-<link rel="stylesheet" href="official-v4.css"><link rel="stylesheet" href="login.css"><link rel="stylesheet" href="regras.css?v=3">
+<title>Regras Oficiais • GAT-LOG</title><meta name="description" content="Regras oficiais de Pontos GAT, ranking mensal, XP, multas, danos e histórico de carreira no Euro Truck Simulator 2.">
+<link rel="stylesheet" href="official-v4.css"><link rel="stylesheet" href="login.css"><link rel="stylesheet" href="regras.css?v=4">
 </head>
 <body>
 <header class="topbar"><a class="brand" href="index.html"><b>GAT-<span>LOG</span></b></a><nav><a href="index.html">Início</a><a href="motorista.html">Motorista</a><a href="mapa.html">Mapa</a><a href="index.html#ranking">Ranking</a><a class="active-nav" href="regras.html">Regras</a><a class="event-month-link" href="eventos/hallowin/" style="display:none">Evento do Mês</a><a href="index.html#downloads">Downloads</a></nav></header>
 <main class="rules-page shell">
-<section class="rules-hero"><span class="eyebrow">GAT-LOG • CARREIRA DO MOTORISTA</span><h1>Cada viagem vira história.<br><strong>Qualidade vale Pontos GAT.</strong></h1><p>Uma entrega concluída detectada pelo GAT Telemetria é registrada no histórico do motorista. O XP é calculado pela quilometragem registrada. Depois, separadamente, a Central decide se a viagem está elegível para receber Pontos GAT.</p><div class="rules-badges"><span>HISTÓRICO PERMANENTE</span><span>XP POR KM</span><span>PONTOS GAT POR QUALIDADE</span><span>ROTAS LIVRES</span><span>CARGAS REPETIDAS PERMITIDAS</span></div></section>
-<section class="preseason-note"><b>FILOSOFIA GAT-LOG</b><span>Entrega concluída nunca é descartada por uma regra de ranking. Falhas de validação podem zerar os Pontos GAT daquela viagem, mas o registro e o XP da distância continuam na carreira.</span></section>
-<section class="rules-grid">
-<article class="rule-card"><span class="rule-number">01</span><h2>Histórico primeiro</h2><p>Quando o GAT Telemetria confirma uma entrega do ETS2, a Central registra carga, rota, peso, distância e os demais dados disponíveis. Esse registro faz parte da história do motorista.</p></article>
-<article class="rule-card"><span class="rule-number">02</span><h2>Sem limite de viagens</h2><p>O motorista pode fazer quantas entregas quiser. Não existe meta obrigatória nem teto mensal de viagens.</p></article>
-<article class="rule-card"><span class="rule-number">03</span><h2>Repetições são permitidas</h2><p>A mesma carga, rota, cidade, empresa ou mercado pode ser repetida quantas vezes o motorista quiser. Cada entrega concluída é uma nova viagem no histórico.</p></article>
-<article class="rule-card"><span class="rule-number">04</span><h2>XP pela quilometragem</h2><p>O XP da viagem é calculado em blocos completos de <b>100 km registrados</b>: cada bloco vale <b>20 XP</b>. Multas, danos ou uma falha de elegibilidade para Pontos GAT não retiram esse XP.</p></article>
-<article class="rule-card wide"><span class="rule-number">05</span><h2>Pontos GAT são uma validação separada</h2><p>Depois que a viagem já foi registrada, a Central analisa os dados necessários para pontuação, como versão do GAT Telemetria, continuidade da telemetria e dados de danos. Se a validação falhar, a entrega continua no histórico e mantém o XP, mas recebe <b>0 Pontos GAT</b> e o motivo fica registrado.</p></article>
-<article class="rule-card wide"><span class="rule-number">06</span><h2>Qualidade da condução</h2><p>Quando a viagem está elegível para pontuação, ela parte de até <b>100 Pontos GAT</b>. Multas de velocidade e danos detectados podem reduzir os pontos daquela entrega. A pontuação nunca fica negativa.</p></article>
-<article class="rule-card wide"><span class="rule-number">07</span><h2>Carga ainda desconhecida</h2><p>Se a Central ainda não reconhecer a carga no catálogo, a entrega não é perdida. Ela entra no histórico e recebe o XP da distância; a classificação pode ser feita depois sem criar uma segunda viagem.</p></article>
-<article class="rule-card wide"><span class="rule-number">08</span><h2>Duplicidade e entrega real</h2><p>Pacotes repetidos da mesma conclusão não contam duas vezes. Cancelamentos ou dados que não representam uma entrega concluída também não criam uma viagem. Isso protege o histórico sem limitar a liberdade do motorista.</p></article>
+
+<section class="rules-hero">
+<span class="eyebrow">GAT-LOG • REGRAS OFICIAIS</span>
+<h1>Cada viagem entra na carreira.<br><strong>O ranking começa de novo todo mês.</strong></h1>
+<p>O GAT Telemetria envia a viagem para a Central. A entrega fica no histórico permanente do motorista, enquanto os Pontos GAT usados na classificação são somados dentro do mês selecionado. XP, quilômetros e entregas de carreira continuam acumulados.</p>
+<div class="rules-badges"><span>RANKING MENSAL</span><span>HISTÓRICO POR MÊS</span><span>99 KM = 10 PONTOS</span><span>BÔNUS DE PESO</span><span>MULTAS E DANOS DESCONTAM</span></div>
 </section>
-<section class="rules-section"><div class="section-head"><div><span class="eyebrow">PONTUAÇÃO</span><h2>Como funcionam os Pontos GAT</h2></div></div><div class="career-grid"><article><small>MÁXIMO POR ENTREGA</small><b>100 Pontos GAT</b><p>Uma viagem elegível e sem penalidades pode receber os 100 pontos completos.</p></article><article><small>DESCONTOS</small><b>Multas + danos</b><p>As penalidades de qualidade são aplicadas somente aos Pontos GAT, não ao XP da quilometragem.</p></article><article><small>SEM ELEGIBILIDADE</small><b>0 Pontos GAT</b><p>A viagem permanece registrada e mantém o XP; o perfil informa o motivo da não pontuação.</p></article></div></section>
-<section class="rules-section"><div class="section-head"><div><span class="eyebrow">CONDUÇÃO</span><h2>Penalidades de Pontos GAT</h2></div></div><div class="penalty-grid">
-<article><h3>Excesso de velocidade</h3><p>Acima de <b>91 km/h continuamente por 5 segundos</b> gera 1 multa GAT.</p><strong>−3 PONTOS por multa</strong><small>Ao voltar para 91 km/h ou menos, a ocorrência é encerrada.</small></article>
+
+<section class="preseason-note"><b>NOVA REGRA • 01/10/2026 00:00</b><span>A fórmula completa com bônus de peso, contagem de todas as multas e dano do reboque entra em vigor em <b>1º de outubro de 2026, à 00:00, horário de Brasília</b>. Setembro permanece preservado no histórico com a regra vigente no período. Não existe recálculo retroativo.</span></section>
+
+<section class="rules-grid">
+<article class="rule-card"><span class="rule-number">01</span><h2>Histórico permanente</h2><p>Uma entrega concluída continua salva com carga, rota, peso, distância e os demais dados disponíveis. A virada do mês não apaga as viagens antigas.</p></article>
+<article class="rule-card"><span class="rule-number">02</span><h2>Ranking mensal</h2><p>O Ranking GAT usa apenas as entregas do mês escolhido. Quando começa um novo mês, a classificação daquele mês começa em zero. Os meses anteriores continuam disponíveis para consulta.</p></article>
+<article class="rule-card"><span class="rule-number">03</span><h2>Rotas e cargas livres</h2><p>Não existe limite de viagens, rota obrigatória ou proibição de repetir carga. Cada entrega real concluída pode entrar no histórico e na pontuação conforme as regras de validação.</p></article>
+<article class="rule-card"><span class="rule-number">04</span><h2>XP continua separado</h2><p>O XP da carreira continua em blocos completos de <b>100 km registrados</b>: cada bloco vale <b>20 XP</b>. Pontos GAT e XP são sistemas separados.</p></article>
+<article class="rule-card wide"><span class="rule-number">05</span><h2>Fórmula dos Pontos GAT</h2><p>A partir de 01/10, a conta da entrega é: <b>Pontos da distância + bônus de peso − multas − danos</b>. A distância vale <b>10 Pontos GAT a cada 99 km completos</b>. O resultado nunca fica negativo.</p></article>
+<article class="rule-card wide"><span class="rule-number">06</span><h2>Elegibilidade continua obrigatória</h2><p>A Central ainda verifica os dados necessários para o ranking, incluindo telemetria e informações de dano. Se a viagem não estiver elegível, ela permanece no histórico e mantém o XP, mas pode receber <b>0 Pontos GAT</b>.</p></article>
+<article class="rule-card wide"><span class="rule-number">07</span><h2>Sem recálculo dos meses antigos</h2><p>A regra nova vale somente para entregas concluídas a partir da data de ativação. Setembro e outros períodos já encerrados permanecem com os pontos que foram registrados na época.</p></article>
+<article class="rule-card wide"><span class="rule-number">08</span><h2>Duplicidade não pontua duas vezes</h2><p>Pacotes repetidos da mesma conclusão não criam uma segunda entrega. Cancelamentos ou dados que não representam uma entrega concluída também não entram como nova viagem.</p></article>
+</section>
+
+<section class="rules-section">
+<div class="section-head"><div><span class="eyebrow">PONTUAÇÃO</span><h2>Distância + peso</h2></div></div>
+<div class="career-grid">
+<article><small>DISTÂNCIA</small><b>10 pontos / 99 km</b><p>São contados apenas blocos completos de 99 km da distância registrada na entrega.</p></article>
+<article><small>FÓRMULA</small><b>Base + bônus − penalidades</b><p>O bônus de peso é somado à base da distância; multas e danos são descontados depois.</p></article>
+<article><small>LIMITE INFERIOR</small><b>Mínimo 0 ponto</b><p>Se as penalidades ultrapassarem a pontuação positiva da viagem, o resultado final fica em zero.</p></article>
+</div>
+</section>
+
+<section class="rules-section">
+<div class="section-head"><div><span class="eyebrow">BÔNUS DE PESO</span><h2>Quanto a carga acrescenta</h2></div></div>
+<div class="career-grid">
+<article><small>ATÉ 4.999 KG</small><b>+1 PONTO</b><p>Carga válida com peso maior que zero.</p></article>
+<article><small>5.000 A 9.999 KG</small><b>+2 PONTOS</b><p>Bônus aplicado uma vez na entrega.</p></article>
+<article><small>10.000 A 19.999 KG</small><b>+3 PONTOS</b><p>Somado aos pontos da distância.</p></article>
+<article><small>20.000 A 29.999 KG</small><b>+4 PONTOS</b><p>Somado aos pontos da distância.</p></article>
+<article><small>30.000 A 39.999 KG</small><b>+6 PONTOS</b><p>Somado aos pontos da distância.</p></article>
+<article><small>40.000 KG OU MAIS</small><b>+8 PONTOS</b><p>Maior faixa de bônus de peso.</p></article>
+</div>
+</section>
+
+<section class="rules-section">
+<div class="section-head"><div><span class="eyebrow">PENALIDADES</span><h2>Multas e danos</h2></div></div>
+<div class="penalty-grid">
+<article><h3>Multas do ETS2</h3><p>A partir de 01/10, cada ocorrência de multa detectada vale a mesma penalidade, independentemente do tipo ou do valor em dinheiro.</p><strong>−3 PONTOS por multa</strong><small>A Central evita contar repetidamente o mesmo evento enquanto ele permanecer ativo.</small></article>
 <article><h3>Dano da carga</h3><div class="penalty-list"><div><span>Acima de 0% até 3%</span><b>−3 PONTOS</b></div><div><span>Acima de 3% até 7%</span><b>−5 PONTOS</b></div><div><span>Acima de 7% até 15%</span><b>−10 PONTOS</b></div><div><span>Acima de 15%</span><b>−15 PONTOS</b></div></div></article>
-<article><h3>Dano novo no caminhão</h3><div class="penalty-list"><div><span>Acima de 0 até +5%</span><b>−3 PONTOS</b></div><div><span>Acima de +5% até +10%</span><b>−5 PONTOS</b></div><div><span>Acima de +10% até +20%</span><b>−10 PONTOS</b></div><div><span>Acima de +20%</span><b>−15 PONTOS</b></div></div><small>É considerado o aumento de dano durante a viagem.</small></article>
-</div></section>
-<section class="rules-section"><div class="section-head"><div><span class="eyebrow">COLEÇÃO</span><h2>Cargas concluídas</h2></div></div><div class="career-grid"><article><small>PRIMEIRA VEZ</small><b>Fica verde</b><p>Ao concluir um tipo de carga pela primeira vez, ele passa a constar como concluído na coleção do perfil.</p></article><article><small>REPETIÇÕES</small><b>Continuam no histórico</b><p>Repetir a mesma carga cria novas viagens normalmente, mas não duplica a descoberta na coleção.</p></article><article><small>FUTURO</small><b>Conquistas e álbuns</b><p>O histórico permanente poderá servir de base para novas conquistas e álbuns sem limitar como o motorista joga.</p></article></div></section>
-<section class="rules-section"><div class="section-head"><div><span class="eyebrow">CARREIRA</span><h2>XP, nível e quilômetros</h2></div></div><div class="career-grid"><article><small>XP</small><b>20 XP / 100 km</b><p>São usados blocos completos de 100 km da distância registrada na entrega.</p></article><article><small>NÍVEL</small><b>+1 a cada 2.000 XP</b><p>O nível representa a evolução acumulada da carreira do motorista.</p></article><article><small>QUILOMETRAGEM</small><b>Histórico acumulado</b><p>Os quilômetros das entregas registradas ficam associados à carreira e podem alimentar estatísticas e conquistas futuras.</p></article></div></section>
-<section class="summary-rule"><span class="eyebrow">RESUMO RÁPIDO</span><h2>Entrega → Histórico + XP → validação dos Pontos GAT.</h2><p><b>Histórico é permanente.</b> XP acompanha a quilometragem. Pontos GAT medem a qualidade e a elegibilidade da viagem. Não existe X/30, limite de rota ou proibição de repetir carga.</p><a class="btn primary" href="motorista.html?tab=work">VER MINHA CARREIRA</a></section>
+<article><h3>Caminhão / reboque</h3><div class="penalty-list"><div><span>Acima de 0 até +5%</span><b>−3 PONTOS</b></div><div><span>Acima de +5% até +10%</span><b>−5 PONTOS</b></div><div><span>Acima de +10% até +20%</span><b>−10 PONTOS</b></div><div><span>Acima de +20%</span><b>−15 PONTOS</b></div></div><small>A Central considera o maior aumento de dano detectado entre caminhão e reboque durante a viagem.</small></article>
+</div>
+</section>
+
+<section class="rules-section">
+<div class="section-head"><div><span class="eyebrow">RANKING</span><h2>Virada mensal e histórico</h2></div></div>
+<div class="career-grid">
+<article><small>MÊS ATUAL</small><b>Começa em zero</b><p>No primeiro instante de cada mês, a nova classificação começa sem carregar Pontos GAT do mês anterior.</p></article>
+<article><small>HISTÓRICO</small><b>Meses preservados</b><p>O site permite selecionar meses anteriores e consultar a classificação registrada naquele período.</p></article>
+<article><small>CARREIRA</small><b>Totais continuam</b><p>XP, quilômetros e entregas totais permanecem acumulados no perfil do motorista.</p></article>
+</div>
+</section>
+
+<section class="rules-section">
+<div class="section-head"><div><span class="eyebrow">CARREIRA</span><h2>XP, nível e quilômetros</h2></div></div>
+<div class="career-grid">
+<article><small>XP</small><b>20 XP / 100 km</b><p>São usados blocos completos de 100 km da distância registrada na entrega.</p></article>
+<article><small>NÍVEL</small><b>+1 a cada 2.000 XP</b><p>O nível representa a evolução acumulada da carreira do motorista.</p></article>
+<article><small>QUILOMETRAGEM</small><b>Histórico acumulado</b><p>Os quilômetros das entregas registradas continuam associados ao perfil mesmo depois da virada mensal.</p></article>
+</div>
+</section>
+
+<section class="summary-rule"><span class="eyebrow">RESUMO RÁPIDO</span><h2>99 km = 10 pontos + bônus de peso − multas − danos.</h2><p><b>Nova fórmula completa a partir de 01/10/2026 00:00.</b> O Ranking GAT é mensal e mantém histórico. A carreira continua acumulando entregas, quilômetros, XP e nível.</p><a class="btn primary" href="index.html#ranking">VER RANKING GAT</a></section>
+
 </main><footer class="footer"><div class="shell">GAT-LOG • A cada viagem, uma história.</div></footer>
 <script src="event-nav.js?v=1"></script></body></html>
