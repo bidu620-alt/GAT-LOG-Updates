@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070a0f">
+<title>GAT-LOG • Desafios na Estrada</title><meta name="description" content="GAT-LOG: coleção de cargas, ranking, XP, cargas perfeitas e telemetria do Euro Truck Simulator 2.">
+<link rel="stylesheet" href="official-v4.css"><link rel="stylesheet" href="login.css"><link rel="stylesheet" href="home-v5.css?v=3"><link rel="stylesheet" href="hero-photo.css?v=2"><link rel="stylesheet" href="discord-home.css?v=1"><link rel="stylesheet" href="home-redesign-v9.css?v=3">
+<style id="halloween-full-inline">
+/* GAT-LOG • Tema Halloween 2026
+   Ativado por event-nav.js entre 01/10/2026 00:00 e 01/11/2026 00:00 (Brasília).
+   Camada visual apenas: não altera estrutura, ranking, telemetria ou lógica do evento. */
+body.gat-halloween{
+  --gat-blue:#ff7a1a;
+  --gat-blue2:#ffad58;
+  --gat-panel:#100b14;
+  --gat-panel2:#160e1d;
+  --gat-border:#4b294f;
+  --gat-muted:#ad9bb0;
+  --gat-green:#79e6a8;
+  --gat-gold:#ffd36a;
+  --h-orange:#ff6a00;
+  --h-orange2:#ff9b43;
+  --h-purple:#9a4dff;
+  --h-purple2:#6330a0;
+  --h-bg:#070508;
+  color:#f4edf4;
+  background:
+    linear-gradient(rgba(6,4,8,.93),rgba(7,5,9,.96)),
+    url("eventos/hallowin/assets/fundo-halloween.jpg") top center/cover fixed no-repeat,
+    #070508;
+}
+
+/* Barra superior e navegação */
+body.gat-halloween .topbar{
+  background:rgba(7,4,9,.94)!important;
+  border-bottom-color:rgba(255,106,0,.28)!important;
+  box-shadow:0 10px 34px rgba(0,0,0,.34);
+  backdrop-filter:blur(16px);
+}
+body.gat-halloween .topbar .brand span{color:var(--h-orange)!important}
+body.gat-halloween .topbar nav a{color:#d9cfd9}
+body.gat-halloween .topbar nav a:hover,
+body.gat-halloween .topbar nav a.active-nav,
+body.gat-halloween .topbar nav a:first-child{color:#fff}
+body.gat-halloween .topbar nav a:after{background:var(--h-orange)!important;box-shadow:0 0 14px rgba(255,106,0,.55)}
+body.gat-halloween .event-month-link{
+  color:#ffd2ad!important;
+  text-shadow:0 0 14px rgba(255,106,0,.35);
+}
+
+/* Botões e controles */
+body.gat-halloween .btn.primary,
+body.gat-halloween .login-submit,
+body.gat-halloween .top-my-work{
+  border-color:#ff8a31!important;
+  background:linear-gradient(135deg,#c84608,#7c2511)!important;
+  color:#fff!important;
+  box-shadow:0 8px 28px rgba(255,84,0,.24)!important;
+}
+body.gat-halloween .btn.ghost,
+body.gat-halloween .rank-more{
+  border-color:#633d78!important;
+  color:#d9b8ff!important;
+  background:rgba(63,28,82,.24)!important;
+}
+body.gat-halloween input,
+body.gat-halloween select,
+body.gat-halloween textarea{
+  border-color:#4b3153!important;
+  background-color:#110b15!important;
+  color:#f0e8f2!important;
+}
+
+/* Home — usa a arte oficial do evento como destaque sem mudar o layout */
+body.gat-halloween .home-hero{
+  background:
+    linear-gradient(90deg,rgba(6,4,8,.97) 0%,rgba(6,4,8,.82) 34%,rgba(6,4,8,.22) 68%,rgba(6,4,8,.50) 100%),
+    url("eventos/hallowin/assets/hero-halloween.png") 67% center/cover no-repeat!important;
+}
+body.gat-halloween .home-hero:before{
+  background:
+    radial-gradient(circle at 70% 36%,rgba(154,77,255,.16),transparent 36%),
+    linear-gradient(90deg,rgba(7,4,9,.88),rgba(7,4,9,.18) 64%,rgba(7,4,9,.40))!important;
+}
+body.gat-halloween .home-hero .truck-scene{opacity:0!important}
+body.gat-halloween .hero-main .eyebrow,
+body.gat-halloween .hero-main h1 strong,
+body.gat-halloween .hero-kicker b{color:#ff9142!important}
+body.gat-halloween .live-dot{background:#ff7b25!important;box-shadow:0 0 16px #ff6a00!important}
+
+/* Cards da home e ranking */
+body.gat-halloween .season-panel,
+body.gat-halloween .ranking-hub,
+body.gat-halloween .why-card,
+body.gat-halloween .downloads-panel,
+body.gat-halloween .community-panel{
+  border-color:#44264a!important;
+  background:linear-gradient(180deg,rgba(21,12,26,.96),rgba(9,7,12,.98))!important;
+}
+body.gat-halloween .season-panel,
+body.gat-halloween .ranking-hub{box-shadow:0 18px 52px rgba(0,0,0,.35),0 0 26px rgba(121,49,167,.07)}
+body.gat-halloween .goal-icon,
+body.gat-halloween .progress-foot strong,
+body.gat-halloween .rank-more{color:#e2b5ff!important}
+body.gat-halloween .progress-card,
+body.gat-halloween .download-mini{
+  border-color:#4a2d52!important;
+  background:linear-gradient(145deg,#160e1d,#0d0911)!important;
+}
+body.gat-halloween .rank-tab{
+  border-color:#50315a!important;background:#130c18!important;color:#bda9c3!important
+}
+body.gat-halloween .rank-tab.active{
+  border-color:#b457ff!important;
+  background:linear-gradient(135deg,#6b2d9c,#3c1b5b)!important;
+  color:#fff!important;
+  box-shadow:0 0 18px rgba(154,77,255,.22)!important;
+}
+body.gat-halloween .rank-row{border-bottom-color:#2b1a31!important}
+body.gat-halloween .rank-row:hover{background:#170e1b!important}
+body.gat-halloween .rank-avatar2,
+body.gat-halloween .admin-avatar,
+body.gat-halloween .driver-avatar{
+  background:linear-gradient(145deg,#5c2a76,#2e183d)!important;
+  color:#f0d8ff!important;
+  border-color:#8f51ad!important;
+}
+body.gat-halloween .rank-row:first-child .rank-pos{background:#4a2508!important;color:#ffca72!important}
+body.gat-halloween .rank-season-picker select{border-color:#5c3767!important;background-color:#130c18!important;color:#f0dff5!important}
+
+/* Motorista */
+body.gat-halloween .driver-hero{
+  border-color:#56315a!important;
+  background:
+    linear-gradient(90deg,rgba(13,8,16,.96),rgba(13,8,16,.80)),
+    url("eventos/hallowin/assets/regras-halloween.jpg") center/cover no-repeat!important;
+}
+body.gat-halloween .driver-card,
+body.gat-halloween .driver-stat-grid article,
+body.gat-halloween .driver-month,
+body.gat-halloween .metric-grid>div,
+body.gat-halloween .work-specs>div,
+body.gat-halloween .work-live{
+  border-color:#3d2843!important;
+  background:#0f0a13!important;
+}
+body.gat-halloween .driver-tabs{background:#09060b!important;border-color:#302036!important}
+body.gat-halloween .driver-tabs button.active{background:#3f1d50!important;color:#e8c9ff!important}
+body.gat-halloween .xp-badge{border-color:#633d78!important;background:#24102f!important;color:#e0baff!important}
+body.gat-halloween .truck-symbol{background:#4a2609!important;color:#ffc178!important}
+body.gat-halloween .truck-symbol.live-truck{background:#24102f!important;color:#d5abff!important}
+
+/* Regras */
+body.gat-halloween .rules-hero{
+  border-color:#69384a!important;
+  background:
+    linear-gradient(90deg,rgba(8,5,10,.95),rgba(8,5,10,.68)),
+    url("eventos/hallowin/assets/regras-halloween.jpg") center/cover no-repeat!important;
+}
+body.gat-halloween .rules-hero h1 strong,
+body.gat-halloween .career-grid b{color:#ff9c53!important}
+body.gat-halloween .rules-badges span{
+  border-color:#704050!important;background:#281119!important;color:#ffc097!important
+}
+body.gat-halloween .preseason-note{
+  border-color:#6a3c20!important;
+  background:linear-gradient(90deg,#261208,#160c12)!important;
+  color:#e2c0a6!important;
+}
+body.gat-halloween .rule-card,
+body.gat-halloween .penalty-grid article,
+body.gat-halloween .career-grid article,
+body.gat-halloween .summary-rule{
+  border-color:#45284b!important;
+  background:linear-gradient(180deg,#120b16,#0b0810)!important;
+}
+body.gat-halloween .rule-number{background:#35183d!important;color:#e5bfff!important}
+
+/* Mapa — altera a moldura/interface, não os tiles do mapa */
+body.gat-halloween.map-page{background:#070508!important}
+body.gat-halloween .map-toolbar,
+body.gat-halloween .map-mapbar,
+body.gat-halloween .map-sidebar{
+  background:#0d0910!important;border-color:#36203b!important
+}
+body.gat-halloween .map-icon,
+body.gat-halloween .count-badge{
+  border-color:#693c76!important;background:#2b1535!important;color:#e5c3ff!important
+}
+body.gat-halloween .map-world-tabs button,
+body.gat-halloween .map-look-tabs button,
+body.gat-halloween .map-filters button{
+  border-color:#43294b!important;background:#120d16!important;color:#b5a4ba!important
+}
+body.gat-halloween .map-world-tabs button.active,
+body.gat-halloween .map-look-tabs button.active,
+body.gat-halloween .map-filters button.active{
+  border-color:#d36125!important;background:#3b180d!important;color:#ffbd8d!important
+}
+body.gat-halloween .map-driver-item{border-bottom-color:#2d1c31!important}
+body.gat-halloween .map-driver-item:hover,
+body.gat-halloween .map-driver-item.selected{background:#211027!important}
+body.gat-halloween .map-driver-item.selected{box-shadow:inset 3px 0 #ff7925!important}
+
+/* Administração */
+body.gat-halloween .admin-head{
+  border-color:#58304e!important;
+  background:
+    linear-gradient(90deg,rgba(13,8,14,.96),rgba(13,8,14,.78)),
+    url("eventos/hallowin/assets/hall-halloween.jpg") center/cover no-repeat!important;
+}
+body.gat-halloween .admin-ident,
+body.gat-halloween .admin-stats article,
+body.gat-halloween .admin-table-wrap,
+body.gat-halloween .detail-card,
+body.gat-halloween .detail-panel{
+  border-color:#412641!important;background-color:#0e0911!important
+}
+body.gat-halloween .admin-tabs{background:#09060b!important;border-color:#302033!important}
+body.gat-halloween .admin-tabs button.active{background:#3c1b39!important;color:#ffc0d2!important}
+body.gat-halloween .admin-table th{background:#140c16!important}
+body.gat-halloween .admin-table td{border-top-color:#29172d!important}
+body.gat-halloween .admin-table tr:hover td{background:#160d19!important}
+
+/* Elementos genéricos / modal / rodapé */
+body.gat-halloween .account-panel,
+body.gat-halloween .modal .profile{
+  border-color:#4d2c54!important;
+  background:#0c0810!important;
+}
+body.gat-halloween .footer{
+  border-top-color:#2d1c32!important;
+  background:rgba(6,4,8,.72);
+  color:#9f909f;
+}
+body.gat-halloween ::selection{background:#8c3ed0;color:#fff}
+
+@media(max-width:760px){
+  body.gat-halloween .home-hero{
+    background:
+      linear-gradient(180deg,rgba(6,4,8,.08),rgba(6,4,8,.38) 43%,rgba(6,4,8,.97) 78%),
+      url("eventos/hallowin/assets/hero-halloween.png") 64% top/cover no-repeat!important;
+  }
+}
+
+
+/* Nova home pública e página dedicada de Ranking */
+body.gat-halloween .platform-showcase,
+body.gat-halloween .platform-nav-card,
+body.gat-halloween .ranking-hero,
+body.gat-halloween .ranking-board,
+body.gat-halloween .ranking-explain article{
+  border-color:#4b294f!important;
+  background:linear-gradient(180deg,rgba(20,11,25,.97),rgba(9,6,12,.99))!important;
+}
+body.gat-halloween .platform-copy h2 strong,
+body.gat-halloween .platform-node i,
+body.gat-halloween .platform-nav-card>strong,
+body.gat-halloween .ranking-hero-side span,
+body.gat-halloween .ranking-explain article>span{color:#ff9a4b!important}
+body.gat-halloween .platform-badges span,
+body.gat-halloween .ranking-hero-badges span{
+  border-color:#6a3a43!important;background:#2a1117!important;color:#ffc19a!important
+}
+body.gat-halloween .platform-node,
+body.gat-halloween .ranking-hero-side{
+  border-color:#4d3153!important;background:linear-gradient(145deg,#160d1b,#0d0911)!important
+}
+body.gat-halloween .platform-nav-card>span,
+body.gat-halloween .ranking-avatar{
+  background:linear-gradient(145deg,#5c2a76,#2e183d)!important;color:#f0d8ff!important
+}
+body.gat-halloween .platform-nav-card:hover,
+body.gat-halloween .ranking-row:hover{background:#170e1b!important;border-color:#8d4f79!important}
+body.gat-halloween .ranking-page{background:transparent}
+body.gat-halloween .ranking-hero{
+  background:
+    linear-gradient(90deg,rgba(8,5,10,.96),rgba(8,5,10,.72)),
+    url("eventos/hallowin/assets/hall2-halloween.jpg") center/cover no-repeat!important;
+}
+body.gat-halloween .ranking-controls select,
+body.gat-halloween .rank-tab{border-color:#50315a!important;background:#130c18!important;color:#c7b4cc!important}
+body.gat-halloween .rank-tab.active{
+  border-color:#b457ff!important;background:linear-gradient(135deg,#6b2d9c,#3c1b5b)!important;color:#fff!important
+}
+body.gat-halloween .ranking-columns,
+body.gat-halloween .ranking-row{border-bottom-color:#2b1a31!important}
+
+
+/* Home Halloween — Telemetria + Radar */
+body.gat-halloween .telemetry-showcase,
+body.gat-halloween .road-radar{
+  border-color:#4b294f!important;
+  background:linear-gradient(180deg,rgba(20,11,25,.97),rgba(9,6,12,.99))!important;
+}
+body.gat-halloween .home-panel-head h2 strong{color:#ff9a4b!important}
+body.gat-halloween .telemetry-data-grid>div{
+  border-color:#44294c!important;
+  background:linear-gradient(145deg,#160d1b,#0d0911)!important
+}
+body.gat-halloween .telemetry-data-grid>div>span{color:#d4a7ff!important}
+body.gat-halloween .telemetry-data-grid>div:nth-child(4)>span{color:#ff6e72!important}
+body.gat-halloween .telemetry-data-grid>div:nth-child(9)>span,
+body.gat-halloween .telemetry-data-grid>div:nth-child(10)>span{color:#ffb44d!important}
+body.gat-halloween .telemetry-live{
+  border-color:#6e3f27!important;background:#28140b!important;color:#ffbd87!important
+}
+body.gat-halloween .telemetry-live i{background:#ff7a22!important;box-shadow:0 0 12px #ff6a00!important}
+body.gat-halloween .radar-head>a{border-color:#61396b!important;color:#ddb8ff!important}
+body.gat-halloween .radar-list>a{border-color:#3a2440!important;background:#110b15!important}
+body.gat-halloween .radar-list>a:hover{border-color:#8c4f74!important;background:#180f1c!important}
+body.gat-halloween .radar-tag{border-color:#5a3765!important;background:#25122f!important;color:#debaff!important}
+body.gat-halloween .radar-tag.ats{border-color:#7c4221!important;background:#31170a!important;color:#ffb16d!important}
+body.gat-halloween .radar-tag.scs{border-color:#6a3d7c!important;background:#281235!important;color:#e1baff!important}
+body.gat-halloween .radar-tag.promods{border-color:#8a3b20!important;background:#35130a!important;color:#ff9d72!important}
+body.gat-halloween .radar-tag.maps{border-color:#5c3c64!important;background:#24122c!important;color:#d8b4f5!important}
+
+
+/* Banner Ecossistema no Halloween */
+body.gat-halloween .ecosystem-banner{
+  border-color:#6a3149!important;
+  background:
+    linear-gradient(90deg,rgba(8,5,10,.97) 0%,rgba(8,5,10,.86) 42%,rgba(8,5,10,.26) 74%,rgba(8,5,10,.58) 100%),
+    url("eventos/hallowin/assets/fundo-halloween.jpg") center/cover no-repeat!important;
+  box-shadow:0 18px 52px rgba(0,0,0,.42),0 0 26px rgba(255,95,0,.08)!important;
+}
+body.gat-halloween .ecosystem-banner:before{border-color:rgba(255,104,32,.18)!important}
+body.gat-halloween .ecosystem-copy h2 strong{color:#ff8e3a!important}
+body.gat-halloween .ecosystem-copy p{color:#b5a7b7!important}
+body.gat-halloween .ecosystem-copy blockquote{
+  border-left-color:#ff6a00!important;color:#ffc08f!important
+}
+body.gat-halloween .journey-route{
+  background:linear-gradient(90deg,rgba(255,106,0,.08),rgba(255,106,0,.62),rgba(154,77,255,.62),rgba(154,77,255,.08))!important;
+  box-shadow:0 0 20px rgba(255,106,0,.22)!important
+}
+body.gat-halloween .journey-icon{
+  border-color:#7b3d73!important;
+  background:radial-gradient(circle,#3a183a,#160c1b 72%)!important;
+  color:#e1b7ff!important;
+  box-shadow:0 0 22px rgba(154,77,255,.24)!important
+}
+body.gat-halloween .journey-step:nth-of-type(2) .journey-icon,
+body.gat-halloween .journey-step:nth-of-type(4) .journey-icon{
+  border-color:#8c4726!important;background:radial-gradient(circle,#4a1e12,#1b0d0b 72%)!important;color:#ffae75!important
+}
+body.gat-halloween .journey-step b{
+  border-color:#60335f!important;background:#160d1a!important;color:#e2c6eb!important
+}
+body.gat-halloween .ecosystem-journey>i{color:#ff8b37!important}
+
+
+body.gat-halloween .ecosystem-signoff{color:#c39dbf!important}
+body.gat-halloween .ecosystem-signoff b{
+  background:linear-gradient(90deg,#ffd2ad,#ff7a22,#d7adff,#ffd2ad)!important;
+  background-size:220% auto!important;
+  -webkit-background-clip:text!important;background-clip:text!important;color:transparent!important
+}
+
+
+
+/* Halloween: abóbora substitui os quatro ícones do fluxo */
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step .journey-icon.pumpkin-node{
+  width:64px!important;
+  height:64px!important;
+  border:0!important;
+  color:transparent!important;
+  font-size:0!important;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20140%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22pumpkin%22%20cx%3D%2250%25%22%20cy%3D%2242%25%22%20r%3D%2262%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffb33f%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%23ef6a14%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238f2d0a%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22glow%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2260%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff3a6%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.26%22%20stop-color%3D%22%23ffb000%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%23ff3b00%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238e0000%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%3Cfilter%20id%3D%22outer%22%20x%3D%22-50%25%22%20y%3D%22-50%25%22%20width%3D%22200%25%22%20height%3D%22200%25%22%3E%0A%20%20%20%20%20%20%3CfeGaussianBlur%20stdDeviation%3D%224%22%20result%3D%22b%22%2F%3E%0A%20%20%20%20%20%20%3CfeMerge%3E%3CfeMergeNode%20in%3D%22b%22%2F%3E%3CfeMergeNode%20in%3D%22SourceGraphic%22%2F%3E%3C%2FfeMerge%3E%0A%20%20%20%20%3C%2Ffilter%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Cellipse%20cx%3D%2280%22%20cy%3D%2275%22%20rx%3D%2266%22%20ry%3D%2252%22%20fill%3D%22url(%23pumpkin)%22%20stroke%3D%22%234f1607%22%20stroke-width%3D%223%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%2280%22%20cy%3D%2275%22%20rx%3D%2246%22%20ry%3D%2252%22%20fill%3D%22none%22%20stroke%3D%22%23b8420e%22%20stroke-width%3D%224%22%20opacity%3D%22.55%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%2280%22%20cy%3D%2275%22%20rx%3D%2224%22%20ry%3D%2252%22%20fill%3D%22none%22%20stroke%3D%22%23c24c10%22%20stroke-width%3D%223%22%20opacity%3D%22.48%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M76%2024c4-15%2012-17%2019-18-2%208-1%2013%205%2018-10%200-16%202-24%200z%22%20fill%3D%22%236a4a12%22%20stroke%3D%22%232a2108%22%20stroke-width%3D%222%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M36%2059l26-13-10%2026zM124%2059L98%2046l10%2026z%22%20fill%3D%22url(%23glow)%22%20stroke%3D%22%235c0900%22%20stroke-width%3D%222%22%20filter%3D%22url(%23outer)%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M72%2077l8-12%208%2012-8%207z%22%20fill%3D%22url(%23glow)%22%20stroke%3D%22%235c0900%22%20stroke-width%3D%222%22%20filter%3D%22url(%23outer)%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M36%2091l14%2010%2010-8%2011%2010%2010-9%2011%209%2010-10%209%207%2013-9-7%2024H43z%22%20fill%3D%22url(%23glow)%22%20stroke%3D%22%235c0900%22%20stroke-width%3D%222%22%20filter%3D%22url(%23outer)%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%2280%22%20cy%3D%22120%22%20rx%3D%2248%22%20ry%3D%228%22%20fill%3D%22%23ff5a00%22%20opacity%3D%22.2%22%20filter%3D%22url(%23outer)%22%2F%3E%0A%3C%2Fsvg%3E") center/contain no-repeat!important;
+  filter:drop-shadow(0 0 8px rgba(255,70,0,.78)) drop-shadow(0 0 18px rgba(255,120,0,.34));
+  box-shadow:none!important;
+  animation:gatPumpkinFloat 3.4s ease-in-out infinite!important;
+}
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step:nth-of-type(2) .journey-icon.pumpkin-node{animation-delay:.25s!important}
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step:nth-of-type(3) .journey-icon.pumpkin-node{animation-delay:.5s!important}
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step:nth-of-type(4) .journey-icon.pumpkin-node{animation-delay:.75s!important}
+body.gat-halloween .journey-step b{
+  border-color:#60335f!important;
+  background:#160d1a!important;
+  color:#e2c6eb!important
+}
+@keyframes gatPumpkinFloat{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-4px) scale(1.035)}
+}
+@media(prefers-reduced-motion:reduce){
+  body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step .journey-icon.pumpkin-node{animation:none!important}
+}
+@media(max-width:650px){
+  body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step .journey-icon.pumpkin-node{width:54px!important;height:54px!important}
+}
+
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step .journey-icon.pumpkin-node{
+  width:64px!important;height:64px!important;border:0!important;color:transparent!important;font-size:0!important;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20140%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22pumpkin%22%20cx%3D%2250%25%22%20cy%3D%2242%25%22%20r%3D%2262%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffb33f%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%23ef6a14%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238f2d0a%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22glow%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2260%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff3a6%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.26%22%20stop-color%3D%22%23ffb000%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%23ff3b00%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238e0000%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%3Cfilter%20id%3D%22outer%22%20x%3D%22-50%25%22%20y%3D%22-50%25%22%20width%3D%22200%25%22%20height%3D%22200%25%22%3E%0A%20%20%20%20%20%20%3CfeGaussianBlur%20stdDeviation%3D%224%22%20result%3D%22b%22%2F%3E%0A%20%20%20%20%20%20%3CfeMerge%3E%3CfeMergeNode%20in%3D%22b%22%2F%3E%3CfeMergeNode%20in%3D%22SourceGraphic%22%2F%3E%3C%2FfeMerge%3E%0A%20%20%20%20%3C%2Ffilter%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Cellipse%20cx%3D%2280%22%20cy%3D%2275%22%20rx%3D%2266%22%20ry%3D%2252%22%20fill%3D%22url(%23pumpkin)%22%20stroke%3D%22%234f1607%22%20stroke-width%3D%223%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%2280%22%20cy%3D%2275%22%20rx%3D%2246%22%20ry%3D%2252%22%20fill%3D%22none%22%20stroke%3D%22%23b8420e%22%20stroke-width%3D%224%22%20opacity%3D%22.55%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%2280%22%20cy%3D%2275%22%20rx%3D%2224%22%20ry%3D%2252%22%20fill%3D%22none%22%20stroke%3D%22%23c24c10%22%20stroke-width%3D%223%22%20opacity%3D%22.48%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M76%2024c4-15%2012-17%2019-18-2%208-1%2013%205%2018-10%200-16%202-24%200z%22%20fill%3D%22%236a4a12%22%20stroke%3D%22%232a2108%22%20stroke-width%3D%222%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M36%2059l26-13-10%2026zM124%2059L98%2046l10%2026z%22%20fill%3D%22url(%23glow)%22%20stroke%3D%22%235c0900%22%20stroke-width%3D%222%22%20filter%3D%22url(%23outer)%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M72%2077l8-12%208%2012-8%207z%22%20fill%3D%22url(%23glow)%22%20stroke%3D%22%235c0900%22%20stroke-width%3D%222%22%20filter%3D%22url(%23outer)%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M36%2091l14%2010%2010-8%2011%2010%2010-9%2011%209%2010-10%209%207%2013-9-7%2024H43z%22%20fill%3D%22url(%23glow)%22%20stroke%3D%22%235c0900%22%20stroke-width%3D%222%22%20filter%3D%22url(%23outer)%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%2280%22%20cy%3D%22120%22%20rx%3D%2248%22%20ry%3D%228%22%20fill%3D%22%23ff5a00%22%20opacity%3D%22.2%22%20filter%3D%22url(%23outer)%22%2F%3E%0A%3C%2Fsvg%3E") center/contain no-repeat!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 0 8px rgba(255,70,0,.8)) drop-shadow(0 0 18px rgba(255,120,0,.42))!important;
+}
+
+</style>
+</head>
+<body class="gat-halloween">
+<section id="accountModal" class="account-modal" aria-label="Conta GAT" aria-hidden="true"><div class="account-panel"><button id="accountClose" class="account-close" type="button" aria-label="Fechar">×</button><div class="login-brand"><span>GAT</span><span>LOG</span></div><span class="login-kicker">CONTA DO MOTORISTA</span><h1 id="accountTitle">Entrar na Conta GAT</h1><p id="accountIntro">Use a mesma conta no site e no GAT Telemetria.</p><div class="account-tabs"><button id="tabLogin" class="active" type="button">ENTRAR</button><button id="tabRegister" class="" type="button">CRIAR CONTA</button></div><form id="loginForm" class="login-form" autocomplete="on"><div class="login-field"><label for="loginUser">USUÁRIO</label><input id="loginUser" name="username" autocomplete="username" required></div><div class="login-field"><label for="loginPassword">SENHA</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required></div><button id="loginButton" class="login-submit" type="submit">ENTRAR</button></form><form id="registerForm" class="login-form hidden" autocomplete="off"><div class="login-field"><label for="registerUser">CRIAR USUÁRIO</label><input id="registerUser" autocomplete="username" minlength="3" maxlength="32" required></div><div class="login-field"><label for="registerPassword">CRIAR SENHA</label><input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required></div><div class="login-field"><label for="registerConfirm">CONFIRMAR SENHA</label><input id="registerConfirm" type="password" autocomplete="new-password" minlength="6" required></div><button id="registerButton" class="login-submit" type="submit">CADASTRAR MOTORISTA</button></form><div id="loginStatus" class="login-status">Cadastre uma conta ou entre com uma conta existente.</div><div class="login-note">Depois do login, o navegador mantém sua sessão até você sair.</div></div></section>
+<header class="topbar"><a class="brand" href="halloween-preview-final.html"><b>GAT-<span>LOG</span></b></a><nav><a href="halloween-preview-final.html">Início</a><a href="motorista.html?site=regras-final-20260902&halloween=preview">Motorista</a><a href="mapa.html?halloween=preview">Mapa</a><a href="ranking.html?halloween=preview">Ranking</a><a href="regras.html?halloween=preview">Regras</a><a class="event-month-link" href="eventos/hallowin/" style="display:none">Evento do Mês</a><a class="top-my-work" href="motorista.html?site=regras-final-20260902&tab=work&halloween=preview">MEU TRABALHO</a><a href="#downloads">Downloads</a><a href="admin.html">Admin</a></nav><button id="accountButton" class="account-btn logout-button" type="button">ENTRAR / CADASTRAR</button></header>
+<main>
+<section id="inicio" class="home-hero hero"><div class="shell" style="width:100%"><div class="hero-main"><span class="eyebrow">CENTRAL GAT • EURO TRUCK SIMULATOR 2</span><h1>Faça suas entregas.<br><strong>Construa sua coleção.</strong></h1><p class="lead">Pegue qualquer carga válida no ETS2, acumule quilômetros, XP e Pontos GAT e aumente sua coleção conforme conclui novas cargas.</p><div class="hero-actions"><a class="btn primary" href="motorista.html?site=regras-final-20260902&tab=work&halloween=preview">ABRIR MEU TRABALHO →</a><a class="btn ghost" href="ranking.html?halloween=preview">VER RANKING</a><a class="btn ghost" href="regras.html?halloween=preview">COMO FUNCIONA</a></div><div class="hero-kicker"><span class="live-dot"></span><b>CENTRAL GAT AO VIVO</b><span>• solo ou multiplayer • telemetria pela Conta GAT</span></div></div></div><div class="truck-scene" aria-hidden="true"><div class="road"></div><div class="truck"></div></div></section>
+<section class="shell platform-home">
+<article class="ecosystem-banner">
+  <div class="ecosystem-copy">
+    <span class="eyebrow">ECOSSISTEMA GAT-LOG</span>
+    <h2>Mais que um ranking.<br><strong>Uma plataforma para sua vida na estrada.</strong></h2>
+    <p>Aqui, cada entrega tem valor, cada quilômetro conta e cada viagem constrói a sua história. O GAT-LOG une telemetria, carreira, mapa ao vivo, ranking mensal, eventos e conquistas para transformar sua rotina no ETS2 em uma experiência mais viva, competitiva e completa.</p>
+    <blockquote>Você não apenas transporta cargas. Você evolui, supera desafios e deixa sua marca na estrada.</blockquote>
+    <div class="ecosystem-signoff">Se a estrada é o seu lugar, <b>o GAT-LOG é a sua plataforma.</b></div>
+  </div>
+  <div class="ecosystem-journey" aria-label="Telemetria, histórico, progresso e comunidade">
+    <div class="journey-route" aria-hidden="true"></div>
+    <div class="journey-step"><span class="journey-icon pumpkin-node">▥</span><b>TELEMETRIA</b></div>
+    <i>→</i>
+    <div class="journey-step"><span class="journey-icon pumpkin-node">▤</span><b>HISTÓRICO</b></div>
+    <i>→</i>
+    <div class="journey-step"><span class="journey-icon pumpkin-node">★</span><b>PROGRESSO</b></div>
+    <i>→</i>
+    <div class="journey-step"><span class="journey-icon pumpkin-node">●●●</span><b>COMUNIDADE</b></div>
+  </div>
+</article>
+</section>
+<section class="shell why-section"><div class="why-title"><h2>POR QUE FAZER PARTE DA GAT-LOG?</h2></div><div class="why-grid"><article class="why-card"><div class="why-icon">✦</div><h3>Viagens Perfeitas</h3><p>Complete trabalhos com excelência, evite multas e danos e construa uma condução de destaque.</p></article><article class="why-card"><div class="why-icon">★</div><h3>XP e Conquistas</h3><p>Ganhe XP por distância real, suba de nível e desbloqueie marcas da sua carreira.</p></article><article class="why-card"><div class="why-icon">⌖</div><h3>Mapa ao Vivo</h3><p>Acompanhe rotas, motoristas, caminhões e cargas em tempo real pela Central GAT.</p></article><article class="why-card"><div class="why-icon">◎</div><h3>Comunidade</h3><p>Participe de rankings, comboios, eventos e uma competição justa entre amigos.</p></article></div></section>
+<section class="shell lower-grid" id="downloads"><article class="downloads-panel"><h2>DOWNLOADS GAT</h2><div class="downloads-mini"><a class="download-mini" href="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.8_VOZ_NOVA_LIMPA.exe"><strong>GAT Telemetria 1.0.68.8 • VOZ NOVA LIMPA</strong><span>Versão estável com o sistema de voz limpo e independente do GAT DASH.</span><b>BAIXAR GAT TELEMETRIA</b></a><a class="download-mini" href="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_DASH_ANDROID_1.2.0.apk"><strong>GAT DASH 1.2.0 • Android</strong><span>Versão Android com foco em telemetria, rota, velocidade, viagem e condição do caminhão.</span><b>BAIXAR APK ANDROID</b></a></div></article><article class="community-panel"><span class="eyebrow">COMUNIDADE GAT</span><h2>Entre para nossa comunidade!</h2><p>Participe do Discord, acompanhe novidades, organize comboios, tire dúvidas e converse com outros motoristas.</p><a class="btn primary" href="https://discord.gg/X6DTVt9Kxf" target="_blank" rel="noopener">ENTRAR NO DISCORD →</a></article></section>
+<section class="shell home-footer-strip"><span><i>●</i> Central online</span><span>◉ Suporte ativo</span><span>▣ Coleção de cargas</span><span>◇ Sistema justo e transparente</span><span>♡ Feito para quem gosta de estrada</span></section>
+</main><footer class="footer"><div class="shell">GAT-LOG • A cada viagem, uma história.</div></footer><script src="official-v5.js"></script><script src="home-v7.js?v=10"></script></body></html>
+
