@@ -7,6 +7,12 @@ on:
     paths:
       - 'central-hotfix-10621/**'
       - '.github/workflows/build-central-hotfix-10621.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'central-hotfix-10621/**'
+      - '.github/workflows/build-central-hotfix-10621.yml'
   workflow_dispatch:
 
 permissions:
@@ -17,8 +23,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: hotfix-central-autostart-1.0.62.1
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -40,6 +44,7 @@ jobs:
           Get-FileHash $f -Algorithm SHA256
 
       - name: Publish release file to branch
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           mkdir -p releases
@@ -54,5 +59,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: GAT-Central-Fix-1.0.62.1
-          path: |
-            central-hotfix-10621/out/GAT_CENTRAL_FIX_1.0.62.1.exe
+          path: central-hotfix-10621/out/GAT_CENTRAL_FIX_1.0.62.1.exe
