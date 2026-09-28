@@ -1,0 +1,236 @@
+/* GAT-LOG • Tema Halloween 2026
+   Ativado por event-nav.js entre 01/10/2026 00:00 e 01/11/2026 00:00 (Brasília).
+   Camada visual apenas: não altera estrutura, ranking, telemetria ou lógica do evento. */
+body.gat-halloween{
+  --gat-blue:#ff7a1a;
+  --gat-blue2:#ffad58;
+  --gat-panel:#100b14;
+  --gat-panel2:#160e1d;
+  --gat-border:#4b294f;
+  --gat-muted:#ad9bb0;
+  --gat-green:#79e6a8;
+  --gat-gold:#ffd36a;
+  --h-orange:#ff6a00;
+  --h-orange2:#ff9b43;
+  --h-purple:#9a4dff;
+  --h-purple2:#6330a0;
+  --h-bg:#070508;
+  color:#f4edf4;
+  background:
+    linear-gradient(rgba(6,4,8,.93),rgba(7,5,9,.96)),
+    url("eventos/hallowin/assets/fundo-halloween.jpg") top center/cover fixed no-repeat,
+    #070508;
+}
+
+/* Barra superior e navegação */
+body.gat-halloween .topbar{
+  background:rgba(7,4,9,.94)!important;
+  border-bottom-color:rgba(255,106,0,.28)!important;
+  box-shadow:0 10px 34px rgba(0,0,0,.34);
+  backdrop-filter:blur(16px);
+}
+body.gat-halloween .topbar .brand span{color:var(--h-orange)!important}
+body.gat-halloween .topbar nav a{color:#d9cfd9}
+body.gat-halloween .topbar nav a:hover,
+body.gat-halloween .topbar nav a.active-nav,
+body.gat-halloween .topbar nav a:first-child{color:#fff}
+body.gat-halloween .topbar nav a:after{background:var(--h-orange)!important;box-shadow:0 0 14px rgba(255,106,0,.55)}
+body.gat-halloween .event-month-link{
+  color:#ffd2ad!important;
+  text-shadow:0 0 14px rgba(255,106,0,.35);
+}
+
+/* Botões e controles */
+body.gat-halloween .btn.primary,
+body.gat-halloween .login-submit,
+body.gat-halloween .top-my-work{
+  border-color:#ff8a31!important;
+  background:linear-gradient(135deg,#c84608,#7c2511)!important;
+  color:#fff!important;
+  box-shadow:0 8px 28px rgba(255,84,0,.24)!important;
+}
+body.gat-halloween .btn.ghost,
+body.gat-halloween .rank-more{
+  border-color:#633d78!important;
+  color:#d9b8ff!important;
+  background:rgba(63,28,82,.24)!important;
+}
+body.gat-halloween input,
+body.gat-halloween select,
+body.gat-halloween textarea{
+  border-color:#4b3153!important;
+  background-color:#110b15!important;
+  color:#f0e8f2!important;
+}
+
+/* Home — usa a arte oficial do evento como destaque sem mudar o layout */
+body.gat-halloween .home-hero{
+  background:
+    linear-gradient(90deg,rgba(6,4,8,.97) 0%,rgba(6,4,8,.82) 34%,rgba(6,4,8,.22) 68%,rgba(6,4,8,.50) 100%),
+    url("eventos/hallowin/assets/hero-halloween.png") 67% center/cover no-repeat!important;
+}
+body.gat-halloween .home-hero:before{
+  background:
+    radial-gradient(circle at 70% 36%,rgba(154,77,255,.16),transparent 36%),
+    linear-gradient(90deg,rgba(7,4,9,.88),rgba(7,4,9,.18) 64%,rgba(7,4,9,.40))!important;
+}
+body.gat-halloween .home-hero .truck-scene{opacity:0!important}
+body.gat-halloween .hero-main .eyebrow,
+body.gat-halloween .hero-main h1 strong,
+body.gat-halloween .hero-kicker b{color:#ff9142!important}
+body.gat-halloween .live-dot{background:#ff7b25!important;box-shadow:0 0 16px #ff6a00!important}
+
+/* Cards da home e ranking */
+body.gat-halloween .season-panel,
+body.gat-halloween .ranking-hub,
+body.gat-halloween .why-card,
+body.gat-halloween .downloads-panel,
+body.gat-halloween .community-panel{
+  border-color:#44264a!important;
+  background:linear-gradient(180deg,rgba(21,12,26,.96),rgba(9,7,12,.98))!important;
+}
+body.gat-halloween .season-panel,
+body.gat-halloween .ranking-hub{box-shadow:0 18px 52px rgba(0,0,0,.35),0 0 26px rgba(121,49,167,.07)}
+body.gat-halloween .goal-icon,
+body.gat-halloween .progress-foot strong,
+body.gat-halloween .rank-more{color:#e2b5ff!important}
+body.gat-halloween .progress-card,
+body.gat-halloween .download-mini{
+  border-color:#4a2d52!important;
+  background:linear-gradient(145deg,#160e1d,#0d0911)!important;
+}
+body.gat-halloween .rank-tab{
+  border-color:#50315a!important;background:#130c18!important;color:#bda9c3!important
+}
+body.gat-halloween .rank-tab.active{
+  border-color:#b457ff!important;
+  background:linear-gradient(135deg,#6b2d9c,#3c1b5b)!important;
+  color:#fff!important;
+  box-shadow:0 0 18px rgba(154,77,255,.22)!important;
+}
+body.gat-halloween .rank-row{border-bottom-color:#2b1a31!important}
+body.gat-halloween .rank-row:hover{background:#170e1b!important}
+body.gat-halloween .rank-avatar2,
+body.gat-halloween .admin-avatar,
+body.gat-halloween .driver-avatar{
+  background:linear-gradient(145deg,#5c2a76,#2e183d)!important;
+  color:#f0d8ff!important;
+  border-color:#8f51ad!important;
+}
+body.gat-halloween .rank-row:first-child .rank-pos{background:#4a2508!important;color:#ffca72!important}
+body.gat-halloween .rank-season-picker select{border-color:#5c3767!important;background-color:#130c18!important;color:#f0dff5!important}
+
+/* Motorista */
+body.gat-halloween .driver-hero{
+  border-color:#56315a!important;
+  background:
+    linear-gradient(90deg,rgba(13,8,16,.96),rgba(13,8,16,.80)),
+    url("eventos/hallowin/assets/regras-halloween.jpg") center/cover no-repeat!important;
+}
+body.gat-halloween .driver-card,
+body.gat-halloween .driver-stat-grid article,
+body.gat-halloween .driver-month,
+body.gat-halloween .metric-grid>div,
+body.gat-halloween .work-specs>div,
+body.gat-halloween .work-live{
+  border-color:#3d2843!important;
+  background:#0f0a13!important;
+}
+body.gat-halloween .driver-tabs{background:#09060b!important;border-color:#302036!important}
+body.gat-halloween .driver-tabs button.active{background:#3f1d50!important;color:#e8c9ff!important}
+body.gat-halloween .xp-badge{border-color:#633d78!important;background:#24102f!important;color:#e0baff!important}
+body.gat-halloween .truck-symbol{background:#4a2609!important;color:#ffc178!important}
+body.gat-halloween .truck-symbol.live-truck{background:#24102f!important;color:#d5abff!important}
+
+/* Regras */
+body.gat-halloween .rules-hero{
+  border-color:#69384a!important;
+  background:
+    linear-gradient(90deg,rgba(8,5,10,.95),rgba(8,5,10,.68)),
+    url("eventos/hallowin/assets/regras-halloween.jpg") center/cover no-repeat!important;
+}
+body.gat-halloween .rules-hero h1 strong,
+body.gat-halloween .career-grid b{color:#ff9c53!important}
+body.gat-halloween .rules-badges span{
+  border-color:#704050!important;background:#281119!important;color:#ffc097!important
+}
+body.gat-halloween .preseason-note{
+  border-color:#6a3c20!important;
+  background:linear-gradient(90deg,#261208,#160c12)!important;
+  color:#e2c0a6!important;
+}
+body.gat-halloween .rule-card,
+body.gat-halloween .penalty-grid article,
+body.gat-halloween .career-grid article,
+body.gat-halloween .summary-rule{
+  border-color:#45284b!important;
+  background:linear-gradient(180deg,#120b16,#0b0810)!important;
+}
+body.gat-halloween .rule-number{background:#35183d!important;color:#e5bfff!important}
+
+/* Mapa — altera a moldura/interface, não os tiles do mapa */
+body.gat-halloween.map-page{background:#070508!important}
+body.gat-halloween .map-toolbar,
+body.gat-halloween .map-mapbar,
+body.gat-halloween .map-sidebar{
+  background:#0d0910!important;border-color:#36203b!important
+}
+body.gat-halloween .map-icon,
+body.gat-halloween .count-badge{
+  border-color:#693c76!important;background:#2b1535!important;color:#e5c3ff!important
+}
+body.gat-halloween .map-world-tabs button,
+body.gat-halloween .map-look-tabs button,
+body.gat-halloween .map-filters button{
+  border-color:#43294b!important;background:#120d16!important;color:#b5a4ba!important
+}
+body.gat-halloween .map-world-tabs button.active,
+body.gat-halloween .map-look-tabs button.active,
+body.gat-halloween .map-filters button.active{
+  border-color:#d36125!important;background:#3b180d!important;color:#ffbd8d!important
+}
+body.gat-halloween .map-driver-item{border-bottom-color:#2d1c31!important}
+body.gat-halloween .map-driver-item:hover,
+body.gat-halloween .map-driver-item.selected{background:#211027!important}
+body.gat-halloween .map-driver-item.selected{box-shadow:inset 3px 0 #ff7925!important}
+
+/* Administração */
+body.gat-halloween .admin-head{
+  border-color:#58304e!important;
+  background:
+    linear-gradient(90deg,rgba(13,8,14,.96),rgba(13,8,14,.78)),
+    url("eventos/hallowin/assets/hall-halloween.jpg") center/cover no-repeat!important;
+}
+body.gat-halloween .admin-ident,
+body.gat-halloween .admin-stats article,
+body.gat-halloween .admin-table-wrap,
+body.gat-halloween .detail-card,
+body.gat-halloween .detail-panel{
+  border-color:#412641!important;background-color:#0e0911!important
+}
+body.gat-halloween .admin-tabs{background:#09060b!important;border-color:#302033!important}
+body.gat-halloween .admin-tabs button.active{background:#3c1b39!important;color:#ffc0d2!important}
+body.gat-halloween .admin-table th{background:#140c16!important}
+body.gat-halloween .admin-table td{border-top-color:#29172d!important}
+body.gat-halloween .admin-table tr:hover td{background:#160d19!important}
+
+/* Elementos genéricos / modal / rodapé */
+body.gat-halloween .account-panel,
+body.gat-halloween .modal .profile{
+  border-color:#4d2c54!important;
+  background:#0c0810!important;
+}
+body.gat-halloween .footer{
+  border-top-color:#2d1c32!important;
+  background:rgba(6,4,8,.72);
+  color:#9f909f;
+}
+body.gat-halloween ::selection{background:#8c3ed0;color:#fff}
+
+@media(max-width:760px){
+  body.gat-halloween .home-hero{
+    background:
+      linear-gradient(180deg,rgba(6,4,8,.08),rgba(6,4,8,.38) 43%,rgba(6,4,8,.97) 78%),
+      url("eventos/hallowin/assets/hero-halloween.png") 64% top/cover no-repeat!important;
+  }
+}
