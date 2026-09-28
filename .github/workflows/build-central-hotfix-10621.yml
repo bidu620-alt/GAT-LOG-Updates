@@ -1,0 +1,58 @@
+name: Build GAT Central Hotfix 1.0.62.1
+
+on:
+  push:
+    branches:
+      - hotfix-central-autostart-1.0.62.1
+    paths:
+      - 'central-hotfix-10621/**'
+      - '.github/workflows/build-central-hotfix-10621.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: hotfix-central-autostart-1.0.62.1
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish updater
+        shell: pwsh
+        run: |
+          dotnet publish central-hotfix-10621/GAT_CENTRAL_FIX.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o central-hotfix-10621/out
+          if (!(Test-Path central-hotfix-10621/out/GAT_CENTRAL_FIX_1.0.62.1.exe)) { throw "EXE nao gerado" }
+
+      - name: Verify updater
+        shell: pwsh
+        run: |
+          $f = Get-Item central-hotfix-10621/out/GAT_CENTRAL_FIX_1.0.62.1.exe
+          if ($f.Length -lt 1000000) { throw "EXE menor que o esperado: $($f.Length)" }
+          Write-Host "Updater:" $f.FullName
+          Write-Host "Bytes:" $f.Length
+          Get-FileHash $f -Algorithm SHA256
+
+      - name: Publish release file to branch
+        shell: bash
+        run: |
+          mkdir -p releases
+          cp central-hotfix-10621/out/GAT_CENTRAL_FIX_1.0.62.1.exe releases/GAT_CENTRAL_FIX_1.0.62.1.exe
+          sha256sum releases/GAT_CENTRAL_FIX_1.0.62.1.exe > releases/GAT_CENTRAL_FIX_1.0.62.1.sha256
+          git config user.name "GAT Central Build"
+          git config user.email "actions@users.noreply.github.com"
+          git add releases/GAT_CENTRAL_FIX_1.0.62.1.exe releases/GAT_CENTRAL_FIX_1.0.62.1.sha256
+          git diff --cached --quiet || git commit -m "Publish GAT Central Fix 1.0.62.1"
+          git push origin HEAD:hotfix-central-autostart-1.0.62.1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Central-Fix-1.0.62.1
+          path: |
+            central-hotfix-10621/out/GAT_CENTRAL_FIX_1.0.62.1.exe
