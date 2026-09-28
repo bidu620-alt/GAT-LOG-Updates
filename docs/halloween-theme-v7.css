@@ -352,7 +352,7 @@ body.gat-halloween .ecosystem-signoff b{
 
 
 /* Halloween: abóbora substitui os quatro ícones do fluxo */
-body.gat-halloween .pumpkin-node{
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step .journey-icon.pumpkin-node{
   width:64px!important;
   height:64px!important;
   border:0!important;
@@ -363,9 +363,9 @@ body.gat-halloween .pumpkin-node{
   box-shadow:none!important;
   animation:gatPumpkinFloat 3.4s ease-in-out infinite!important;
 }
-body.gat-halloween .journey-step:nth-of-type(2) .pumpkin-node{animation-delay:.25s!important}
-body.gat-halloween .journey-step:nth-of-type(3) .pumpkin-node{animation-delay:.5s!important}
-body.gat-halloween .journey-step:nth-of-type(4) .pumpkin-node{animation-delay:.75s!important}
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step:nth-of-type(2) .journey-icon.pumpkin-node{animation-delay:.25s!important}
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step:nth-of-type(3) .journey-icon.pumpkin-node{animation-delay:.5s!important}
+body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step:nth-of-type(4) .journey-icon.pumpkin-node{animation-delay:.75s!important}
 body.gat-halloween .journey-step b{
   border-color:#60335f!important;
   background:#160d1a!important;
@@ -376,8 +376,8 @@ body.gat-halloween .journey-step b{
   50%{transform:translateY(-4px) scale(1.035)}
 }
 @media(prefers-reduced-motion:reduce){
-  body.gat-halloween .pumpkin-node{animation:none!important}
+  body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step .journey-icon.pumpkin-node{animation:none!important}
 }
 @media(max-width:650px){
-  body.gat-halloween .pumpkin-node{width:54px!important;height:54px!important}
+  body.gat-halloween .ecosystem-banner .ecosystem-journey .journey-step .journey-icon.pumpkin-node{width:54px!important;height:54px!important}
 }
