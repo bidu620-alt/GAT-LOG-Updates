@@ -277,3 +277,32 @@ body.gat-halloween .rank-tab.active{
 }
 body.gat-halloween .ranking-columns,
 body.gat-halloween .ranking-row{border-bottom-color:#2b1a31!important}
+
+
+/* Home Halloween — Telemetria + Radar */
+body.gat-halloween .telemetry-showcase,
+body.gat-halloween .road-radar{
+  border-color:#4b294f!important;
+  background:linear-gradient(180deg,rgba(20,11,25,.97),rgba(9,6,12,.99))!important;
+}
+body.gat-halloween .home-panel-head h2 strong{color:#ff9a4b!important}
+body.gat-halloween .telemetry-data-grid>div{
+  border-color:#44294c!important;
+  background:linear-gradient(145deg,#160d1b,#0d0911)!important
+}
+body.gat-halloween .telemetry-data-grid>div>span{color:#d4a7ff!important}
+body.gat-halloween .telemetry-data-grid>div:nth-child(4)>span{color:#ff6e72!important}
+body.gat-halloween .telemetry-data-grid>div:nth-child(9)>span,
+body.gat-halloween .telemetry-data-grid>div:nth-child(10)>span{color:#ffb44d!important}
+body.gat-halloween .telemetry-live{
+  border-color:#6e3f27!important;background:#28140b!important;color:#ffbd87!important
+}
+body.gat-halloween .telemetry-live i{background:#ff7a22!important;box-shadow:0 0 12px #ff6a00!important}
+body.gat-halloween .radar-head>a{border-color:#61396b!important;color:#ddb8ff!important}
+body.gat-halloween .radar-list>a{border-color:#3a2440!important;background:#110b15!important}
+body.gat-halloween .radar-list>a:hover{border-color:#8c4f74!important;background:#180f1c!important}
+body.gat-halloween .radar-tag{border-color:#5a3765!important;background:#25122f!important;color:#debaff!important}
+body.gat-halloween .radar-tag.ats{border-color:#7c4221!important;background:#31170a!important;color:#ffb16d!important}
+body.gat-halloween .radar-tag.scs{border-color:#6a3d7c!important;background:#281235!important;color:#e1baff!important}
+body.gat-halloween .radar-tag.promods{border-color:#8a3b20!important;background:#35130a!important;color:#ff9d72!important}
+body.gat-halloween .radar-tag.maps{border-color:#5c3c64!important;background:#24122c!important;color:#d8b4f5!important}
