@@ -119,3 +119,12 @@ body{background:#060b12}.topbar{background:rgba(5,10,17,.94);backdrop-filter:blu
   .ecosystem-journey>i,.journey-route{display:none}
   .journey-icon{width:54px;height:54px}
 }
+
+@keyframes gatJourneyPulse{0%,100%{transform:translateY(0);box-shadow:0 0 18px rgba(37,139,255,.14)}50%{transform:translateY(-3px);box-shadow:0 0 28px rgba(37,139,255,.32)}}
+@keyframes gatRouteGlow{0%,100%{opacity:.35}50%{opacity:1}}
+.journey-step:nth-of-type(2) .journey-icon{animation:gatJourneyPulse 3.2s ease-in-out infinite}
+.journey-step:nth-of-type(3) .journey-icon{animation:gatJourneyPulse 3.2s .35s ease-in-out infinite}
+.journey-step:nth-of-type(4) .journey-icon{animation:gatJourneyPulse 3.2s .7s ease-in-out infinite}
+.journey-step:nth-of-type(5) .journey-icon{animation:gatJourneyPulse 3.2s 1.05s ease-in-out infinite}
+.journey-route{animation:gatRouteGlow 2.5s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.journey-icon,.journey-route{animation:none!important}}
