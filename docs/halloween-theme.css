@@ -306,3 +306,37 @@ body.gat-halloween .radar-tag.ats{border-color:#7c4221!important;background:#311
 body.gat-halloween .radar-tag.scs{border-color:#6a3d7c!important;background:#281235!important;color:#e1baff!important}
 body.gat-halloween .radar-tag.promods{border-color:#8a3b20!important;background:#35130a!important;color:#ff9d72!important}
 body.gat-halloween .radar-tag.maps{border-color:#5c3c64!important;background:#24122c!important;color:#d8b4f5!important}
+
+
+/* Banner Ecossistema no Halloween */
+body.gat-halloween .ecosystem-banner{
+  border-color:#6a3149!important;
+  background:
+    linear-gradient(90deg,rgba(8,5,10,.97) 0%,rgba(8,5,10,.86) 42%,rgba(8,5,10,.26) 74%,rgba(8,5,10,.58) 100%),
+    url("eventos/hallowin/assets/hero-halloween.png") 78% center/cover no-repeat!important;
+  box-shadow:0 18px 52px rgba(0,0,0,.42),0 0 26px rgba(255,95,0,.08)!important;
+}
+body.gat-halloween .ecosystem-banner:before{border-color:rgba(255,104,32,.18)!important}
+body.gat-halloween .ecosystem-copy h2 strong{color:#ff8e3a!important}
+body.gat-halloween .ecosystem-copy p{color:#b5a7b7!important}
+body.gat-halloween .ecosystem-copy blockquote{
+  border-left-color:#ff6a00!important;color:#ffc08f!important
+}
+body.gat-halloween .journey-route{
+  background:linear-gradient(90deg,rgba(255,106,0,.08),rgba(255,106,0,.62),rgba(154,77,255,.62),rgba(154,77,255,.08))!important;
+  box-shadow:0 0 20px rgba(255,106,0,.22)!important
+}
+body.gat-halloween .journey-icon{
+  border-color:#7b3d73!important;
+  background:radial-gradient(circle,#3a183a,#160c1b 72%)!important;
+  color:#e1b7ff!important;
+  box-shadow:0 0 22px rgba(154,77,255,.24)!important
+}
+body.gat-halloween .journey-step:nth-of-type(2) .journey-icon,
+body.gat-halloween .journey-step:nth-of-type(4) .journey-icon{
+  border-color:#8c4726!important;background:radial-gradient(circle,#4a1e12,#1b0d0b 72%)!important;color:#ffae75!important
+}
+body.gat-halloween .journey-step b{
+  border-color:#60335f!important;background:#160d1a!important;color:#e2c6eb!important
+}
+body.gat-halloween .ecosystem-journey>i{color:#ff8b37!important}
