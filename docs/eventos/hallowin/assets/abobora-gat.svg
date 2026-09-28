@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140">
+  <defs>
+    <radialGradient id="pumpkin" cx="50%" cy="42%" r="62%">
+      <stop offset="0" stop-color="#ffb33f"/>
+      <stop offset=".55" stop-color="#ef6a14"/>
+      <stop offset="1" stop-color="#8f2d0a"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="60%">
+      <stop offset="0" stop-color="#fff3a6"/>
+      <stop offset=".26" stop-color="#ffb000"/>
+      <stop offset=".55" stop-color="#ff3b00"/>
+      <stop offset="1" stop-color="#8e0000"/>
+    </radialGradient>
+    <filter id="outer" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <ellipse cx="80" cy="75" rx="66" ry="52" fill="url(#pumpkin)" stroke="#4f1607" stroke-width="3"/>
+  <ellipse cx="80" cy="75" rx="46" ry="52" fill="none" stroke="#b8420e" stroke-width="4" opacity=".55"/>
+  <ellipse cx="80" cy="75" rx="24" ry="52" fill="none" stroke="#c24c10" stroke-width="3" opacity=".48"/>
+  <path d="M76 24c4-15 12-17 19-18-2 8-1 13 5 18-10 0-16 2-24 0z" fill="#6a4a12" stroke="#2a2108" stroke-width="2"/>
+  <path d="M36 59l26-13-10 26zM124 59L98 46l10 26z" fill="url(#glow)" stroke="#5c0900" stroke-width="2" filter="url(#outer)"/>
+  <path d="M72 77l8-12 8 12-8 7z" fill="url(#glow)" stroke="#5c0900" stroke-width="2" filter="url(#outer)"/>
+  <path d="M36 91l14 10 10-8 11 10 10-9 11 9 10-10 9 7 13-9-7 24H43z" fill="url(#glow)" stroke="#5c0900" stroke-width="2" filter="url(#outer)"/>
+  <ellipse cx="80" cy="120" rx="48" ry="8" fill="#ff5a00" opacity=".2" filter="url(#outer)"/>
+</svg>
