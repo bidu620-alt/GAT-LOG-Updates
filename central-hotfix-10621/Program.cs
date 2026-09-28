@@ -1,3 +1,4 @@
+// Build trigger after enabling PR workflow on main.
 using System;
 using System.Diagnostics;
 using System.IO;
