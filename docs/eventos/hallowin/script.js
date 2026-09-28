@@ -1,7 +1,7 @@
 (()=>{
 const API='https://api.gatlogets2.com.br';
 const SESSION_KEY='gat_driver_account_v1';
-const START=Date.parse('2026-09-30T00:00:00-03:00');
+const START=Date.parse('2026-10-01T00:00:00-03:00');
 const END=Date.parse('2026-11-01T00:00:00-03:00');
 const ICON_DATA='../../assets/cargo/cargo-icon-defs.json?v=1';
 const CARGOS=[
@@ -47,7 +47,7 @@ async function loadHall(){
 }
 function tick(){
  const now=Date.now(),locked=document.getElementById('eventLocked'),state=document.getElementById('eventState');
- if(now<START){locked.hidden=false;state.textContent='ABRE 30/09 • 00:00';const ms=START-now,d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000);document.getElementById('eventCountdown').textContent=d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';}
+ if(now<START){locked.hidden=false;state.textContent='ABRE 01/10 • 00:00';const ms=START-now,d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000);document.getElementById('eventCountdown').textContent=d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';}
  else if(now<END){locked.hidden=true;state.textContent='● EVENTO ATIVO';}
  else{locked.hidden=true;state.textContent='EVENTO ENCERRADO';}
 }
