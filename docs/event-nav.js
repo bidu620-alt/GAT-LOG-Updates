@@ -6,9 +6,9 @@ function theme(on){
   if(!on&&l)l.remove();
 }
 function apply(){
-  const now=Date.now(),active=now>=START&&now<END;
-  document.querySelectorAll('.event-month-link').forEach(a=>a.style.display=active?'':'none');
-  theme(active);
+  const now=Date.now(),launched=now>=START,themeActive=launched&&now<END;
+  document.querySelectorAll('.event-month-link').forEach(a=>a.style.display=launched?'':'none');
+  theme(themeActive);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 setInterval(apply,60000);
