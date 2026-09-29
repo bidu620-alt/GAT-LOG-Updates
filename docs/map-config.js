@@ -36,9 +36,14 @@ window.GAT_MAP_CONFIG = {
   },
   promods: {
     label: 'ProMods',
-    type: 'reference',
-    reference: 'base',
-    note: 'Mapa Base usado apenas como referência até entrar a exportação do ProMods.'
+    type: 'gat-direct-tiles',
+    source: 'GAT Map Exportador ProMods + Cloudflare R2',
+    tileUrl: 'https://maps.gatlogets2.com.br/promods/Tiles/{z}/{x}/{y}.png?v=1',
+    tileSize: 256,
+    minZoom: 0,
+    maxZoom: 8,
+    displayMaxZoom: 10,
+    gameBounds: null
   },
   rbr: {
     label: 'RBR',
