@@ -17,7 +17,7 @@ const truckText=t=>{const a=textValue(t,'truck_make','truck.make','Truck.Make'),
 const sourceOf=t=>textValue(t,'source_city','source','job.sourceCity','Job.SourceCity');
 const destinationOf=t=>textValue(t,'destination_city','destination','job.destinationCity','Job.DestinationCity');
 
-function mapKey(t){let k=norm(textValue(t,'gat_map','map_mode','gatMap')).replace(/[\s-]+/g,'_');if(k==='promods'||k==='pro_mods')return 'promods';if(k==='rbr')return 'rbr';if(k==='rotas_brasil'||k==='rotasbrasil'||k==='rots_brasil')return 'rotas_brasil';if(k==='eaa'||k==='mapa_eaa')return 'eaa';if(k==='other'||k==='outro'||k==='outro_mapa')return 'other';return 'base'}
+function mapKey(t){let k=norm(textValue(t,'gat_map','map_mode','gatMap')).replace(/[\s-]+/g,'_');if(!k||k==='base'||k==='mapa_base')return 'base';if(k.includes('promods')||k.includes('pro_mods'))return 'promods';if(k==='rbr'||k.startsWith('rbr_')||k.endsWith('_rbr'))return 'rbr';if(k.includes('rotas_brasil')||k.includes('rotasbrasil')||k.includes('rots_brasil'))return 'rotas_brasil';if(k==='eaa'||k.startsWith('eaa_')||k.includes('mapa_eaa'))return 'eaa';if(k==='other'||k==='outro'||k==='outro_mapa')return 'other';return 'other'}
 function mapLabel(k){return MAP_LABELS[k]||MAP_LABELS.base}
 function mapMatch(d){return d.map===currentMap}
 function markerKey(d){return norm(d.t?.account_user||d.name)}
