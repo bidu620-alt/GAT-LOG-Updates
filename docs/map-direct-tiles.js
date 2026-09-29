@@ -12,7 +12,6 @@
   try{liveMap._fadeAnimated=false}catch(_){}
 
   function directKey(){
-    if(currentMap==='promods')return 'base';
     const cfg=configs[currentMap]||{};
     return cfg.type==='gat-direct-tiles'&&cfg.tileUrl?currentMap:'';
   }
@@ -110,8 +109,7 @@
     liveMap.setMaxBounds(bounds.pad(.035));
     document.getElementById('mapStage')?.classList.add('map-has-base-image','map-gat-export','map-gat-tiles');
     const label=(configs[currentMap]?.label||configs[key]?.label||key).toUpperCase();
-    if(currentMap==='promods')note('PROMODS • MAPA BASE GAT COMO REFERÊNCIA • TILES DIRETOS');
-    else note(label+' • TILES GAT • POSIÇÃO AO VIVO');
+    note(label+' • TILES GAT • POSIÇÃO AO VIVO');
     if(fit)liveMap.fitBounds(bounds,{padding:[18,18],maxZoom:2});
   }
 
