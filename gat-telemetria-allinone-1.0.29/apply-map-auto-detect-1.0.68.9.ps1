@@ -16,6 +16,17 @@ $mainText = $mainText.Replace('CurrentVersion = "1.0.68.8"', 'CurrentVersion = "
 $mainText = $mainText.Replace('Text = "Cliente 1.0.68.8"', 'Text = "Cliente 1.0.68.9"')
 $mainText = $mainText.Replace('HUB 1.0.68.8:', 'HUB 1.0.68.9:')
 
+# Atualiza também os textos visíveis da interface que são definidos nos arquivos Hub.
+Get-ChildItem $rootPath -Filter '*.cs' -Recurse | ForEach-Object {
+    $uiText = Get-Content $_.FullName -Raw
+    $updated = $uiText
+    $updated = $updated.Replace('GAT Telemetria BETA 1.0.68.8', 'GAT Telemetria BETA 1.0.68.9')
+    $updated = $updated.Replace('Cliente 1.0.68.8 TESTE', 'Cliente 1.0.68.9')
+    $updated = $updated.Replace('Cliente: 1.0.68.8 TESTE', 'Cliente: 1.0.68.9')
+    $updated = $updated.Replace('Cliente 1.0.68.8', 'Cliente 1.0.68.9')
+    if ($updated -ne $uiText) { Set-Content $_.FullName $updated -Encoding UTF8 }
+}
+
 $mapAssignPattern = 'tele\["gat_map"\]\s*=\s*CurrentMapModeKey\s*;\s*tele\["gat_map_label"\]\s*=\s*CurrentMapModeLabel\s*;'
 if ([regex]::IsMatch($mainText, $mapAssignPattern)) {
     $mapAssignReplacement = @'
