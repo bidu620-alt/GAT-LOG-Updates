@@ -16,19 +16,16 @@ $mainText = $mainText.Replace('CurrentVersion = "1.0.68.8"', 'CurrentVersion = "
 $mainText = $mainText.Replace('Text = "Cliente 1.0.68.8"', 'Text = "Cliente 1.0.68.9"')
 $mainText = $mainText.Replace('HUB 1.0.68.8:', 'HUB 1.0.68.9:')
 
-$old = @'
-		tele["gat_map"] = CurrentMapModeKey;
-		tele["gat_map_label"] = CurrentMapModeLabel;
-'@
-$new = @'
+$mapAssignPattern = 'tele\["gat_map"\]\s*=\s*CurrentMapModeKey\s*;\s*tele\["gat_map_label"\]\s*=\s*CurrentMapModeLabel\s*;'
+if ([regex]::IsMatch($mainText, $mapAssignPattern)) {
+    $mapAssignReplacement = @'
 		GatMapDetection gatMap = DetectMapFromGameLog();
 		tele["gat_map"] = gatMap.Key;
 		tele["gat_map_label"] = gatMap.Label;
 		tele["gat_map_package"] = gatMap.PackageName;
 		tele["gat_map_source"] = gatMap.Source;
 '@
-if ($mainText.Contains($old)) {
-    $mainText = $mainText.Replace($old, $new)
+    $mainText = [regex]::Replace($mainText, $mapAssignPattern, $mapAssignReplacement.Trim(), 1)
 } elseif ($mainText -notlike '*DetectMapFromGameLog()*') {
     throw 'Bloco gat_map nao encontrado no MainForm.'
 }
