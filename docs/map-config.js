@@ -43,7 +43,12 @@ window.GAT_MAP_CONFIG = {
     minZoom: 0,
     maxZoom: 8,
     displayMaxZoom: 10,
-    gameBounds: null
+    gameBounds: {
+      xMin: -135110.156,
+      zMin: -197653.719,
+      xMax: 205684.1,
+      zMax: 143140.531
+    }
   },
   rbr: {
     label: 'RBR',
