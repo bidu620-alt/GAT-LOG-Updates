@@ -27,7 +27,7 @@ jobs:
           path: publish1689
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          run-id: 36604251678
+          run-id: 36610792954
 
       - name: Publish installer and updater metadata
         shell: bash
