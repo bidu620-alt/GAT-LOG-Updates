@@ -1,0 +1,64 @@
+name: Publish GAT Telemetria 1.0.68.9 AUTO MAP updater
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gat-telemetria-1.0.68.9-auto-map.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download successful 1.0.68.9 AUTO MAP build
+        uses: actions/download-artifact@v4
+        with:
+          name: GAT-Telemetria-1.0.68.9-AUTO-MAP
+          path: publish1689
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 36604251678
+
+      - name: Publish installer and updater metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          setup='publish1689/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe'
+          test -s "$setup"
+          mkdir -p releases
+          cp "$setup" 'releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe'
+          sha="$(sha256sum 'releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe' | awk '{print $1}')"
+          echo "GAT 1.0.68.9 AUTO MAP sha256=$sha"
+
+          cat > latest.json <<EOF
+          {
+            "version": "1.0.68.9",
+            "name": "GAT Telemetria 1.0.68.9 AUTO MAP",
+            "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe",
+            "sha256": "$sha",
+            "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
+          }
+          EOF
+
+          cp latest.json latest-template.json
+
+      - name: Commit updater publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe latest.json latest-template.json
+          git commit -m 'Publish GAT Telemetria 1.0.68.9 AUTO MAP updater'
+          git pull --rebase -X theirs origin main
+          git push origin main
