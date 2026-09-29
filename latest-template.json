@@ -2,6 +2,6 @@
   "version": "1.0.68.9",
   "name": "GAT Telemetria 1.0.68.9 AUTO MAP",
   "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe",
-  "sha256": "90460ecd0dd0024f699e97eea2d94aaece85c1ef17ebdaa37becb9025076827d",
+  "sha256": "2e85c3d83379ac0bd0dcb59629d12ae22d5d73df12897dd09c617d3b3c758356",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }
