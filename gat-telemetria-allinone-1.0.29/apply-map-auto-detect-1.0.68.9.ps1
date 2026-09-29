@@ -170,7 +170,7 @@ internal sealed partial class MainForm
     {
         var result = new List<GatMountedMod>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var mounted = new Regex(@"\[mod_package_manager\]\s+Mod\s+\""(?<name>[^\"]+)\"\s+has been mounted\.\s*\(package_name:\s*(?<pkg>[^,\)]+)", RegexOptions.IgnoreCase);
+        var mounted = new Regex("\\[mod_package_manager\\]\\s+Mod\\s+\\"(?<name>[^\\"]+)\\"\\s+has been mounted\\.\\s*\\(package_name:\\s*(?<pkg>[^,\\)]+)", RegexOptions.IgnoreCase);
         var active = new Regex(@"\[mods\]\s+Active (?:local|workshop) mod\s+(?<pkg>[^\s]+)\s+\(name:\s*(?<name>[^,\)]+)", RegexOptions.IgnoreCase);
 
         foreach (string line in lines)
