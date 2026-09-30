@@ -1,5 +1,8 @@
-// GAT-LOG • estabiliza a camada ATS depois que o ZIP é ativado.
+// GAT-LOG • compatibilidade do ATS legado em ZIP.
+// Quando o ATS usa tiles diretos no Cloudflare R2, este patch não interfere.
 (function(){
+  const cfg=(window.GAT_MAP_CONFIG||{}).ats||{};
+  if(cfg.type!=='gat-zip-tiles')return;
   if(typeof applyLayerForMap!=='function')return;
   const previousApplyLayerForMap=applyLayerForMap;
 
