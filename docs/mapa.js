@@ -1,7 +1,7 @@
 const CENTRAL={label:'CENTRAL GAT',url:'https://api.gatlogets2.com.br'};
 const LIVE_PATH='/api/public/account-live',FRESH_MS=18000,REF_ZOOM=8;
 const MAP_CONFIG=window.GAT_MAP_CONFIG||{};
-const MAP_LABELS={base:'Mapa Base',promods:'ProMods',rbr:'RBR',rotas_brasil:'Rotas Brasil',eaa:'EAA',other:'Outro mapa'};
+const MAP_LABELS={base:'Mapa Base',ats:'American Truck Simulator',promods:'ProMods',rbr:'RBR',rotas_brasil:'Rotas Brasil',eaa:'EAA',other:'Outro mapa'};
 let mapDrivers=[],currentFilter='all',currentMap='base',firstPosition=true,activeImageLayer=null,activeVisualKey='base',selectedDriverKey='';
 const truckMarkers=new Map(),driverRows=new Map();
 const norm=s=>String(s||'').trim().toLowerCase();
@@ -17,7 +17,7 @@ const truckText=t=>{const a=textValue(t,'truck_make','truck.make','Truck.Make'),
 const sourceOf=t=>textValue(t,'source_city','source','job.sourceCity','Job.SourceCity');
 const destinationOf=t=>textValue(t,'destination_city','destination','job.destinationCity','Job.DestinationCity');
 
-function mapKey(t){let k=norm(textValue(t,'gat_map','map_mode','gatMap')).replace(/[\s-]+/g,'_');if(!k||k==='base'||k==='mapa_base')return 'base';if(k.includes('promods')||k.includes('pro_mods'))return 'promods';if(k==='rbr'||k.startsWith('rbr_')||k.endsWith('_rbr'))return 'rbr';if(k.includes('rotas_brasil')||k.includes('rotasbrasil')||k.includes('rots_brasil'))return 'rotas_brasil';if(k==='eaa'||k.startsWith('eaa_')||k.includes('mapa_eaa'))return 'eaa';if(k==='other'||k==='outro'||k==='outro_mapa')return 'other';return 'other'}
+function mapKey(t){let k=norm(textValue(t,'gat_map','map_mode','gatMap')).replace(/[\s-]+/g,'_');if(!k||k==='base'||k==='mapa_base')return 'base';if(k==='ats'||k==='american_truck_simulator'||k==='americantrucksimulator'||k==='american_truck')return 'ats';if(k.includes('promods')||k.includes('pro_mods'))return 'promods';if(k==='rbr'||k.startsWith('rbr_')||k.endsWith('_rbr'))return 'rbr';if(k.includes('rotas_brasil')||k.includes('rotasbrasil')||k.includes('rots_brasil'))return 'rotas_brasil';if(k==='eaa'||k.startsWith('eaa_')||k.includes('mapa_eaa'))return 'eaa';if(k==='other'||k==='outro'||k==='outro_mapa')return 'other';return 'other'}
 function mapLabel(k){return MAP_LABELS[k]||MAP_LABELS.base}
 function mapMatch(d){return d.map===currentMap}
 function markerKey(d){return norm(d.t?.account_user||d.name)}
@@ -95,7 +95,7 @@ function renderPins(){
   if(firstPosition&&latlngs.length){firstPosition=false;if(latlngs.length===1)liveMap.setView(latlngs[0],6);else liveMap.fitBounds(L.latLngBounds(latlngs),{padding:[55,55],maxZoom:6})}
 }
 
-function renderMapCounts(){const counts={base:0,promods:0,rbr:0,rotas_brasil:0,eaa:0,other:0};mapDrivers.forEach(d=>counts[d.map]=(counts[d.map]||0)+1);const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};set('mapCountBase',counts.base);set('mapCountPromods',counts.promods);set('mapCountRbr',counts.rbr);set('mapCountRotas',counts.rotas_brasil);set('mapCountEaa',counts.eaa);set('mapCountOther',counts.other)}
+function renderMapCounts(){const counts={base:0,ats:0,promods:0,rbr:0,rotas_brasil:0,eaa:0,other:0};mapDrivers.forEach(d=>counts[d.map]=(counts[d.map]||0)+1);const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};set('mapCountBase',counts.base);set('mapCountAts',counts.ats);set('mapCountPromods',counts.promods);set('mapCountRbr',counts.rbr);set('mapCountRotas',counts.rotas_brasil);set('mapCountEaa',counts.eaa);set('mapCountOther',counts.other)}
 function updateStats(ok){const visible=mapDrivers.filter(mapMatch),online=visible.length,trips=visible.filter(d=>d.t?.on_job).length,positioned=visible.filter(d=>hasPosition(d.t)).length;document.getElementById('mapOnline').textContent=online;document.getElementById('mapTrips').textContent=trips;document.getElementById('mapTelemetry').textContent=positioned;document.getElementById('mapClock').textContent=new Date().toLocaleTimeString('pt-BR');const badge=document.getElementById('mapLiveState');badge.textContent=ok?'● CENTRAL AO VIVO':'● CENTRAL OFFLINE';badge.classList.toggle('online',ok)}
 async function refresh(){const data=await fetchCentral();if(data)mapDrivers=build(data);renderMapCounts();updateDriverList();renderPins();updateStats(!!data)}
 
