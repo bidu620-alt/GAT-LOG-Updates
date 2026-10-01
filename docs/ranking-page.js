@@ -1,6 +1,7 @@
 (()=>{const API='https://api.gatlogets2.com.br';
 const RANKING=API+'/api/public/ranking',SAFETY=API+'/api/public/safety-ranking';
-let gat=null,safe=null,mode='gat',month='',gatReq=0;
+const urlMonth=new URLSearchParams(location.search).get('month')||'';
+let gat=null,safe=null,mode='gat',month=/^\d{4}-\d{2}$/.test(urlMonth)?urlMonth:'',gatReq=0;
 const n=v=>Number(v)||0;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const label=u=>{const s=String(u||'motorista').replace(/^@/,'');return s.charAt(0).toUpperCase()+s.slice(1)};
@@ -16,7 +17,13 @@ function months(){const el=document.getElementById('rankMonth');if(!el||!gat)ret
 async function loadGat(m=month){const req=++gatReq,s=document.getElementById('rankingStatus');try{const d=await json(RANKING+(m?'?month='+encodeURIComponent(m):''));if(req!==gatReq)return;if(d?.ok){gat=d;month=d.season||m||d.current_month||'';months();syncHeader();render();return}if(s)s.textContent='Ranking temporariamente indisponível.'}catch(_){if(req!==gatReq)return;if(s)s.textContent='Aguardando conexão com a Central GAT.'}}
 async function loadSafe(){if(safe)return render();try{const d=await json(SAFETY);if(d?.ok){safe=d;render();return}}catch(_){}const s=document.getElementById('rankingStatus');if(s)s.textContent='Cargas perfeitas temporariamente indisponíveis.'}
 document.querySelectorAll('.rank-tab').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.rankMode||'gat';document.querySelectorAll('.rank-tab').forEach(x=>x.classList.toggle('active',x===btn));const sel=document.getElementById('rankMonth');if(sel)sel.disabled=mode!=='gat';if(mode==='safe')loadSafe();else render()}));
-document.getElementById('rankMonth')?.addEventListener('change',e=>{const chosen=e.target.value||'';month=chosen;loadGat(chosen)});
+document.getElementById('rankMonth')?.addEventListener('change',e=>{
+  const chosen=e.target.value||'';
+  if(!chosen)return;
+  const url=new URL(location.href);
+  url.searchParams.set('month',chosen);
+  location.href=url.toString();
+});
 loadGat();
 setInterval(()=>{if(!document.hidden)loadGat(month)},60000);
 })();
