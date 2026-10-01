@@ -1,6 +1,6 @@
 (()=>{const API='https://api.gatlogets2.com.br';
 const RANKING=API+'/api/public/ranking',SAFETY=API+'/api/public/safety-ranking';
-let gat=null,safe=null,mode='gat',month='';
+let gat=null,safe=null,mode='gat',month='',gatReq=0;
 const n=v=>Number(v)||0;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const label=u=>{const s=String(u||'motorista').replace(/^@/,'');return s.charAt(0).toUpperCase()+s.slice(1)};
@@ -13,10 +13,10 @@ function list(){if(mode==='safe'){const a=Array.isArray(safe?.ranking)?safe.rank
 function render(){const root=document.getElementById('rankList'),status=document.getElementById('rankingStatus');if(!root||!status)return;const rows=list();root.textContent='';status.textContent=rows.length?statusText():'Nenhum motorista classificado neste período.';rows.slice(0,50).forEach((item,i)=>{const a=document.createElement('a');a.className='ranking-row';a.href='motorista.html?u='+encodeURIComponent(item.user||'');const m=metric(item),initial=label(item.user).charAt(0);a.innerHTML='<span class="ranking-pos">'+(i+1)+'</span><span class="ranking-driver"><span class="ranking-avatar">'+esc(initial)+'</span><span><b>'+esc(label(item.user))+'</b><small>@'+esc(item.user||'motorista')+'</small></span></span><span class="ranking-score"><b>'+esc(m.main)+'</b><small>'+esc(m.sub)+'</small></span>';root.appendChild(a)})}
 function syncHeader(){const season=gat?.season||gat?.current_month||month||'',title=document.getElementById('rankingSeasonTitle'),state=document.getElementById('rankingSeasonState');if(title)title.textContent=monthLabel(season);if(state)state.textContent=gat?.is_current_month===false?'Histórico mensal':'Ranking mensal ativo'}
 function months(){const el=document.getElementById('rankMonth');if(!el||!gat)return;const values=[...new Set([gat.current_month,...(Array.isArray(gat.available_months)?gat.available_months:[])].filter(x=>/^\d{4}-\d{2}$/.test(String(x||''))))].sort().reverse();el.textContent='';for(const v of values){const o=document.createElement('option');o.value=v;o.textContent=monthLabel(v)+(v===gat.current_month?' • atual':'');el.appendChild(o)}const selected=gat.season||month||gat.current_month||values[0]||'';if(selected)el.value=selected;el.disabled=mode!=='gat'}
-async function loadGat(m=month){const s=document.getElementById('rankingStatus');try{const d=await json(RANKING+(m?'?month='+encodeURIComponent(m):''));if(d?.ok){gat=d;month=d.season||m||d.current_month||'';months();syncHeader();render();return}if(s)s.textContent='Ranking temporariamente indisponível.'}catch(_){if(s)s.textContent='Aguardando conexão com a Central GAT.'}}
+async function loadGat(m=month){const req=++gatReq,s=document.getElementById('rankingStatus');try{const d=await json(RANKING+(m?'?month='+encodeURIComponent(m):''));if(req!==gatReq)return;if(d?.ok){gat=d;month=d.season||m||d.current_month||'';months();syncHeader();render();return}if(s)s.textContent='Ranking temporariamente indisponível.'}catch(_){if(req!==gatReq)return;if(s)s.textContent='Aguardando conexão com a Central GAT.'}}
 async function loadSafe(){if(safe)return render();try{const d=await json(SAFETY);if(d?.ok){safe=d;render();return}}catch(_){}const s=document.getElementById('rankingStatus');if(s)s.textContent='Cargas perfeitas temporariamente indisponíveis.'}
 document.querySelectorAll('.rank-tab').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.rankMode||'gat';document.querySelectorAll('.rank-tab').forEach(x=>x.classList.toggle('active',x===btn));const sel=document.getElementById('rankMonth');if(sel)sel.disabled=mode!=='gat';if(mode==='safe')loadSafe();else render()}));
-document.getElementById('rankMonth')?.addEventListener('change',e=>{month=e.target.value||'';loadGat(month)});
+document.getElementById('rankMonth')?.addEventListener('change',e=>{const chosen=e.target.value||'';month=chosen;loadGat(chosen)});
 loadGat();
 setInterval(()=>{if(!document.hidden)loadGat(month)},60000);
 })();
