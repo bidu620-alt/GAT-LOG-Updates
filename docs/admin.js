@@ -23,7 +23,7 @@ const EVENT_CARGOS=[
  ['petrol','Gasolina',['Petrol','Gasolina']],
  ['kerosene','Querosene',['Kerosene','Querosene']],
  ['lpg','GLP',['LPG','GLP']],
- ['fueltanker','Tanque de combustível',['Fuel Tanker','Tanque de combustível','tanker']],
+ ['fueltanker','Tanques de combustível',['Fuel Tanker','Tanque de combustível','Tanques de combustível','fuel_tanks','tanker']],
  ['chemicals','Produtos químicos',['Chemicals','Produtos químicos']],
  ['hchemicals','Produtos químicos quentes',['Hot Chemicals','Produtos químicos quentes','hot_chem']],
  ['acid','Ácido',['Acid','Ácido']],
