@@ -76,6 +76,20 @@ new_route=""" const source=String(m.source||f.source_city||'Origem nao informada
 if old_route in s:
     s=s.replace(old_route,new_route,1)
 
+
+# Preserva o identificador bruto da carga para perfil, evento e auditoria.
+s=s.replace(
+    "const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.raw_json||'{}')}catch{}return{...x,...raw.audit}}).reverse();",
+    "const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.raw_json||'{}')}catch{}const ci=raw.cargo_identity||{},mi=raw.mission||{};return{...x,cargo_id:String(ci.cargo_id_raw||mi.cargo_id||''),cargo_name_raw:String(ci.cargo_name_raw||x.cargo||''),source_city_id:String(ci.source_city_id_raw||mi.source_city_id||''),destination_city_id:String(ci.destination_city_id_raw||mi.destination_city_id||''),cargo_match_method:String(ci.recognized_by||((ci.cargo_id_raw||mi.cargo_id)?'telemetry_id':'telemetry_name')),...raw.audit}}).reverse();",
+    1
+)
+
+s=s.replace(
+    "JSON.stringify({mission:m,delivery_details:details,audit:auditData,map_mode:rbr?'rbr':'base'})",
+    "JSON.stringify({mission:m,delivery_details:details,audit:auditData,map_mode:rbr?'rbr':'base',cargo_identity:{cargo_id_raw:String(m.cargo_id||f.cargo_id||''),cargo_name_raw:String(cargo||''),source_city_id_raw:String(m.source_city_id||f.source_city_id||''),destination_city_id_raw:String(m.destination_city_id||f.destination_city_id||''),recognized_by:(m.cargo_id||f.cargo_id)?'telemetry_id':'telemetry_name'}})",
+    1
+)
+
 s=s.replace("const VERSION='1.0.43-cloudflare';","const VERSION='1.0.44-cloudflare';",1)
 
 required=['cargo_id:str(raw','async function cargoOK(env,mission,cargo,cargoId)','mission_waiting','distance_below_minimum','source_city_id:str(raw']
