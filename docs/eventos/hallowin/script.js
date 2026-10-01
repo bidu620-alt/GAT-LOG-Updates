@@ -15,12 +15,36 @@ const CARGOS=[
  ['Low Bed Semi-trailers','Semirreboques prancha baixa','overweight'],['Excavator','Escavadeira','excavator']
 ];
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
+const CARGO_ALIASES={
+  wshavings:['Casca de madeira','Cavacos de madeira'],
+  beef_meat:['Carne','Carne bovina']
+};
+function cargoIdentityIds(icon){
+ const ids=[icon];
+ const defs=Array.isArray(icons?.definitions)?icons.definitions:[];
+ for(const d of defs)if(d?.id===icon){if(d.id)ids.push(d.id);if(d.token)ids.push(d.token)}
+ return [...new Set(ids.map(compact).filter(Boolean))];
+}
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let profile=null,done=new Map(),icons=null;
 
 function session(){try{let raw=localStorage.getItem(SESSION_KEY);if(!raw){raw=sessionStorage.getItem(SESSION_KEY);if(raw){localStorage.setItem(SESSION_KEY,raw);sessionStorage.removeItem(SESSION_KEY)}}const s=JSON.parse(raw||'null');return s&&s.user&&s.token?s:null}catch(_){return null}}
 function eventRows(p){const rows=Array.isArray(p?.deliveries)?p.deliveries:(Array.isArray(p?.cargo_history)?p.cargo_history:[]);return rows.filter(x=>{const t=Date.parse(x?.delivered_at||x?.completed_at||x?.date||'');return Number.isFinite(t)&&t>=START&&t<END})}
-function completion(rows){const out=new Map();for(const row of rows){const n=norm(row?.cargo||row?.cargo_name||row?.name);for(const [official,label] of CARGOS){if((n===norm(official)||n===norm(label))&&!out.has(official))out.set(official,row)}}return out}
+function completion(rows){
+ const out=new Map();
+ for(const row of rows){
+  const name=norm(row?.cargo||row?.cargo_name||row?.cargo_name_raw||row?.name);
+  const rid=compact(row?.cargo_id||row?.cargoId||row?.catalog_id||'');
+  for(const [official,label,icon] of CARGOS){
+   const aliases=[official,label,...(CARGO_ALIASES[icon]||[])].map(norm);
+   const idMatch=rid&&cargoIdentityIds(icon).includes(rid);
+   const nameMatch=name&&aliases.includes(name);
+   if((idMatch||nameMatch)&&!out.has(official))out.set(official,row);
+  }
+ }
+ return out
+}
 async function loadIcons(){try{const r=await fetch(ICON_DATA,{cache:'force-cache'});const j=await r.json();if(r.ok)icons=j}catch(_){}}
 function thumb(icon){
  if(!icons?.icons?.[icon]||!Array.isArray(icons?.sheets))return '<div class="event-cargo-fallback">GAT</div>';
