@@ -20,7 +20,7 @@ let profile=null,done=new Map(),icons=null;
 
 function session(){try{const s=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');return s&&s.user&&s.token?s:null}catch(_){return null}}
 function eventRows(p){const rows=Array.isArray(p?.deliveries)?p.deliveries:(Array.isArray(p?.cargo_history)?p.cargo_history:[]);return rows.filter(x=>{const t=Date.parse(x?.delivered_at||x?.completed_at||x?.date||'');return Number.isFinite(t)&&t>=START&&t<END})}
-function completion(rows){const out=new Map();for(const row of rows){const n=norm(row?.cargo||row?.cargo_name||row?.name);for(const [official] of CARGOS){if(n===norm(official)&&!out.has(official))out.set(official,row)}}return out}
+function completion(rows){const out=new Map();for(const row of rows){const n=norm(row?.cargo||row?.cargo_name||row?.name);for(const [official,label] of CARGOS){if((n===norm(official)||n===norm(label))&&!out.has(official))out.set(official,row)}}return out}
 async function loadIcons(){try{const r=await fetch(ICON_DATA,{cache:'force-cache'});const j=await r.json();if(r.ok)icons=j}catch(_){}}
 function thumb(icon){
  if(!icons?.icons?.[icon]||!Array.isArray(icons?.sheets))return '<div class="event-cargo-fallback">GAT</div>';
