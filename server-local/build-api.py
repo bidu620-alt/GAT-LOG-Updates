@@ -140,6 +140,38 @@ if reset_old not in worker:
     raise RuntimeError('Nao encontrei a limpeza da tentativa para remover o recibo inicial.')
 worker=worker.replace(reset_old,reset_new,1)
 
+
+# HOTFIX: cancelamento/entrega deve ser decidido pela viagem atual.
+# Evita reaproveitar jobDeliveredDetails de uma viagem anterior (ex.: 129 km)
+# e impede qualquer cancelamento explícito de ser gravado como entrega.
+mission_event_old=""" const deliveryDetailsChanged=(!hasLoadedJob||tripReplaced)&&deliveryDetailsStart&&deliveryDetailsNow!==deliveryDetailsStart&&deliveryDetailsPositive;
+ const legacyDeliveryFallback=!hasLoadedJob&&!deliveryDetailsStart&&(adminTest||m.trip_progress_confirmed===true)&&teleKm>=0&&teleKm<=2&&deliveryDetailsPositive;
+ const delivered=gatJobEvent==='delivered'||deliveryDetailsChanged||legacyDeliveryFallback||(!hasLoadedJob&&bool(raw,'gameplay.jobDelivered','jobDelivered'));
+ const cancelled=!delivered&&raw?.game?.connected===true&&(gatJobEvent==='cancelled'||(!hasLoadedJob&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled','job.cancelled','job.canceled')));"""
+mission_event_new=""" const deliveryDetailsChanged=(!hasLoadedJob||tripReplaced)&&deliveryDetailsStart&&deliveryDetailsNow!==deliveryDetailsStart&&deliveryDetailsPositive;
+ const legacyDeliveryFallback=!hasLoadedJob&&!deliveryDetailsStart&&(adminTest||m.trip_progress_confirmed===true)&&teleKm>=0&&teleKm<=2&&deliveryDetailsPositive;
+ const explicitCancelled=gatJobEvent==='cancelled',explicitDelivered=gatJobEvent==='delivered';
+ const legacyCancelled=!hasLoadedJob&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled','job.cancelled','job.canceled');
+ const legacyDelivered=!hasLoadedJob&&bool(raw,'gameplay.jobDelivered','jobDelivered');
+ const cancelled=raw?.game?.connected===true&&(explicitCancelled||(!explicitDelivered&&legacyCancelled));
+ const delivered=!cancelled&&(explicitDelivered||((adminTest||m.trip_progress_confirmed===true)&&(deliveryDetailsChanged||legacyDeliveryFallback||legacyDelivered)));"""
+if mission_event_old not in worker:
+    raise RuntimeError('Nao encontrei a classificacao final da missao para aplicar o hotfix de cancelamento.')
+worker=worker.replace(mission_event_old,mission_event_new,1)
+
+endpoint_event_old="""   const deliveryDetailsChanged=!loaded&&prevRaw&&JSON.stringify(deliveryDetailsRaw)!==JSON.stringify(previousDeliveryDetailsRaw)&&deliveryDetailsPositive;
+   const delivered=event==='delivered'||deliveryDetailsChanged||(!loaded&&bool(raw,'gameplay.jobDelivered','jobDelivered'));
+   const cancelled=!delivered&&raw?.game?.connected===true&&(event==='cancelled'||(!loaded&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled')));"""
+endpoint_event_new="""   const deliveryDetailsChanged=!loaded&&prevRaw&&JSON.stringify(deliveryDetailsRaw)!==JSON.stringify(previousDeliveryDetailsRaw)&&deliveryDetailsPositive;
+   const explicitCancelled=event==='cancelled',explicitDelivered=event==='delivered';
+   const legacyCancelled=!loaded&&bool(raw,'gameplay.jobCancelled','jobCancelled','gameplay.jobCanceled','jobCanceled');
+   const cancelled=raw?.game?.connected===true&&(explicitCancelled||(!explicitDelivered&&legacyCancelled));
+   const delivered=!cancelled&&(explicitDelivered||deliveryDetailsChanged||(!loaded&&bool(raw,'gameplay.jobDelivered','jobDelivered')));"""
+if endpoint_event_old not in worker:
+    raise RuntimeError('Nao encontrei a classificacao final do endpoint para aplicar o hotfix de cancelamento.')
+worker=worker.replace(endpoint_event_old,endpoint_event_new,1)
+
+
 worker=re.sub(r"import .* from '@noble/[^\n]+\n",'',worker)
 worker="""import {createHash,pbkdf2Sync} from 'node:crypto';
 const sha256=x=>createHash('sha256').update(x).digest();
