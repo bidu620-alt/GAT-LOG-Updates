@@ -18,7 +18,7 @@ const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLo
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let profile=null,done=new Map(),icons=null;
 
-function session(){try{const s=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');return s&&s.user&&s.token?s:null}catch(_){return null}}
+function session(){try{let raw=localStorage.getItem(SESSION_KEY);if(!raw){raw=sessionStorage.getItem(SESSION_KEY);if(raw){localStorage.setItem(SESSION_KEY,raw);sessionStorage.removeItem(SESSION_KEY)}}const s=JSON.parse(raw||'null');return s&&s.user&&s.token?s:null}catch(_){return null}}
 function eventRows(p){const rows=Array.isArray(p?.deliveries)?p.deliveries:(Array.isArray(p?.cargo_history)?p.cargo_history:[]);return rows.filter(x=>{const t=Date.parse(x?.delivered_at||x?.completed_at||x?.date||'');return Number.isFinite(t)&&t>=START&&t<END})}
 function completion(rows){const out=new Map();for(const row of rows){const n=norm(row?.cargo||row?.cargo_name||row?.name);for(const [official,label] of CARGOS){if((n===norm(official)||n===norm(label))&&!out.has(official))out.set(official,row)}}return out}
 async function loadIcons(){try{const r=await fetch(ICON_DATA,{cache:'force-cache'});const j=await r.json();if(r.ok)icons=j}catch(_){}}
@@ -35,7 +35,7 @@ function buildCards(active){
 }
 function updateProgress(){const n=done.size,pct=Math.round(n/30*100);document.getElementById('eventProgress').textContent=n+'/30';document.getElementById('eventProgressTitle').textContent='('+n+'/30)';document.getElementById('eventProgressBar').style.width=pct+'%'}
 async function loadMine(){
- const s=session();if(!s){document.getElementById('eventAccountText').textContent='Entre na sua Conta GAT para registrar o progresso automaticamente.';return}
+ const s=session();const accountLink=document.querySelector('.event-account-link');if(accountLink)accountLink.textContent=s?.user?'@'+s.user:'CONTA GAT';if(!s){document.getElementById('eventAccountText').textContent='Entre na sua Conta GAT para registrar o progresso automaticamente.';return}
  try{const r=await fetch(API+'/api/site/profile',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.token},body:JSON.stringify({token:s.token})});const j=await r.json();if(!r.ok||!j?.profile)throw 0;profile=j.profile;done=completion(eventRows(profile));updateProgress();buildCards(Date.now()>=START&&Date.now()<END);document.getElementById('eventAccountText').textContent='@'+s.user+' • progresso atualizado pela Central GAT.'}catch(_){document.getElementById('eventAccountText').textContent='Não foi possível carregar sua Conta GAT agora.'}
 }
 async function loadHall(){
