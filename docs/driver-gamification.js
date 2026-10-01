@@ -60,14 +60,34 @@
     return {count:found.size,completedAt};
   }
   function achievementsFallback(p,st){
-    const hw=halloweenProgress(p?.deliveries);
+    const rows=Array.isArray(p?.deliveries)?p.deliveries:[];
+    const parsed=rows.map(parseDelivery);
+    const hw=halloweenProgress(rows);
+    const maxDistance=parsed.reduce((m,x)=>Math.max(m,x.distance),0);
+    const maxWeight=rows.reduce((m,d)=>Math.max(m,Math.max(0,n(d?.weight_kg))),0);
+    const cityKey=v=>normEvent(v);
+    const cities=new Set();
+    rows.forEach(d=>{const a=cityKey(d?.source),b=cityKey(d?.destination);if(a)cities.add(a);if(b)cities.add(b)});
+    const exactZero=(d,key)=>Object.prototype.hasOwnProperty.call(d||{},key)&&Number.isFinite(Number(d[key]))&&Number(d[key])===0;
+    const truckZero=d=>{
+      if(Object.prototype.hasOwnProperty.call(d||{},'truck_damage_delta_pct')&&Number.isFinite(Number(d.truck_damage_delta_pct)))return Number(d.truck_damage_delta_pct)===0;
+      if(Object.prototype.hasOwnProperty.call(d||{},'truck_overall_delta_pct')&&Number.isFinite(Number(d.truck_overall_delta_pct)))return Number(d.truck_overall_delta_pct)===0;
+      return false;
+    };
+    const noFine=d=>Number.isFinite(Number(d?.speed_fines))&&Number(d.speed_fines)===0;
+    const perfectCargo500=rows.some(d=>n(d?.distance_km)>=500&&exactZero(d,'cargo_damage_pct'));
+    const impeccable1000=rows.some(d=>n(d?.distance_km)>=1000&&exactZero(d,'cargo_damage_pct')&&truckZero(d)&&noFine(d));
     return [
-      {title:'Primeira Entrega',description:'Conclua sua primeira entrega GAT.',unlocked:n(p?.total_deliveries)>=1,medal:'🚚'},
-      {title:'Na Estrada',description:'Conclua 10 entregas GAT.',unlocked:n(p?.total_deliveries)>=10,medal:'🛣️'},
-      {title:'Direção de Ouro',description:'Conclua 10 viagens perfeitas.',unlocked:n(st?.perfect_trips)>=10,medal:'🥇'},
-      {title:'Pé Leve',description:'Percorra 5.000 km em entregas sem multa.',unlocked:n(st?.no_fine_km)>=5000,medal:'🪽'},
-      {title:'30 Entregas',description:'Complete 30 entregas ao longo da sua carreira GAT.',unlocked:n(p?.total_deliveries)>=30,medal:'📦'},
-      {title:'Veterano GAT',description:'Ultrapasse 50.000 km acumulados.',unlocked:n(p?.total_km)>=50000,medal:'⭐'},
+      {title:'Longa Jornada',description:'Conclua uma viagem válida de 3.000 km ou mais.',unlocked:maxDistance>=3000,medal:'🛣️'},
+      {title:'Horizonte Distante',description:'Conclua uma viagem válida de 5.000 km ou mais.',unlocked:maxDistance>=5000,medal:'🌍'},
+      {title:'Peso Pesado',description:'Entregue uma carga válida de 30 toneladas ou mais.',unlocked:maxWeight>=30000,medal:'🏋️'},
+      {title:'Gigante da Estrada',description:'Entregue uma carga válida de 50 toneladas ou mais.',unlocked:maxWeight>=50000,medal:'🦾'},
+      {title:'Carga Extrema',description:'Entregue uma carga válida de 60 toneladas ou mais.',unlocked:maxWeight>=60000,medal:'🚧'},
+      {title:'Entrega Perfeita',description:'Conclua 500 km ou mais com 0% de dano na carga.',unlocked:perfectCargo500,medal:'🎯'},
+      {title:'Viagem Impecável',description:'Conclua 1.000 km ou mais com 0% de dano na carga, 0% de dano no caminhão e nenhuma multa.',unlocked:impeccable1000,medal:'💎'},
+      {title:'Explorador',description:'Realize entregas válidas envolvendo 25 cidades diferentes.',unlocked:cities.size>=25,medal:'🧭'},
+      {title:'Veterano',description:'Complete 500 entregas válidas.',unlocked:n(p?.total_deliveries)>=500,medal:'🥇'},
+      {title:'Lenda da Estrada',description:'Complete 1.500 entregas válidas.',unlocked:n(p?.total_deliveries)>=1500,medal:'👑'},
       {title:'Halloween 2026 • 30/30',description:hw.count>=30?'Evento concluído. As 30 cargas foram entregues.':'Complete as 30 cargas do Evento Halloween. Progresso: '+hw.count+'/30.',unlocked:hw.count>=30,medal:'🎃',kind:'halloween',progress:hw.count,completedAt:hw.completedAt}
     ];
   }
