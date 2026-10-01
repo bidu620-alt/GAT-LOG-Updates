@@ -18,7 +18,8 @@ const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLo
 const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
 const CARGO_ALIASES={
   wshavings:['Casca de madeira','Cavacos de madeira'],
-  beef_meat:['Carne','Carne bovina']
+  beef_meat:['Carne','Carne bovina'],
+  fueltanker:['Fuel Tanker','Tanque de combustível','Tanques de combustível','fuel_tanks','tanker']
 };
 function cargoIdentityIds(icon){
  const ids=[icon];
@@ -38,7 +39,8 @@ function completion(rows){
   const rid=compact(row?.cargo_id||row?.cargoId||row?.catalog_id||'');
   for(const [official,label,icon] of CARGOS){
    const aliases=[official,label,...(CARGO_ALIASES[icon]||[])].map(norm);
-   const idMatch=rid&&cargoIdentityIds(icon).includes(rid);
+   const idAliases=[...cargoIdentityIds(icon),...(CARGO_ALIASES[icon]||[]).map(compact)];
+   const idMatch=rid&&idAliases.includes(rid);
    const nameMatch=name&&aliases.includes(name);
    if((idMatch||nameMatch)&&!out.has(official))out.set(official,row);
   }
