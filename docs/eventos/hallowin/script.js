@@ -5,7 +5,7 @@ const START=Date.parse('2026-10-01T00:00:00-03:00');
 const END=Date.parse('2026-11-01T00:00:00-03:00');
 const ICON_DATA='../../assets/cargo/cargo-icon-defs.json?v=1';
 const CARGOS=[
- ['Locomotive CZ LOKO EffiShunter 1000','Locomotiva CZ LOKO EffiShunter 1000','czl_es1000'],['Lumber','Madeira serrada','lumber'],['Sawdust Panels','Painéis de serragem','sawpanels'],['Wood Shavings','Cavacos de madeira','wshavings'],
+ ['Dynamite','Dinamite','dynamite'],['Lumber','Madeira serrada','lumber'],['Sawdust Panels','Painéis de serragem','sawpanels'],['Wood Shavings','Cavacos de madeira','wshavings'],
  ['Potatoes','Batatas','potatoes'],['Sugar','Açúcar','sugar'],['Beef','Carne bovina','beef_meat'],['Diesel','Combustível diesel','diesel'],
  ['Petrol','Gasolina','petrol'],['Kerosene','Querosene','kerosene'],['LPG','GLP','lpg'],['Fuel Tanker','Tanque de combustível','fueltanker'],
  ['Chemicals','Produtos químicos','chemicals'],['Hot Chemicals','Produtos químicos quentes','hchemicals'],['Acid','Ácido','acid'],['Arsenic','Arsênico','arsenic'],
