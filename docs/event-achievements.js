@@ -2,7 +2,7 @@
 const START=Date.parse('2026-09-30T00:00:00-03:00');
 const END=Date.parse('2026-11-01T00:00:00-03:00');
 const CARGOS=[
- 'Logs','Lumber','Sawdust Panels','Wood Shavings','Potatoes','Sugar','Beef','Diesel','Petrol','Kerosene',
+ 'Dynamite','Lumber','Sawdust Panels','Wood Shavings','Potatoes','Sugar','Beef','Diesel','Petrol','Kerosene',
  'LPG','Fuel Tanker','Chemicals','Hot Chemicals','Acid','Arsenic','Chlorine','Hydrochloric Acid','Pesticides',
  'Sulphuric Acid','Hospital Waste','Scrap Metals','Used Car Batteries','Cement','Iron Pipes (large)',
  'Glass Panels','Coal','Ore','Low Bed Semi-trailers','Excavator'
