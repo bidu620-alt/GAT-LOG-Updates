@@ -1,0 +1,48 @@
+name: Build RoadLife Independent Dashboard 0.1.0
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-dash/roadlife/**'
+      - '.github/workflows/build-roadlife-dashboard.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: roadlife-independent-dashboard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build RoadLife dashboard
+        shell: pwsh
+        run: |
+          dotnet restore gat-dash/roadlife/windows/RoadLife.Dashboard.csproj
+          dotnet build gat-dash/roadlife/windows/RoadLife.Dashboard.csproj -c Release --no-restore
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "gat-dash\roadlife\windows\ROADLIFE_ETS2_DASHBOARD.iss"
+          Copy-Item "gat-dash\roadlife\windows\Output\ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.0.exe" "ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.0.exe"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: roadlife-independent-dashboard-0.1.0
+          path: ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.0.exe
