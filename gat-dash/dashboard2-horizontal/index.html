@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#050807">
+<title>RoadLife ETS2 • Dashboard Horizontal</title>
+<link rel="stylesheet" href="horizontal.css?v=1">
+</head>
+<body>
+<main class="hud">
+  <section class="brand module drag-zone">
+    <div class="brand-logo"><div class="road-ring"><i></i></div><div class="brand-word">ROAD<span>LIFE</span><small>ETS2</small></div></div>
+    <div class="online"><i id="connectionDot"></i><b id="connectionText">SEM TELEMETRIA</b></div>
+    <div class="date-row"><span>▣</span><strong id="brasiliaDate">--/--/----</strong></div>
+    <div class="time-row"><span>◷</span><strong id="brasiliaTime">--:--</strong><small>HORÁRIO DE BRASÍLIA</small></div>
+  </section>
+
+  <section class="journey">
+    <article class="route module">
+      <div class="caption">ROTA ATUAL</div>
+      <div class="route-title"><strong id="sourceCity">—</strong><span>→</span><strong id="destinationCity">—</strong></div>
+      <div class="route-bar"><i id="routeProgress"></i><em></em></div>
+      <div class="route-meta"><span id="routeStartText">0 km</span><span id="remainingKm">0 km</span></div>
+    </article>
+    <div class="journey-row">
+      <article class="mini module cargo-card"><span class="icon">◆</span><div><small>CARGA</small><strong id="cargoName">Sem carga</strong><b id="cargoMass">0 t</b></div></article>
+      <article class="mini module fuel-card"><span class="icon">⛽</span><div class="grow"><small>COMBUSTÍVEL</small><strong id="fuelLiters">0 / 0 L</strong><div class="fuel-bar"><i id="fuelBar"></i></div></div><b id="fuelPct">0%</b></article>
+    </div>
+    <div class="journey-bottom module">
+      <div><small>DISTÂNCIA RESTANTE</small><strong id="remainingKm2">0 km</strong></div>
+      <i></i>
+      <div><small>PERCURSO DA VIAGEM</small><strong id="tripKm">0 km</strong></div>
+    </div>
+  </section>
+
+  <section class="cluster">
+    <div class="gear-stack"><span>R</span><span>N</span><b id="gearValue">N</b><div class="temp"><small>♨</small><strong id="waterTemp">0°C</strong></div></div>
+    <div class="speedometer">
+      <div class="dial ticks"></div>
+      <div class="dial glow"></div>
+      <div class="speed-core"><strong id="speedValue">0</strong><span>km/h</span></div>
+    </div>
+    <div class="limit-stack">
+      <div class="limit-sign"><strong id="speedLimit">—</strong></div>
+      <small>LIMITE</small>
+      <div class="cruise"><span>◴</span><b id="cruiseValue">OFF</b></div>
+    </div>
+  </section>
+
+  <section class="right-zone">
+    <article class="cargo-dynamic module">
+      <header><div><span class="box-icon">◇</span><b>CARGA DINÂMICA</b></div><small>● Reconhecimento automático</small></header>
+      <div class="cargo-content">
+        <div class="cargo-visual"><div id="cargoGraphic" class="cargo-glyph">▰</div></div>
+        <div class="cargo-info"><strong id="dynamicCargoName">Sem carga</strong><div class="rule"></div><small>PESO TOTAL</small><b id="dynamicCargoMass">0 t</b></div>
+      </div>
+    </article>
+    <div class="right-bottom">
+      <article class="eta module"><span>◷</span><div><small>CHEGADA ESTIMADA</small><strong id="etaClock">—</strong></div></article>
+      <article class="truck module"><span>▰</span><div><small>CAMINHÃO</small><strong id="truckDisplay">Aguardando</strong></div></article>
+    </div>
+    <article class="damages module">
+      <div class="damage-title">🔧 <b>DANOS</b></div>
+      <div><small>Caminhão</small><strong id="damageTruck">0%</strong></div>
+      <div><small>Reboque</small><strong id="damageTrailer">0%</strong></div>
+      <div><small>Carga</small><strong id="damageCargo">0%</strong></div>
+    </article>
+  </section>
+
+  <button id="settingsBtn" class="control settings-btn" title="Opacidade">⚙</button>
+  <button id="minimizeBtn" class="control min-btn" title="Minimizar">—</button>
+  <button id="closeBtn" class="control close-btn" title="Fechar">×</button>
+</main>
+
+<div id="settingsModal" class="modal hidden">
+  <div class="settings">
+    <div><b>ROADLIFE • HORIZONTAL</b><button id="closeSettings">×</button></div>
+    <label>OPACIDADE</label>
+    <input id="opacityRange" type="range" min="65" max="100" value="94">
+    <small>Esta versão trabalha somente no layout horizontal.</small>
+  </div>
+</div>
+<script src="horizontal.js?v=1"></script>
+</body>
+</html>
