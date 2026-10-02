@@ -168,10 +168,13 @@
       const calculatedBase=Math.floor(distance/100)*20;
       const base=penaltyValue(x,'base_xp',calculatedBase)||calculatedBase;
       const fines=Math.max(0,Math.round(n(x?.speed_fines)));
-      const speedPenalty=penaltyValue(x,'speed_penalty_xp',fines*3);
-      const cargoPenalty=penaltyValue(x,'cargo_penalty_xp',0);
-      const truckPenalty=penaltyValue(x,'truck_penalty_xp',0);
-      const totalPenalty=penaltyValue(x,'penalty_xp',speedPenalty+cargoPenalty+truckPenalty);
+      const speedingPenalty=penaltyValue(x,'gat_speeding_penalty_points',0);
+      const speedingRatio=penaltyValue(x,'gat_speeding_ratio_pct',0);
+      const speedingSeconds=penaltyValue(x,'gat_speeding_seconds',0);
+      const trafficPenalty=penaltyValue(x,'gat_fine_penalty_points',penaltyValue(x,'speed_penalty_xp',fines*3));
+      const cargoPenalty=penaltyValue(x,'gat_cargo_penalty_points',penaltyValue(x,'cargo_penalty_xp',0));
+      const truckPenalty=penaltyValue(x,'gat_truck_penalty_points',penaltyValue(x,'truck_penalty_xp',0));
+      const totalPenalty=speedingPenalty+penaltyValue(x,'gat_penalty_points',trafficPenalty+cargoPenalty+truckPenalty);
       const hasSavedFinal=x&&Object.prototype.hasOwnProperty.call(x,'xp_awarded')&&Number.isFinite(Number(x.xp_awarded));
       const finalXp=hasSavedFinal?Math.max(0,Number(x.xp_awarded)):Math.max(0,base);
       const rankFlag=x?.ranking_eligible??x?.rank_eligible,rankEligible=rankFlag===undefined?true:rankFlag!==false;
@@ -185,7 +188,8 @@
       let chips=`<span class="gat-xp-chip final"><span>XP DA VIAGEM</span><b>${fmt(finalXp)}</b></span>`;
       if(rankEligible){
         chips+=`<span class="gat-xp-chip ${gatPoints>0?'clean':'penalty'}"><span>PONTOS GAT</span><b>${fmt(gatPoints)}</b></span>`;
-        if(speedPenalty>0||fines>0)chips+=`<span class="gat-xp-chip penalty"><span>VELOCIDADE${fines?' • '+fines+' multa'+(fines===1?'':'s'):''}</span><b>-${fmt(speedPenalty)} PONTOS</b></span>`;
+        if(speedingPenalty>0||speedingRatio>0)chips+=`<span class="gat-xp-chip penalty"><span>EXCESSO DE VELOCIDADE • ${fmtPct(speedingRatio)}</span><b>-${fmt(speedingPenalty)} PONTOS</b></span>`;
+        if(trafficPenalty>0||fines>0)chips+=`<span class="gat-xp-chip penalty"><span>INFRAÇÃO DE TRÂNSITO${fines?' • '+fines+' ocorrência'+(fines===1?'':'s'):''}</span><b>-${fmt(trafficPenalty)} PONTOS</b></span>`;
         if(cargoPenalty>0||cargoDamage>0)chips+=`<span class="gat-xp-chip ${cargoPenalty>0?'penalty':''}"><span>CARGA • ${fmtPct(cargoDamage)}</span><b>${cargoPenalty>0?'-'+fmt(cargoPenalty)+' PONTOS':'OK'}</b></span>`;
         if(truckPenalty>0||truckDamage>0)chips+=`<span class="gat-xp-chip ${truckPenalty>0?'penalty':''}"><span>CAMINHÃO • +${fmtPct(truckDamage)}</span><b>${truckPenalty>0?'-'+fmt(truckPenalty)+' PONTOS':'OK'}</b></span>`;
       }else{
