@@ -2,8 +2,8 @@
 'use strict';
 const $=id=>document.getElementById(id), STORE='roadlife_dashboard2_overlay_v2';
 const state={theme:'green',layout:'vertical',opacity:.96,lastTelemetry:0};
-const truckMap={volvo:'assets/trucks/volvo.webp',scania:'assets/trucks/scania.webp',mercedes:'assets/trucks/mercedes.webp',mercedes_benz:'assets/trucks/mercedes.webp',daf:'assets/trucks/daf.webp',man:'assets/trucks/man.webp',iveco:'assets/trucks/iveco.webp',stralis:'assets/trucks/iveco.webp',s_way:'assets/trucks/iveco.webp',renault:'assets/trucks/renault.webp'};
-const cargoMap={tractor:'assets/cargo/tractor.webp',tractors:'assets/cargo/tractor.webp',lpg:'assets/cargo/lpg.webp',glp:'assets/cargo/lpg.webp',acid:'assets/cargo/acid.webp',arsenic:'assets/cargo/arsenic.webp',excavator:'assets/cargo/excavator.webp',lumber:'assets/cargo/lumber.webp',diesel:'assets/cargo/diesel.webp',dynamite:'assets/cargo/dynamite.webp',hwaste:'assets/cargo/hospital_waste.webp',hospital_waste:'assets/cargo/hospital_waste.webp'};
+const truckMap={volvo:'assets/trucks/truck-green.png',scania:'assets/trucks/truck-green.png',mercedes:'assets/trucks/truck-green.png',mercedes_benz:'assets/trucks/truck-green.png',daf:'assets/trucks/truck-green.png',man:'assets/trucks/truck-green.png',iveco:'assets/trucks/truck-green.png',stralis:'assets/trucks/truck-green.png',s_way:'assets/trucks/truck-green.png',renault:'assets/trucks/truck-green.png'};
+let cargoDefs=[];
 function nativePost(o){try{if(window.chrome&&window.chrome.webview)window.chrome.webview.postMessage(o)}catch{}}
 function first(obj,...paths){for(const path of paths){let v=obj;for(const p of path.split('.')){if(v==null)break;v=v[p]}if(v!==undefined&&v!==null)return v}}
 function num(v){v=Number(v);return Number.isFinite(v)?v:0}
@@ -16,7 +16,13 @@ function gear(t){const g=num(first(t,'truck.displayedGear','Truck.DisplayedGear'
 function brTime(){const d=new Date();set('brasiliaTime',new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(d));set('brasiliaDate',new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric'}).format(d))}
 function arrival(v){if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(d)}
 function pickTruck(make,model){const k=norm(make+' '+model);for(const b of Object.keys(truckMap))if(k.includes(b))return truckMap[b];return ''}
-function pickCargo(id,name){const a=norm(id),b=norm(name);for(const k of Object.keys(cargoMap))if(a.includes(k)||b.includes(k))return cargoMap[k];return ''}
+function pickCargoDef(id,name){const a=norm(id),b=norm(name);return cargoDefs.find(d=>{const di=norm(d.id),dt=norm(d.token),ic=norm(d.icon);return (a&&(a===di||a===dt||a.includes(di)||di.includes(a)))||(b&&(b===dt||b.includes(dt)||b.includes(di)||b.includes(ic)))})||null}
+function pickCargo(id,name){const d=pickCargoDef(id,name);return d?'cargo-sprite:'+d.icon:''}
+function cargoSprite(imgId,fallbackId,src){
+ const img=$(imgId),fb=$(fallbackId);if(!src||!src.startsWith('cargo-sprite:')){img.hidden=true;fb.hidden=false;return}
+ const icon=src.slice(13);img.hidden=true;fb.hidden=false;fb.textContent='▰';fb.dataset.cargoIcon=icon;fb.title='Carga: '+icon;fb.classList.add('catalog-cargo')
+}
+async function loadCargoDefs(){try{const r=await fetch('assets/cargo/cargo-icon-defs.json',{cache:'no-store'});const j=await r.json();cargoDefs=Array.isArray(j.definitions)?j.definitions:[]}catch{cargoDefs=[]}}
 function imageMap(imgId,fallbackId,src){const img=$(imgId),fb=$(fallbackId);if(!src){img.hidden=true;fb.hidden=false;return}img.onload=()=>{img.hidden=false;fb.hidden=true};img.onerror=()=>{img.hidden=true;fb.hidden=false};img.src=src}
 function pctBar(id,v){const e=$(id);if(e)e.style.width=clamp(v,0,100)+'%'}
 function load(){try{Object.assign(state,JSON.parse(localStorage.getItem(STORE)||'{}'))}catch{}applyPrefs(false)}
@@ -34,6 +40,7 @@ function render(t){
  const planned=num(first(t,'job.plannedDistanceKm','Job.PlannedDistanceKm','job.distanceKm','Job.DistanceKm'));
  const eta=first(t,'navigation.estimatedTime','Navigation.EstimatedTime');
  const make=first(t,'truck.make','Truck.Make','truck.makeName','Truck.MakeName')||'',model=first(t,'truck.model','Truck.Model','truck.modelName','Truck.ModelName')||'';
+ const trailer=first(t,'trailer.name','Trailer.Name','trailer.model','Trailer.Model','trailer.bodyType','Trailer.BodyType','trailer.id','Trailer.Id')||'Reboque conectado';
  const wears=['Engine','Transmission','Cabin','Chassis','Wheels'].map(x=>dmg(first(t,'truck.wear'+x,'Truck.Wear'+x)));
  const truckDamage=Math.max(...wears),trailerDamage=dmg(first(t,'trailer.wear','Trailer.Wear','trailer.damage','Trailer.Damage')),cargoDamage=dmg(first(t,'job.cargoDamage','Job.CargoDamage','gameplay.jobDelivered.cargoDamage'));
  set('speedValue',Math.round(speed));set('speedLimit',limit>0?Math.round(limit):'—');set('gearValue',gear(t));
@@ -43,12 +50,12 @@ function render(t){
  set('cargoMass',mass>0?(mass/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' t':'0 t');
  set('remainingKm',fmtKm(remain));set('remainingKm2',fmtKm(remain));set('tripKm',planned>0?fmtKm(planned):'—');set('etaClock',arrival(eta));
  set('fuelPct',Math.round(fp)+'%');set('fuelLiters',Math.round(fuel).toLocaleString('pt-BR')+' / '+Math.round(cap).toLocaleString('pt-BR')+' L');pctBar('fuelBar',fp);
- set('truckName',make||'Caminhão');set('truckModel',model||'modelo não informado');
+ set('truckName',make||'Caminhão');set('truckModel',model||'modelo não informado');set('trailerName',trailer);
  set('damageTruck',truckDamage.toFixed(1).replace('.',',')+'%');set('damageTrailer',trailerDamage.toFixed(1).replace('.',',')+'%');set('damageCargo',cargoDamage.toFixed(1).replace('.',',')+'%');
  pctBar('damageTruckBar',truckDamage);pctBar('damageTrailerBar',trailerDamage);pctBar('damageCargoBar',cargoDamage);
  $('connectionDot').classList.toggle('on',connected);set('connectionText',connected?'ONLINE':'SEM TELEMETRIA');set('telemetryStatus',connected?'TruckSim GPS: telemetria ativa':'TruckSim GPS: sem conexão');
  const total=planned>0?planned:remain;const progress=total>0?clamp((total-remain)/total*100,0,100):0;pctBar('routeProgress',progress);set('routeStartText',progress>0?Math.round(progress)+'%':'0 km');
- imageMap('truckImage','truckFallback',pickTruck(make,model));imageMap('cargoImage','cargoFallback',pickCargo(cid,cargo));
+ imageMap('truckImage','truckFallback',pickTruck(make,model));cargoSprite('cargoImage','cargoFallback',pickCargo(cid,cargo));
 }
 window.dashboard2PushTelemetry=p=>{let t=p;if(typeof t==='string'){try{t=JSON.parse(t)}catch{return}}if(t&&typeof t==='object'){state.lastTelemetry=Date.now();render(t)}};
 $('rotateBtn').onclick=rotate;$('floatingRotateBtn').onclick=rotate;$('settingsBtn').onclick=()=>$('settingsModal').classList.remove('hidden');$('closeSettings').onclick=()=>$('settingsModal').classList.add('hidden');$('saveSettings').onclick=()=>$('settingsModal').classList.add('hidden');
@@ -57,5 +64,5 @@ document.querySelectorAll('[data-theme-choice]').forEach(b=>b.onclick=()=>{state
 document.querySelectorAll('[data-layout-choice]').forEach(b=>b.onclick=()=>setLayout(b.dataset.layoutChoice));
 $('opacityRange').oninput=e=>{state.opacity=Number(e.target.value)/100;save()};
 document.querySelectorAll('.drag-zone').forEach(el=>el.addEventListener('mousedown',e=>{if(e.button===0&&!e.target.closest('button'))nativePost({type:'drag'})}));
-setInterval(brTime,1000);brTime();load();setTimeout(()=>nativePost({type:'layout',layout:state.layout,initial:true}),300);
+setInterval(brTime,1000);brTime();load();loadCargoDefs();setTimeout(()=>nativePost({type:'layout',layout:state.layout,initial:true}),300);
 })();
