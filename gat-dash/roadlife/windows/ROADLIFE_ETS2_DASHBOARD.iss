@@ -1,5 +1,5 @@
 #define MyAppName "RoadLife ETS2 Dashboard"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.1.1"
 #define MyAppExeName "ROADLIFE_ETS2_DASHBOARD.exe"
 
 [Setup]
@@ -9,7 +9,7 @@ AppVersion={#MyAppVersion}
 DefaultDirName={localappdata}\RoadLife ETS2\RoadLife Dashboard
 DefaultGroupName=RoadLife ETS2
 OutputDir=Output
-OutputBaseFilename=ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.0
+OutputBaseFilename=ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.1
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
