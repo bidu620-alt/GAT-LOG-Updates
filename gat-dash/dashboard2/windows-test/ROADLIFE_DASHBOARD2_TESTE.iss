@@ -1,5 +1,5 @@
 #define MyAppName "RoadLife ETS2 Dashboard2 Overlay TESTE"
-#define MyAppVersion "0.2.1"
+#define MyAppVersion "0.3.0"
 #define MyAppExeName "ROADLIFE_DASHBOARD2_OVERLAY_TESTE.exe"
 
 [Setup]
@@ -9,7 +9,7 @@ AppVersion={#MyAppVersion}
 DefaultDirName={localappdata}\RoadLife ETS2\Dashboard2 Overlay Teste
 DefaultGroupName=RoadLife ETS2
 OutputDir=Output
-OutputBaseFilename=ROADLIFE_DASHBOARD2_OVERLAY_TESTE_SETUP_0.2.1
+OutputBaseFilename=ROADLIFE_DASHBOARD2_OVERLAY_TESTE_SETUP_0.3.0
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
