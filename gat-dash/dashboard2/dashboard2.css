@@ -122,3 +122,37 @@ body[data-layout=horizontal] footer{
  grid-column:1/5;grid-row:3;
  min-height:13px
 }
+
+/* RoadLife 0.3.0 — futuristic HUD skin */
+.overlay-shell{background:
+ radial-gradient(circle at 50% 30%,var(--glow),transparent 26%),
+ linear-gradient(145deg,#0c1210f8 0%,#030605fb 48%,#09100df8 100%);
+ border:1px solid #53635b;box-shadow:inset 0 0 0 2px #020403,inset 0 0 22px #000,0 10px 30px #000a}
+.panel,.top{clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px);
+ border-color:#45574e;background:linear-gradient(155deg,#111a16f2,#050907f5 60%,#0b120ff2)}
+.panel:after,.top:after{content:"";position:absolute;inset:3px;pointer-events:none;border-top:1px solid #ffffff12;border-left:1px solid #ffffff08;clip-path:inherit}
+.panel:before{height:2px;width:42%;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 12px var(--accent)}
+.top{position:relative;box-shadow:inset 0 -10px 25px #0006,0 0 10px #0008}
+.brand-text strong{text-shadow:0 2px 0 #000,0 0 12px var(--glow);letter-spacing:-.06em}.brand-text small{color:#e8ecea}
+.road-mark{border-width:3px;background:radial-gradient(circle,#0c1812,#020403 68%);box-shadow:inset 0 0 12px #000,0 0 15px var(--glow)}
+.speed-zone{background:radial-gradient(circle at 50% 50%,#13251b 0,#07100b 46%,#030504 76%);box-shadow:inset 0 0 30px #000,0 0 12px #000b}
+.speedometer{isolation:isolate}.speedometer:before,.speedometer:after{content:"";position:absolute;border-radius:50%;pointer-events:none}.speedometer:before{width:154px;height:154px;border:2px solid #65736b;box-shadow:inset 0 0 12px #000,0 0 16px #000}.speedometer:after{width:116px;height:116px;border:1px solid #22332a;background:radial-gradient(circle,#0b110e 20%,#020403 72%);z-index:0;box-shadow:inset 0 0 24px #000}
+.arc{z-index:1;border-color:#25312b;border-left-color:var(--accent);border-top-color:var(--accent);filter:drop-shadow(0 0 5px var(--accent))}
+.dial-ring{position:absolute;width:150px;height:150px;border-radius:50%;z-index:2;pointer-events:none}.dial-ring i{position:absolute;left:74px;top:2px;width:2px;height:9px;background:#dce4df;transform-origin:1px 73px;box-shadow:0 0 4px var(--accent)}.dial-ring i:nth-child(1){transform:rotate(-105deg)}.dial-ring i:nth-child(2){transform:rotate(-70deg)}.dial-ring i:nth-child(3){transform:rotate(-35deg)}.dial-ring i:nth-child(4){transform:rotate(0)}.dial-ring i:nth-child(5){transform:rotate(35deg)}.dial-ring i:nth-child(6){transform:rotate(70deg)}.dial-ring i:nth-child(7){transform:rotate(105deg)}
+.speed-core{z-index:4;text-shadow:0 3px 4px #000}.speed-core strong{font-weight:900;background:linear-gradient(#fff,#b9c2bd);-webkit-background-clip:text;color:transparent}
+.limit-sign{border-color:#e12b35;box-shadow:inset 0 0 0 2px #fff,0 0 14px #e12b3544}
+.route{background:linear-gradient(100deg,#08100cf5,#101914f2)}.route-main strong{font-weight:800;text-shadow:0 2px 3px #000}.route-bar{border:1px solid #3b4942;height:6px;background:#111915}.route-bar i,.fuel-bar i,.damage i{background:linear-gradient(90deg,var(--accent2),var(--accent));box-shadow:0 0 8px var(--accent)}
+.tile{min-width:0}.tile .ico{filter:drop-shadow(0 0 5px var(--accent));text-shadow:0 0 8px var(--accent)}.tile strong,.tile b{font-weight:800}
+.damages{background:linear-gradient(90deg,#09110df5,#050806f5)}.section-title{text-shadow:0 0 8px var(--accent)}
+.dynamic{background:linear-gradient(180deg,#09110df7,#030504f8),radial-gradient(ellipse at bottom,#183523 0,transparent 60%)}.dynamic-stage:after{content:"";position:absolute;left:8%;right:8%;bottom:8px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 10px var(--accent)}
+.floating-rotate{clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 7px,100% calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,0 calc(100% - 7px),0 7px);border-radius:0;background:#07100bf5}
+body[data-layout=vertical] .overlay-shell{padding:7px;gap:6px}
+body[data-layout=horizontal] .overlay-shell{grid-template-columns:175px minmax(230px,270px) 1fr 285px;grid-template-rows:76px 76px 13px;padding:6px;gap:5px}
+body[data-layout=horizontal] .speed-zone{grid-column:2;grid-row:1/3}
+body[data-layout=horizontal] .speedometer:before{width:142px;height:142px}body[data-layout=horizontal] .speedometer:after{width:106px;height:106px}
+body[data-layout=horizontal] .dial-ring{width:140px;height:140px}.dial-ring i{transform-origin:1px 68px}
+body[data-layout=horizontal] .route{grid-column:3;grid-row:1}
+body[data-layout=horizontal] .data-grid{grid-column:3;grid-row:2}
+body[data-layout=horizontal] .damages{grid-column:4;grid-row:1}
+body[data-layout=horizontal] .dynamic{grid-column:4;grid-row:2}
+@media(min-width:1100px){body[data-layout=horizontal] .overlay-shell{grid-template-columns:180px 290px 1fr 320px}.speed-core strong{font-size:68px}}
