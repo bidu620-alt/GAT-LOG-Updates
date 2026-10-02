@@ -1,0 +1,22 @@
+{
+  "trucks": {
+    "volvo": "assets/trucks/volvo.webp",
+    "scania": "assets/trucks/scania.webp",
+    "mercedes": "assets/trucks/mercedes.webp",
+    "daf": "assets/trucks/daf.webp",
+    "man": "assets/trucks/man.webp",
+    "iveco": "assets/trucks/iveco.webp",
+    "renault": "assets/trucks/renault.webp"
+  },
+  "cargo": {
+    "tractor": "assets/cargo/tractor.webp",
+    "lpg": "assets/cargo/lpg.webp",
+    "acid": "assets/cargo/acid.webp",
+    "arsenic": "assets/cargo/arsenic.webp",
+    "excavator": "assets/cargo/excavator.webp",
+    "lumber": "assets/cargo/lumber.webp",
+    "diesel": "assets/cargo/diesel.webp",
+    "dynamite": "assets/cargo/dynamite.webp",
+    "hwaste": "assets/cargo/hospital_waste.webp"
+  }
+}
