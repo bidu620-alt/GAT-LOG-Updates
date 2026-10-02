@@ -1,0 +1,47 @@
+name: Build RoadLife Dashboard Horizontal Test 0.5.0
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-dash/dashboard2-horizontal/**'
+      - '.github/workflows/build-dashboard-horizontal-test.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: roadlife-dashboard-horizontal-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build horizontal overlay
+        shell: pwsh
+        run: |
+          dotnet restore gat-dash/dashboard2-horizontal/windows-test/RoadLife.DashboardHorizontal.Test.csproj
+          dotnet build gat-dash/dashboard2-horizontal/windows-test/RoadLife.DashboardHorizontal.Test.csproj -c Release --no-restore
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "gat-dash\dashboard2-horizontal\windows-test\ROADLIFE_DASHBOARD_HORIZONTAL_TESTE.iss"
+          Copy-Item "gat-dash\dashboard2-horizontal\windows-test\Output\ROADLIFE_DASHBOARD_HORIZONTAL_TESTE_SETUP_0.5.0.exe" "ROADLIFE_DASHBOARD_HORIZONTAL_TESTE_SETUP_0.5.0.exe"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: roadlife-dashboard-horizontal-test-0.5.0
+          path: ROADLIFE_DASHBOARD_HORIZONTAL_TESTE_SETUP_0.5.0.exe
