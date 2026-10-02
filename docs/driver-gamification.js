@@ -24,7 +24,7 @@
   }
 
   function parseDelivery(d){
-    const distance=Math.max(0,n(d?.distance_km)),base=Math.max(0,n(d?.base_xp)||Math.floor(distance/100)*20),fines=Math.max(0,Math.round(n(d?.speed_fines)));
+    const distance=Math.max(0,n(d?.distance_km)),base=Math.max(0,n(d?.base_xp)||Math.floor(distance)),fines=Math.max(0,Math.round(n(d?.speed_fines)));
     const speed=Math.max(0,n(d?.gat_speed_penalty_points)||fines*3),cargo=Math.max(0,n(d?.gat_cargo_penalty_points)),truck=Math.max(0,n(d?.gat_truck_penalty_points)),penalty=Math.max(0,n(d?.gat_penalty_points)||n(d?.penalty_xp)||speed+cargo+truck),bonus=Math.max(0,n(d?.perfect_bonus_xp));
     const final=(d&&Object.prototype.hasOwnProperty.call(d,'xp_awarded')&&Number.isFinite(Number(d.xp_awarded)))?Math.max(0,Number(d.xp_awarded)):Math.max(0,base+bonus),score=(d&&Object.prototype.hasOwnProperty.call(d,'gat_points')&&Number.isFinite(Number(d.gat_points)))?Math.max(0,Number(d.gat_points)):Math.max(0,100-penalty);
     return {d,distance,base,fines,speed,cargo,truck,penalty,bonus,final,score,cargoDamage:Math.max(0,n(d?.cargo_damage_pct)),truckDamage:Math.max(0,n(d?.truck_damage_delta_pct)),perfect:!!d?.perfect_trip||bonus>0};
