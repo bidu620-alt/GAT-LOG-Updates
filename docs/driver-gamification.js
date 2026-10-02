@@ -37,32 +37,14 @@
     return {deliveries:p.length,speed_fines:fines,penalty_points:lost,penalty_xp:lost,perfect_trips:perfect,clean_trips:clean,no_fine_km:noFineKm,avg_cargo_damage_pct:avgC,avg_truck_damage_pct:avgT,score};
   }
 
-  const HALLOWEEN_EVENT_START=Date.parse('2026-09-30T00:00:00-03:00');
-  const HALLOWEEN_EVENT_END=Date.parse('2026-11-01T00:00:00-03:00');
-  const HALLOWEEN_CARGOS=[
-    'Dynamite','Lumber','Sawdust Panels','Wood Shavings','Potatoes','Sugar','Beef','Diesel','Petrol','Kerosene',
-    'LPG','Fuel Tanker','Chemicals','Hot Chemicals','Acid','Arsenic','Chlorine','Hydrochloric Acid','Pesticides',
-    'Sulphuric Acid','Hospital Waste','Scrap Metals','Used Car Batteries','Cement','Iron Pipes (large)',
-    'Glass Panels','Coal','Ore','Low Bed Semi-trailers','Excavator'
-  ];
   const normEvent=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-  function halloweenProgress(history){
-    const found=new Map();
-    for(const d of Array.isArray(history)?history:[]){
-      const t=Date.parse(d?.delivered_at||d?.completed_at||d?.date||'');
-      if(!Number.isFinite(t)||t<HALLOWEEN_EVENT_START||t>=HALLOWEEN_EVENT_END)continue;
-      const cargo=normEvent(d?.cargo||d?.cargo_name||d?.name);
-      for(const official of HALLOWEEN_CARGOS){
-        if(cargo===normEvent(official)&&!found.has(official))found.set(official,t);
-      }
-    }
-    const completedAt=found.size===HALLOWEEN_CARGOS.length?Math.max(...found.values()):null;
-    return {count:found.size,completedAt};
+  function eventAchievements(p){
+    const registry=window.GATEventRegistry;
+    return registry&&typeof registry.achievementList==='function'?registry.achievementList(p):[];
   }
   function achievementsFallback(p,st){
     const rows=Array.isArray(p?.deliveries)?p.deliveries:[];
     const parsed=rows.map(parseDelivery);
-    const hw=halloweenProgress(rows);
     const maxDistance=parsed.reduce((m,x)=>Math.max(m,x.distance),0);
     const maxWeight=rows.reduce((m,d)=>Math.max(m,Math.max(0,n(d?.weight_kg))),0);
     const cityKey=v=>normEvent(v);
@@ -88,7 +70,7 @@
       {title:'Explorador',description:'Realize entregas válidas envolvendo 25 cidades diferentes.',unlocked:cities.size>=25,medal:'🧭'},
       {title:'Veterano',description:'Complete 500 entregas válidas.',unlocked:n(p?.total_deliveries)>=500,medal:'🥇'},
       {title:'Lenda da Estrada',description:'Complete 1.500 entregas válidas.',unlocked:n(p?.total_deliveries)>=1500,medal:'👑'},
-      {title:'Halloween 2026 • 30/30',description:hw.count>=30?'Evento concluído. As 30 cargas foram entregues.':'Complete as 30 cargas do Evento Halloween. Progresso: '+hw.count+'/30.',unlocked:hw.count>=30,medal:'🎃',kind:'halloween',progress:hw.count,completedAt:hw.completedAt}
+      ...eventAchievements(p)
     ];
   }
 
@@ -104,7 +86,7 @@
       const longest=parsed.reduce((a,b)=>b.distance>(a?.distance||0)?b:a,null),avg=parsed.length?parsed.reduce((s,x)=>s+x.distance,0)/parsed.length:0;
       stats.innerHTML=`<div class="gat-game-grid"><article class="gat-game-card blue"><small>KM TOTAL</small><b>${km2(p.total_km)}</b></article><article class="gat-game-card"><small>MÉDIA POR ENTREGA</small><b>${km2(avg)}</b></article><article class="gat-game-card"><small>MAIOR VIAGEM</small><b>${longest?km2(longest.distance):'—'}</b></article><article class="gat-game-card gold"><small>VIAGENS PERFEITAS</small><b>${fmt(st.perfect_trips)}</b></article><article class="gat-game-card good"><small>KM SEM MULTA</small><b>${km2(st.no_fine_km)}</b></article></div><div class="gat-game-grid"><article class="gat-game-card gold"><small>PONTOS GAT DO MÊS</small><b>${fmt(p.points)}</b></article><article class="gat-game-card"><small>ENTREGAS</small><b>${fmt(p.total_deliveries)}</b></article><article class="gat-game-card"><small>XP TOTAL</small><b>${fmt(p.xp)}</b></article><article class="gat-game-card bad"><small>PONTOS PERDIDOS</small><b>-${fmt(lost)}</b></article><article class="gat-game-card gold"><small>TAXA PERFEITA</small><b>${pct(n(st.deliveries)?n(st.perfect_trips)/n(st.deliveries)*100:0)}</b></article></div>`;
     }
-    const ach=document.getElementById('gat-achievements-body');if(ach){const list=Array.isArray(p.achievements)?p.achievements:achievementsFallback(p,st);const html='<div class="gat-achievements">'+list.map(a=>{const kind=a.kind==='halloween'?' halloween-achievement':'';const medal=a.unlocked?(a.medal||'🏆'):'🔒';const pctEvent=a.kind==='halloween'?Math.min(100,Math.round((n(a.progress)/30)*100)):null;const date=a.kind==='halloween'&&a.unlocked&&a.completedAt?'<span class="gat-achievement-date">Concluída em '+new Date(a.completedAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+'</span>':'';const progress=a.kind==='halloween'?'<div class="gat-achievement-progress"><i style="width:'+pctEvent+'%"></i></div>':'';return `<article class="gat-achievement ${a.unlocked?'unlocked':''}${kind}"><div class="medal">${medal}</div><b>${esc2(a.title||'Conquista')}</b><small>${esc2(a.description||'')}</small>${progress}${date}</article>`}).join('')+'</div>';const sig=list.map(a=>[a.title,a.description,!!a.unlocked,a.progress||0,a.completedAt||''].join('|')).join('||');if(ach.dataset.gatAchievementSig!==sig){ach.innerHTML=html;ach.dataset.gatAchievementSig=sig}}
+    const ach=document.getElementById('gat-achievements-body');if(ach){const list=Array.isArray(p.achievements)?p.achievements:achievementsFallback(p,st);const html='<div class="gat-achievements">'+list.map(a=>{const isEvent=a.kind==='event',isHalloween=isEvent&&String(a.eventId||'').includes('halloween');const kind=isHalloween?' halloween-achievement':'';const medal=a.unlocked?(a.medal||'🏆'):'🔒';const goal=Math.max(1,n(a.goal)||1);const pctEvent=isEvent?Math.min(100,Math.round((n(a.progress)/goal)*100)):null;const date=isEvent&&a.unlocked&&a.completedAt?'<span class="gat-achievement-date">Concluída em '+new Date(a.completedAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+'</span>':'';const progress=isEvent?'<div class="gat-achievement-progress"><i style="width:'+pctEvent+'%"></i></div>':'';return `<article class="gat-achievement ${a.unlocked?'unlocked':''}${kind}"><div class="medal">${medal}</div><b>${esc2(a.title||'Conquista')}</b><small>${esc2(a.description||'')}</small>${progress}${date}</article>`}).join('')+'</div>';const sig=list.map(a=>[a.id||a.title,a.description,!!a.unlocked,a.progress||0,a.goal||0,a.completedAt||''].join('|')).join('||');if(ach.dataset.gatAchievementSig!==sig){ach.innerHTML=html;ach.dataset.gatAchievementSig=sig}}
   }
 
   injectStyle();ensureTabs();
