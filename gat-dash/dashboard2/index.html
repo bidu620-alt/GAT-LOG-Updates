@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#090d0b">
+  <title>Dashboard2 • RoadLife ETS2</title>
+  <link rel="stylesheet" href="dashboard2.css?v=1">
+</head>
+<body data-theme="green" data-layout="horizontal">
+  <main class="dash2-shell">
+    <header class="dash2-topbar">
+      <div class="brand">
+        <div class="brand-mark">RL</div>
+        <div><strong>ROADLIFE ETS2</strong><small>DASHBOARD2 • TELEMETRIA AO VIVO</small></div>
+      </div>
+      <div class="top-status">
+        <span id="connectionDot" class="dot"></span>
+        <span id="connectionText">AGUARDANDO ETS2</span>
+      </div>
+      <div class="clock">
+        <strong id="brasiliaTime">--:--:--</strong>
+        <small id="brasiliaDate">--/--/----</small>
+      </div>
+      <button id="settingsBtn" class="icon-button" type="button" aria-label="Configurações">⚙</button>
+    </header>
+
+    <section class="dash2-grid">
+      <aside class="side left-side">
+        <article class="card">
+          <span class="eyebrow">ROTA</span>
+          <div class="route"><strong id="sourceCity">—</strong><span>→</span><strong id="destinationCity">—</strong></div>
+        </article>
+
+        <article class="card truck-card">
+          <span class="eyebrow">CAMINHÃO</span>
+          <div class="vehicle-stage">
+            <img id="truckImage" alt="Caminhão" hidden>
+            <div id="truckFallback" class="vehicle-fallback">🚛</div>
+          </div>
+          <strong id="truckName">Aguardando caminhão</strong>
+          <small id="truckModel">—</small>
+        </article>
+
+        <article class="card">
+          <span class="eyebrow">COMBUSTÍVEL</span>
+          <div class="fuel-row"><strong id="fuelPct">0%</strong><small id="fuelLiters">0 / 0 L</small></div>
+          <div class="bar"><i id="fuelBar"></i></div>
+        </article>
+      </aside>
+
+      <section class="center">
+        <div class="speed-card">
+          <div class="limit-box"><span>LIMITE</span><strong id="speedLimit">—</strong></div>
+          <div class="speed-value"><strong id="speedValue">0</strong><span>km/h</span></div>
+          <div class="gear"><span>MARCHA</span><strong id="gearValue">N</strong></div>
+        </div>
+
+        <article class="card cargo-card">
+          <div class="cargo-copy">
+            <span class="eyebrow">CARGA ATUAL</span>
+            <strong id="cargoName">Sem carga</strong>
+            <small><span id="cargoMass">0 t</span> • <span id="remainingKm">0 km restantes</span></small>
+          </div>
+          <div class="cargo-stage">
+            <img id="cargoImage" alt="Carga" hidden>
+            <div id="cargoFallback" class="cargo-fallback">📦</div>
+          </div>
+        </article>
+
+        <article class="card eta-card">
+          <div><span class="eyebrow">CHEGADA ESTIMADA</span><strong id="etaClock">—</strong></div>
+          <div><span class="eyebrow">TEMPO ESTIMADO</span><strong id="etaDuration">—</strong></div>
+        </article>
+      </section>
+
+      <aside class="side right-side">
+        <article class="card damage-card">
+          <span class="eyebrow">DANOS</span>
+          <div class="damage-row"><span>Motor</span><strong id="damageEngine">0%</strong></div>
+          <div class="damage-row"><span>Transmissão</span><strong id="damageTransmission">0%</strong></div>
+          <div class="damage-row"><span>Cabine</span><strong id="damageCabin">0%</strong></div>
+          <div class="damage-row"><span>Chassi</span><strong id="damageChassis">0%</strong></div>
+          <div class="damage-row"><span>Rodas</span><strong id="damageWheels">0%</strong></div>
+          <div class="damage-row"><span>Reboque</span><strong id="damageTrailer">0%</strong></div>
+          <div class="damage-row total"><span>Carga</span><strong id="damageCargo">0%</strong></div>
+        </article>
+
+        <article class="card">
+          <span class="eyebrow">TELEMETRIA</span>
+          <div class="metric"><span>RPM</span><strong id="rpmValue">0</strong></div>
+          <div class="metric"><span>Temperatura</span><strong id="waterTemp">0°C</strong></div>
+          <div class="metric"><span>Bateria</span><strong id="batteryVoltage">0 V</strong></div>
+        </article>
+      </aside>
+    </section>
+
+    <footer>
+      <span>Dashboard2 isolado • RoadLife ETS2</span>
+      <span id="telemetryStatus">TruckSim GPS: aguardando...</span>
+    </footer>
+  </main>
+
+  <div id="settingsModal" class="modal hidden">
+    <div class="settings">
+      <div class="settings-head"><strong>DASHBOARD2</strong><button id="closeSettings" type="button">✕</button></div>
+      <label>Tema</label>
+      <div class="theme-grid">
+        <button data-theme-choice="green">Verde</button>
+        <button data-theme-choice="red">Vermelho</button>
+        <button data-theme-choice="yellow">Amarelo</button>
+        <button data-theme-choice="white">Branco</button>
+        <button data-theme-choice="blue">Azul</button>
+      </div>
+      <label>Orientação</label>
+      <div class="layout-grid">
+        <button data-layout-choice="horizontal">Horizontal</button>
+        <button data-layout-choice="vertical">Vertical</button>
+      </div>
+      <label for="telemetryHost">TruckSim GPS</label>
+      <input id="telemetryHost" type="text" placeholder="127.0.0.1">
+      <small>Porta padrão: 31377. Depois o GAT Telemetria poderá empurrar os mesmos dados diretamente para o Dashboard2.</small>
+      <button id="saveSettings" class="primary" type="button">SALVAR</button>
+    </div>
+  </div>
+
+  <script src="dashboard2.js?v=1"></script>
+</body>
+</html>
