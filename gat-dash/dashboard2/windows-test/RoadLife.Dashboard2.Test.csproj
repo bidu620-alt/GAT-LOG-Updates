@@ -5,8 +5,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>RoadLife.Dashboard2.Test</RootNamespace>
     <AssemblyName>ROADLIFE_DASHBOARD2_OVERLAY_TESTE</AssemblyName>
-    <Version>0.2.0</Version>
-    <FileVersion>0.2.0.0</FileVersion>
+    <Version>0.2.1</Version>
+    <FileVersion>0.2.1.0</FileVersion>
     <LangVersion>latest</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PlatformTarget>x64</PlatformTarget>
