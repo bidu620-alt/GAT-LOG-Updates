@@ -2,7 +2,7 @@
 'use strict';
 const $=id=>document.getElementById(id), STORE='roadlife_dashboard2_overlay_v2';
 const state={theme:'green',layout:'vertical',opacity:.96,lastTelemetry:0};
-const truckMap={volvo:'assets/trucks/volvo.webp',scania:'assets/trucks/scania.webp',mercedes:'assets/trucks/mercedes.webp',daf:'assets/trucks/daf.webp',man:'assets/trucks/man.webp',iveco:'assets/trucks/iveco.webp',renault:'assets/trucks/renault.webp'};
+const truckMap={volvo:'assets/trucks/volvo.webp',scania:'assets/trucks/scania.webp',mercedes:'assets/trucks/mercedes.webp',mercedes_benz:'assets/trucks/mercedes.webp',daf:'assets/trucks/daf.webp',man:'assets/trucks/man.webp',iveco:'assets/trucks/iveco.webp',stralis:'assets/trucks/iveco.webp',s_way:'assets/trucks/iveco.webp',renault:'assets/trucks/renault.webp'};
 const cargoMap={tractor:'assets/cargo/tractor.webp',tractors:'assets/cargo/tractor.webp',lpg:'assets/cargo/lpg.webp',glp:'assets/cargo/lpg.webp',acid:'assets/cargo/acid.webp',arsenic:'assets/cargo/arsenic.webp',excavator:'assets/cargo/excavator.webp',lumber:'assets/cargo/lumber.webp',diesel:'assets/cargo/diesel.webp',dynamite:'assets/cargo/dynamite.webp',hwaste:'assets/cargo/hospital_waste.webp',hospital_waste:'assets/cargo/hospital_waste.webp'};
 function nativePost(o){try{if(window.chrome&&window.chrome.webview)window.chrome.webview.postMessage(o)}catch{}}
 function first(obj,...paths){for(const path of paths){let v=obj;for(const p of path.split('.')){if(v==null)break;v=v[p]}if(v!==undefined&&v!==null)return v}}
