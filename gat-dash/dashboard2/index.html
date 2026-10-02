@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <meta name="theme-color" content="#080b09">
   <title>RoadLife ETS2 • Dashboard2 Overlay</title>
-  <link rel="stylesheet" href="dashboard2.css?v=4">
+  <link rel="stylesheet" href="dashboard2.css?v=5">
 </head>
 <body data-theme="green" data-layout="vertical">
   <main class="overlay-shell">
@@ -38,8 +38,8 @@
       <div class="damage"><small>REBOQUE</small><strong id="damageTrailer">0%</strong><div><i id="damageTrailerBar"></i></div></div>
       <div class="damage"><small>CARGA</small><strong id="damageCargo">0%</strong><div><i id="damageCargoBar"></i></div></div>
     </section>
-    <section class="dynamic panel">
-      <div class="dynamic-head"><div><small>CARGA DINÂMICA</small><strong id="dynamicCargoName">Sem carga</strong></div><span id="dynamicHint">prévia automática</span></div>
+    <section class="dynamic panel dynamic-vehicle">
+      <div class="dynamic-head"><div><small>CONJUNTO DINÂMICO</small><strong id="dynamicCargoName">Sem carga</strong><b id="trailerName">Reboque aguardando</b></div><span id="dynamicHint">caminhão + reboque/carga</span></div>
       <div class="dynamic-stage"><div class="vehicle-block"><img id="truckImage" alt="Caminhão" hidden><div id="truckFallback" class="fallback truck">🚛</div></div><div class="cargo-block"><img id="cargoImage" alt="Carga" hidden><div id="cargoFallback" class="fallback cargo">📦</div></div></div>
     </section>
     <footer class="drag-zone"><span>RoadLife ETS2 • Dashboard2 Overlay</span><span id="telemetryStatus">TruckSim GPS: aguardando...</span></footer>
@@ -53,6 +53,6 @@
       <button id="saveSettings" class="primary">FECHAR</button><small>Arraste pelo topo ou rodapé. A posição e o tamanho ficam salvos separadamente para cada orientação.</small>
     </div>
   </div>
-  <script src="dashboard2.js?v=4"></script>
+  <script src="dashboard2.js?v=5"></script>
 </body>
 </html>
