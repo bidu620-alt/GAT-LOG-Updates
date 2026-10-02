@@ -37,7 +37,7 @@ namespace RoadLife.Dashboard
 
         public MainForm()
         {
-            Text = "RoadLife ETS2 Dashboard 0.1.0";
+            Text = "RoadLife ETS2 Dashboard 0.1.1";
             FormBorderStyle = FormBorderStyle.None;
             TopMost = true;
             ShowInTaskbar = true;
