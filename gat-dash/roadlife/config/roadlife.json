@@ -1,0 +1,10 @@
+{
+  "name": "RoadLife ETS2 Dashboard",
+  "version": "0.1.0",
+  "layout": "horizontal",
+  "designWidth": 1000,
+  "designHeight": 205,
+  "telemetryUrl": "http://127.0.0.1:31377/api/ets2/telemetry",
+  "timezone": "America/Sao_Paulo",
+  "storageKey": "roadlife_dashboard_v1"
+}
