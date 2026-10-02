@@ -1,0 +1,74 @@
+name: Build RoadLife Dashboard2 Test 0.1.0
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-dash/dashboard2/**'
+      - '.github/workflows/build-dashboard2-test.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: roadlife-dashboard2-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build Dashboard2 test
+        shell: pwsh
+        run: |
+          dotnet restore gat-dash/dashboard2/windows-test/RoadLife.Dashboard2.Test.csproj
+          dotnet build gat-dash/dashboard2/windows-test/RoadLife.Dashboard2.Test.csproj -c Release --no-restore
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "gat-dash\dashboard2\windows-test\ROADLIFE_DASHBOARD2_TESTE.iss"
+          Copy-Item "gat-dash\dashboard2\windows-test\Output\ROADLIFE_DASHBOARD2_TESTE_SETUP_0.1.0.exe" "ROADLIFE_DASHBOARD2_TESTE_SETUP_0.1.0.exe"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: roadlife-dashboard2-test-0.1.0
+          path: ROADLIFE_DASHBOARD2_TESTE_SETUP_0.1.0.exe
+
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: windows
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: roadlife-dashboard2-test-0.1.0
+          path: dist
+
+      - name: Publish test executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p releases
+          cp dist/ROADLIFE_DASHBOARD2_TESTE_SETUP_0.1.0.exe releases/
+          git config user.name 'RoadLife Dashboard2 Build'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -f releases/ROADLIFE_DASHBOARD2_TESTE_SETUP_0.1.0.exe
+          git commit -m 'Publish RoadLife Dashboard2 test 0.1.0' || exit 0
+          git pull --rebase -X theirs origin main
+          git push origin main
