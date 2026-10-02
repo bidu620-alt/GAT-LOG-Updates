@@ -12,6 +12,16 @@ function gear(t){const g=num(first(t,'truck.displayedGear','Truck.DisplayedGear'
 function brTime(){const d=new Date();set('brasiliaTime',new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(d));set('brasiliaDate',new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric'}).format(d))}
 function arrival(v){if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(d)}
 function pct(id,v){const e=$(id);if(e)e.style.width=clamp(v,0,100)+'%'}
+function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+function cargoArt(name){
+ const n=norm(name),art=$('cargoArt'),glyph=$('cargoGraphic');if(!art||!glyph)return;
+ art.className='cargo-art generic';glyph.textContent='▰';
+ if(n.includes('arroz')||n.includes('rice'))art.className='cargo-art rice';
+ else if(n.includes('diesel')||n.includes('combust')||n.includes('fuel'))glyph.textContent='◉';
+ else if(n.includes('trator')||n.includes('tractor')||n.includes('maquina'))glyph.textContent='⚙';
+ else if(n.includes('madeira')||n.includes('lumber')||n.includes('wood'))glyph.textContent='▥';
+ else if(n.includes('gado')||n.includes('cattle'))glyph.textContent='◇';
+}
 function load(){try{Object.assign(state,JSON.parse(localStorage.getItem(STORE)||'{}'))}catch{}document.body.style.opacity=String(state.opacity);$('opacityRange').value=Math.round(state.opacity*100)}
 function save(){localStorage.setItem(STORE,JSON.stringify(state));document.body.style.opacity=String(state.opacity)}
 function render(t){
@@ -28,7 +38,7 @@ function render(t){
  const truckDamage=Math.max(...wears),trailerDamage=dmg(first(t,'trailer.wear','Trailer.Wear','trailer.damage','Trailer.Damage')),cargoDamage=dmg(first(t,'job.cargoDamage','Job.CargoDamage','gameplay.jobDelivered.cargoDamage'));
  set('speedValue',Math.round(speed));set('speedLimit',limit>0?Math.round(limit):'—');set('gearValue',gear(t));set('waterTemp',Math.round(num(first(t,'truck.waterTemperature','Truck.WaterTemperature')))+'°C');
  set('cruiseValue',first(t,'truck.cruiseControlOn','Truck.CruiseControlOn')?Math.round(num(first(t,'truck.cruiseControlSpeed','Truck.CruiseControlSpeed'))):'OFF');
- set('sourceCity',source);set('destinationCity',dest);set('cargoName',cargo);set('dynamicCargoName',cargo);
+ set('sourceCity',source);set('destinationCity',dest);set('cargoName',cargo);set('dynamicCargoName',cargo);cargoArt(cargo);
  const massText=mass>0?(mass/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' t':'0 t';set('cargoMass',massText);set('dynamicCargoMass',massText);
  set('remainingKm',fmtKm(remain));set('remainingKm2',fmtKm(remain));set('tripKm',planned>0?fmtKm(planned):'—');set('etaClock',arrival(eta));
  set('fuelPct',Math.round(fp)+'%');set('fuelLiters',Math.round(fuel).toLocaleString('pt-BR')+' / '+Math.round(cap).toLocaleString('pt-BR')+' L');pct('fuelBar',fp);
