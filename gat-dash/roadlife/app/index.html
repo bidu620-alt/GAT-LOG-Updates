@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>RoadLife ETS2 Dashboard</title>
+<link rel="stylesheet" href="roadlife.css?v=1">
+</head>
+<body>
+<main id="dashboard" class="dashboard drag-zone">
+  <svg class="frame" viewBox="0 0 1000 205" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="outerMetal" x1="0" x2="1">
+        <stop offset="0" stop-color="#19211e"/>
+        <stop offset=".18" stop-color="#070a09"/>
+        <stop offset=".5" stop-color="#020403"/>
+        <stop offset=".82" stop-color="#080b0a"/>
+        <stop offset="1" stop-color="#19211e"/>
+      </linearGradient>
+      <linearGradient id="innerMetal" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#111816"/>
+        <stop offset=".5" stop-color="#040706"/>
+        <stop offset="1" stop-color="#0a100e"/>
+      </linearGradient>
+      <linearGradient id="greenEdge" x1="0" x2="1">
+        <stop offset="0" stop-color="#0c4e40"/>
+        <stop offset=".5" stop-color="#00a176"/>
+        <stop offset="1" stop-color="#0c4e40"/>
+      </linearGradient>
+      <pattern id="carbon" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="6" height="6" fill="#060908"/>
+        <rect width="2" height="6" fill="#101613" opacity=".5"/>
+      </pattern>
+      <filter id="glow"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <path d="M17 3H983L997 17V188L983 202H17L3 188V17Z" fill="url(#outerMetal)" stroke="#67736e" stroke-width="1.3"/>
+    <path d="M23 8H977L991 22V183L977 197H23L9 183V22Z" fill="url(#carbon)" stroke="url(#greenEdge)" stroke-width="1.4"/>
+    <path d="M28 13H972L986 27V178L972 192H28L14 178V27Z" fill="url(#innerMetal)" stroke="#273b34" stroke-width="1"/>
+    <path d="M18 15h126M856 15h126M18 190h126M856 190h126" stroke="#0d6e58" stroke-width="1.4" filter="url(#glow)"/>
+    <path d="M151 14V191M424 14V191M641 14V191" stroke="#22372f" stroke-width="1"/>
+    <path d="M153 128H422M425 143H640M643 149H985" stroke="#2a4037" stroke-width="1"/>
+  </svg>
+
+  <section class="logo-panel panel">
+    <img class="roadlife-logo" src="../assets/logo/roadlife-logo.png" alt="RoadLife ETS2" onerror="this.hidden=true;document.getElementById('logoFallback').hidden=false">
+    <div id="logoFallback" class="logo-fallback" hidden><div class="logo-circle"></div><b>ROAD<span>LIFE</span></b><small>ETS2</small></div>
+    <div class="online"><i id="connectionDot"></i><b id="connectionText">SEM TELEMETRIA</b></div>
+    <div class="calendar"><span>▣</span><b id="dateValue">--/--/----</b></div>
+    <div class="clock"><span>◷</span><b id="timeValue">--:--</b><small>HORÁRIO DE BRASÍLIA</small></div>
+  </section>
+
+  <section class="route-panel panel">
+    <div class="label">ROTA ATUAL</div>
+    <div class="route-title"><b id="sourceCity">—</b><span>→</span><b id="destinationCity">—</b></div>
+    <div class="progress"><i id="routeProgress"></i><em id="routeKnob"></em></div>
+    <div class="route-meta"><span id="routeStart">0 km</span><span id="remainingKm">0 km</span></div>
+  </section>
+
+  <section class="cargo-fuel-panel">
+    <article class="subpanel cargo"><div class="icon">◇</div><div><small>CARGA</small><b id="cargoName">Sem carga</b><strong id="cargoMass">0 t</strong></div></article>
+    <article class="subpanel fuel"><div class="icon">▣</div><div class="grow"><small>COMBUSTÍVEL</small><b id="fuelLiters">0 / 0 L</b><div class="fuelbar"><i id="fuelBar"></i></div></div><strong id="fuelPct">0%</strong></article>
+  </section>
+
+  <section class="speed-panel">
+    <div class="gear-stack"><span>R</span><span>N</span><b id="gearValue">N</b><small>♨</small><strong id="temperatureValue">0°C</strong></div>
+    <div class="speedometer">
+      <div class="dial-label l0">0</div><div class="dial-label l20">20</div><div class="dial-label l40">40</div><div class="dial-label l60">60</div><div class="dial-label l80">80</div><div class="dial-label l100">100</div><div class="dial-label l120">120</div>
+      <div class="tick-ring"></div><div class="neon-ring"></div><div class="grid-floor"></div>
+      <div class="speed-value"><b id="speedValue">0</b><span>km/h</span></div>
+    </div>
+    <div class="limit-stack"><div class="limit-sign"><b id="speedLimit">—</b></div><small>LIMITE</small><div class="cruise"><span>◴</span><b id="cruiseValue">OFF</b></div></div>
+  </section>
+
+  <section class="dynamic-panel panel">
+    <div class="dynamic-head"><b>◇ CARGA DINÂMICA</b><span>● Reconhecimento automático</span></div>
+    <div class="dynamic-body">
+      <div class="dynamic-art">
+        <img id="cargoImage" alt="Carga" hidden>
+        <div id="cargoFallback" class="cargo-fallback">▰</div>
+      </div>
+      <div class="dynamic-info"><b id="dynamicCargoName">Sem carga</b><i></i><small>PESO TOTAL</small><strong id="dynamicCargoMass">0 t</strong></div>
+    </div>
+  </section>
+
+  <section class="distance-panel panel">
+    <div><span>⚑</span><p><small>DISTÂNCIA RESTANTE</small><b id="remainingKm2">0 km</b></p></div>
+    <i></i>
+    <div><span>⌖</span><p><small>PERCURSO DA VIAGEM</small><b id="tripKm">0 km</b></p></div>
+  </section>
+
+  <section class="eta-truck-panel panel">
+    <div><span>◷</span><p><small>CHEGADA ESTIMADA</small><b id="etaValue">—</b></p></div>
+    <i></i>
+    <div><span>▰</span><p><small>CAMINHÃO</small><b id="truckValue">Aguardando</b></p></div>
+  </section>
+
+  <section class="damage-panel panel">
+    <div class="damage-title">🔧 <b>DANOS</b></div>
+    <div><small>Caminhão</small><b id="damageTruck">0%</b></div>
+    <div><small>Reboque</small><b id="damageTrailer">0%</b></div>
+    <div><small>Carga</small><b id="damageCargo">0%</b></div>
+  </section>
+
+  <button id="settingsBtn" class="window-btn settings-btn">⚙</button>
+  <button id="minimizeBtn" class="window-btn min-btn">—</button>
+  <button id="closeBtn" class="window-btn close-btn">×</button>
+</main>
+
+<div id="settingsModal" class="modal hidden">
+  <div class="settings">
+    <header><b>ROADLIFE ETS2 DASHBOARD</b><button id="closeSettings">×</button></header>
+    <label>OPACIDADE</label><input id="opacityRange" type="range" min="70" max="100" value="95">
+    <small>Esta aplicação é independente das versões antigas.</small>
+  </div>
+</div>
+
+<script src="../telemetry/telemetry-mapping.js?v=1"></script>
+<script src="roadlife.js?v=1"></script>
+</body>
+</html>
