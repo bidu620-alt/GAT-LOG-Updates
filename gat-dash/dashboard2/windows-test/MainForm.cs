@@ -33,7 +33,7 @@ namespace RoadLife.Dashboard2.Test
 
         public MainForm()
         {
-            Text = "RoadLife ETS2 • Dashboard2 Overlay TESTE 0.3.0";
+            Text = "RoadLife ETS2 • Dashboard2 Overlay TESTE 0.4.0";
             FormBorderStyle = FormBorderStyle.None;
             TopMost = true;
             ShowInTaskbar = true;
