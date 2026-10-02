@@ -17,12 +17,108 @@ button,input{font:inherit}.overlay-shell{width:100%;height:100%;padding:6px;back
 .modal{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:20}.modal.hidden{display:none}.settings{width:min(320px,92vw);padding:14px;border:1px solid var(--line);background:#08100b;border-radius:12px;box-shadow:0 20px 50px #000}.settings-head{display:flex;justify-content:space-between}.settings-head button{border:0;background:none;color:var(--text);font-size:18px}.settings label{display:block;margin:11px 0 5px;font-size:8px;color:var(--muted);font-weight:900}.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.layout-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.theme-grid button,.layout-grid button,.primary{border:1px solid var(--line);background:#101713;color:var(--text);padding:7px;border-radius:6px;font-size:8px}.primary{width:100%;margin-top:12px;border-color:var(--accent);color:var(--accent)}.settings input{width:100%}.settings>small{display:block;color:var(--muted);font-size:7px;margin-top:8px;line-height:1.4}
 body[data-layout=vertical] .overlay-shell{grid-template-rows:50px 155px 76px 1fr 58px 112px 13px}
 body[data-layout=vertical] .brand-text strong{font-size:17px}body[data-layout=vertical] .online{display:none}body[data-layout=vertical] .clock b{font-size:11px}body[data-layout=vertical] .window-actions button{width:20px}
-body[data-layout=horizontal] .overlay-shell{grid-template-columns:190px 210px 270px 1fr;grid-template-rows:1fr 14px;gap:4px;padding:5px;position:relative}
-body[data-layout=horizontal] .top{grid-column:1;grid-row:1;grid-template-columns:1fr;align-content:center;padding:6px}.brand{justify-content:center}.brand-text strong{font-size:20px}.road-mark{width:48px;height:48px}.online{display:block;text-align:center}.clock{text-align:center}.window-actions{position:absolute;top:3px;right:3px}.window-actions button{width:18px;height:18px;font-size:9px}.window-actions #settingsBtn,.window-actions #minimizeBtn{display:none}
-body[data-layout=horizontal] .speed-zone{grid-column:3;grid-row:1;min-height:0;grid-template-columns:42px 1fr 50px}.speedometer{height:100%}.arc{width:132px;height:132px}.speed-core strong{font-size:64px}.limit-sign{width:42px;height:42px}
-body[data-layout=horizontal] .route{grid-column:2;grid-row:1;position:absolute;left:195px;top:6px;width:205px;height:61px}.route-main strong{font-size:12px}.route-main{margin:2px 0}.route-meta{font-size:6px}
-body[data-layout=horizontal] .data-grid{grid-column:2/5;grid-row:1;display:grid;grid-template-columns:200px 150px 115px 115px 115px 135px;gap:4px;align-self:end;height:62px;pointer-events:none}.data-grid .tile{padding:5px;grid-template-columns:22px 1fr auto}.tile .ico{font-size:15px}.tile strong{font-size:10px}.tile b{font-size:11px}
-body[data-layout=horizontal] .damages{position:absolute;right:6px;top:6px;width:330px;height:54px;grid-template-columns:auto repeat(3,1fr);z-index:3}.damages .section-title{font-size:7px}.damage strong{font-size:10px}
-body[data-layout=horizontal] .dynamic{position:absolute;right:6px;top:64px;width:330px;height:68px;min-height:0;padding:4px}.dynamic-head{position:absolute;left:6px;top:4px;z-index:2}.dynamic-head span{display:none}.dynamic-stage{height:58px;grid-template-columns:1fr 1fr}.dynamic-stage img{max-height:55px}.fallback{font-size:28px}
-body[data-layout=horizontal] footer{grid-column:1/5;grid-row:2}
-body[data-layout=horizontal] .data-grid .truck-tile{display:none}body[data-layout=horizontal] .data-grid .tile:nth-child(4){display:none}
+
+.floating-rotate{
+ position:fixed;right:8px;top:8px;z-index:99;width:34px;height:34px;border-radius:9px;
+ border:1px solid var(--accent);background:#07100bee;color:var(--accent);font-size:20px;
+ display:grid;place-items:center;cursor:pointer;box-shadow:0 0 12px #000,0 0 10px var(--glow)
+}
+.floating-rotate:hover{background:#102018}
+body[data-layout=vertical] .floating-rotate{right:8px;top:58px}
+
+body[data-layout=horizontal] .overlay-shell{
+ position:relative;
+ grid-template-columns:180px 250px 1fr 290px;
+ grid-template-rows:72px 72px 13px;
+ gap:4px;
+ padding:5px
+}
+body[data-layout=horizontal] .top{
+ grid-column:1;grid-row:1/3;
+ display:grid;grid-template-columns:1fr;
+ align-content:center;justify-items:center;gap:5px;
+ padding:7px 6px
+}
+body[data-layout=horizontal] .brand{justify-content:center}
+body[data-layout=horizontal] .brand-text strong{font-size:18px}
+body[data-layout=horizontal] .road-mark{width:42px;height:42px}
+body[data-layout=horizontal] .online{display:block;text-align:center;font-size:7px}
+body[data-layout=horizontal] .clock{text-align:center}
+body[data-layout=horizontal] .clock b{font-size:12px}
+body[data-layout=horizontal] .clock small{font-size:6px}
+body[data-layout=horizontal] .window-actions{display:none}
+
+body[data-layout=horizontal] .speed-zone{
+ grid-column:2;grid-row:1/3;
+ min-height:0;
+ grid-template-columns:42px 1fr 48px;
+}
+body[data-layout=horizontal] .speedometer{height:138px}
+body[data-layout=horizontal] .arc{width:130px;height:130px;border-width:9px}
+body[data-layout=horizontal] .speed-core strong{font-size:60px}
+body[data-layout=horizontal] .speed-core span{font-size:12px}
+body[data-layout=horizontal] .limit-sign{width:40px;height:40px;border-width:4px}
+body[data-layout=horizontal] .limit-sign strong{font-size:16px}
+body[data-layout=horizontal] .gear-strip strong{font-size:20px}
+body[data-layout=horizontal] .temp span,body[data-layout=horizontal] .cruise span{font-size:14px}
+
+body[data-layout=horizontal] .route{
+ grid-column:3;grid-row:1;
+ position:static;width:auto;height:auto;
+ padding:7px 10px
+}
+body[data-layout=horizontal] .route-main{margin:2px 0;gap:5px}
+body[data-layout=horizontal] .route-main strong{font-size:13px}
+body[data-layout=horizontal] .route-main span{font-size:14px}
+body[data-layout=horizontal] .route-meta{font-size:6px}
+
+body[data-layout=horizontal] .data-grid{
+ grid-column:3;grid-row:2;
+ display:grid;
+ grid-template-columns:1.2fr 1fr .8fr;
+ gap:4px;
+ height:auto;
+ pointer-events:auto;
+ align-self:stretch
+}
+body[data-layout=horizontal] .data-grid .tile{
+ padding:5px;
+ grid-template-columns:20px 1fr auto
+}
+body[data-layout=horizontal] .data-grid .tile .ico{font-size:14px}
+body[data-layout=horizontal] .data-grid .tile small{font-size:6px}
+body[data-layout=horizontal] .data-grid .tile strong{font-size:9px}
+body[data-layout=horizontal] .data-grid .tile b{font-size:10px}
+body[data-layout=horizontal] .data-grid .tile:nth-child(4),
+body[data-layout=horizontal] .data-grid .tile:nth-child(6){display:none}
+
+body[data-layout=horizontal] .damages{
+ grid-column:4;grid-row:1;
+ position:static;width:auto;height:auto;
+ display:grid;grid-template-columns:auto repeat(3,1fr);
+ gap:4px;padding:5px
+}
+body[data-layout=horizontal] .damages .section-title{font-size:7px}
+body[data-layout=horizontal] .damage{padding-left:5px}
+body[data-layout=horizontal] .damage small{font-size:5px}
+body[data-layout=horizontal] .damage strong{font-size:9px}
+
+body[data-layout=horizontal] .dynamic{
+ grid-column:4;grid-row:2;
+ position:static;width:auto;height:auto;min-height:0;
+ padding:4px 6px
+}
+body[data-layout=horizontal] .dynamic-head{position:static}
+body[data-layout=horizontal] .dynamic-head small{font-size:7px}
+body[data-layout=horizontal] .dynamic-head strong{font-size:9px}
+body[data-layout=horizontal] .dynamic-head span{display:none}
+body[data-layout=horizontal] .dynamic-stage{
+ height:43px;grid-template-columns:1fr 1fr
+}
+body[data-layout=horizontal] .dynamic-stage img{max-height:42px}
+body[data-layout=horizontal] .fallback{font-size:24px}
+
+body[data-layout=horizontal] footer{
+ grid-column:1/5;grid-row:3;
+ min-height:13px
+}
