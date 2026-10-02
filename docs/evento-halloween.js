@@ -29,12 +29,12 @@ function buildCards(active){
 function updateProgress(){const n=done.size,pct=Math.round(n/30*100);document.getElementById('eventProgress').textContent=n+'/30';document.getElementById('eventProgressTitle').textContent='('+n+'/30)';document.getElementById('eventProgressBar').style.width=pct+'%'}
 async function loadMine(){
  const s=session();if(!s){document.getElementById('eventAccountText').textContent='Entre na sua Conta GAT para registrar o progresso automaticamente.';return}
- try{const r=await fetch(API+'/api/site/profile',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.token},body:JSON.stringify({token:s.token})});const j=await r.json();if(!r.ok||!j?.profile)throw 0;profile=j.profile;done=completion(eventRows(profile));updateProgress();buildCards(Date.now()>=START&&Date.now()<END);document.getElementById('eventAccountText').textContent='@'+s.user+' • progresso atualizado pela Central GAT.'}catch(_){document.getElementById('eventAccountText').textContent='Não foi possível carregar sua Conta GAT agora.'}
+ try{const r=await fetch(API+'/api/site/profile',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.token},body:JSON.stringify({token:s.token})});const j=await r.json();if(!r.ok||!j?.profile)throw 0;profile=j.profile;const official=REGISTRY?.progress?.(profile,'halloween_2026');done=official?.manual&&official?.completed?new Map((EVENT?.cargos||[]).map(c=>[c.official,{manual:true}])):completion(eventRows(profile));updateProgress();buildCards(Date.now()>=START&&Date.now()<END);document.getElementById('eventAccountText').textContent='@'+s.user+' • progresso atualizado pela Central GAT.'}catch(_){document.getElementById('eventAccountText').textContent='Não foi possível carregar sua Conta GAT agora.'}
 }
 async function loadHall(){
  if(Date.now()<START)return;const box=document.getElementById('eventHall');
  try{const r=await fetch(API+'/api/public/ranking',{cache:'no-store'}),j=await r.json();const users=(j?.ranking||[]).map(x=>x.user).filter(Boolean).slice(0,60);const winners=[];
- await Promise.all(users.map(async user=>{try{const rr=await fetch(API+'/api/public/driver?user='+encodeURIComponent(user),{cache:'no-store'}),jj=await rr.json();const rows=eventRows(jj?.profile);if(completion(rows).size===30)winners.push(user)}catch(_){}}));
+ await Promise.all(users.map(async user=>{try{const rr=await fetch(API+'/api/public/driver?user='+encodeURIComponent(user),{cache:'no-store'}),jj=await rr.json();const official=REGISTRY?.progress?.(jj?.profile,'halloween_2026');const rows=eventRows(jj?.profile);if(official?.completed||completion(rows).size===30)winners.push(user)}catch(_){}}));
  winners.sort((a,b)=>a.localeCompare(b,'pt-BR'));box.innerHTML=winners.length?winners.map(u=>'<b>30/30 • @'+esc(u)+'</b>').join(''):'<span>Ainda sem concluídos.</span>';
  }catch(_){box.innerHTML='<span>Hall indisponível no momento.</span>'}
 }
