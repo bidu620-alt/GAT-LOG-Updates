@@ -1,0 +1,14 @@
+{
+  "name": "Dashboard2",
+  "brand": "RoadLife ETS2",
+  "timezone": "America/Sao_Paulo",
+  "default_theme": "green",
+  "default_layout": "horizontal",
+  "telemetry": {
+    "host": "127.0.0.1",
+    "port": 31377,
+    "path": "/api/ets2/telemetry"
+  },
+  "themes": ["green", "red", "yellow", "white", "blue"],
+  "layouts": ["horizontal", "vertical"]
+}
