@@ -4,9 +4,9 @@
     <TargetFramework>net48</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>RoadLife.Dashboard2.Test</RootNamespace>
-    <AssemblyName>ROADLIFE_DASHBOARD2_TESTE</AssemblyName>
-    <Version>0.1.0</Version>
-    <FileVersion>0.1.0.0</FileVersion>
+    <AssemblyName>ROADLIFE_DASHBOARD2_OVERLAY_TESTE</AssemblyName>
+    <Version>0.2.0</Version>
+    <FileVersion>0.2.0.0</FileVersion>
     <LangVersion>latest</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PlatformTarget>x64</PlatformTarget>
@@ -20,5 +20,6 @@
     <Content Include="..\dashboard2.css"><Link>www\dashboard2.css</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
     <Content Include="..\dashboard2.js"><Link>www\dashboard2.js</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
     <Content Include="..\config\**\*"><Link>www\config\%(RecursiveDir)%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
+    <Content Include="..\assets\**\*" Condition="Exists('..\assets')"><Link>www\assets\%(RecursiveDir)%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
   </ItemGroup>
 </Project>
