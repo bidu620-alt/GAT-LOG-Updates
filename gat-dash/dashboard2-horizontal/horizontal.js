@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id),STORE='roadlife_dashboard_horizontal_v1';
-const state={opacity:.94};
+const $=id=>document.getElementById(id),STORE='roadlife_dashboard_horizontal_v6';
+const state={opacity:.95};
 function post(o){try{if(window.chrome&&window.chrome.webview)window.chrome.webview.postMessage(o)}catch{}}
 function first(obj,...paths){for(const path of paths){let v=obj;for(const p of path.split('.')){if(v==null)break;v=v[p]}if(v!==undefined&&v!==null)return v}}
 function num(v){v=Number(v);return Number.isFinite(v)?v:0}
@@ -13,15 +13,7 @@ function brTime(){const d=new Date();set('brasiliaTime',new Intl.DateTimeFormat(
 function arrival(v){if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(d)}
 function pct(id,v){const e=$(id);if(e)e.style.width=clamp(v,0,100)+'%'}
 function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
-function cargoArt(name){
- const n=norm(name),art=$('cargoArt'),glyph=$('cargoGraphic');if(!art||!glyph)return;
- art.className='cargo-art generic';glyph.textContent='▰';
- if(n.includes('arroz')||n.includes('rice'))art.className='cargo-art rice';
- else if(n.includes('diesel')||n.includes('combust')||n.includes('fuel'))glyph.textContent='◉';
- else if(n.includes('trator')||n.includes('tractor')||n.includes('maquina'))glyph.textContent='⚙';
- else if(n.includes('madeira')||n.includes('lumber')||n.includes('wood'))glyph.textContent='▥';
- else if(n.includes('gado')||n.includes('cattle'))glyph.textContent='◇';
-}
+function cargoArt(name){const n=norm(name),art=$('cargoArt'),glyph=$('cargoGlyph');if(!art||!glyph)return;art.className='cargo-art generic';glyph.textContent='▰';if(n.includes('arroz')||n.includes('rice'))art.className='cargo-art rice';else if(n.includes('diesel')||n.includes('combust')||n.includes('fuel'))glyph.textContent='◉';else if(n.includes('trator')||n.includes('tractor')||n.includes('maquina'))glyph.textContent='⚙';else if(n.includes('madeira')||n.includes('lumber')||n.includes('wood'))glyph.textContent='▥';}
 function load(){try{Object.assign(state,JSON.parse(localStorage.getItem(STORE)||'{}'))}catch{}document.body.style.opacity=String(state.opacity);$('opacityRange').value=Math.round(state.opacity*100)}
 function save(){localStorage.setItem(STORE,JSON.stringify(state));document.body.style.opacity=String(state.opacity)}
 function render(t){
@@ -46,11 +38,12 @@ function render(t){
  set('damageTruck',truckDamage.toFixed(1).replace('.',',')+'%');set('damageTrailer',trailerDamage.toFixed(1).replace('.',',')+'%');set('damageCargo',cargoDamage.toFixed(1).replace('.',',')+'%');
  $('connectionDot').classList.toggle('on',connected);set('connectionText',connected?'ONLINE':'SEM TELEMETRIA');
  const total=planned>0?planned:remain,progress=total>0?clamp((total-remain)/total*100,0,100):0;pct('routeProgress',progress);set('routeStartText',progress>0?Math.round(progress)+'%':'0 km');
+ const knob=$('routeKnob');if(knob)knob.style.left=clamp(progress,0,100)+'%';
 }
 window.dashboardHorizontalPushTelemetry=p=>{let t=p;if(typeof t==='string'){try{t=JSON.parse(t)}catch{return}}if(t&&typeof t==='object')render(t)};
-$('settingsBtn').onclick=()=>$('settingsModal').classList.remove('hidden');$('closeSettings').onclick=()=>$('settingsModal').classList.add('hidden');
-$('minimizeBtn').onclick=()=>post({type:'minimize'});$('closeBtn').onclick=()=>post({type:'close'});
+$('settingsBtn').onclick=e=>{e.stopPropagation();$('settingsModal').classList.remove('hidden')};$('closeSettings').onclick=()=>$('settingsModal').classList.add('hidden');
+$('minimizeBtn').onclick=e=>{e.stopPropagation();post({type:'minimize'})};$('closeBtn').onclick=e=>{e.stopPropagation();post({type:'close'})};
 $('opacityRange').oninput=e=>{state.opacity=Number(e.target.value)/100;save()};
-document.querySelectorAll('.drag-zone,.route,.journey-bottom').forEach(el=>el.addEventListener('mousedown',e=>{if(e.button===0&&!e.target.closest('button,input'))post({type:'drag'})}));
-setInterval(brTime,1000);brTime();load();post({type:'ready',layout:'horizontal'});
+$('hud').addEventListener('mousedown',e=>{if(e.button===0&&!e.target.closest('button,input,.modal'))post({type:'drag'})});
+setInterval(brTime,1000);brTime();load();
 })();
