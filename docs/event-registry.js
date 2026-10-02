@@ -9,6 +9,7 @@
     start:'2026-09-30T00:00:00-03:00',
     end:'2026-11-01T00:00:00-03:00',
     goal:30,
+    manual_completions:{gensey:{count:30,completed:true,reason:'Correção administrativa: evento confirmado como concluído; duas cargas com erro histórico ignoradas.'}},
     cargos:[
       {official:'Dynamite',label:'Dinamite',ids:['dynamite']},
       {official:'Lumber',label:'Madeira serrada',ids:['lumber']},
@@ -67,10 +68,14 @@
         if(!matched.has(cargo.official)&&cargoMatches(row,cargo))matched.set(cargo.official,{row,t,cargo});
       }
     }
-    const goal=Number(event.goal)||event.cargos?.length||0,count=Math.min(matched.size,goal);
+    const goal=Number(event.goal)||event.cargos?.length||0;
+    const user=norm(profile?.user||profile?.driver||profile?.account_user||'');
+    const override=event.manual_completions?.[user]||null;
+    if(override){return {count:Math.min(Number(override.count)||goal,goal),goal,completed:override.completed!==false,completedAt:override.completedAt?Date.parse(override.completedAt):null,matched,manual:true,reason:override.reason||''};}
+    const count=Math.min(matched.size,goal);
     const completed=goal>0&&count>=goal;
     const completedAt=completed?Math.max(...[...matched.values()].map(x=>x.t)):null;
-    return {count,goal,completed,completedAt,matched};
+    return {count,goal,completed,completedAt,matched,manual:false,reason:''};
   }
   function achievementList(profile){
     return EVENTS.filter(e=>e.achievement_enabled!==false).map(e=>{
