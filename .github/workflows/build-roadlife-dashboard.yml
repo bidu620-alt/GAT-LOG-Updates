@@ -1,4 +1,4 @@
-name: Build RoadLife Independent Dashboard 0.1.0
+name: Build RoadLife Independent Dashboard 0.1.1
 
 on:
   workflow_dispatch:
@@ -40,9 +40,9 @@ jobs:
         shell: pwsh
         run: |
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "gat-dash\roadlife\windows\ROADLIFE_ETS2_DASHBOARD.iss"
-          Copy-Item "gat-dash\roadlife\windows\Output\ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.0.exe" "ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.0.exe"
+          Copy-Item "gat-dash\roadlife\windows\Output\ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.1.exe" "ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.1.exe"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: roadlife-independent-dashboard-0.1.0
-          path: ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.0.exe
+          name: roadlife-independent-dashboard-0.1.1
+          path: ROADLIFE_ETS2_DASHBOARD_SETUP_0.1.1.exe
