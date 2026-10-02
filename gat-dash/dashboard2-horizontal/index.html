@@ -3,84 +3,134 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#050807">
-<title>RoadLife ETS2 • Dashboard Horizontal</title>
-<link rel="stylesheet" href="horizontal.css?v=2">
+<title>RoadLife ETS2 • Horizontal 0.6.0</title>
+<link rel="stylesheet" href="horizontal.css?v=6">
 </head>
 <body>
-<main class="hud">
-  <section class="brand module drag-zone">
-    <div class="brand-logo"><div class="road-ring"><i></i></div><div class="brand-word">ROAD<span>LIFE</span><small>ETS2</small></div></div>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-route" viewBox="0 0 24 24"><path d="M5 18c3-5 11-5 14-12M6 18h-3v-3M18 6h3V3"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="5" r="2"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M4 7l8-4 8 4-8 4-8-4zm0 0v10l8 4 8-4V7M12 11v10"/></symbol>
+    <symbol id="i-fuel" viewBox="0 0 24 24"><path d="M6 3h8v18H6zM8 6h4M14 8h2l2 3v6c0 2 3 2 3 0V9l-2-2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14 6a5 5 0 01-6 6L3 17l4 4 5-5a5 5 0 006-6l-3 3-3-3z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></symbol>
+    <symbol id="i-speed" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1116 0M12 13l5-4"/><circle cx="12" cy="13" r="1.5"/></symbol>
+    <symbol id="i-temp" viewBox="0 0 24 24"><path d="M9 5a3 3 0 016 0v8a5 5 0 11-6 0zM12 7v8"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 3v18M5 4h11l-2 4 2 4H5"/></symbol>
+  </defs>
+</svg>
+
+<main id="hud" class="hud drag-zone">
+  <svg class="frame" viewBox="0 0 1000 205" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#121917"/><stop offset=".52" stop-color="#030504"/><stop offset="1" stop-color="#101715"/></linearGradient>
+      <linearGradient id="edge" x1="0" x2="1"><stop offset="0" stop-color="#0d4437"/><stop offset=".5" stop-color="#1b6250"/><stop offset="1" stop-color="#0d4437"/></linearGradient>
+      <pattern id="fiber" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="6" height="6" fill="#070b09"/><rect width="2" height="6" fill="#0d1210" opacity=".45"/>
+      </pattern>
+      <filter id="softGlow"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <path d="M16 4H984L996 17V188L984 201H16L4 188V17Z" fill="url(#fiber)" stroke="#53615b" stroke-width="1.2"/>
+    <path d="M22 8H978L991 21V184L978 197H22L9 184V21Z" fill="url(#metal)" stroke="url(#edge)" stroke-width="1.4"/>
+    <path d="M20 13H145L154 22V183L145 192H20L14 184V21Z" class="frame-line"/>
+    <path d="M158 13H420L430 23V122L421 131H158L149 122V22Z" class="frame-line"/>
+    <path d="M158 136H420L429 145V183L421 192H158L149 183V145Z" class="frame-line"/>
+    <path d="M427 13H635L647 25V128L635 140H427L416 128V25Z" class="frame-line"/>
+    <path d="M427 145H635L644 153V183L635 192H427L418 183V153Z" class="frame-line"/>
+    <path d="M642 13H980L989 22V137L980 146H642L633 137V22Z" class="frame-line"/>
+    <path d="M642 151H980L989 160V183L980 192H642L633 183V160Z" class="frame-line"/>
+    <path d="M18 14h122M860 14h118M18 191h122M860 191h118" class="accent-line" filter="url(#softGlow)"/>
+  </svg>
+
+  <section class="brand area">
+    <div class="brand-mark"><div class="road-ring"></div><div class="brand-text"><b>ROAD<span>LIFE</span></b><small>ETS2</small></div></div>
     <div class="online"><i id="connectionDot"></i><b id="connectionText">SEM TELEMETRIA</b></div>
-    <div class="date-row"><span>▣</span><strong id="brasiliaDate">--/--/----</strong></div>
-    <div class="time-row"><span>◷</span><strong id="brasiliaTime">--:--</strong><small>HORÁRIO DE BRASÍLIA</small></div>
+    <div class="meta"><svg><use href="#i-calendar"/></svg><span id="brasiliaDate">--/--/----</span></div>
+    <div class="meta time"><svg><use href="#i-clock"/></svg><strong id="brasiliaTime">--:--</strong><small>HORÁRIO DE BRASÍLIA</small></div>
   </section>
 
-  <section class="journey">
-    <article class="route module">
-      <div class="caption">ROTA ATUAL</div>
-      <div class="route-title"><strong id="sourceCity">—</strong><span>→</span><strong id="destinationCity">—</strong></div>
-      <div class="route-bar"><i id="routeProgress"></i><em></em></div>
-      <div class="route-meta"><span id="routeStartText">0 km</span><span id="remainingKm">0 km</span></div>
-    </article>
-    <div class="journey-row">
-      <article class="mini module cargo-card"><span class="icon">◆</span><div><small>CARGA</small><strong id="cargoName">Sem carga</strong><b id="cargoMass">0 t</b></div></article>
-      <article class="mini module fuel-card"><span class="icon">⛽</span><div class="grow"><small>COMBUSTÍVEL</small><strong id="fuelLiters">0 / 0 L</strong><div class="fuel-bar"><i id="fuelBar"></i></div></div><b id="fuelPct">0%</b></article>
+  <section class="route area">
+    <div class="label"><svg><use href="#i-route"/></svg>ROTA ATUAL</div>
+    <div class="route-title"><strong id="sourceCity">—</strong><span>→</span><strong id="destinationCity">—</strong></div>
+    <div class="route-progress"><i id="routeProgress"></i><em id="routeKnob"></em></div>
+    <div class="route-meta"><span id="routeStartText">0 km</span><span id="remainingKm">0 km</span></div>
+  </section>
+
+  <section class="trip-top area">
+    <div class="cargo-card info-card">
+      <svg><use href="#i-box"/></svg>
+      <div><small>CARGA</small><strong id="cargoName">Sem carga</strong><b id="cargoMass">0 t</b></div>
     </div>
-    <div class="journey-bottom module">
-      <div><small>DISTÂNCIA RESTANTE</small><strong id="remainingKm2">0 km</strong></div>
-      <i></i>
-      <div><small>PERCURSO DA VIAGEM</small><strong id="tripKm">0 km</strong></div>
+    <div class="fuel-card info-card">
+      <svg><use href="#i-fuel"/></svg>
+      <div class="grow"><small>COMBUSTÍVEL</small><strong id="fuelLiters">0 / 0 L</strong><div class="fuel-bar"><i id="fuelBar"></i></div></div>
+      <b id="fuelPct">0%</b>
     </div>
   </section>
 
-  <section class="cluster">
-    <div class="gear-stack"><span>R</span><span>N</span><b id="gearValue">N</b><div class="temp"><small>♨</small><strong id="waterTemp">0°C</strong></div></div>
-    <div class="speedometer">
-      <div class="dial ticks"></div>
-      <div class="dial glow"></div>
-      <div class="speed-core"><strong id="speedValue">0</strong><span>km/h</span></div>
+  <section class="cluster area">
+    <div class="gear">
+      <span>R</span><span>N</span><b id="gearValue">N</b>
+      <div class="temp"><svg><use href="#i-temp"/></svg><strong id="waterTemp">0°C</strong></div>
     </div>
-    <div class="limit-stack">
-      <div class="limit-sign"><strong id="speedLimit">—</strong></div>
+    <div class="speedo">
+      <div class="speed-ring"></div>
+      <div class="ticks"></div>
+      <div class="speed-value"><strong id="speedValue">0</strong><span>km/h</span></div>
+    </div>
+    <div class="limit">
+      <div class="sign"><strong id="speedLimit">—</strong></div>
       <small>LIMITE</small>
-      <div class="cruise"><span>◴</span><b id="cruiseValue">OFF</b></div>
+      <div class="cruise"><svg><use href="#i-speed"/></svg><b id="cruiseValue">OFF</b></div>
     </div>
   </section>
 
-  <section class="right-zone">
-    <article class="cargo-dynamic module">
-      <header><div><span class="box-icon">◇</span><b>CARGA DINÂMICA</b></div><small>● Reconhecimento automático</small></header>
-      <div class="cargo-content">
-        <div class="cargo-visual"><div id="cargoArt" class="cargo-art generic"><div class="rice-sacks"><i></i><i></i><i></i><i></i><i></i><i></i><b>❧</b></div><div id="cargoGraphic" class="cargo-glyph">▰</div></div></div>
-        <div class="cargo-info"><strong id="dynamicCargoName">Sem carga</strong><div class="rule"></div><small>PESO TOTAL</small><b id="dynamicCargoMass">0 t</b></div>
+  <section class="cargo-dynamic area">
+    <div class="dynamic-head"><div><svg><use href="#i-box"/></svg><b>CARGA DINÂMICA</b></div><span>● Reconhecimento automático</span></div>
+    <div class="dynamic-body">
+      <div id="cargoArt" class="cargo-art generic">
+        <div class="rice-stack"><i></i><i></i><i></i><i></i><i></i><i></i><b>❧</b></div>
+        <div id="cargoGlyph" class="cargo-glyph">▰</div>
       </div>
-    </article>
-    <div class="right-bottom">
-      <article class="eta module"><span>◷</span><div><small>CHEGADA ESTIMADA</small><strong id="etaClock">—</strong></div></article>
-      <article class="truck module"><span>▰</span><div><small>CAMINHÃO</small><strong id="truckDisplay">Aguardando</strong></div></article>
+      <div class="dynamic-info"><strong id="dynamicCargoName">Sem carga</strong><i></i><small>PESO TOTAL</small><b id="dynamicCargoMass">0 t</b></div>
     </div>
-    <article class="damages module">
-      <div class="damage-title">🔧 <b>DANOS</b></div>
-      <div><small>Caminhão</small><strong id="damageTruck">0%</strong></div>
-      <div><small>Reboque</small><strong id="damageTrailer">0%</strong></div>
-      <div><small>Carga</small><strong id="damageCargo">0%</strong></div>
-    </article>
   </section>
 
-  <button id="settingsBtn" class="control settings-btn" title="Opacidade">⚙</button>
-  <button id="minimizeBtn" class="control min-btn" title="Minimizar">—</button>
-  <button id="closeBtn" class="control close-btn" title="Fechar">×</button>
+  <section class="bottom-left area">
+    <div><svg><use href="#i-flag"/></svg><p><small>DISTÂNCIA RESTANTE</small><strong id="remainingKm2">0 km</strong></p></div>
+    <i></i>
+    <div><svg><use href="#i-route"/></svg><p><small>PERCURSO DA VIAGEM</small><strong id="tripKm">0 km</strong></p></div>
+  </section>
+
+  <section class="bottom-mid area">
+    <div><svg><use href="#i-clock"/></svg><p><small>CHEGADA ESTIMADA</small><strong id="etaClock">—</strong></p></div>
+    <i></i>
+    <div><svg><use href="#i-truck"/></svg><p><small>CAMINHÃO</small><strong id="truckDisplay">Aguardando</strong></p></div>
+  </section>
+
+  <section class="damages area">
+    <div class="damage-title"><svg><use href="#i-wrench"/></svg><b>DANOS</b></div>
+    <div><small>Caminhão</small><strong id="damageTruck">0%</strong></div>
+    <div><small>Reboque</small><strong id="damageTrailer">0%</strong></div>
+    <div><small>Carga</small><strong id="damageCargo">0%</strong></div>
+  </section>
+
+  <button id="settingsBtn" class="control settings-btn">⚙</button>
+  <button id="minimizeBtn" class="control min-btn">—</button>
+  <button id="closeBtn" class="control close-btn">×</button>
 </main>
 
 <div id="settingsModal" class="modal hidden">
-  <div class="settings">
-    <div><b>ROADLIFE • HORIZONTAL</b><button id="closeSettings">×</button></div>
-    <label>OPACIDADE</label>
-    <input id="opacityRange" type="range" min="65" max="100" value="94">
-    <small>Esta versão trabalha somente no layout horizontal.</small>
-  </div>
+ <div class="settings">
+   <header><b>ROADLIFE • HORIZONTAL 0.6.0</b><button id="closeSettings">×</button></header>
+   <label>OPACIDADE</label>
+   <input id="opacityRange" type="range" min="70" max="100" value="95">
+   <small>Painel horizontal dedicado. O layout mantém a mesma proporção ao redimensionar.</small>
+ </div>
 </div>
-<script src="horizontal.js?v=2"></script>
+
+<script src="horizontal.js?v=6"></script>
 </body>
 </html>
