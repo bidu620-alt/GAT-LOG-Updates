@@ -51,7 +51,7 @@ function render(t){
  imageMap('truckImage','truckFallback',pickTruck(make,model));imageMap('cargoImage','cargoFallback',pickCargo(cid,cargo));
 }
 window.dashboard2PushTelemetry=p=>{let t=p;if(typeof t==='string'){try{t=JSON.parse(t)}catch{return}}if(t&&typeof t==='object'){state.lastTelemetry=Date.now();render(t)}};
-$('rotateBtn').onclick=rotate;$('settingsBtn').onclick=()=>$('settingsModal').classList.remove('hidden');$('closeSettings').onclick=()=>$('settingsModal').classList.add('hidden');$('saveSettings').onclick=()=>$('settingsModal').classList.add('hidden');
+$('rotateBtn').onclick=rotate;$('floatingRotateBtn').onclick=rotate;$('settingsBtn').onclick=()=>$('settingsModal').classList.remove('hidden');$('closeSettings').onclick=()=>$('settingsModal').classList.add('hidden');$('saveSettings').onclick=()=>$('settingsModal').classList.add('hidden');
 $('minimizeBtn').onclick=()=>nativePost({type:'minimize'});$('closeBtn').onclick=()=>nativePost({type:'close'});
 document.querySelectorAll('[data-theme-choice]').forEach(b=>b.onclick=()=>{state.theme=b.dataset.themeChoice;save()});
 document.querySelectorAll('[data-layout-choice]').forEach(b=>b.onclick=()=>setLayout(b.dataset.layoutChoice));
