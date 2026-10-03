@@ -328,7 +328,7 @@ internal sealed partial class MainForm
     private static string RoadLifeSlug(string value)
     {
         if (string.IsNullOrWhiteSpace(value)) return string.Empty;
-        string normalized = value.Normalize(NormalizationForm.FormD);
+        string normalized = value.Normalize(System.Text.NormalizationForm.FormD);
         var sb = new System.Text.StringBuilder();
 
         foreach (char c in normalized)
