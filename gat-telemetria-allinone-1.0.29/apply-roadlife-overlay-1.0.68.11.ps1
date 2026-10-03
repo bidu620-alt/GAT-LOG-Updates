@@ -72,8 +72,8 @@ if($mainText -notlike '*RoadLifeOverlayPush(identityTelemetry);*' -and $mainText
 $template=Join-Path $PSScriptRoot 'RoadLifeOverlayHost16811.cs'
 if(-not(Test-Path $template)){throw 'RoadLifeOverlayHost16811.cs ausente.'}
 $sourceDir=Split-Path $main.FullName -Parent
-$host=Join-Path $sourceDir 'RoadLifeOverlayHost.cs'
-Copy-Item $template $host -Force
+$overlayHostFile=Join-Path $sourceDir 'RoadLifeOverlayHost.cs'
+Copy-Item $template $overlayHostFile -Force
 
 # Referencias WPF necessarias apenas para a janela do overlay.
 if($projectText -notmatch 'PresentationFramework'){
@@ -104,7 +104,7 @@ Set-Content $project.FullName $projectText -Encoding UTF8
 
 $checkMain=Get-Content $main.FullName -Raw
 $checkHub=Get-Content $hub.FullName -Raw
-$checkHost=Get-Content $host -Raw
+$checkHost=Get-Content $overlayHostFile -Raw
 
 if($checkMain -notlike '*CurrentVersion = "1.0.68.11"*'){throw 'Versao 1.0.68.11 nao aplicada.'}
 foreach($m in @('ROADLIFE DASHBOARD2','ToggleRoadLifeOverlay','RoadLifeOverlayInitialize')){
