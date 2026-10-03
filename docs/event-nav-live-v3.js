@@ -1,4 +1,4 @@
-(()=>{const START=Date.parse('2026-10-01T00:00:00-03:00'),END=Date.parse('2026-11-01T00:00:00-03:00'),PREVIEW_KEY='gat_halloween_preview';
+(()=>{const START=Date.parse('2026-09-30T00:00:00-03:00'),END=Date.parse('2026-11-01T00:00:00-03:00'),PREVIEW_KEY='gat_halloween_preview';
 const qs=new URLSearchParams(location.search);
 if(qs.get('halloween')==='preview')try{sessionStorage.setItem(PREVIEW_KEY,'1')}catch(_){}
 if(qs.get('halloween')==='off')try{sessionStorage.removeItem(PREVIEW_KEY)}catch(_){}
