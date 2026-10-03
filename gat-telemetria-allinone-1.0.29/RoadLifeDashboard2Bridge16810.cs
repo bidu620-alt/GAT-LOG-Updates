@@ -407,8 +407,8 @@ internal sealed class RoadLifeDashboard2Form : Form
         DrawCentered(g, "ROTA ATUAL", 210, 27, 305, 18, 11, FontStyle.Bold, _green);
         DrawCentered(g, _source + "  →  " + _destination, 205, 48, 315, 27, 19, FontStyle.Bold, Color.White);
 
-        float total = Math.Max(1, _remaining + _travelled);
-        float pct = Math.Max(0, Math.Min(1, _travelled / total));
+        float total = (float)Math.Max(1.0, _remaining + _travelled);
+        float pct = (float)Math.Max(0.0, Math.Min(1.0, _travelled / total));
         using (Brush bg = new SolidBrush(Color.FromArgb(30, 40, 44)))
         using (Brush fg = new SolidBrush(_brightGreen))
         {
