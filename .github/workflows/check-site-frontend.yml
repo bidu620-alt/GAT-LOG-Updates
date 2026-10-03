@@ -31,6 +31,9 @@ jobs:
           node --check docs/link-device.js
           node --check docs/work-catalog.js
           node --check docs/work-catalog-completion.js
+          node --check docs/event-registry.js
+          node --check docs/evento-halloween.js
+          node --check docs/eventos/hallowin/script.js
       - name: Check profile page uses unified controller
         run: |
           grep -q 'driver-store.js' docs/motorista.html
@@ -44,3 +47,11 @@ jobs:
             echo 'Legacy distance override is still active.'
             exit 1
           fi
+
+      - name: Check Halloween event wiring
+        run: |
+          grep -q 'event-registry.js?v=2' docs/eventos/hallowin/index.html
+          grep -q 'script.js?v=10' docs/eventos/hallowin/index.html
+          grep -q "2026-09-30T00:00:00-03:00" docs/event-registry.js
+          grep -q "cargo_name_raw" docs/event-registry.js
+          grep -q "api/public/driver" docs/eventos/hallowin/script.js
