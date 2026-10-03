@@ -153,11 +153,21 @@ jobs:
             Copy-Item $_.FullName (Join-Path $stage 'gat') -Recurse -Force
           }
 
-          # IMPORTANTE: nao copiamos Dashboard2.xaml nesta atualizacao.
-          # Assim o layout que o usuario ja editou em 1.0.68.11 permanece intacto.
+          # Instala o RoadLifeDashboard2 COMPLETO também em PCs novos.
+          # A base 1.0.68.9 nao possui o Dashboard2, entao copiamos o projeto atual do repositorio.
           $dash=Join-Path $stage 'gat/RoadLifeDashboard2'
+          $roadLifeSource=Join-Path $PWD 'Projeto Dashboard2'
+          if(-not(Test-Path (Join-Path $roadLifeSource 'Dashboard2.xaml'))){throw 'Projeto Dashboard2/Dashboard2.xaml ausente'}
+          if(Test-Path $dash){Remove-Item $dash -Recurse -Force}
+          New-Item -ItemType Directory -Force -Path $dash | Out-Null
+          Copy-Item (Join-Path $roadLifeSource '*') $dash -Recurse -Force
+
+          # Garante a estrutura usada pelo host interno e pelas cargas dinamicas.
           $cargo=Join-Path $dash 'Assets/cargo'
-          New-Item -ItemType Directory -Force -Path $dash,(Join-Path $dash 'Assets'),$cargo | Out-Null
+          New-Item -ItemType Directory -Force -Path (Join-Path $dash 'Assets'),$cargo | Out-Null
+
+          if(-not(Test-Path (Join-Path $dash 'Dashboard2.xaml'))){throw 'Dashboard2.xaml nao foi incluido no instalador'}
+          if(-not(Test-Path (Join-Path $dash 'Dashboard2.ps1'))){throw 'Dashboard2.ps1 nao foi incluido no instalador'}
 
           python -m pip install pillow --disable-pip-version-check
           if($LASTEXITCODE -ne 0){throw 'Falha ao instalar Pillow'}
@@ -172,7 +182,7 @@ jobs:
             'ROADLIFE DASHBOARD2 - CARGA DINAMICA',
             '====================================',
             '',
-            'Esta atualizacao preserva o Dashboard2.xaml existente.',
+            'Esta instalacao inclui a pasta RoadLifeDashboard2 completa, inclusive Dashboard2.xaml.',
             'O GAT continua sendo o unico captador de telemetria.',
             '',
             'Assets/cargo/cargo-name-map.json = mapa de nomes/IDs de carga.',
@@ -183,6 +193,8 @@ jobs:
 
           if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
           if(-not(Test-Path (Join-Path $stage 'GAT_TELEMETRIA_APP.exe'))){throw 'GAT 1.0.68.12 ausente'}
+          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDashboard2/Dashboard2.xaml'))){throw 'RoadLifeDashboard2 incompleto no staging'}
+          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDashboard2/Dashboard2.ps1'))){throw 'RoadLifeDashboard2 sem Dashboard2.ps1 no staging'}
 
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress
