@@ -23,9 +23,22 @@ internal sealed partial class MainForm
         return Path.Combine(RoadLifeDashboard2Root(), "Dashboard2.ps1");
     }
 
+    private static string RoadLifeDashboard2DataRoot()
+    {
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "GAT Telemetria",
+            "RoadLifeDashboard2");
+    }
+
     private static string RoadLifeDashboard2TelemetryFile()
     {
-        return Path.Combine(RoadLifeDashboard2Root(), "data", "telemetry.json");
+        return Path.Combine(RoadLifeDashboard2DataRoot(), "telemetry.json");
+    }
+
+    private static string RoadLifeDashboard2LogFile()
+    {
+        return Path.Combine(RoadLifeDashboard2DataRoot(), "dashboard2-launch.log");
     }
 
     private void RoadLifeDashboard2Initialize()
@@ -62,7 +75,11 @@ internal sealed partial class MainForm
                 return;
             }
 
-            Directory.CreateDirectory(Path.GetDirectoryName(RoadLifeDashboard2TelemetryFile()));
+            Directory.CreateDirectory(RoadLifeDashboard2DataRoot());
+
+            string telemetryFile = RoadLifeDashboard2TelemetryFile();
+            if (!File.Exists(telemetryFile))
+                File.WriteAllText(telemetryFile, "{\"online\":false}", new UTF8Encoding(false));
 
             string psExe = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
@@ -71,12 +88,12 @@ internal sealed partial class MainForm
             if (!File.Exists(psExe))
                 psExe = "powershell.exe";
 
-            string logFile = Path.Combine(RoadLifeDashboard2Root(), "dashboard2-launch.log");
+            string logFile = RoadLifeDashboard2LogFile();
 
             _roadLifeDashboard2Process = Process.Start(new ProcessStartInfo
             {
                 FileName = psExe,
-                Arguments = "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File \"" + script + "\"",
+                Arguments = "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File \"" + script + "\" -TelemetryPath \"" + telemetryFile + "\"",
                 WorkingDirectory = RoadLifeDashboard2Root(),
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -86,23 +103,19 @@ internal sealed partial class MainForm
             if (_roadLifeDashboard2Process == null)
                 throw new InvalidOperationException("O Windows não iniciou o processo do RoadLife Dashboard2.");
 
-            try
+            if (_roadLifeDashboard2Process.WaitForExit(1200))
             {
-                if (_roadLifeDashboard2Process.WaitForExit(900))
-                {
-                    string err = _roadLifeDashboard2Process.StandardError.ReadToEnd();
-                    if (string.IsNullOrWhiteSpace(err))
-                        err = "O Dashboard2 encerrou logo após iniciar, sem mensagem do PowerShell.";
+                string err = _roadLifeDashboard2Process.StandardError.ReadToEnd();
+                if (string.IsNullOrWhiteSpace(err))
+                    err = "O Dashboard2 encerrou logo após iniciar, sem mensagem do PowerShell.";
 
-                    File.WriteAllText(logFile, err, Encoding.UTF8);
-                    throw new InvalidOperationException(
-                        "O RoadLife Dashboard2 não conseguiu abrir.\r\n\r\n" +
-                        "Detalhes salvos em:\r\n" + logFile + "\r\n\r\n" +
-                        err);
-                }
+                try { File.WriteAllText(logFile, err, new UTF8Encoding(true)); } catch { }
+
+                throw new InvalidOperationException(
+                    "O RoadLife Dashboard2 não conseguiu abrir.\r\n\r\n" +
+                    "Detalhes salvos em:\r\n" + logFile + "\r\n\r\n" +
+                    err);
             }
-            catch (InvalidOperationException) { throw; }
-            catch { }
 
             ClientStore.Log("RoadLife Dashboard2 PS1 aberto: " + script);
         }
