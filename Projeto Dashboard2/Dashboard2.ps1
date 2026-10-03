@@ -1,4 +1,7 @@
-param([switch]$DebugMode)
+param(
+  [switch]$DebugMode,
+  [string]$TelemetryPath = ""
+)
 
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 $ErrorActionPreference = "Stop"
@@ -6,7 +9,9 @@ $ErrorActionPreference = "Stop"
 [System.Threading.Thread]::CurrentThread.CurrentUICulture = [System.Globalization.CultureInfo]::GetCultureInfo("pt-BR")
 
 $Base = Split-Path -Parent $MyInvocation.MyCommand.Path
-$TelemetryPath = Join-Path $Base "data\telemetry.json"
+if([string]::IsNullOrWhiteSpace($TelemetryPath)){
+  $TelemetryPath = Join-Path $Base "data\telemetry.json"
+}
 
 $native = @"
 using System;
