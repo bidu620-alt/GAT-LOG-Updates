@@ -147,29 +147,31 @@ jobs:
 
           $ps1='Projeto Dashboard2/Dashboard2.ps1'
           if(-not(Test-Path $ps1)){throw 'Dashboard2.ps1 do projeto nao encontrado'}
-          Copy-Item $ps1 (Join-Path $dashDest 'Dashboard2.ps1') -Force
+          $dashPs1=Join-Path $dashDest 'Dashboard2.ps1'
+          Copy-Item $ps1 $dashPs1 -Force
+
+          # Windows PowerShell 5.1 precisa de BOM para interpretar corretamente
+          # acentos, travessao, seta e outros caracteres UTF-8 usados no layout.
+          $ps1Text=[IO.File]::ReadAllText($dashPs1,[Text.Encoding]::UTF8)
+          [IO.File]::WriteAllText($dashPs1,$ps1Text,[Text.UTF8Encoding]::new($true))
 
           $frame='Projeto Dashboard2/dashboard-structure-green.png'
           if(Test-Path $frame){
             Copy-Item $frame (Join-Path $dashDest 'Assets/dashboard-structure-green.png') -Force
           }
 
-          $initialTelemetry=@{
-            online=$false
-            route=@{source='—';destination='—';distance_remaining_km=0;distance_travelled_km=0}
-            cargo=@{name='Sem carga';weight_t=0}
-            fuel=@{current_l=0;capacity_l=0;percent=0}
-            truck=@{model='—';gear='N';temperature_c=0;speed_kmh=0;speed_limit_kmh=0;cruise=$false}
-            eta='—'
-            damage=@{truck_pct=0;trailer_pct=0;cargo_pct=0}
-          } | ConvertTo-Json -Depth 5
-          Set-Content (Join-Path $dashDest 'data/telemetry.json') $initialTelemetry -Encoding UTF8
+          # O JSON ao vivo agora fica no LocalAppData do usuario, onde o GAT
+          # consegue escrever sem permissao de administrador.
+          Set-Content (Join-Path $dashDest 'data/README.txt') @(
+            'A telemetria ao vivo nao e gravada nesta pasta.',
+            'O GAT usa %LOCALAPPDATA%\GAT Telemetria\RoadLifeDashboard2\telemetry.json'
+          ) -Encoding UTF8
 
           $readme=@(
             'ROADLIFE DASHBOARD2 - VISUAL EDITAVEL',
             '=====================================',
             'O GAT Telemetria capta os dados do ETS2.',
-            'Este Dashboard2.ps1 apenas exibe os dados gravados em data\\telemetry.json.',
+            'Este Dashboard2.ps1 apenas exibe os dados enviados pelo GAT Telemetria.',
             '',
             'Para alterar o visual:',
             '1. Feche o RoadLife Dashboard2.',
@@ -181,7 +183,7 @@ jobs:
           Set-Content (Join-Path $dashDest 'COMO_EDITAR_DASHBOARD2.txt') $readme -Encoding UTF8
 
           if(-not(Test-Path (Join-Path $dashDest 'Dashboard2.ps1'))){throw 'Dashboard2.ps1 nao foi incluido'}
-          if(-not(Test-Path (Join-Path $dashDest 'data/telemetry.json'))){throw 'telemetry.json nao foi incluido'}
+          if(-not(Test-Path (Join-Path $dashDest 'Dashboard2.ps1'))){throw 'Dashboard2.ps1 nao foi incluido'}
           if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
           if(-not(Test-Path (Join-Path $stage 'GAT_TELEMETRIA_APP.exe'))){throw 'GAT 1.0.68.10 ausente'}
 
