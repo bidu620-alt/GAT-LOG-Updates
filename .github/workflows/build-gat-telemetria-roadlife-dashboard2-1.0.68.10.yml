@@ -1,0 +1,207 @@
+name: Build GAT Telemetria 1.0.68.10 ROADLIFE DASHBOARD2 TESTE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gat-telemetria-allinone-1.0.29/RoadLifeDashboard2Bridge16810.cs'
+      - 'gat-telemetria-allinone-1.0.29/apply-roadlife-dashboard2-1.0.68.10.ps1'
+      - 'Projeto Dashboard2/**'
+      - '.github/workflows/build-gat-telemetria-roadlife-dashboard2-1.0.68.10.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gat-roadlife-16810-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Reconstruct source and integrate RoadLife
+        run: |
+          $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
+          $first = [Convert]::FromBase64String($firstText.Trim())
+          $parts = Get-ChildItem 'gat-telemetria-dotnet-1.0.28/source.bin.*' | Sort-Object Name
+          if ($parts.Count -ne 5) { throw "Esperava 5 partes binarias e encontrei $($parts.Count)" }
+
+          $zip = Join-Path $PWD 'gat16810-source.zip'
+          $out = [IO.File]::Create($zip)
+          try {
+            $out.Write($first,0,$first.Length)
+            foreach($part in $parts) {
+              $bytes=[IO.File]::ReadAllBytes($part.FullName)
+              $out.Write($bytes,0,$bytes.Length)
+            }
+          } finally { $out.Dispose() }
+
+          if(Test-Path 'gat16810-build'){Remove-Item 'gat16810-build' -Recurse -Force}
+          Expand-Archive $zip 'gat16810-build' -Force
+          Get-ChildItem 'gat16810-build' -Recurse -Include *.cs,*.csproj,*.config | ForEach-Object {
+            $txt=Get-Content $_.FullName -Raw
+            if($txt -like '*1.0.28*'){Set-Content $_.FullName ($txt.Replace('1.0.28','1.0.32')) -Encoding UTF8}
+          }
+
+          $root="$PWD/gat16810-build"
+          $patchDir=Join-Path $PWD 'gat-telemetria-allinone-1.0.29'
+
+          # Recupera exatamente os patches usados na build publicada 1.0.68.9.
+          $legacyRef='f9341bab66d037b1057e796a92b37de7571a1c89'
+          foreach($n in @('apply-voice-clean-from-61-1.0.68.8.ps1','apply-map-auto-detect-1.0.68.9.ps1')){
+            $dest=Join-Path $patchDir $n
+            if(-not(Test-Path $dest)){
+              $url="https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/$legacyRef/gat-telemetria-allinone-1.0.29/$n"
+              Invoke-WebRequest $url -OutFile $dest
+            }
+            if(-not(Test-Path $dest)){throw "Patch historico ausente: $n"}
+          }
+
+          $patches=@(
+            'apply-offline-queue.ps1','apply-trip-sensor-v2.ps1','apply-stability-1.0.32.ps1','apply-beta-brand-1.0.32.ps1',
+            'apply-radio-1.0.33.ps1','apply-radio-1.0.34.ps1','apply-radio-overlay-1.0.35.ps1','apply-radio-personal-1.0.36.ps1',
+            'apply-radio-stream-1.0.37.ps1','apply-youtube-referrer-1.0.39.ps1','apply-dash-media-1.0.40.ps1','apply-hub-1.0.41.ps1',
+            'apply-hub-fixes-1.0.42.ps1','apply-startup-fix-1.0.43.ps1','apply-modern-ui-1.0.44.ps1','apply-hub-1.0.45.ps1',
+            'apply-mute-alert-1.0.46.ps1','apply-overlay-fix-1.0.47.ps1','apply-radio-background-1.0.48.ps1','apply-radio-home-1.0.49.ps1',
+            'apply-radio-home-1.0.49-fix.ps1','apply-dash-overlay-1.0.50.ps1','apply-responsive-ui-1.0.51.ps1','apply-responsive-ui-1.0.52.ps1',
+            'apply-ui-overlay-1.0.53.ps1','apply-overlay-independent-1.0.54.ps1','apply-window-layout-1.0.55-pre.ps1','apply-window-layout-1.0.55.ps1',
+            'apply-window-layout-1.0.55-fix.ps1','apply-full-responsive-1.0.56.ps1','apply-version-only-1.0.57.ps1','apply-version-only-1.0.58.ps1',
+            'apply-version-only-1.0.59.ps1','apply-full-dash-overlay-1.0.60.ps1','apply-video-borderless-1.0.61.ps1',
+            'apply-voice-clean-from-61-1.0.68.8.ps1','apply-map-auto-detect-1.0.68.9.ps1',
+            'apply-roadlife-dashboard2-1.0.68.10.ps1'
+          )
+          foreach($p in $patches){
+            $file=Join-Path $patchDir $p
+            if(-not(Test-Path $file)){throw "Patch ausente: $p"}
+            & $file -Root $root
+          }
+
+          $main=Get-ChildItem $root -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
+          $hub=Get-ChildItem $root -Filter 'MainForm.Hub041.cs' -Recurse | Select-Object -First 1
+          $voice=Get-ChildItem $root -Filter 'VoiceClean.cs' -Recurse | Select-Object -First 1
+          $bridge=Get-ChildItem $root -Filter 'RoadLifeDashboard2Bridge.cs' -Recurse | Select-Object -First 1
+          $project=Get-ChildItem $root -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
+          if(-not $main -or -not $hub -or -not $voice -or -not $bridge -or -not $project){throw 'Fonte RoadLife incompleta'}
+
+          $mt=Get-Content $main.FullName -Raw
+          $ht=Get-Content $hub.FullName -Raw
+          $vt=Get-Content $voice.FullName -Raw
+          $bt=Get-Content $bridge.FullName -Raw
+          if($mt -notlike '*CurrentVersion = "1.0.68.10"*'){throw 'Versao 1.0.68.10 incorreta'}
+          foreach($m in @('ROADLIFE DASHBOARD2','ToggleRoadLifeDashboard2','RoadLifeDashboard2Initialize')){if($ht -notlike "*$m*"){throw "Hub sem $m"}}
+          if($vt -notlike '*RoadLifeDashboard2Push(tele);*'){throw 'VoiceClean nao encaminha a telemetria ao RoadLife'}
+          foreach($m in @('RoadLifeDashboard2BuildPayload','telemetry.json','RoadLifeGear')){if($bt -notlike "*$m*"){throw "Bridge sem $m"}}
+
+          msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
+          if($LASTEXITCODE -ne 0){throw 'Falha na compilacao 1.0.68.10 RoadLife'}
+
+          $projectDir=Split-Path $project.FullName -Parent
+          $exe=Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
+          if(-not $exe){throw 'Executavel 1.0.68.10 nao gerado'}
+          "GAT16810_EXE=$($exe.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          $cfg=Join-Path $exe.Directory.FullName 'GAT_TELEMETRIA.exe.config'
+          if(Test-Path $cfg){"GAT16810_CFG=$cfg" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append}
+
+      - name: Prepare installer stage and Dashboard2
+        run: |
+          $base=Join-Path $PWD 'GAT_TELEMETRIA_1.0.68.9_BASE.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe' -OutFile $base
+          if(-not(Test-Path $base) -or (Get-Item $base).Length -lt 1000000){throw 'Base 1.0.68.9 nao baixada'}
+
+          $installed=Join-Path $PWD 'installed1689'
+          $stage=Join-Path $PWD 'gat-telemetria-allinone-1.0.29/staging-roadlife-16810'
+          foreach($p in @($installed,$stage)){if(Test-Path $p){Remove-Item $p -Recurse -Force}}
+          New-Item -ItemType Directory -Force -Path $installed,$stage,(Join-Path $stage 'gat'),(Join-Path $stage 'trucksim') | Out-Null
+
+          $args=@('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR='+'"'+$installed+'"'))
+          $proc=Start-Process -FilePath $base -ArgumentList $args -Wait -PassThru
+          if($proc.ExitCode -ne 0){throw "Base 1.0.68.9 retornou $($proc.ExitCode)"}
+
+          Copy-Item (Join-Path $installed 'GAT_TELEMETRIA.exe') (Join-Path $stage 'GAT_TELEMETRIA.exe') -Force
+          Copy-Item $env:GAT16810_EXE (Join-Path $stage 'GAT_TELEMETRIA_APP.exe') -Force
+          if($env:GAT16810_CFG -and (Test-Path $env:GAT16810_CFG)){Copy-Item $env:GAT16810_CFG (Join-Path $stage 'GAT_TELEMETRIA_APP.exe.config') -Force}
+
+          $truckInstalled=Join-Path $installed 'TruckSimGPS'
+          if(Test-Path $truckInstalled){Copy-Item "$truckInstalled/*" (Join-Path $stage 'trucksim') -Recurse -Force}
+          $skip=@('GAT_TELEMETRIA.exe','GAT_TELEMETRIA_APP.exe','GAT_TELEMETRIA_APP.exe.config','TruckSimGPS')
+          Get-ChildItem $installed -Force | Where-Object{$_.Name -notin $skip -and $_.Name -notlike 'unins*'} | ForEach-Object{
+            Copy-Item $_.FullName (Join-Path $stage 'gat') -Recurse -Force
+          }
+
+          # Instala exatamente o Dashboard2 enviado como visualizador.
+          $dashZip='Projeto Dashboard2/ROADLIFE_Dashboard2_0.4.0_GREEN.zip'
+          if(-not(Test-Path $dashZip)){throw 'ZIP do Dashboard2 nao encontrado'}
+          $tmp=Join-Path $PWD 'dashboard2-runtime'
+          if(Test-Path $tmp){Remove-Item $tmp -Recurse -Force}
+          Expand-Archive $dashZip $tmp -Force
+          $dashSource=Get-ChildItem $tmp -Directory | Select-Object -First 1
+          if(-not $dashSource){throw 'ZIP do Dashboard2 invalido'}
+          $dashDest=Join-Path $stage 'gat/RoadLifeDashboard2'
+          New-Item -ItemType Directory -Force -Path $dashDest | Out-Null
+          Copy-Item "$($dashSource.FullName)/*" $dashDest -Recurse -Force
+
+          # A arte estrutural nao veio dentro do ZIP enviado. Reconstroi apenas as linhas
+          # da mesma malha para o visualizador nao ficar sem o frame.
+          Add-Type -AssemblyName System.Drawing
+          $assetDir=Join-Path $dashDest 'Assets'
+          New-Item -ItemType Directory -Force -Path $assetDir | Out-Null
+          $img=[System.Drawing.Bitmap]::new(1332,330,[System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+          $g=[System.Drawing.Graphics]::FromImage($img)
+          $g.SmoothingMode=[System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+          $g.Clear([System.Drawing.Color]::Transparent)
+          $pen=[System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(215,70,255,120),2)
+          $rects=@(
+            @(16,35,165,260),@(190,35,340,110),@(190,147,145,74),@(337,147,193,74),
+            @(532,62,62,84),@(532,149,62,72),@(840,65,74,78),@(840,147,74,74),
+            @(916,35,410,190),@(190,229,355,84),@(547,229,360,84),@(909,229,417,84)
+          )
+          foreach($r in $rects){$g.DrawRectangle($pen,$r[0],$r[1],$r[2],$r[3])}
+          $g.DrawEllipse($pen,603,32,235,215)
+          $img.Save((Join-Path $assetDir 'dashboard-structure-green.png'),[System.Drawing.Imaging.ImageFormat]::Png)
+          $pen.Dispose(); $g.Dispose(); $img.Dispose()
+
+          if(-not(Test-Path (Join-Path $dashDest 'Dashboard2.ps1'))){throw 'Dashboard2.ps1 ausente'}
+          if(-not(Test-Path (Join-Path $dashDest 'data/telemetry.json'))){throw 'telemetry.json ausente'}
+          if(-not(Test-Path (Join-Path $dashDest 'Assets/dashboard-structure-green.png'))){throw 'Frame do Dashboard2 ausente'}
+          if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer
+        run: |
+          $issSource='gat-telemetria-allinone-1.0.29/GAT_Telemetria_AllInOne.iss'
+          $iss='gat-telemetria-allinone-1.0.29/GAT_Telemetria_RoadLife_1.0.68.10.iss'
+          $text=Get-Content $issSource -Raw
+          $text=$text.Replace('#define AppVersion "1.0.29"','#define AppVersion "1.0.68.10"')
+          $text=$text.Replace('staging\','staging-roadlife-16810\')
+          $text=$text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA')
+          $text=$text.Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
+          $text=$text.Replace('OutputBaseFilename=GAT_TELEMETRIA_SETUP_{#AppVersion}','OutputBaseFilename=GAT_TELEMETRIA_1.0.68.10_ROADLIFE_DASHBOARD2_TESTE')
+          Set-Content $iss $text -Encoding UTF8
+
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss
+          if($LASTEXITCODE -ne 0){throw 'Falha ao gerar instalador RoadLife'}
+          $setup='gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_1.0.68.10_ROADLIFE_DASHBOARD2_TESTE.exe'
+          if(-not(Test-Path $setup)){throw 'Setup RoadLife nao gerado'}
+          New-Item -ItemType Directory -Force -Path releases-test | Out-Null
+          Copy-Item $setup 'releases-test/GAT_TELEMETRIA_1.0.68.10_ROADLIFE_DASHBOARD2_TESTE.exe' -Force
+          Get-FileHash 'releases-test/GAT_TELEMETRIA_1.0.68.10_ROADLIFE_DASHBOARD2_TESTE.exe' -Algorithm SHA256 | Format-List
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAT-Telemetria-1.0.68.10-ROADLIFE-DASHBOARD2-TESTE
+          path: releases-test/GAT_TELEMETRIA_1.0.68.10_ROADLIFE_DASHBOARD2_TESTE.exe
+          if-no-files-found: error
