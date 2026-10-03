@@ -92,7 +92,7 @@ if ($voiceText -notlike '*RoadLifeDashboard2Push(tele);*') {
 }
 
 $bridgeText = Get-Content $bridge -Raw
-foreach ($m in @('RoadLifeDashboard2Push','RoadLifeDashboard2BuildPayload','RoadLifeDashboard2Form','RoadLifeGear')) {
+foreach ($m in @('RoadLifeDashboard2Push','RoadLifeDashboard2BuildPayload','RoadLifeDashboard2Script','telemetry.json','RoadLifeGear')) {
     if ($bridgeText -notlike "*$m*") { throw "Bridge incompleta: $m" }
 }
 
@@ -101,4 +101,4 @@ Set-Content $hub.FullName $hubText -Encoding UTF8
 Set-Content $voice.FullName $voiceText -Encoding UTF8
 Set-Content $project.FullName $projectText -Encoding UTF8
 
-Write-Host 'GAT Telemetria 1.0.68.10 TESTE: RoadLife Dashboard2 nativo integrado; GAT capta e o Dashboard2 apenas visualiza.'
+Write-Host 'GAT Telemetria 1.0.68.10 TESTE: RoadLife Dashboard2 PS1 editavel integrado; GAT capta e o PS1 apenas visualiza.'
