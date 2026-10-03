@@ -11,84 +11,624 @@
         Height="297"
         MinWidth="780"
         MinHeight="193"
-        WindowStartupLocation="CenterScreen">
-  <Grid Name="Root">
-    <Viewbox Stretch="Fill">
-      <Canvas Width="1332" Height="330">
-        <Border Canvas.Left="16" Canvas.Top="35" Width="165" Height="260" Background="#80042012" CornerRadius="28"/>
-        <Border Canvas.Left="190" Canvas.Top="35" Width="340" Height="110" Background="#80042012" CornerRadius="18"/>
-        <Border Canvas.Left="190" Canvas.Top="147" Width="145" Height="74" Background="#80042012" CornerRadius="16"/>
-        <Border Canvas.Left="337" Canvas.Top="147" Width="193" Height="74" Background="#80042012" CornerRadius="16"/>
-        <Border Canvas.Left="532" Canvas.Top="62" Width="62" Height="84" Background="#80042012" CornerRadius="14"/>
-        <Border Canvas.Left="532" Canvas.Top="149" Width="62" Height="72" Background="#80042012" CornerRadius="14"/>
-        <Ellipse Canvas.Left="603" Canvas.Top="32" Width="235" Height="215" Fill="#80042012"/>
-        <Border Canvas.Left="840" Canvas.Top="65" Width="74" Height="78" Background="#80042012" CornerRadius="18"/>
-        <Border Canvas.Left="840" Canvas.Top="147" Width="74" Height="74" Background="#80042012" CornerRadius="18"/>
-        <Border Canvas.Left="916" Canvas.Top="35" Width="410" Height="190" Background="#80042012" CornerRadius="22"/>
-        <Border Canvas.Left="190" Canvas.Top="229" Width="355" Height="84" Background="#80042012" CornerRadius="18"/>
-        <Border Canvas.Left="547" Canvas.Top="229" Width="360" Height="84" Background="#80042012" CornerRadius="18"/>
-        <Border Canvas.Left="909" Canvas.Top="229" Width="417" Height="84" Background="#80042012" CornerRadius="18"/>
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
 
-        <Image Name="StructureImage" Canvas.Left="0" Canvas.Top="0" Width="1332" Height="330" Stretch="Fill"/>
+  <Window.Resources>
+    <SolidColorBrush x:Key="PanelBrush" Color="#80042012"/>
+    <SolidColorBrush x:Key="EdgeBrush" Color="#FF36F27A"/>
+    <SolidColorBrush x:Key="SoftEdgeBrush" Color="#B836F27A"/>
+    <SolidColorBrush x:Key="MutedBrush" Color="#FFB9C1C7"/>
+    <SolidColorBrush x:Key="FuelTrackBrush" Color="#5530FF78"/>
+    <SolidColorBrush x:Key="FuelFillBrush" Color="#FF4CFF8A"/>
 
-        <TextBlock Canvas.Left="46" Canvas.Top="66" Width="108" FontSize="20" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="ROADLIFE"/>
-        <TextBlock Canvas.Left="68" Canvas.Top="91" Width="64" FontSize="11" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="ETS2"/>
-        <TextBlock Name="OnlineText" Canvas.Left="44" Canvas.Top="130" Width="115" FontSize="15" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="● ONLINE"/>
-        <TextBlock Name="DateText" Canvas.Left="43" Canvas.Top="207" Width="120" FontSize="15" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="02/10/26"/>
-        <TextBlock Name="TimeText" Canvas.Left="43" Canvas.Top="239" Width="120" FontSize="15" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="10:40:57"/>
+    <Style x:Key="PanelStyle" TargetType="Border">
+      <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource SoftEdgeBrush}"/>
+      <Setter Property="BorderThickness" Value="1.5"/>
+      <Setter Property="CornerRadius" Value="16"/>
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="Padding" Value="10"/>
+      <Setter Property="SnapsToDevicePixels" Value="True"/>
+    </Style>
 
-        <TextBlock Canvas.Left="214" Canvas.Top="45" Width="120" FontSize="13" FontWeight="Bold" Foreground="White" Text="ROTA ATUAL"/>
-        <TextBlock Name="RouteText" Canvas.Left="207" Canvas.Top="69" Width="312" FontSize="23" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="Albacete → A Coruña"/>
-        <TextBlock Name="StartKmText" Canvas.Left="210" Canvas.Top="118" Width="64" FontSize="13" FontWeight="Bold" Foreground="White" Text="0 km"/>
-        <TextBlock Name="RemainKmTop" Canvas.Left="456" Canvas.Top="118" Width="62" FontSize="13" FontWeight="Bold" Foreground="White" TextAlignment="Right" Text="928 km"/>
+    <Style x:Key="CaptionStyle" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
 
-        <TextBlock Canvas.Left="207" Canvas.Top="157" Width="116" FontSize="13" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="PESO"/>
-        <TextBlock Name="CargoWeight" Canvas.Left="207" Canvas.Top="183" Width="116" FontSize="23" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="22,1 t"/>
+    <Style x:Key="ValueStyle" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="TextAlignment" Value="Center"/>
+      <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+  </Window.Resources>
 
-        <TextBlock Canvas.Left="355" Canvas.Top="157" Width="155" FontSize="13" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="COMBUSTÍVEL"/>
-        <TextBlock Name="FuelText" Canvas.Left="347" Canvas.Top="181" Width="170" FontSize="17" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="644 / 1.300 L"/>
-        <TextBlock Name="FuelPct" Canvas.Left="453" Canvas.Top="205" Width="52" FontSize="16" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="50%"/>
-        <Border Canvas.Left="357" Canvas.Top="211" Width="125" Height="8" Background="#5530FF78" CornerRadius="4"/>
-        <Border Name="FuelBar" Canvas.Left="357" Canvas.Top="211" Width="62" Height="8" Background="#FF4CFF8A" CornerRadius="4"/>
+  <Grid Name="Root" Background="Transparent" Margin="6">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="2.35*"/>
+      <RowDefinition Height="1*"/>
+    </Grid.RowDefinitions>
 
-        <TextBlock Canvas.Left="536" Canvas.Top="158" Width="54" FontSize="11" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="TEMP"/>
-        <TextBlock Name="TempText" Canvas.Left="531" Canvas.Top="183" Width="64" FontSize="17" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="53°C"/>
+    <!-- LINHA PRINCIPAL: tudo distribuído por frações, sem Canvas e sem Viewbox -->
+    <Grid Grid.Row="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1.20*"/>
+        <ColumnDefinition Width="2.60*"/>
+        <ColumnDefinition Width="0.50*"/>
+        <ColumnDefinition Width="1.80*"/>
+        <ColumnDefinition Width="0.60*"/>
+        <ColumnDefinition Width="3.30*"/>
+      </Grid.ColumnDefinitions>
 
-        <TextBlock Name="SpeedText" Canvas.Left="653" Canvas.Top="91" Width="124" FontSize="68" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="0"/>
-        <TextBlock Canvas.Left="672" Canvas.Top="160" Width="86" FontSize="18" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="km/h"/>
-        <TextBlock Name="GearText" Canvas.Left="676" Canvas.Top="199" Width="78" FontSize="24" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="D1"/>
+      <!-- ROADLIFE / STATUS -->
+      <Border Grid.Column="0" Style="{StaticResource PanelStyle}" CornerRadius="24">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
 
-        <Ellipse Canvas.Left="845" Canvas.Top="74" Width="63" Height="63" Fill="#FFF5F5F5" Stroke="#FFFF3737" StrokeThickness="6"/>
-        <TextBlock Name="LimitText" Canvas.Left="850" Canvas.Top="90" Width="53" FontSize="28" FontWeight="Bold" Foreground="#FF111111" TextAlignment="Center" Text="56"/>
-        <TextBlock Canvas.Left="842" Canvas.Top="139" Width="70" FontSize="10" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="LIMITE"/>
-        <TextBlock Canvas.Left="844" Canvas.Top="169" Width="67" FontSize="11" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="CRUISE"/>
-        <TextBlock Name="CruiseText" Canvas.Left="845" Canvas.Top="194" Width="65" FontSize="17" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="OFF"/>
+          <TextBlock Grid.Row="0"
+                     Text="ROADLIFE"
+                     Foreground="White"
+                     FontWeight="Bold"
+                     FontSize="20"
+                     HorizontalAlignment="Center"
+                     Margin="0,4,0,0"/>
 
-        <TextBlock Canvas.Left="936" Canvas.Top="48" Width="150" FontSize="14" FontWeight="Bold" Foreground="White" Text="CARGA DINÂMICA"/>
-        <TextBlock Canvas.Left="1110" Canvas.Top="50" Width="175" FontSize="9" FontWeight="Bold" Foreground="White" TextAlignment="Right" Text="Reconhecimento automático"/>
-        <TextBlock Name="CargoRightName" Canvas.Left="1100" Canvas.Top="83" Width="185" FontSize="30" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="ARROZ"/>
-        <Image Name="CargoPreview" Canvas.Left="932" Canvas.Top="94" Width="320" Height="126" Stretch="Uniform"/>
+          <TextBlock Grid.Row="1"
+                     Text="ETS2"
+                     Foreground="White"
+                     FontWeight="Bold"
+                     FontSize="11"
+                     HorizontalAlignment="Center"
+                     Margin="0,-2,0,4"/>
 
-        <TextBlock Canvas.Left="211" Canvas.Top="247" Width="155" FontSize="11" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="DISTÂNCIA RESTANTE"/>
-        <TextBlock Name="RemainBottom" Canvas.Left="220" Canvas.Top="274" Width="138" FontSize="21" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="928 km"/>
+          <TextBlock Name="OnlineText"
+                     Grid.Row="2"
+                     Text="● ONLINE"
+                     Foreground="White"
+                     FontWeight="Bold"
+                     FontSize="15"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     TextAlignment="Center"/>
 
-        <TextBlock Canvas.Left="386" Canvas.Top="247" Width="175" FontSize="11" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="PERCURSO DA VIAGEM"/>
-        <TextBlock Name="TravelBottom" Canvas.Left="407" Canvas.Top="274" Width="138" FontSize="21" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="927 km"/>
+          <TextBlock Name="DateText"
+                     Grid.Row="3"
+                     Text="02/10/26"
+                     Foreground="White"
+                     FontWeight="Bold"
+                     FontSize="15"
+                     HorizontalAlignment="Center"
+                     Margin="0,2"/>
 
-        <TextBlock Canvas.Left="576" Canvas.Top="247" Width="145" FontSize="11" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="CHEGADA ESTIMADA"/>
-        <TextBlock Name="EtaText" Canvas.Left="599" Canvas.Top="274" Width="100" FontSize="21" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="11:53"/>
+          <TextBlock Name="TimeText"
+                     Grid.Row="4"
+                     Text="10:40:57"
+                     Foreground="White"
+                     FontWeight="Bold"
+                     FontSize="15"
+                     HorizontalAlignment="Center"
+                     Margin="0,2,0,4"/>
+        </Grid>
+      </Border>
 
-        <TextBlock Canvas.Left="716" Canvas.Top="247" Width="150" FontSize="11" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="CAMINHÃO"/>
-        <TextBlock Name="TruckText" Canvas.Left="708" Canvas.Top="274" Width="166" FontSize="18" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="Iveco Stralis"/>
+      <!-- ROTA + PESO + COMBUSTÍVEL -->
+      <Grid Grid.Column="1">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="1.30*"/>
+          <RowDefinition Height="0.90*"/>
+        </Grid.RowDefinitions>
 
-        <TextBlock Canvas.Left="930" Canvas.Top="247" Width="88" FontSize="13" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="DANOS"/>
-        <TextBlock Canvas.Left="1011" Canvas.Top="250" Width="82" FontSize="10" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="Caminhão"/>
-        <TextBlock Name="TruckDamageText" Canvas.Left="1011" Canvas.Top="274" Width="82" FontSize="18" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="0,0%"/>
-        <TextBlock Canvas.Left="1110" Canvas.Top="250" Width="82" FontSize="10" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="Reboque"/>
-        <TextBlock Name="TrailerDamageText" Canvas.Left="1110" Canvas.Top="274" Width="82" FontSize="18" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="0,0%"/>
-        <TextBlock Canvas.Left="1208" Canvas.Top="250" Width="82" FontSize="10" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="Carga"/>
-        <TextBlock Name="CargoDamageText" Canvas.Left="1208" Canvas.Top="274" Width="82" FontSize="18" FontWeight="Bold" Foreground="White" TextAlignment="Center" Text="0,0%"/>
-      </Canvas>
-    </Viewbox>
+        <Border Grid.Row="0" Style="{StaticResource PanelStyle}">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
+              <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="ROTA ATUAL"
+                       Style="{StaticResource CaptionStyle}"
+                       HorizontalAlignment="Left"/>
+
+            <TextBlock Name="RouteText"
+                       Grid.Row="1"
+                       Text="Albacete → A Coruña"
+                       Foreground="White"
+                       FontWeight="Bold"
+                       FontSize="23"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       Margin="6,0"/>
+
+            <Grid Grid.Row="2" Margin="2,2,2,0">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+
+              <TextBlock Name="StartKmText"
+                         Grid.Column="0"
+                         Text="0 km"
+                         Style="{StaticResource CaptionStyle}"
+                         HorizontalAlignment="Left"/>
+
+              <TextBlock Name="RemainKmTop"
+                         Grid.Column="1"
+                         Text="928 km"
+                         Style="{StaticResource CaptionStyle}"
+                         HorizontalAlignment="Right"/>
+            </Grid>
+          </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.85*"/>
+            <ColumnDefinition Width="1.15*"/>
+          </Grid.ColumnDefinitions>
+
+          <Border Grid.Column="0" Style="{StaticResource PanelStyle}">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+
+              <TextBlock Grid.Row="0"
+                         Text="PESO"
+                         Style="{StaticResource CaptionStyle}"
+                         HorizontalAlignment="Center"/>
+
+              <TextBlock Name="CargoWeight"
+                         Grid.Row="1"
+                         Text="22,1 t"
+                         Style="{StaticResource ValueStyle}"
+                         FontSize="23"
+                         HorizontalAlignment="Stretch"/>
+            </Grid>
+          </Border>
+
+          <Border Grid.Column="1" Style="{StaticResource PanelStyle}">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+              </Grid.RowDefinitions>
+
+              <TextBlock Grid.Row="0"
+                         Text="COMBUSTÍVEL"
+                         Style="{StaticResource CaptionStyle}"
+                         HorizontalAlignment="Center"/>
+
+              <TextBlock Name="FuelText"
+                         Grid.Row="1"
+                         Text="644 / 1.300 L"
+                         Style="{StaticResource ValueStyle}"
+                         FontSize="17"
+                         HorizontalAlignment="Stretch"/>
+
+              <Grid Grid.Row="2" Margin="4,2,4,0">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0"
+                      Width="125"
+                      Height="8"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+                  <Border Background="{StaticResource FuelTrackBrush}"
+                          CornerRadius="4"/>
+                  <Border Name="FuelBar"
+                          Width="62"
+                          Height="8"
+                          HorizontalAlignment="Left"
+                          Background="{StaticResource FuelFillBrush}"
+                          CornerRadius="4"/>
+                </Grid>
+
+                <TextBlock Name="FuelPct"
+                           Grid.Column="1"
+                           Text="50%"
+                           Foreground="White"
+                           FontWeight="Bold"
+                           FontSize="14"
+                           VerticalAlignment="Center"
+                           Margin="8,0,0,0"/>
+              </Grid>
+            </Grid>
+          </Border>
+        </Grid>
+      </Grid>
+
+      <!-- TEMPERATURA -->
+      <Border Grid.Column="2" Style="{StaticResource PanelStyle}" Padding="5">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0"
+                     Text="TEMP"
+                     Style="{StaticResource CaptionStyle}"
+                     FontSize="10"
+                     HorizontalAlignment="Center"/>
+
+          <TextBlock Name="TempText"
+                     Grid.Row="1"
+                     Text="53°C"
+                     Style="{StaticResource ValueStyle}"
+                     FontSize="17"
+                     HorizontalAlignment="Stretch"/>
+        </Grid>
+      </Border>
+
+      <!-- VELOCÍMETRO: o slot cresce, mas a elipse mantém proporção -->
+      <Grid Grid.Column="3" Margin="4">
+        <Ellipse Fill="{StaticResource PanelBrush}"
+                 Stroke="{StaticResource EdgeBrush}"
+                 StrokeThickness="1.5"
+                 Stretch="Uniform"
+                 Margin="3"/>
+
+        <Grid Margin="14">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <TextBlock Name="SpeedText"
+                     Grid.Row="0"
+                     Text="0"
+                     Foreground="White"
+                     FontWeight="Bold"
+                     FontSize="68"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Bottom"/>
+
+          <TextBlock Grid.Row="1"
+                     Text="km/h"
+                     Foreground="White"
+                     FontWeight="Bold"
+                     FontSize="18"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     Margin="0,-8,0,0"/>
+
+          <TextBlock Name="GearText"
+                     Grid.Row="2"
+                     Text="D1"
+                     Foreground="White"
+                     FontWeight="Bold"
+                     FontSize="24"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     Margin="0,2,0,8"/>
+        </Grid>
+      </Grid>
+
+      <!-- LIMITE + CRUISE -->
+      <Border Grid.Column="4" Style="{StaticResource PanelStyle}" Padding="5">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="1.15*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="0.90*"/>
+          </Grid.RowDefinitions>
+
+          <Grid Grid.Row="0" Margin="4">
+            <Ellipse Fill="#FFF5F5F5"
+                     Stroke="#FFFF3737"
+                     StrokeThickness="6"
+                     Stretch="Uniform"/>
+
+            <TextBlock Name="LimitText"
+                       Text="56"
+                       Foreground="#FF111111"
+                       FontWeight="Bold"
+                       FontSize="26"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Center"/>
+          </Grid>
+
+          <TextBlock Grid.Row="1"
+                     Text="LIMITE"
+                     Style="{StaticResource CaptionStyle}"
+                     FontSize="9"
+                     HorizontalAlignment="Center"
+                     Margin="0,1,0,3"/>
+
+          <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="CRUISE"
+                       Style="{StaticResource CaptionStyle}"
+                       FontSize="10"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Name="CruiseText"
+                       Grid.Row="1"
+                       Text="OFF"
+                       Style="{StaticResource ValueStyle}"
+                       FontSize="17"
+                       HorizontalAlignment="Stretch"/>
+          </Grid>
+        </Grid>
+      </Border>
+
+      <!-- CARGA DINÂMICA -->
+      <Border Grid.Column="5" Style="{StaticResource PanelStyle}">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+
+          <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="1.20*"/>
+              <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="CARGA DINÂMICA"
+                       Foreground="White"
+                       FontWeight="Bold"
+                       FontSize="14"
+                       HorizontalAlignment="Left"
+                       TextTrimming="CharacterEllipsis"/>
+
+            <TextBlock Grid.Column="1"
+                       Text="Reconhecimento automático"
+                       Foreground="White"
+                       FontWeight="Bold"
+                       FontSize="9"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"/>
+          </Grid>
+
+          <Grid Grid.Row="1" Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="1.30*"/>
+              <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Image Name="CargoPreview"
+                   Grid.Column="0"
+                   Stretch="Uniform"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Margin="4"/>
+
+            <TextBlock Name="CargoRightName"
+                       Grid.Column="1"
+                       Text="ARROZ"
+                       Foreground="White"
+                       FontWeight="Bold"
+                       FontSize="30"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       TextTrimming="CharacterEllipsis"
+                       Margin="8,0"/>
+          </Grid>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <!-- BARRA INFERIOR: uma única faixa de ponta a ponta -->
+    <Border Grid.Row="1"
+            Style="{StaticResource PanelStyle}"
+            CornerRadius="16"
+            Padding="4">
+
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1.30*"/>
+          <ColumnDefinition Width="1.30*"/>
+          <ColumnDefinition Width="1.10*"/>
+          <ColumnDefinition Width="1.35*"/>
+          <ColumnDefinition Width="2.45*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Margin="4">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0"
+                     Text="DISTÂNCIA RESTANTE"
+                     Style="{StaticResource CaptionStyle}"
+                     FontSize="10"
+                     HorizontalAlignment="Center"/>
+
+          <TextBlock Name="RemainBottom"
+                     Grid.Row="1"
+                     Text="928 km"
+                     Style="{StaticResource ValueStyle}"
+                     FontSize="21"
+                     HorizontalAlignment="Stretch"/>
+        </Grid>
+
+        <Border Grid.Column="1"
+                BorderBrush="#5536F27A"
+                BorderThickness="1,0,0,0"
+                Padding="8,0,4,0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="PERCURSO DA VIAGEM"
+                       Style="{StaticResource CaptionStyle}"
+                       FontSize="10"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Name="TravelBottom"
+                       Grid.Row="1"
+                       Text="927 km"
+                       Style="{StaticResource ValueStyle}"
+                       FontSize="21"
+                       HorizontalAlignment="Stretch"/>
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="2"
+                BorderBrush="#5536F27A"
+                BorderThickness="1,0,0,0"
+                Padding="8,0,4,0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="CHEGADA ESTIMADA"
+                       Style="{StaticResource CaptionStyle}"
+                       FontSize="10"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Name="EtaText"
+                       Grid.Row="1"
+                       Text="11:53"
+                       Style="{StaticResource ValueStyle}"
+                       FontSize="21"
+                       HorizontalAlignment="Stretch"/>
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="3"
+                BorderBrush="#5536F27A"
+                BorderThickness="1,0,0,0"
+                Padding="8,0,4,0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="CAMINHÃO"
+                       Style="{StaticResource CaptionStyle}"
+                       FontSize="10"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Name="TruckText"
+                       Grid.Row="1"
+                       Text="Iveco Stralis"
+                       Style="{StaticResource ValueStyle}"
+                       FontSize="18"
+                       HorizontalAlignment="Stretch"
+                       TextTrimming="CharacterEllipsis"/>
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="4"
+                BorderBrush="#5536F27A"
+                BorderThickness="1,0,0,0"
+                Padding="8,0,4,0">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="0.80*"/>
+              <ColumnDefinition Width="1*"/>
+              <ColumnDefinition Width="1*"/>
+              <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="DANOS"
+                       Style="{StaticResource CaptionStyle}"
+                       FontSize="12"
+                       HorizontalAlignment="Center"/>
+
+            <Grid Grid.Column="1">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <TextBlock Grid.Row="0"
+                         Text="Caminhão"
+                         Style="{StaticResource CaptionStyle}"
+                         FontSize="9"
+                         HorizontalAlignment="Center"/>
+              <TextBlock Name="TruckDamageText"
+                         Grid.Row="1"
+                         Text="0,0%"
+                         Style="{StaticResource ValueStyle}"
+                         FontSize="18"
+                         HorizontalAlignment="Stretch"/>
+            </Grid>
+
+            <Grid Grid.Column="2">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <TextBlock Grid.Row="0"
+                         Text="Reboque"
+                         Style="{StaticResource CaptionStyle}"
+                         FontSize="9"
+                         HorizontalAlignment="Center"/>
+              <TextBlock Name="TrailerDamageText"
+                         Grid.Row="1"
+                         Text="0,0%"
+                         Style="{StaticResource ValueStyle}"
+                         FontSize="18"
+                         HorizontalAlignment="Stretch"/>
+            </Grid>
+
+            <Grid Grid.Column="3">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <TextBlock Grid.Row="0"
+                         Text="Carga"
+                         Style="{StaticResource CaptionStyle}"
+                         FontSize="9"
+                         HorizontalAlignment="Center"/>
+              <TextBlock Name="CargoDamageText"
+                         Grid.Row="1"
+                         Text="0,0%"
+                         Style="{StaticResource ValueStyle}"
+                         FontSize="18"
+                         HorizontalAlignment="Stretch"/>
+            </Grid>
+          </Grid>
+        </Border>
+      </Grid>
+    </Border>
   </Grid>
 </Window>
