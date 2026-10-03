@@ -75,6 +75,31 @@ $sourceDir=Split-Path $main.FullName -Parent
 $overlayHostFile=Join-Path $sourceDir 'RoadLifeOverlayHost.cs'
 Copy-Item $template $overlayHostFile -Force
 
+# Adiciona o modulo de temas clicaveis sem alterar a telemetria.
+$themeTemplate=Join-Path $PSScriptRoot 'RoadLifeTheme16812.cs'
+if(-not(Test-Path $themeTemplate)){throw 'RoadLifeTheme16812.cs ausente.'}
+$themeFile=Join-Path $sourceDir 'RoadLifeTheme16812.cs'
+Copy-Item $themeTemplate $themeFile -Force
+
+$hostText=Get-Content $overlayHostFile -Raw
+$oldLoad=@'
+            object loaded;
+            using (FileStream fs = File.OpenRead(xamlPath))
+                loaded = System.Windows.Markup.XamlReader.Load(fs);
+'@
+$newLoad=@'
+            object loaded;
+            string roadLifeXamlText = File.ReadAllText(xamlPath);
+            roadLifeXamlText = RoadLifeThemePrepareXaml(roadLifeXamlText);
+            using (var sr = new StringReader(roadLifeXamlText))
+            using (var xr = System.Xml.XmlReader.Create(sr))
+                loaded = System.Windows.Markup.XamlReader.Load(xr);
+'@
+if(-not $hostText.Contains($oldLoad)){throw 'Bloco XAML do RoadLife nao encontrado para tema.'}
+$hostText=$hostText.Replace($oldLoad,$newLoad)
+$hostText=$hostText.Replace('            LoadRoadLifeImage("StructureImage", Path.Combine(RoadLifeOverlayRoot(), "Assets", "dashboard-structure-green.png"));','            RoadLifeThemeWire();'+[Environment]::NewLine+'            LoadRoadLifeImage("StructureImage", Path.Combine(RoadLifeOverlayRoot(), "Assets", "dashboard-structure-green.png"));')
+Set-Content $overlayHostFile $hostText -Encoding UTF8
+
 # Referencias WPF necessarias apenas para a janela do overlay.
 if($projectText -notmatch 'PresentationFramework'){
   $refs=@'
@@ -93,9 +118,12 @@ if($projectText -notmatch '<Project\s+Sdk=' -and $projectText -notmatch 'RoadLif
   $compile=@'
   <ItemGroup>
     <Compile Include="RoadLifeOverlayHost.cs" />
+    <Compile Include="RoadLifeTheme16812.cs" />
   </ItemGroup>
 '@
   $projectText=$projectText -replace '</Project>',($compile+[Environment]::NewLine+'</Project>')
+}elseif($projectText -notmatch '<Project\s+Sdk=' -and $projectText -notmatch 'RoadLifeTheme16812\.cs'){
+  $projectText=$projectText.Replace('<Compile Include="RoadLifeOverlayHost.cs" />','<Compile Include="RoadLifeOverlayHost.cs" />'+[Environment]::NewLine+'    <Compile Include="RoadLifeTheme16812.cs" />')
 }
 
 Set-Content $main.FullName $mainText -Encoding UTF8
