@@ -99,7 +99,7 @@
                      Text="● ONLINE"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="13"
+                     FontSize="14"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"
                      TextAlignment="Center"/>
@@ -109,7 +109,7 @@
                      Text="02/10/26"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="13"
+                     FontSize="14"
                      HorizontalAlignment="Center"
                      Margin="0,2"/>
 
@@ -118,7 +118,7 @@
                      Text="10:40:57"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="13"
+                     FontSize="14"
                      HorizontalAlignment="Center"
                      Margin="0,2,0,4"/>
         </Grid>
@@ -549,7 +549,7 @@
                        Grid.Row="1"
                        Text="Iveco Stralis"
                        Style="{StaticResource ValueStyle}"
-                       FontSize="17"
+                       FontSize="18"
                        HorizontalAlignment="Stretch"
                        TextTrimming="CharacterEllipsis"/>
           </Grid>
@@ -587,7 +587,7 @@
                          Grid.Row="1"
                          Text="0,0%"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="17"
+                         FontSize="18"
                          HorizontalAlignment="Stretch"/>
             </Grid>
 
@@ -605,7 +605,7 @@
                          Grid.Row="1"
                          Text="0,0%"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="17"
+                         FontSize="18"
                          HorizontalAlignment="Stretch"/>
             </Grid>
 
@@ -623,7 +623,7 @@
                          Grid.Row="1"
                          Text="0,0%"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="17"
+                         FontSize="18"
                          HorizontalAlignment="Stretch"/>
             </Grid>
           </Grid>
