@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: gat-roadlife-overlay-16811-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
