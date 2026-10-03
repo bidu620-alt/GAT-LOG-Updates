@@ -36,7 +36,7 @@
     <Style x:Key="CaptionStyle" TargetType="TextBlock">
       <Setter Property="Foreground" Value="White"/>
       <Setter Property="FontWeight" Value="Bold"/>
-      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="FontSize" Value="10"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
     </Style>
@@ -82,7 +82,7 @@
                      Text="ROADLIFE"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="20"
+                     FontSize="19"
                      HorizontalAlignment="Center"
                      Margin="0,4,0,0"/>
 
@@ -90,7 +90,7 @@
                      Text="ETS2"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="11"
+                     FontSize="10"
                      HorizontalAlignment="Center"
                      Margin="0,-2,0,4"/>
 
@@ -99,7 +99,7 @@
                      Text="● ONLINE"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="15"
+                     FontSize="13"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"
                      TextAlignment="Center"/>
@@ -109,7 +109,7 @@
                      Text="02/10/26"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="15"
+                     FontSize="13"
                      HorizontalAlignment="Center"
                      Margin="0,2"/>
 
@@ -118,7 +118,7 @@
                      Text="10:40:57"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="15"
+                     FontSize="13"
                      HorizontalAlignment="Center"
                      Margin="0,2,0,4"/>
         </Grid>
@@ -149,7 +149,7 @@
                        Text="Albacete → A Coruña"
                        Foreground="White"
                        FontWeight="Bold"
-                       FontSize="23"
+                       FontSize="22"
                        TextAlignment="Center"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Center"
@@ -199,7 +199,7 @@
                          Grid.Row="1"
                          Text="22,1 t"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="23"
+                         FontSize="22"
                          HorizontalAlignment="Stretch"/>
             </Grid>
           </Border>
@@ -221,7 +221,7 @@
                          Grid.Row="1"
                          Text="644 / 1.300 L"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="17"
+                         FontSize="16"
                          HorizontalAlignment="Stretch"/>
 
               <Grid Grid.Row="2" Margin="4,2,4,0">
@@ -250,7 +250,7 @@
                            Text="50%"
                            Foreground="White"
                            FontWeight="Bold"
-                           FontSize="14"
+                           FontSize="13"
                            VerticalAlignment="Center"
                            Margin="8,0,0,0"/>
               </Grid>
@@ -270,14 +270,14 @@
           <TextBlock Grid.Row="0"
                      Text="TEMP"
                      Style="{StaticResource CaptionStyle}"
-                     FontSize="10"
+                     FontSize="9"
                      HorizontalAlignment="Center"/>
 
           <TextBlock Name="TempText"
                      Grid.Row="1"
                      Text="53°C"
                      Style="{StaticResource ValueStyle}"
-                     FontSize="17"
+                     FontSize="16"
                      HorizontalAlignment="Stretch"/>
         </Grid>
       </Border>
@@ -302,7 +302,7 @@
                      Text="0"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="68"
+                     FontSize="67"
                      TextAlignment="Center"
                      HorizontalAlignment="Stretch"
                      VerticalAlignment="Bottom"/>
@@ -311,7 +311,7 @@
                      Text="km/h"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="18"
+                     FontSize="17"
                      TextAlignment="Center"
                      HorizontalAlignment="Stretch"
                      Margin="0,-8,0,0"/>
@@ -321,7 +321,7 @@
                      Text="D1"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="24"
+                     FontSize="23"
                      TextAlignment="Center"
                      HorizontalAlignment="Stretch"
                      Margin="0,2,0,8"/>
@@ -347,7 +347,7 @@
                        Text="56"
                        Foreground="#FF111111"
                        FontWeight="Bold"
-                       FontSize="26"
+                       FontSize="25"
                        TextAlignment="Center"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Center"/>
@@ -356,7 +356,7 @@
           <TextBlock Grid.Row="1"
                      Text="LIMITE"
                      Style="{StaticResource CaptionStyle}"
-                     FontSize="9"
+                     FontSize="8"
                      HorizontalAlignment="Center"
                      Margin="0,1,0,3"/>
 
@@ -369,14 +369,14 @@
             <TextBlock Grid.Row="0"
                        Text="CRUISE"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="10"
+                       FontSize="9"
                        HorizontalAlignment="Center"/>
 
             <TextBlock Name="CruiseText"
                        Grid.Row="1"
                        Text="OFF"
                        Style="{StaticResource ValueStyle}"
-                       FontSize="17"
+                       FontSize="16"
                        HorizontalAlignment="Stretch"/>
           </Grid>
         </Grid>
@@ -400,7 +400,7 @@
                        Text="CARGA DINÂMICA"
                        Foreground="White"
                        FontWeight="Bold"
-                       FontSize="14"
+                       FontSize="13"
                        HorizontalAlignment="Left"
                        TextTrimming="CharacterEllipsis"/>
 
@@ -408,7 +408,7 @@
                        Text="Reconhecimento automático"
                        Foreground="White"
                        FontWeight="Bold"
-                       FontSize="9"
+                       FontSize="8"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"/>
@@ -432,7 +432,7 @@
                        Text="ARROZ"
                        Foreground="White"
                        FontWeight="Bold"
-                       FontSize="30"
+                       FontSize="28"
                        TextAlignment="Center"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Center"
@@ -468,7 +468,7 @@
           <TextBlock Grid.Row="0"
                      Text="DISTÂNCIA RESTANTE"
                      Style="{StaticResource CaptionStyle}"
-                     FontSize="10"
+                     FontSize="11"
                      HorizontalAlignment="Center"/>
 
           <TextBlock Name="RemainBottom"
@@ -492,7 +492,7 @@
             <TextBlock Grid.Row="0"
                        Text="PERCURSO DA VIAGEM"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="10"
+                       FontSize="11"
                        HorizontalAlignment="Center"/>
 
             <TextBlock Name="TravelBottom"
@@ -517,7 +517,7 @@
             <TextBlock Grid.Row="0"
                        Text="CHEGADA ESTIMADA"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="10"
+                       FontSize="11"
                        HorizontalAlignment="Center"/>
 
             <TextBlock Name="EtaText"
@@ -542,14 +542,14 @@
             <TextBlock Grid.Row="0"
                        Text="CAMINHÃO"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="10"
+                       FontSize="11"
                        HorizontalAlignment="Center"/>
 
             <TextBlock Name="TruckText"
                        Grid.Row="1"
                        Text="Iveco Stralis"
                        Style="{StaticResource ValueStyle}"
-                       FontSize="18"
+                       FontSize="17"
                        HorizontalAlignment="Stretch"
                        TextTrimming="CharacterEllipsis"/>
           </Grid>
@@ -570,7 +570,7 @@
             <TextBlock Grid.Column="0"
                        Text="DANOS"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="12"
+                       FontSize="13"
                        HorizontalAlignment="Center"/>
 
             <Grid Grid.Column="1">
@@ -581,13 +581,13 @@
               <TextBlock Grid.Row="0"
                          Text="Caminhão"
                          Style="{StaticResource CaptionStyle}"
-                         FontSize="9"
+                         FontSize="10"
                          HorizontalAlignment="Center"/>
               <TextBlock Name="TruckDamageText"
                          Grid.Row="1"
                          Text="0,0%"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="18"
+                         FontSize="17"
                          HorizontalAlignment="Stretch"/>
             </Grid>
 
@@ -599,13 +599,13 @@
               <TextBlock Grid.Row="0"
                          Text="Reboque"
                          Style="{StaticResource CaptionStyle}"
-                         FontSize="9"
+                         FontSize="10"
                          HorizontalAlignment="Center"/>
               <TextBlock Name="TrailerDamageText"
                          Grid.Row="1"
                          Text="0,0%"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="18"
+                         FontSize="17"
                          HorizontalAlignment="Stretch"/>
             </Grid>
 
@@ -617,18 +617,30 @@
               <TextBlock Grid.Row="0"
                          Text="Carga"
                          Style="{StaticResource CaptionStyle}"
-                         FontSize="9"
+                         FontSize="10"
                          HorizontalAlignment="Center"/>
               <TextBlock Name="CargoDamageText"
                          Grid.Row="1"
                          Text="0,0%"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="18"
+                         FontSize="17"
                          HorizontalAlignment="Stretch"/>
             </Grid>
           </Grid>
         </Border>
       </Grid>
     </Border>
+    <!-- Indicadores visuais no canto superior direito -->
+    <StackPanel Grid.RowSpan="2"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,2,14,0"
+                Panel.ZIndex="100">
+      <Ellipse Width="6" Height="6" Fill="{StaticResource EdgeBrush}" Margin="2,0"/>
+      <Ellipse Width="6" Height="6" Fill="{StaticResource EdgeBrush}" Margin="2,0"/>
+      <Ellipse Width="6" Height="6" Fill="{StaticResource EdgeBrush}" Margin="2,0"/>
+      <Ellipse Width="6" Height="6" Fill="{StaticResource EdgeBrush}" Margin="2,0"/>
+    </StackPanel>
   </Grid>
 </Window>
