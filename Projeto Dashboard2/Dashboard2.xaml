@@ -9,36 +9,39 @@
         Topmost="True"
         Width="1200"
         Height="297"
-        MinWidth="780"
-        MinHeight="193"
+        MinWidth="720"
+        MinHeight="180"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
-        SnapsToDevicePixels="True">
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display">
 
   <Window.Resources>
     <SolidColorBrush x:Key="PanelBrush" Color="#80042012"/>
     <SolidColorBrush x:Key="EdgeBrush" Color="#FF36F27A"/>
     <SolidColorBrush x:Key="SoftEdgeBrush" Color="#B836F27A"/>
-    <SolidColorBrush x:Key="MutedBrush" Color="#FFB9C1C7"/>
     <SolidColorBrush x:Key="FuelTrackBrush" Color="#5530FF78"/>
     <SolidColorBrush x:Key="FuelFillBrush" Color="#FF4CFF8A"/>
+    <SolidColorBrush x:Key="DividerBrush" Color="#5536F27A"/>
 
     <Style x:Key="PanelStyle" TargetType="Border">
       <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource SoftEdgeBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SoftEdgeBrush}"/>
       <Setter Property="BorderThickness" Value="1.5"/>
-      <Setter Property="CornerRadius" Value="16"/>
-      <Setter Property="Margin" Value="4"/>
-      <Setter Property="Padding" Value="10"/>
+      <Setter Property="CornerRadius" Value="14"/>
+      <Setter Property="Margin" Value="3"/>
+      <Setter Property="Padding" Value="6"/>
+      <Setter Property="ClipToBounds" Value="True"/>
       <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
     <Style x:Key="CaptionStyle" TargetType="TextBlock">
       <Setter Property="Foreground" Value="White"/>
       <Setter Property="FontWeight" Value="Bold"/>
-      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="FontSize" Value="9"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+      <Setter Property="TextWrapping" Value="NoWrap"/>
     </Style>
 
     <Style x:Key="ValueStyle" TargetType="TextBlock">
@@ -47,28 +50,35 @@
       <Setter Property="VerticalAlignment" Value="Center"/>
       <Setter Property="TextAlignment" Value="Center"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+      <Setter Property="TextWrapping" Value="NoWrap"/>
     </Style>
   </Window.Resources>
 
-  <Grid Name="Root" Background="Transparent" Margin="6">
+  <Grid Name="Root" Background="Transparent" Margin="4" ClipToBounds="True">
     <Grid.RowDefinitions>
-      <RowDefinition Height="2.35*"/>
+      <RowDefinition Height="2.40*"/>
       <RowDefinition Height="1*"/>
     </Grid.RowDefinitions>
 
-    <!-- LINHA PRINCIPAL: tudo distribuído por frações, sem Canvas e sem Viewbox -->
+    <!--
+      Layout responsivo:
+      1) Status
+      2) Rota + peso + combustível
+      3) Velocímetro + temperatura + marcha + limite/cruise
+      4) Carga dinâmica
+
+      Não há Canvas nem Viewbox. As colunas usam apenas frações (*).
+    -->
     <Grid Grid.Row="0">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="1.20*"/>
-        <ColumnDefinition Width="2.60*"/>
-        <ColumnDefinition Width="0.50*"/>
-        <ColumnDefinition Width="1.80*"/>
-        <ColumnDefinition Width="0.60*"/>
-        <ColumnDefinition Width="3.30*"/>
+        <ColumnDefinition Width="1.15*"/>
+        <ColumnDefinition Width="2.55*"/>
+        <ColumnDefinition Width="2.15*"/>
+        <ColumnDefinition Width="3.15*"/>
       </Grid.ColumnDefinitions>
 
-      <!-- ROADLIFE / STATUS -->
-      <Border Grid.Column="0" Style="{StaticResource PanelStyle}" CornerRadius="24">
+      <!-- STATUS -->
+      <Border Grid.Column="0" Style="{StaticResource PanelStyle}" CornerRadius="20">
         <Grid>
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -82,53 +92,61 @@
                      Text="ROADLIFE"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="19"
-                     HorizontalAlignment="Center"
-                     Margin="0,4,0,0"/>
+                     FontSize="15"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     TextTrimming="CharacterEllipsis"
+                     Margin="0,1,0,0"/>
 
           <TextBlock Grid.Row="1"
                      Text="ETS2"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="10"
-                     HorizontalAlignment="Center"
-                     Margin="0,-2,0,4"/>
+                     FontSize="7"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     Margin="0,-1,0,1"/>
 
           <TextBlock Name="OnlineText"
                      Grid.Row="2"
                      Text="● ONLINE"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="14"
-                     HorizontalAlignment="Center"
+                     FontSize="10"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Stretch"
                      VerticalAlignment="Center"
-                     TextAlignment="Center"/>
+                     TextTrimming="CharacterEllipsis"/>
 
           <TextBlock Name="DateText"
                      Grid.Row="3"
-                     Text="02/10/26"
+                     Text="03/10/26"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="14"
-                     HorizontalAlignment="Center"
-                     Margin="0,2"/>
+                     FontSize="10"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     TextTrimming="CharacterEllipsis"
+                     Margin="0,1"/>
 
           <TextBlock Name="TimeText"
                      Grid.Row="4"
-                     Text="10:40:57"
+                     Text="13:00:32"
                      Foreground="White"
                      FontWeight="Bold"
-                     FontSize="14"
-                     HorizontalAlignment="Center"
-                     Margin="0,2,0,4"/>
+                     FontSize="10"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     TextTrimming="CharacterEllipsis"
+                     Margin="0,1,0,2"/>
         </Grid>
       </Border>
 
       <!-- ROTA + PESO + COMBUSTÍVEL -->
       <Grid Grid.Column="1">
         <Grid.RowDefinitions>
-          <RowDefinition Height="1.30*"/>
-          <RowDefinition Height="0.90*"/>
+          <RowDefinition Height="1.25*"/>
+          <RowDefinition Height="0.95*"/>
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" Style="{StaticResource PanelStyle}">
@@ -146,17 +164,18 @@
 
             <TextBlock Name="RouteText"
                        Grid.Row="1"
-                       Text="Albacete → A Coruña"
+                       Text="— → —"
                        Foreground="White"
                        FontWeight="Bold"
-                       FontSize="22"
+                       FontSize="16"
                        TextAlignment="Center"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
-                       Margin="6,0"/>
+                       TextWrapping="NoWrap"
+                       Margin="2,0"/>
 
-            <Grid Grid.Row="2" Margin="2,2,2,0">
+            <Grid Grid.Row="2" Margin="0,1,0,0">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -170,7 +189,7 @@
 
               <TextBlock Name="RemainKmTop"
                          Grid.Column="1"
-                         Text="928 km"
+                         Text="0 km"
                          Style="{StaticResource CaptionStyle}"
                          HorizontalAlignment="Right"/>
             </Grid>
@@ -179,11 +198,11 @@
 
         <Grid Grid.Row="1">
           <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.85*"/>
-            <ColumnDefinition Width="1.15*"/>
+            <ColumnDefinition Width="0.75*"/>
+            <ColumnDefinition Width="1.25*"/>
           </Grid.ColumnDefinitions>
 
-          <Border Grid.Column="0" Style="{StaticResource PanelStyle}">
+          <Border Grid.Column="0" Style="{StaticResource PanelStyle}" Padding="4">
             <Grid>
               <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -197,14 +216,14 @@
 
               <TextBlock Name="CargoWeight"
                          Grid.Row="1"
-                         Text="22,1 t"
+                         Text="0,0 t"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="22"
+                         FontSize="16"
                          HorizontalAlignment="Stretch"/>
             </Grid>
           </Border>
 
-          <Border Grid.Column="1" Style="{StaticResource PanelStyle}">
+          <Border Grid.Column="1" Style="{StaticResource PanelStyle}" Padding="4">
             <Grid>
               <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -219,171 +238,199 @@
 
               <TextBlock Name="FuelText"
                          Grid.Row="1"
-                         Text="644 / 1.300 L"
+                         Text="0 / 0 L"
                          Style="{StaticResource ValueStyle}"
-                         FontSize="16"
+                         FontSize="12"
                          HorizontalAlignment="Stretch"/>
 
-              <Grid Grid.Row="2" Margin="4,2,4,0">
+              <Grid Grid.Row="2" Margin="1,1,1,0" ClipToBounds="True">
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="*"/>
                   <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
+                <!-- Mantido em 125 para continuar compatível com o cálculo atual do GAT -->
                 <Grid Grid.Column="0"
                       Width="125"
-                      Height="8"
+                      MaxWidth="125"
+                      Height="7"
                       HorizontalAlignment="Center"
-                      VerticalAlignment="Center">
-                  <Border Background="{StaticResource FuelTrackBrush}"
-                          CornerRadius="4"/>
+                      VerticalAlignment="Center"
+                      ClipToBounds="True">
+                  <Border Background="{DynamicResource FuelTrackBrush}" CornerRadius="4"/>
                   <Border Name="FuelBar"
-                          Width="62"
-                          Height="8"
+                          Width="0"
+                          Height="7"
                           HorizontalAlignment="Left"
-                          Background="{StaticResource FuelFillBrush}"
+                          Background="{DynamicResource FuelFillBrush}"
                           CornerRadius="4"/>
                 </Grid>
 
                 <TextBlock Name="FuelPct"
                            Grid.Column="1"
-                           Text="50%"
+                           Text="0%"
                            Foreground="White"
                            FontWeight="Bold"
-                           FontSize="13"
+                           FontSize="9"
                            VerticalAlignment="Center"
-                           Margin="8,0,0,0"/>
+                           Margin="4,0,0,0"
+                           TextTrimming="CharacterEllipsis"/>
               </Grid>
             </Grid>
           </Border>
         </Grid>
       </Grid>
 
-      <!-- TEMPERATURA -->
-      <Border Grid.Column="2" Style="{StaticResource PanelStyle}" Padding="5">
+      <!-- VELOCÍMETRO / TEMP / LIMITE -->
+      <Border Grid.Column="2" Style="{StaticResource PanelStyle}" Padding="4">
         <Grid>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.68*"/>
+            <ColumnDefinition Width="1.55*"/>
+            <ColumnDefinition Width="0.77*"/>
+          </Grid.ColumnDefinitions>
 
-          <TextBlock Grid.Row="0"
-                     Text="TEMP"
-                     Style="{StaticResource CaptionStyle}"
-                     FontSize="9"
-                     HorizontalAlignment="Center"/>
-
-          <TextBlock Name="TempText"
-                     Grid.Row="1"
-                     Text="53°C"
-                     Style="{StaticResource ValueStyle}"
-                     FontSize="16"
-                     HorizontalAlignment="Stretch"/>
-        </Grid>
-      </Border>
-
-      <!-- VELOCÍMETRO: o slot cresce, mas a elipse mantém proporção -->
-      <Grid Grid.Column="3" Margin="4">
-        <Ellipse Fill="{StaticResource PanelBrush}"
-                 Stroke="{StaticResource EdgeBrush}"
-                 StrokeThickness="1.5"
-                 Stretch="Uniform"
-                 Margin="3"/>
-
-        <Grid Margin="14">
-          <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-          </Grid.RowDefinitions>
-
-          <TextBlock Name="SpeedText"
-                     Grid.Row="0"
-                     Text="0"
-                     Foreground="White"
-                     FontWeight="Bold"
-                     FontSize="67"
-                     TextAlignment="Center"
-                     HorizontalAlignment="Stretch"
-                     VerticalAlignment="Bottom"/>
-
-          <TextBlock Grid.Row="1"
-                     Text="km/h"
-                     Foreground="White"
-                     FontWeight="Bold"
-                     FontSize="17"
-                     TextAlignment="Center"
-                     HorizontalAlignment="Stretch"
-                     Margin="0,-8,0,0"/>
-
-          <TextBlock Name="GearText"
-                     Grid.Row="2"
-                     Text="D1"
-                     Foreground="White"
-                     FontWeight="Bold"
-                     FontSize="23"
-                     TextAlignment="Center"
-                     HorizontalAlignment="Stretch"
-                     Margin="0,2,0,8"/>
-        </Grid>
-      </Grid>
-
-      <!-- LIMITE + CRUISE -->
-      <Border Grid.Column="4" Style="{StaticResource PanelStyle}" Padding="5">
-        <Grid>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="1.15*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="0.90*"/>
-          </Grid.RowDefinitions>
-
-          <Grid Grid.Row="0" Margin="4">
-            <Ellipse Fill="#FFF5F5F5"
-                     Stroke="#FFFF3737"
-                     StrokeThickness="6"
-                     Stretch="Uniform"/>
-
-            <TextBlock Name="LimitText"
-                       Text="56"
-                       Foreground="#FF111111"
-                       FontWeight="Bold"
-                       FontSize="25"
-                       TextAlignment="Center"
-                       HorizontalAlignment="Stretch"
-                       VerticalAlignment="Center"/>
-          </Grid>
-
-          <TextBlock Grid.Row="1"
-                     Text="LIMITE"
-                     Style="{StaticResource CaptionStyle}"
-                     FontSize="8"
-                     HorizontalAlignment="Center"
-                     Margin="0,1,0,3"/>
-
-          <Grid Grid.Row="2">
+          <!-- Temperatura -->
+          <Grid Grid.Column="0" Margin="1">
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto"/>
               <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0"
-                       Text="CRUISE"
+                       Text="TEMP"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="9"
+                       FontSize="7"
                        HorizontalAlignment="Center"/>
 
-            <TextBlock Name="CruiseText"
+            <TextBlock Name="TempText"
                        Grid.Row="1"
-                       Text="OFF"
+                       Text="0°C"
                        Style="{StaticResource ValueStyle}"
-                       FontSize="16"
+                       FontSize="12"
                        HorizontalAlignment="Stretch"/>
+          </Grid>
+
+          <!-- Velocidade e marcha: Viewbox LOCAL mantém o conjunto sempre circular.
+               Ele atua somente neste bloco e não interfere no layout responsivo geral. -->
+          <Grid Grid.Column="1" Margin="2" ClipToBounds="True">
+            <Viewbox Stretch="Uniform"
+                     StretchDirection="Both"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch">
+              <Grid Width="150" Height="150">
+                <Ellipse Fill="{StaticResource PanelBrush}"
+                         Stroke="{DynamicResource EdgeBrush}"
+                         StrokeThickness="1.5"
+                         Margin="2"/>
+
+                <Grid Margin="12">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                  </Grid.RowDefinitions>
+
+                  <TextBlock Name="SpeedText"
+                             Grid.Row="0"
+                             Text="0"
+                             Foreground="White"
+                             FontWeight="Bold"
+                             FontSize="47"
+                             TextAlignment="Center"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Bottom"
+                             TextTrimming="CharacterEllipsis"/>
+
+                  <TextBlock Grid.Row="1"
+                             Text="km/h"
+                             Foreground="White"
+                             FontWeight="Bold"
+                             FontSize="12"
+                             TextAlignment="Center"
+                             HorizontalAlignment="Stretch"
+                             Margin="0,-5,0,0"/>
+
+                  <TextBlock Name="GearText"
+                             Grid.Row="2"
+                             Text="N"
+                             Foreground="White"
+                             FontWeight="Bold"
+                             FontSize="16"
+                             TextAlignment="Center"
+                             HorizontalAlignment="Stretch"
+                             TextTrimming="CharacterEllipsis"
+                             Margin="0,0,0,2"/>
+                </Grid>
+              </Grid>
+            </Viewbox>
+          </Grid>
+
+          <!-- Limite e cruise -->
+          <Grid Grid.Column="2" Margin="1" ClipToBounds="True">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="1.12*"/>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="0.80*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Placa de limite responsiva: conjunto quadrado escalado somente dentro da célula -->
+            <Grid Grid.Row="0" Margin="1" ClipToBounds="True">
+              <Viewbox Stretch="Uniform"
+                       StretchDirection="Both"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch">
+                <Grid Width="100" Height="100">
+                  <Ellipse Fill="#FFF5F5F5"
+                           Stroke="#FFFF3737"
+                           StrokeThickness="7"
+                           Margin="3"/>
+
+                  <TextBlock Name="LimitText"
+                             Text="56"
+                             Foreground="#FF111111"
+                             FontWeight="Bold"
+                             FontSize="29"
+                             TextAlignment="Center"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Center"
+                             TextTrimming="CharacterEllipsis"/>
+                </Grid>
+              </Viewbox>
+            </Grid>
+
+            <TextBlock Grid.Row="1"
+                       Text="LIMITE"
+                       Style="{StaticResource CaptionStyle}"
+                       FontSize="6"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,1"/>
+
+            <Grid Grid.Row="2">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+
+              <TextBlock Grid.Row="0"
+                         Text="CRUISE"
+                         Style="{StaticResource CaptionStyle}"
+                         FontSize="6"
+                         HorizontalAlignment="Center"/>
+
+              <TextBlock Name="CruiseText"
+                         Grid.Row="1"
+                         Text="OFF"
+                         Style="{StaticResource ValueStyle}"
+                         FontSize="12"
+                         HorizontalAlignment="Stretch"/>
+            </Grid>
           </Grid>
         </Grid>
       </Border>
 
       <!-- CARGA DINÂMICA -->
-      <Border Grid.Column="5" Style="{StaticResource PanelStyle}">
+      <Border Grid.Column="3" Style="{StaticResource PanelStyle}">
         <Grid>
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -392,7 +439,8 @@
 
           <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="1.20*"/>
+              <ColumnDefinition Width="1.25*"/>
+              <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
@@ -400,23 +448,34 @@
                        Text="CARGA DINÂMICA"
                        Foreground="White"
                        FontWeight="Bold"
-                       FontSize="13"
+                       FontSize="10"
                        HorizontalAlignment="Left"
                        TextTrimming="CharacterEllipsis"/>
 
-            <TextBlock Grid.Column="1"
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Margin="6,0,8,0">
+              <Ellipse Name="ThemeGreen" Width="8" Height="8" Fill="#FF36F27A" Stroke="White" StrokeThickness="0.7" Margin="2,0" Cursor="Hand" ToolTip="Tema verde"/>
+              <Ellipse Name="ThemeBlue" Width="8" Height="8" Fill="#FF35A7FF" Stroke="#66FFFFFF" StrokeThickness="0.7" Margin="2,0" Cursor="Hand" ToolTip="Tema azul"/>
+              <Ellipse Name="ThemeYellow" Width="8" Height="8" Fill="#FFFFD43B" Stroke="#66FFFFFF" StrokeThickness="0.7" Margin="2,0" Cursor="Hand" ToolTip="Tema amarelo"/>
+              <Ellipse Name="ThemeRed" Width="8" Height="8" Fill="#FFFF4B4B" Stroke="#66FFFFFF" StrokeThickness="0.7" Margin="2,0" Cursor="Hand" ToolTip="Tema vermelho"/>
+            </StackPanel>
+
+            <TextBlock Grid.Column="2"
                        Text="Reconhecimento automático"
                        Foreground="White"
                        FontWeight="Bold"
-                       FontSize="8"
+                       FontSize="6"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"/>
           </Grid>
 
-          <Grid Grid.Row="1" Margin="0,5,0,0">
+          <Grid Grid.Row="1" Margin="0,2,0,0">
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="1.30*"/>
+              <ColumnDefinition Width="1.15*"/>
               <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
@@ -425,143 +484,111 @@
                    Stretch="Uniform"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
-                   Margin="4"/>
+                   Margin="2"/>
 
             <TextBlock Name="CargoRightName"
                        Grid.Column="1"
-                       Text="ARROZ"
+                       Text="SEM CARGA"
                        Foreground="White"
                        FontWeight="Bold"
-                       FontSize="28"
+                       FontSize="20"
                        TextAlignment="Center"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Center"
                        TextWrapping="Wrap"
                        TextTrimming="CharacterEllipsis"
-                       Margin="8,0"/>
+                       Margin="3,0"/>
           </Grid>
         </Grid>
       </Border>
     </Grid>
 
-    <!-- BARRA INFERIOR: uma única faixa de ponta a ponta -->
+    <!-- BARRA INFERIOR, SEM POSICIONAMENTO ABSOLUTO -->
     <Border Grid.Row="1"
             Style="{StaticResource PanelStyle}"
-            CornerRadius="16"
-            Padding="4">
+            CornerRadius="14"
+            Padding="2">
 
-      <Grid>
+      <Grid ClipToBounds="True">
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="1.30*"/>
-          <ColumnDefinition Width="1.30*"/>
-          <ColumnDefinition Width="1.10*"/>
-          <ColumnDefinition Width="1.35*"/>
-          <ColumnDefinition Width="2.45*"/>
+          <ColumnDefinition Width="1.15*"/>
+          <ColumnDefinition Width="1.15*"/>
+          <ColumnDefinition Width="1*"/>
+          <ColumnDefinition Width="1.20*"/>
+          <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Margin="4">
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-          </Grid.RowDefinitions>
-
+        <Grid Grid.Column="0" Margin="3,0">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
           <TextBlock Grid.Row="0"
                      Text="DISTÂNCIA RESTANTE"
                      Style="{StaticResource CaptionStyle}"
-                     FontSize="11"
+                     FontSize="9"
                      HorizontalAlignment="Center"/>
-
           <TextBlock Name="RemainBottom"
                      Grid.Row="1"
-                     Text="928 km"
+                     Text="0 km"
                      Style="{StaticResource ValueStyle}"
-                     FontSize="21"
+                     FontSize="16"
                      HorizontalAlignment="Stretch"/>
         </Grid>
 
-        <Border Grid.Column="1"
-                BorderBrush="#5536F27A"
-                BorderThickness="1,0,0,0"
-                Padding="8,0,4,0">
+        <Border Grid.Column="1" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1,0,0,0" Padding="4,0">
           <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
             <TextBlock Grid.Row="0"
                        Text="PERCURSO DA VIAGEM"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="11"
+                       FontSize="9"
                        HorizontalAlignment="Center"/>
-
             <TextBlock Name="TravelBottom"
                        Grid.Row="1"
-                       Text="927 km"
+                       Text="0 km"
                        Style="{StaticResource ValueStyle}"
-                       FontSize="21"
+                       FontSize="16"
                        HorizontalAlignment="Stretch"/>
           </Grid>
         </Border>
 
-        <Border Grid.Column="2"
-                BorderBrush="#5536F27A"
-                BorderThickness="1,0,0,0"
-                Padding="8,0,4,0">
+        <Border Grid.Column="2" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1,0,0,0" Padding="4,0">
           <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
             <TextBlock Grid.Row="0"
                        Text="CHEGADA ESTIMADA"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="11"
+                       FontSize="9"
                        HorizontalAlignment="Center"/>
-
             <TextBlock Name="EtaText"
                        Grid.Row="1"
-                       Text="11:53"
+                       Text="—"
                        Style="{StaticResource ValueStyle}"
-                       FontSize="21"
+                       FontSize="16"
                        HorizontalAlignment="Stretch"/>
           </Grid>
         </Border>
 
-        <Border Grid.Column="3"
-                BorderBrush="#5536F27A"
-                BorderThickness="1,0,0,0"
-                Padding="8,0,4,0">
+        <Border Grid.Column="3" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1,0,0,0" Padding="4,0">
           <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
             <TextBlock Grid.Row="0"
                        Text="CAMINHÃO"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="11"
+                       FontSize="9"
                        HorizontalAlignment="Center"/>
-
             <TextBlock Name="TruckText"
                        Grid.Row="1"
-                       Text="Iveco Stralis"
+                       Text="—"
                        Style="{StaticResource ValueStyle}"
-                       FontSize="18"
+                       FontSize="14"
                        HorizontalAlignment="Stretch"
                        TextTrimming="CharacterEllipsis"/>
           </Grid>
         </Border>
 
-        <Border Grid.Column="4"
-                BorderBrush="#5536F27A"
-                BorderThickness="1,0,0,0"
-                Padding="8,0,4,0">
+        <Border Grid.Column="4" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1,0,0,0" Padding="4,0">
           <Grid>
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="0.80*"/>
+              <ColumnDefinition Width="0.78*"/>
               <ColumnDefinition Width="1*"/>
               <ColumnDefinition Width="1*"/>
               <ColumnDefinition Width="1*"/>
@@ -570,77 +597,29 @@
             <TextBlock Grid.Column="0"
                        Text="DANOS"
                        Style="{StaticResource CaptionStyle}"
-                       FontSize="13"
+                       FontSize="10"
                        HorizontalAlignment="Center"/>
 
             <Grid Grid.Column="1">
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-              </Grid.RowDefinitions>
-              <TextBlock Grid.Row="0"
-                         Text="Caminhão"
-                         Style="{StaticResource CaptionStyle}"
-                         FontSize="10"
-                         HorizontalAlignment="Center"/>
-              <TextBlock Name="TruckDamageText"
-                         Grid.Row="1"
-                         Text="0,0%"
-                         Style="{StaticResource ValueStyle}"
-                         FontSize="18"
-                         HorizontalAlignment="Stretch"/>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+              <TextBlock Grid.Row="0" Text="Caminhão" Style="{StaticResource CaptionStyle}" FontSize="8" HorizontalAlignment="Center"/>
+              <TextBlock Name="TruckDamageText" Grid.Row="1" Text="0,0%" Style="{StaticResource ValueStyle}" FontSize="14" HorizontalAlignment="Stretch"/>
             </Grid>
 
             <Grid Grid.Column="2">
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-              </Grid.RowDefinitions>
-              <TextBlock Grid.Row="0"
-                         Text="Reboque"
-                         Style="{StaticResource CaptionStyle}"
-                         FontSize="10"
-                         HorizontalAlignment="Center"/>
-              <TextBlock Name="TrailerDamageText"
-                         Grid.Row="1"
-                         Text="0,0%"
-                         Style="{StaticResource ValueStyle}"
-                         FontSize="18"
-                         HorizontalAlignment="Stretch"/>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+              <TextBlock Grid.Row="0" Text="Reboque" Style="{StaticResource CaptionStyle}" FontSize="8" HorizontalAlignment="Center"/>
+              <TextBlock Name="TrailerDamageText" Grid.Row="1" Text="0,0%" Style="{StaticResource ValueStyle}" FontSize="14" HorizontalAlignment="Stretch"/>
             </Grid>
 
             <Grid Grid.Column="3">
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-              </Grid.RowDefinitions>
-              <TextBlock Grid.Row="0"
-                         Text="Carga"
-                         Style="{StaticResource CaptionStyle}"
-                         FontSize="10"
-                         HorizontalAlignment="Center"/>
-              <TextBlock Name="CargoDamageText"
-                         Grid.Row="1"
-                         Text="0,0%"
-                         Style="{StaticResource ValueStyle}"
-                         FontSize="18"
-                         HorizontalAlignment="Stretch"/>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+              <TextBlock Grid.Row="0" Text="Carga" Style="{StaticResource CaptionStyle}" FontSize="8" HorizontalAlignment="Center"/>
+              <TextBlock Name="CargoDamageText" Grid.Row="1" Text="0,0%" Style="{StaticResource ValueStyle}" FontSize="14" HorizontalAlignment="Stretch"/>
             </Grid>
           </Grid>
         </Border>
       </Grid>
     </Border>
-    <!-- Indicadores visuais no canto superior direito -->
-    <StackPanel Grid.RowSpan="2"
-                Orientation="Horizontal"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="0,2,14,0"
-                Panel.ZIndex="100">
-      <Ellipse Width="6" Height="6" Fill="{StaticResource EdgeBrush}" Margin="2,0"/>
-      <Ellipse Width="6" Height="6" Fill="{StaticResource EdgeBrush}" Margin="2,0"/>
-      <Ellipse Width="6" Height="6" Fill="{StaticResource EdgeBrush}" Margin="2,0"/>
-      <Ellipse Width="6" Height="6" Fill="{StaticResource EdgeBrush}" Margin="2,0"/>
-    </StackPanel>
   </Grid>
 </Window>
