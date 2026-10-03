@@ -165,19 +165,19 @@ jobs:
             Copy-Item $frame (Join-Path $dashDest 'Assets/dashboard-structure-green.png') -Force
           }
 
-          $readme=@'
-ROADLIFE DASHBOARD2 - VISUAL EDITAVEL
-=====================================
-O GAT Telemetria capta os dados do ETS2.
-Este Dashboard2.ps1 apenas exibe os dados gravados em data\\telemetry.json.
-
-Para alterar o visual:
-1. Feche o RoadLife Dashboard2.
-2. Edite ou substitua Dashboard2.ps1 nesta pasta.
-3. Abra novamente pelo botao ROADLIFE DASHBOARD2 dentro do GAT DASH.
-
-Nao e necessario recompilar o GAT para alterar o PS1.
-'@
+          $readme=@(
+            'ROADLIFE DASHBOARD2 - VISUAL EDITAVEL',
+            '=====================================',
+            'O GAT Telemetria capta os dados do ETS2.',
+            'Este Dashboard2.ps1 apenas exibe os dados gravados em data\\telemetry.json.',
+            '',
+            'Para alterar o visual:',
+            '1. Feche o RoadLife Dashboard2.',
+            '2. Edite ou substitua Dashboard2.ps1 nesta pasta.',
+            '3. Abra novamente pelo botao ROADLIFE DASHBOARD2 dentro do GAT DASH.',
+            '',
+            'Nao e necessario recompilar o GAT para alterar o PS1.'
+          )
           Set-Content (Join-Path $dashDest 'COMO_EDITAR_DASHBOARD2.txt') $readme -Encoding UTF8
 
           if(-not(Test-Path (Join-Path $dashDest 'Dashboard2.ps1'))){throw 'Dashboard2.ps1 nao foi incluido'}
