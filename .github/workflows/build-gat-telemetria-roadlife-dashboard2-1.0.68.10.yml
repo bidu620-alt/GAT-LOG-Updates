@@ -142,33 +142,28 @@ jobs:
 
           # RoadLife Dashboard2 fica como visualizador PS1 editavel.
           # O GAT continua sendo o unico captador e grava data\\telemetry.json.
-          $dashZip='Projeto Dashboard2/ROADLIFE_Dashboard2_0.4.0_GREEN.zip'
-          if(-not(Test-Path $dashZip)){throw 'ZIP do RoadLife Dashboard2 nao encontrado'}
-
-          $dashTmp=Join-Path $PWD 'dashboard2-runtime'
-          if(Test-Path $dashTmp){Remove-Item $dashTmp -Recurse -Force}
-          New-Item -ItemType Directory -Force -Path $dashTmp | Out-Null
-          $seven='C:\Program Files\7-Zip\7z.exe'
-          if(-not(Test-Path $seven)){throw '7-Zip nao encontrado no runner'}
-          & $seven x $dashZip "-o$dashTmp" -y | Out-Host
-          if($LASTEXITCODE -ne 0){throw "Falha ao extrair o RoadLife Dashboard2: 7z $LASTEXITCODE"}
-
-          $dashSource=Get-ChildItem $dashTmp -Directory | Select-Object -First 1
-          if(-not $dashSource){throw 'Estrutura do RoadLife Dashboard2 invalida'}
-
           $dashDest=Join-Path $stage 'gat/RoadLifeDashboard2'
-          New-Item -ItemType Directory -Force -Path $dashDest | Out-Null
-          & robocopy.exe $dashSource.FullName $dashDest /E /NFL /NDL /NJH /NJS /NP
-          $rc=$LASTEXITCODE
-          if($rc -ge 8){throw "Falha ao copiar o RoadLife Dashboard2: robocopy $rc"}
-          $global:LASTEXITCODE=0
+          New-Item -ItemType Directory -Force -Path $dashDest,(Join-Path $dashDest 'data'),(Join-Path $dashDest 'Assets'),(Join-Path $dashDest 'Assets/cargo') | Out-Null
 
-          # O ZIP arquivado e enxuto; o frame fica guardado separado no projeto.
+          $ps1='Projeto Dashboard2/Dashboard2.ps1'
+          if(-not(Test-Path $ps1)){throw 'Dashboard2.ps1 do projeto nao encontrado'}
+          Copy-Item $ps1 (Join-Path $dashDest 'Dashboard2.ps1') -Force
+
           $frame='Projeto Dashboard2/dashboard-structure-green.png'
           if(Test-Path $frame){
-            New-Item -ItemType Directory -Force -Path (Join-Path $dashDest 'Assets') | Out-Null
             Copy-Item $frame (Join-Path $dashDest 'Assets/dashboard-structure-green.png') -Force
           }
+
+          $initialTelemetry=@{
+            online=$false
+            route=@{source='—';destination='—';distance_remaining_km=0;distance_travelled_km=0}
+            cargo=@{name='Sem carga';weight_t=0}
+            fuel=@{current_l=0;capacity_l=0;percent=0}
+            truck=@{model='—';gear='N';temperature_c=0;speed_kmh=0;speed_limit_kmh=0;cruise=$false}
+            eta='—'
+            damage=@{truck_pct=0;trailer_pct=0;cargo_pct=0}
+          } | ConvertTo-Json -Depth 5
+          Set-Content (Join-Path $dashDest 'data/telemetry.json') $initialTelemetry -Encoding UTF8
 
           $readme=@(
             'ROADLIFE DASHBOARD2 - VISUAL EDITAVEL',
