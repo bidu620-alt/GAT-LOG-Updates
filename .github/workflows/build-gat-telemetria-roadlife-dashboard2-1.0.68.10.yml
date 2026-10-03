@@ -147,16 +147,19 @@ jobs:
 
           $dashTmp=Join-Path $PWD 'dashboard2-runtime'
           if(Test-Path $dashTmp){Remove-Item $dashTmp -Recurse -Force}
-          Expand-Archive $dashZip $dashTmp -Force
+          New-Item -ItemType Directory -Force -Path $dashTmp | Out-Null
+          & tar.exe -xf $dashZip -C $dashTmp
+          if($LASTEXITCODE -ne 0){throw "Falha ao extrair o RoadLife Dashboard2: $LASTEXITCODE"}
 
           $dashSource=Get-ChildItem $dashTmp -Directory | Select-Object -First 1
           if(-not $dashSource){throw 'Estrutura do RoadLife Dashboard2 invalida'}
 
           $dashDest=Join-Path $stage 'gat/RoadLifeDashboard2'
           New-Item -ItemType Directory -Force -Path $dashDest | Out-Null
-          Get-ChildItem $dashSource.FullName -Force | ForEach-Object {
-            Copy-Item $_.FullName -Destination $dashDest -Recurse -Force
-          }
+          & robocopy.exe $dashSource.FullName $dashDest /E /NFL /NDL /NJH /NJS /NP
+          $rc=$LASTEXITCODE
+          if($rc -ge 8){throw "Falha ao copiar o RoadLife Dashboard2: robocopy $rc"}
+          $global:LASTEXITCODE=0
 
           # O ZIP arquivado e enxuto; o frame fica guardado separado no projeto.
           $frame='Projeto Dashboard2/dashboard-structure-green.png'
