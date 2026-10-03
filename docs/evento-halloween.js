@@ -11,7 +11,7 @@ const norm=REGISTRY?.norm||((v)=>String(v||'').normalize('NFD').replace(/[\u0300
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let profile=null,done=new Map(),icons=null;
 
-function session(){try{const s=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');return s&&s.user&&s.token?s:null}catch(_){return null}}
+function session(){try{let raw=localStorage.getItem(SESSION_KEY);if(!raw){raw=sessionStorage.getItem(SESSION_KEY);if(raw){localStorage.setItem(SESSION_KEY,raw);sessionStorage.removeItem(SESSION_KEY)}}const s=JSON.parse(raw||'null');return s&&s.user&&s.token?s:null}catch(_){return null}}
 function eventRows(p){const rows=Array.isArray(p?.deliveries)?p.deliveries:(Array.isArray(p?.cargo_history)?p.cargo_history:[]);return rows.filter(x=>{const t=Date.parse(x?.delivered_at||x?.completed_at||x?.date||'');return Number.isFinite(t)&&t>=START&&t<END})}
 function completion(rows){const out=new Map();for(const row of rows){for(const cargo of EVENT?.cargos||[]){if(!out.has(cargo.official)&&(REGISTRY?.cargoMatches?REGISTRY.cargoMatches(row,cargo):norm(row?.cargo||row?.cargo_name||row?.name)===norm(cargo.official)))out.set(cargo.official,row)}}return out}
 async function loadIcons(){try{const r=await fetch(ICON_DATA,{cache:'force-cache'});const j=await r.json();if(r.ok)icons=j}catch(_){}}
