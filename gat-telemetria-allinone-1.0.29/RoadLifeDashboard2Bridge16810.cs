@@ -64,14 +64,45 @@ internal sealed partial class MainForm
 
             Directory.CreateDirectory(Path.GetDirectoryName(RoadLifeDashboard2TelemetryFile()));
 
+            string psExe = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                @"WindowsPowerShell\v1.0\powershell.exe");
+
+            if (!File.Exists(psExe))
+                psExe = "powershell.exe";
+
+            string logFile = Path.Combine(RoadLifeDashboard2Root(), "dashboard2-launch.log");
+
             _roadLifeDashboard2Process = Process.Start(new ProcessStartInfo
             {
-                FileName = "powershell.exe",
-                Arguments = "-NoProfile -WindowStyle Hidden -File \"" + script + "\"",
+                FileName = psExe,
+                Arguments = "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File \"" + script + "\"",
                 WorkingDirectory = RoadLifeDashboard2Root(),
                 UseShellExecute = false,
-                CreateNoWindow = true
+                CreateNoWindow = true,
+                RedirectStandardError = true
             });
+
+            if (_roadLifeDashboard2Process == null)
+                throw new InvalidOperationException("O Windows não iniciou o processo do RoadLife Dashboard2.");
+
+            try
+            {
+                if (_roadLifeDashboard2Process.WaitForExit(900))
+                {
+                    string err = _roadLifeDashboard2Process.StandardError.ReadToEnd();
+                    if (string.IsNullOrWhiteSpace(err))
+                        err = "O Dashboard2 encerrou logo após iniciar, sem mensagem do PowerShell.";
+
+                    File.WriteAllText(logFile, err, Encoding.UTF8);
+                    throw new InvalidOperationException(
+                        "O RoadLife Dashboard2 não conseguiu abrir.\r\n\r\n" +
+                        "Detalhes salvos em:\r\n" + logFile + "\r\n\r\n" +
+                        err);
+                }
+            }
+            catch (InvalidOperationException) { throw; }
+            catch { }
 
             ClientStore.Log("RoadLife Dashboard2 PS1 aberto: " + script);
         }
