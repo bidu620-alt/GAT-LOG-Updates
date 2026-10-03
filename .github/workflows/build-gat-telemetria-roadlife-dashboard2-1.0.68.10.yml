@@ -152,25 +152,10 @@ jobs:
           New-Item -ItemType Directory -Force -Path $dashDest | Out-Null
           Copy-Item "$($dashSource.FullName)/*" $dashDest -Recurse -Force
 
-          # A arte estrutural nao veio dentro do ZIP enviado. Reconstroi apenas as linhas
-          # da mesma malha para o visualizador nao ficar sem o frame.
-          Add-Type -AssemblyName System.Drawing
-          $assetDir=Join-Path $dashDest 'Assets'
-          New-Item -ItemType Directory -Force -Path $assetDir | Out-Null
-          $img=[System.Drawing.Bitmap]::new(1332,330,[System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-          $g=[System.Drawing.Graphics]::FromImage($img)
-          $g.SmoothingMode=[System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
-          $g.Clear([System.Drawing.Color]::Transparent)
-          $pen=[System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(215,70,255,120),2)
-          $rects=@(
-            @(16,35,165,260),@(190,35,340,110),@(190,147,145,74),@(337,147,193,74),
-            @(532,62,62,84),@(532,149,62,72),@(840,65,74,78),@(840,147,74,74),
-            @(916,35,410,190),@(190,229,355,84),@(547,229,360,84),@(909,229,417,84)
-          )
-          foreach($r in $rects){$g.DrawRectangle($pen,$r[0],$r[1],$r[2],$r[3])}
-          $g.DrawEllipse($pen,603,32,235,215)
-          $img.Save((Join-Path $assetDir 'dashboard-structure-green.png'),[System.Drawing.Imaging.ImageFormat]::Png)
-          $pen.Dispose(); $g.Dispose(); $img.Dispose()
+          # O ZIP enviado nao continha o frame separado. Usa o asset guardado no projeto.
+          $frame='Projeto Dashboard2/dashboard-structure-green.png'
+          if(-not(Test-Path $frame)){throw 'Frame do Dashboard2 nao encontrado no projeto'}
+          Copy-Item $frame (Join-Path $dashDest 'Assets/dashboard-structure-green.png') -Force
 
           if(-not(Test-Path (Join-Path $dashDest 'Dashboard2.ps1'))){throw 'Dashboard2.ps1 ausente'}
           if(-not(Test-Path (Join-Path $dashDest 'data/telemetry.json'))){throw 'telemetry.json ausente'}
