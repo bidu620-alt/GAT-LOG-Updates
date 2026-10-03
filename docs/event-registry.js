@@ -1,5 +1,14 @@
 (()=>{
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
+  function idVariants(v){
+    const raw=compact(v);if(!raw)return [];
+    const out=new Set([raw]);
+    for(const prefix of ['jobcargo','cargodef','scscargo','cargoid','cargo']){
+      if(raw.startsWith(prefix)&&raw.length>prefix.length+2)out.add(raw.slice(prefix.length));
+    }
+    return [...out];
+  }
   const EVENTS=[{
     id:'halloween_2026',
     name:'Halloween 2026',
@@ -46,16 +55,21 @@
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
   function rowTime(row){const t=Date.parse(row?.delivered_at||row?.completed_at||row?.date||'');return Number.isFinite(t)?t:NaN}
-  function cargoTokens(row){
-    return new Set([
-      row?.cargo_id,row?.cargoId,row?.cargo_identity?.cargo_id_raw,
-      row?.cargo,row?.cargo_name,row?.name,row?.title
-    ].map(norm).filter(Boolean));
-  }
   function cargoMatches(row,cargo){
-    const tokens=cargoTokens(row);
-    const accepted=[cargo.official,cargo.label,...(cargo.ids||[]),...(cargo.aliases||[])].map(norm).filter(Boolean);
-    return accepted.some(x=>tokens.has(x));
+    const rowNames=[
+      row?.cargo,row?.cargo_name,row?.cargo_name_raw,row?.name,row?.title,
+      row?.cargo_identity?.cargo_name_raw,row?.cargo_identity?.cargo_name
+    ].map(norm).filter(Boolean);
+    const acceptedNames=[cargo.official,cargo.label,...(cargo.aliases||[])].map(norm).filter(Boolean);
+    if(acceptedNames.some(x=>rowNames.includes(x)))return true;
+
+    const rowIds=[
+      row?.cargo_id,row?.cargoId,row?.catalog_id,
+      row?.cargo_identity?.cargo_id_raw,row?.cargo_identity?.cargo_id,
+      row?.mission?.cargo_id
+    ].flatMap(idVariants);
+    const acceptedIds=(cargo.ids||[]).flatMap(idVariants);
+    return acceptedIds.some(x=>rowIds.includes(x));
   }
   function progress(profile,eventId){
     const event=eventById(eventId);if(!event)return {count:0,goal:0,completed:false,completedAt:null,matched:new Map()};
@@ -87,5 +101,5 @@
       };
     });
   }
-  window.GATEventRegistry={events:EVENTS,eventById,progress,achievementList,norm,cargoMatches};
+  window.GATEventRegistry={events:EVENTS,eventById,progress,achievementList,norm,compact,cargoMatches};
 })();
