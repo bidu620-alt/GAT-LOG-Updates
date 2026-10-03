@@ -93,13 +93,13 @@ jobs:
 
           $main=Get-ChildItem $root -Filter 'MainForm.cs' -Recurse | Select-Object -First 1
           $hub=Get-ChildItem $root -Filter 'MainForm.Hub041.cs' -Recurse | Select-Object -First 1
-          $host=Get-ChildItem $root -Filter 'RoadLifeOverlayHost.cs' -Recurse | Select-Object -First 1
+          $overlayHost=Get-ChildItem $root -Filter 'RoadLifeOverlayHost.cs' -Recurse | Select-Object -First 1
           $project=Get-ChildItem $root -Filter 'GAT_TELEMETRIA.csproj' -Recurse | Select-Object -First 1
-          if(-not $main -or -not $hub -or -not $host -or -not $project){throw 'Fonte RoadLife Overlay incompleta'}
+          if(-not $main -or -not $hub -or -not $overlayHost -or -not $project){throw 'Fonte RoadLife Overlay incompleta'}
 
           $mt=Get-Content $main.FullName -Raw
           $ht=Get-Content $hub.FullName -Raw
-          $ot=Get-Content $host.FullName -Raw
+          $ot=Get-Content $overlayHost.FullName -Raw
           $pt=Get-Content $project.FullName -Raw
 
           if($mt -notlike '*CurrentVersion = "1.0.68.11"*'){throw 'Versao 1.0.68.11 incorreta'}
