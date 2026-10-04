@@ -32,7 +32,7 @@
       {official:'Kerosene',label:'Querosene',ids:['kerosene']},
       {official:'LPG',label:'GLP',ids:['lpg']},
       {official:'Fuel Tanker',label:'Tanque de combustível',ids:['fueltanker','fuel_tanker','tanker','fuel_tanks'],aliases:['Caminhão-tanque de combustível','Tanques de combustível']},
-      {official:'Chemicals',label:'Produtos químicos',ids:['chemicals']},
+      {official:'Chemical Solvent',label:'Solvente químico',ids:['chemical_solvent','solvent_chemical','chemicals'],aliases:['Solvente quimico']},
       {official:'Hot Chemicals',label:'Produtos químicos quentes',ids:['hchemicals','hot_chemicals','hot_chem'],aliases:['Produtos químicos aquecidos']},
       {official:'Acid',label:'Ácido',ids:['acid']},
       {official:'Arsenic',label:'Arsênico',ids:['arsenic'],aliases:['Arsênio']},
