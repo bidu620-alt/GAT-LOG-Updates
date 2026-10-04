@@ -266,8 +266,9 @@ internal sealed partial class MainForm
 
         double limit = RoadLifeDouble(truck["speed_limit_kmh"]);
         SetRoadLifeText("LimitText", limit > 0 ? RoadLifeInt(limit) : "—");
-        SetRoadLifeText("CruiseText", RoadLifeBool(truck["cruise"]) ? "ON" : "OFF");
-        SetRoadLifeText("EtaText", RoadLifeString(d["eta"], "—"));
+        double cruiseSet = RoadLifeDouble(truck["cruise_speed_kmh"]);
+        SetRoadLifeText("CruiseText", RoadLifeBool(truck["cruise"]) && cruiseSet > 0 ? RoadLifeInt(cruiseSet) + " km/h" : "—");
+        SetRoadLifeText("EtaText", RoadLifeString(d["driver"], "—"));
         SetRoadLifeText("TruckText", RoadLifeString(truck["model"], "—"));
 
         SetRoadLifeText("TruckDamageText", RoadLifeDec(RoadLifeDouble(damage["truck_pct"]), 1) + "%");
@@ -460,6 +461,8 @@ internal sealed partial class MainForm
             speedLimit *= 3.6;
 
         double cruiseSpeed = RoadLifeOverlayNumber(tele, "truck.cruiseControlSpeed", "Truck.CruiseControlSpeed", "cruiseControlSpeed", "cruise_speed");
+        if (!double.IsNaN(cruiseSpeed) && cruiseSpeed > 0 && cruiseSpeed < 3.0)
+            cruiseSpeed *= 3.6;
         bool cruise = RoadLifeOverlayBoolean(tele, "truck.cruiseControl", "truck.cruiseControlOn", "cruiseControl", "cruise")
             || (!double.IsNaN(cruiseSpeed) && cruiseSpeed > 0.1);
 
@@ -498,8 +501,10 @@ internal sealed partial class MainForm
                 ["temperature_c"] = RoadLifeOverlayZero(temperature),
                 ["speed_kmh"] = RoadLifeOverlayZero(Math.Abs(speed)),
                 ["speed_limit_kmh"] = RoadLifeOverlayZero(speedLimit),
-                ["cruise"] = cruise
+                ["cruise"] = cruise,
+                ["cruise_speed_kmh"] = RoadLifeOverlayZero(cruiseSpeed)
             },
+            ["driver"] = string.IsNullOrWhiteSpace(_driver) ? (string.IsNullOrWhiteSpace(_accountUser) ? "—" : _accountUser) : _driver,
             ["eta"] = RoadLifeOverlayEta(tele),
             ["damage"] = new JObject
             {
