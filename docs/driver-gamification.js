@@ -72,6 +72,7 @@
     }).length;
     const heavy40Trips=rows.filter(d=>n(d?.weight_kg)>=40000).length;
     const marathonTrips=rows.filter(d=>n(d?.distance_km)>=2000).length;
+    const estradeiro500Trips=rows.filter(d=>n(d?.distance_km)>=500).length;
     return [
       {id:'peso_pesado',title:'Peso Pesado',description:'Entregue uma carga válida de 30 toneladas ou mais.',unlocked:maxWeight>=30000,medal:'🏋️',difficulty:'Fácil',xpReward:250},
       {id:'entrega_perfeita',title:'Entrega Perfeita',description:'Conclua 500 km ou mais com 0% de dano na carga.',unlocked:perfectCargo500,medal:'🎯',difficulty:'Média',xpReward:500},
@@ -85,7 +86,7 @@
       {id:'lenda_estrada',title:'Lenda da Estrada',description:'Complete 1.500 entregas válidas.',unlocked:n(p?.total_deliveries)>=1500,medal:'👑',difficulty:'Muito difícil',xpReward:2000},
 
       {id:'primeiros_passos',title:'Primeiros Passos',description:'Complete 10 entregas válidas.',unlocked:n(p?.total_deliveries)>=10,medal:'🚚',difficulty:'Fácil',xpReward:250},
-      {id:'estradeiro',title:'Estradeiro',description:'Complete 50 entregas válidas.',unlocked:n(p?.total_deliveries)>=50,medal:'🛣️',difficulty:'Média',xpReward:500},
+      {id:'estradeiro',title:'Estradeiro',description:'Complete 50 entregas válidas. Distância mínima: 500 km por entrega.',unlocked:estradeiro500Trips>=50,medal:'🛣️',difficulty:'Média',xpReward:500},
       {id:'rodagem_inicial',title:'Rodagem Inicial',description:'Atinja 5.000 km totais na carreira.',unlocked:n(p?.total_km)>=5000,medal:'🧭',difficulty:'Fácil',xpReward:250},
       {id:'pe_na_estrada',title:'Pé na Estrada',description:'Atinja 25.000 km totais na carreira.',unlocked:n(p?.total_km)>=25000,medal:'🌎',difficulty:'Média',xpReward:500},
       {id:'rodador_nato',title:'Rodador Nato',description:'Atinja 100.000 km totais na carreira.',unlocked:n(p?.total_km)>=100000,medal:'🏁',difficulty:'Difícil',xpReward:1000},
