@@ -429,7 +429,7 @@ internal sealed partial class MainForm
         return sb.ToString().Trim('-');
     }
 
-    private static JObject RoadLifeOverlayBuildPayload(JObject tele)
+    private JObject RoadLifeOverlayBuildPayload(JObject tele)
     {
         string cargo = RoadLifeOverlayText(tele, "cargo_name", "job.cargoName", "job.cargo", "Job.CargoName");
         string cargoId = RoadLifeOverlayText(
