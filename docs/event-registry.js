@@ -51,6 +51,17 @@
       {official:'Low Bed Semi-trailers',label:'Semirreboques prancha baixa',ids:['overweight','low_bed_semi_trailers']},
       {official:'Excavator',label:'Escavadeira',ids:['excavator']}
     ]
+  },{
+    id:'children_2026', name:'Dia das Crianças 2026', title:'Dia das Crianças 2026', medal:'🎈', achievement_enabled:true,
+    start:'2026-10-05T00:00:00-03:00', end:'2026-10-13T00:00:00-03:00', goal:6, sequence:true,
+    cargos:[
+      {official:'Toys',label:'Brinquedos',origin:'Porto',destination:'Barcelona',ids:['toys'],aliases:['Brinquedos','Toy']},
+      {official:'Chocolate',label:'Chocolate',origin:'Barcelona',destination:'Gênova',ids:['chocolate'],aliases:['Chocolate']},
+      {official:'Chewing Gum',label:'Chicletes',origin:'Gênova',destination:'Viena',ids:['chewing_gum','chewinggum'],aliases:['Chicletes','Chewing Gum']},
+      {official:'Milk',label:'Leite',origin:'Viena',destination:'Varsóvia',ids:['milk'],aliases:['Leite','Milk']},
+      {official:'Clothes',label:'Roupas',origin:'Varsóvia',destination:'Budapeste',ids:['clothes'],aliases:['Roupas','Clothes']},
+      {official:'Yoghurt',label:'Iogurte',origin:'Budapeste',destination:'Tessalônica',ids:['yoghurt','yogurt'],aliases:['Iogurte','Yogurt','Yoghurt']}
+    ]
   }];
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
@@ -71,11 +82,31 @@
     const acceptedIds=(cargo.ids||[]).flatMap(idVariants);
     return acceptedIds.some(x=>rowIds.includes(x));
   }
+  function routeMatches(row,cargo){
+    const src=norm(row?.source||row?.source_city||row?.origin||row?.origin_city||'');
+    const dst=norm(row?.destination||row?.destination_city||'');
+    return src===norm(cargo.origin)&&dst===norm(cargo.destination);
+  }
   function progress(profile,eventId){
     const event=eventById(eventId);if(!event)return {count:0,goal:0,completed:false,completedAt:null,matched:new Map()};
     const start=Date.parse(event.start),end=Date.parse(event.end);
     const rows=Array.isArray(profile?.deliveries)?profile.deliveries:(Array.isArray(profile?.cargo_history)?profile.cargo_history:[]);
     const matched=new Map();
+    const steps=[];
+    const ordered=[...rows].filter(row=>{const t=rowTime(row);return Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
+    if(event.sequence){
+      let expected=0;
+      for(const row of ordered){
+        const cargo=event.cargos?.[expected]; if(!cargo) break;
+        if(cargoMatches(row,cargo)&&routeMatches(row,cargo)){
+          matched.set(cargo.official,{row,t:rowTime(row),cargo}); steps.push({row,t:rowTime(row),cargo}); expected++;
+        }
+      }
+      const count=steps.length,completed=count>=goal;
+      const user=norm(profile?.user||profile?.driver||profile?.account_user||''),override=event.manual_completions?.[user]||null;
+      if(override)return {count:Math.min(Number(override.count)||goal,goal),goal,completed:override.completed!==false,completedAt:override.completedAt?Date.parse(override.completedAt):null,matched,manual:true,reason:override.reason||'',steps,completedSteps:count};
+      return {count,goal,completed,completedAt:completed?steps[steps.length-1]?.t:null,matched,manual:false,reason:'',steps,completedSteps:count};
+    }
     for(const row of rows){
       const t=rowTime(row);if(!Number.isFinite(t)||t<start||t>=end)continue;
       for(const cargo of event.cargos||[]){
