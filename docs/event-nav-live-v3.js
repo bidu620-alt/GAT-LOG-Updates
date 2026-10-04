@@ -1,5 +1,4 @@
 (()=>{const EVENTS=[
-{id:'halloween',start:Date.parse('2026-09-30T00:00:00-03:00'),end:Date.parse('2026-11-01T00:00:00-03:00'),href:'eventos/hallowin/',label:'Evento do Mês'},
 {id:'children',start:Date.parse('2026-10-05T00:00:00-03:00'),end:Date.parse('2026-10-13T00:00:00-03:00'),href:'eventos/dia-das-criancas/',label:'Dia das Crianças'}
 ];
 const qs=new URLSearchParams(location.search);
