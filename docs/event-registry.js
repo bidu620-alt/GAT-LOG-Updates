@@ -57,7 +57,7 @@
     cargos:[
       {official:'Toys',label:'Brinquedos',origin:'Porto',destination:'Barcelona',ids:['toys'],aliases:['Brinquedos','Toy']},
       {official:'Chocolate',label:'Chocolate',origin:'Barcelona',destination:'Gênova',ids:['chocolate'],aliases:['Chocolate']},
-      {official:'Chewing Gum',label:'Chicletes',origin:'Gênova',destination:'Viena',ids:['chewing_gum','chewinggum'],aliases:['Chicletes','Chewing Gum']},
+      {official:'Chewing Gum',label:'Chicletes',origin:'Gênova',destination:'Viena',ids:['chewing_gums','chewing_gum','chewinggum'],aliases:['Chicletes','Chewing Gum']},
       {official:'Milk',label:'Leite',origin:'Viena',destination:'Varsóvia',ids:['milk'],aliases:['Leite','Milk']},
       {official:'Clothes',label:'Roupas',origin:'Varsóvia',destination:'Budapeste',ids:['clothes'],aliases:['Roupas','Clothes']},
       {official:'Yoghurt',label:'Iogurte',origin:'Budapeste',destination:'Tessalônica',ids:['yoghurt','yogurt'],aliases:['Iogurte','Yogurt','Yoghurt']}
