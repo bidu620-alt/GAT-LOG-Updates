@@ -56,3 +56,26 @@
   .event-cargo-grid{grid-template-columns:1fr;gap:12px}
   .event-cargo:after{display:none}
 }
+
+/* ROTA — formato inspirado no evento Halloween, adaptado para sequência infantil */
+.timeline-segments{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:2px 0 18px}
+.timeline-segment{min-width:0;padding:10px 8px;border:1px solid #274050;border-radius:12px;background:linear-gradient(180deg,#101d27,#09141c);text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.22);transition:.25s}
+.timeline-segment.done{border-color:#2bb77e;background:linear-gradient(180deg,rgba(38,178,123,.17),#0a1919)}
+.timeline-segment.current{border-color:#ffd45a;box-shadow:0 0 20px rgba(255,212,90,.12),0 8px 20px rgba(0,0,0,.22);transform:translateY(-2px)}
+.timeline-segment.locked{opacity:.58}
+.segment-route{display:flex;justify-content:center;align-items:center;gap:4px;white-space:nowrap;font-size:8px;color:#9fb7c1;font-weight:900}
+.segment-route b{color:#ffe08a}
+.segment-cargo{min-height:48px;display:flex;align-items:center;justify-content:center;gap:5px;margin:6px 0}
+.segment-cargo .event-cargo-thumb{width:72px;height:58px;transform:scale(.48);margin:-8px -13px}
+.segment-cargo strong{font-size:10px;color:#edf8fb}
+.timeline-segment small{display:block;min-height:18px;color:#718995;font-size:7px;font-weight:950;letter-spacing:.03em}
+.timeline-segment.done small{color:#64dfb0}
+.timeline-segment.current small{color:#ffe08a}
+@media(max-width:1050){.timeline-segments{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){
+ .timeline-segments{grid-template-columns:1fr;gap:8px;margin-bottom:14px}
+ .timeline-segment{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;align-items:center;text-align:left;padding:10px 12px}
+ .segment-route{justify-content:flex-start;grid-row:1/3}
+ .segment-cargo{grid-column:2;grid-row:1;min-height:34px;margin:0}
+ .timeline-segment small{grid-column:2;grid-row:2;text-align:right}
+}
