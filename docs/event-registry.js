@@ -2,6 +2,8 @@
   const GREEK_LATIN={α:'a',β:'b',γ:'g',δ:'d',ε:'e',ζ:'z',η:'i',θ:'th',ι:'i',κ:'k',λ:'l',μ:'m',ν:'n',ξ:'x',ο:'o',π:'p',ρ:'r',σ:'s',ς:'s',τ:'t',υ:'y',φ:'f',χ:'ch',ψ:'ps',ω:'o'};
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[α-ως]/g,c=>GREEK_LATIN[c]||c).replace(/[^a-z0-9]+/g,' ').trim();
   const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
+  // Aliases reutilizáveis do catálogo oficial de cargas (normalizados por nome/ID).
+  const CATALOG_ALIASES={hospitalwaste:['Lixo hospitalar'],hwaste:['Lixo hospitalar']};
   function idVariants(v){
     const raw=compact(v);if(!raw)return [];
     const out=new Set([raw]);
@@ -41,7 +43,7 @@
       {official:'Hydrochloric Acid',label:'Ácido clorídrico',ids:['hydrochlor','hydrochloric_acid']},
       {official:'Pesticides',label:'Pesticidas',ids:['pesticide','pesticides']},
       {official:'Sulphuric Acid',label:'Ácido sulfúrico',ids:['sulfuric','sulphuric_acid']},
-      {official:'Hospital Waste',label:'Resíduos hospitalares',ids:['hwaste','hospital_waste'],aliases:['Lixo hospitalar']},
+      {official:'Hospital Waste',label:'Resíduos hospitalares',ids:['hwaste','hospital_waste']},
       {official:'Scrap Metals',label:'Sucata metálica',ids:['scrap_metals']},
       {official:'Used Car Batteries',label:'Baterias usadas',ids:['used_battery','used_car_batteries','batteries'],aliases:['Baterias automotivas usadas']},
       {official:'Cement',label:'Cimento',ids:['cement']},
@@ -68,12 +70,13 @@
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
   function rowTime(row){const t=Date.parse(row?.delivered_at||row?.completed_at||row?.date||'');return Number.isFinite(t)?t:NaN}
+  function catalogAliases(cargo){return [cargo?.official,...(cargo?.ids||[])].flatMap(value=>CATALOG_ALIASES[compact(value)]||[])}
   function cargoMatches(row,cargo){
     const rowNames=[
       row?.cargo,row?.cargo_name,row?.cargo_name_raw,row?.name,row?.title,
       row?.cargo_identity?.cargo_name_raw,row?.cargo_identity?.cargo_name
     ].map(norm).filter(Boolean);
-    const acceptedNames=[cargo.official,cargo.label,...(cargo.aliases||[])].map(norm).filter(Boolean);
+    const acceptedNames=[cargo.official,cargo.label,...(cargo.aliases||[]),...catalogAliases(cargo)].map(norm).filter(Boolean);
     if(acceptedNames.some(x=>rowNames.includes(x)))return true;
 
     const rowIds=[
