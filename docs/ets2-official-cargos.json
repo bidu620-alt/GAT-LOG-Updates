@@ -1239,6 +1239,8 @@
     "scrap": [
       {
         "name": "Scrap Metals",
+        "name_pt": "Metais de sucata",
+        "aliases": ["Sucata metálica"],
         "dlc": "Launch",
         "weight": "21–26"
       },
