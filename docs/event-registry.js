@@ -1,5 +1,5 @@
 (()=>{
-  const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  const GREEK_LATIN={α:'a',β:'b',γ:'g',δ:'d',ε:'e',ζ:'z',η:'i',θ:'th',ι:'i',κ:'k',λ:'l',μ:'m',ν:'n',ξ:'x',ο:'o',π:'p',ρ:'r',σ:'s',ς:'s',τ:'t',υ:'y',φ:'f',χ:'ch',ψ:'ps',ω:'o'};\n  const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[α-ως]/g,c=>GREEK_LATIN[c]||c).replace(/[^a-z0-9]+/g,' ').trim();
   const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
   function idVariants(v){
     const raw=compact(v);if(!raw)return [];
@@ -60,7 +60,7 @@
       {official:'Chewing Gum',label:'Chicletes',origin:'Gênova',origin_aliases:['Genova'],destination:'Viena',destination_aliases:['Wien'],ids:['chewing_gums','chewing_gum','chewinggum'],aliases:['Chicletes','Chewing Gum']},
       {official:'Milk',label:'Leite',origin:'Viena',origin_aliases:['Wien'],destination:'Varsóvia',destination_aliases:['Warszawa'],ids:['milk'],aliases:['Leite','Milk']},
       {official:'Clothes',label:'Roupas',origin:'Varsóvia',origin_aliases:['Warszawa'],destination:'Budapeste',destination_aliases:['Budapest'],ids:['clothes'],aliases:['Roupas','Clothes']},
-      {official:'Yoghurt',label:'Iogurte',origin:'Budapeste',destination:'Tessalônica',ids:['yoghurt','yogurt'],aliases:['Iogurte','Yogurt','Yoghurt']}
+      {official:'Yoghurt',label:'Iogurte',origin:'Budapeste',destination:'Tessalônica',destination_aliases:['Thessaloniki','Θεσσαλονίκη'],ids:['yoghurt','yogurt'],aliases:['Iogurte','Yogurt','Yoghurt']}
     ]
   }];
 
