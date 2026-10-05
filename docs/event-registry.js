@@ -62,7 +62,7 @@
       {official:'Chewing Gum',label:'Chicletes',origin:'Gênova',origin_aliases:['Genova'],destination:'Viena',destination_aliases:['Wien'],ids:['chewing_gums','chewing_gum','chewinggum'],aliases:['Chicletes','Chewing Gum']},
       {official:'Milk',label:'Leite',origin:'Viena',origin_aliases:['Wien'],destination:'Varsóvia',destination_aliases:['Warszawa'],ids:['milk'],aliases:['Leite','Milk']},
       {official:'Clothes',label:'Roupas',origin:'Varsóvia',origin_aliases:['Warszawa'],destination:'Budapeste',destination_aliases:['Budapest'],ids:['clothes'],aliases:['Roupas','Clothes']},
-      {official:'Yoghurt',label:'Iogurte',origin:'Budapeste',destination:'Tessalônica',destination_aliases:['Thessaloniki','Θεσσαλονίκη'],ids:['yoghurt','yogurt'],aliases:['Iogurte','Yogurt','Yoghurt']}
+      {official:'Yoghurt',label:'Iogurte',origin:'Budapeste',origin_aliases:['Budapest'],destination:'Tessalônica',destination_aliases:['Thessaloniki','Θεσσαλονίκη'],ids:['yoghurt','yogurt'],aliases:['Iogurte','Yogurt','Yoghurt']}
     ]
   }];
 
