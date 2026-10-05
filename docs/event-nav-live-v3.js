@@ -11,7 +11,7 @@ function theme(on){
 }
 function apply(){
  const now=Date.now(),isPreview=preview(),launched=now>=START||isPreview,themeActive=(now>=START&&now<END)||isPreview;
- document.querySelectorAll('.event-month-link').forEach(a=>a.style.display=launched?'':'none');document.querySelectorAll('.event-children-link').forEach(a=>a.style.display=(now>=Date.parse('2026-10-05T00:00:00-03:00')&&now<Date.parse('2026-10-13T00:00:00-03:00'))?'':'none');
+ // A navegação de eventos agora é fixa; este script controla apenas o tema do Halloween.
  theme(themeActive);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
