@@ -102,6 +102,7 @@
           matched.set(cargo.official,{row,t:rowTime(row),cargo}); steps.push({row,t:rowTime(row),cargo}); expected++;
         }
       }
+      const goal=Number(event.goal)||event.cargos?.length||0;
       const count=steps.length,completed=count>=goal;
       const user=norm(profile?.user||profile?.driver||profile?.account_user||''),override=event.manual_completions?.[user]||null;
       if(override)return {count:Math.min(Number(override.count)||goal,goal),goal,completed:override.completed!==false,completedAt:override.completedAt?Date.parse(override.completedAt):null,matched,manual:true,reason:override.reason||'',steps,completedSteps:count};
