@@ -3,7 +3,7 @@
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[α-ως]/g,c=>GREEK_LATIN[c]||c).replace(/[^a-z0-9]+/g,' ').trim();
   const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
   // Aliases reutilizáveis do catálogo oficial de cargas (normalizados por nome/ID).
-  const CATALOG_ALIASES={hospitalwaste:['Lixo hospitalar'],hwaste:['Lixo hospitalar'],scrapmetals:['Sucata metálica']};
+  const CATALOG_ALIASES={hospitalwaste:['Lixo hospitalar'],hwaste:['Lixo hospitalar'],scrapmetals:['Sucata metálica','Sucata de Metal','Sucata de metal'],arsenic:['Arsênico'],beef:['Carne'],metalcentring:['Centração de metal'],crawlertractor:['Esteira de trator'],potatoes:['BATATA'],windturbinenacelle:['Nacele de Turbina Aeólica'],lpg:['Gas de Cozinha','Gás de cozinha'],asphaltmilleram0880:['Moedor de asfalto'],petfood:['Ração'],industrialcablereel:['Rolo de cabo industrial'],wagonkronegx520:['Vagão Krone GX 520'],squarebalerkronebigpack1290hdpvc:['Enfardadeira quadradas Krone BiG Pack 1290 HDC VC'],fertilizerspreader:['Adubadora'],metalcoil:['Bobina de metal'],metalbeams:['Vigas de metal'],fertilizer:['Adubo'],woodchipper:['Picador de madeira'],windturbinetower:['Torre de Turbina Aeólica'],tractors:['TRATOR']};
   function idVariants(v){
     const raw=compact(v);if(!raw)return [];
     const out=new Set([raw]);
