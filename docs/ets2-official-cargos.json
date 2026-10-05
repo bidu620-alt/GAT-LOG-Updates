@@ -1207,7 +1207,7 @@
       {
         "name": "Peanut Butter",
         "name_pt": "Manteiga de amendoim",
-        "aliases": ["Massa de amendoim"],
+        "aliases": ["Pasta de amendoim", "Massa de amendoim"],
         "dlc": "Launch",
         "weight": "11–19"
       },
