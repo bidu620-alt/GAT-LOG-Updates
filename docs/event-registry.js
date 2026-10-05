@@ -123,37 +123,14 @@
     return {count,goal,completed,completedAt,matched,manual:false,reason:''};
   }
   function achievementList(profile){
-    const out=[];
-    EVENTS.filter(e=>e.achievement_enabled!==false).forEach(e=>{
+    return EVENTS.filter(e=>e.achievement_enabled!==false).map(e=>{
       const p=progress(profile,e.id);
-      if(e.id==='children_2026'){
-        (e.cargos||[]).forEach((cargo,i)=>{
-          const done=!!p.matched?.has(cargo.official);
-          out.push({
-            id:'event_'+e.id+'_cargo_'+(i+1),
-            eventId:e.id,
-            cargoIndex:i,
-            title:(String(i+1).padStart(2,'0'))+' • '+(cargo.label||cargo.official),
-            description:done
-              ? (cargo.origin+' → '+cargo.destination+' concluído.')
-              : ('Entregue '+(cargo.label||cargo.official)+' de '+cargo.origin+' para '+cargo.destination+'.'),
-            unlocked:done,
-            medal:e.medal||'🎈',
-            kind:'event',
-            progress:done?1:0,
-            goal:1,
-            completedAt:done?p.matched.get(cargo.official)?.t:null
-          });
-        });
-        return;
-      }
-      out.push({
+      return {
         id:'event_'+e.id,eventId:e.id,title:e.title||e.name||e.id,
         description:p.completed?'Evento concluído. Meta '+p.goal+'/'+p.goal+' atingida.':'Complete o evento. Progresso: '+p.count+'/'+p.goal+'.',
         unlocked:p.completed,medal:e.medal||'🏆',kind:'event',progress:p.count,goal:p.goal,completedAt:p.completedAt
-      });
+      };
     });
-    return out;
   }
   window.GATEventRegistry={events:EVENTS,eventById,progress,achievementList,norm,compact,cargoMatches};
 })();
