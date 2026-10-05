@@ -1220,6 +1220,8 @@
     "medical": [
       {
         "name": "Hospital Waste",
+        "name_pt": "Lixo hospitalar",
+        "aliases": ["Lixo hospitalar"],
         "dlc": "Launch",
         "weight": "11–23"
       },
