@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070a0f">
+<title>Eventos • GAT-LOG</title>
+<meta name="description" content="Central de eventos do GAT-LOG.">
+<link rel="stylesheet" href="../official-v4.css">
+<link rel="stylesheet" href="events.css?v=1">
+</head>
+<body class="events-page">
+<header class="topbar events-topbar">
+  <a class="brand" href="../index.html"><b>GAT-<span>LOG</span></b></a>
+  <nav>
+    <a href="../index.html">Início</a>
+    <a href="../motorista.html?site=regras-final-20260902">Motorista</a>
+    <a href="../mapa.html">Mapa</a>
+    <a href="../ranking.html">Ranking</a>
+    <a href="../regras.html">Regras</a>
+    <a class="active" href="./">Evento do Mês</a>
+    <a href="../motorista.html?site=regras-final-20260902&tab=work">MEU TRABALHO</a>
+    <a href="../index.html#downloads">Downloads</a>
+    <a href="../admin.html">Admin</a>
+  </nav>
+</header>
+<main class="events-shell">
+  <section class="events-hero">
+    <span class="eyebrow">CENTRAL DE EVENTOS GAT-LOG</span>
+    <h1>Eventos</h1>
+    <p>Escolha um evento ativo ou consulte os próximos desafios. As regras e o progresso de cada evento continuam independentes.</p>
+  </section>
+  <section>
+    <div class="events-section-title"><span class="eyebrow">ATIVOS AGORA</span><h2>Eventos disponíveis</h2></div>
+    <div id="activeEvents" class="events-grid"></div>
+  </section>
+  <section id="upcomingSection" class="events-section" hidden>
+    <div class="events-section-title"><span class="eyebrow">PRÓXIMOS</span><h2>Próximos eventos</h2></div>
+    <div id="upcomingEvents" class="events-grid"></div>
+  </section>
+  <section id="finishedSection" class="events-section" hidden>
+    <div class="events-section-title"><span class="eyebrow">HISTÓRICO</span><h2>Eventos encerrados</h2></div>
+    <div id="finishedEvents" class="events-grid"></div>
+  </section>
+</main>
+<footer class="footer"><div class="shell">GAT-LOG • Central de Eventos</div></footer>
+<script src="../event-registry.js?v=4"></script>
+<script src="events.js?v=1"></script>
+</body>
+</html>
