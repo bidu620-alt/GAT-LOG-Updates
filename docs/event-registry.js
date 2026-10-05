@@ -41,7 +41,7 @@
       {official:'Hydrochloric Acid',label:'Ácido clorídrico',ids:['hydrochlor','hydrochloric_acid']},
       {official:'Pesticides',label:'Pesticidas',ids:['pesticide','pesticides']},
       {official:'Sulphuric Acid',label:'Ácido sulfúrico',ids:['sulfuric','sulphuric_acid']},
-      {official:'Hospital Waste',label:'Resíduos hospitalares',ids:['hwaste','hospital_waste']},
+      {official:'Hospital Waste',label:'Resíduos hospitalares',ids:['hwaste','hospital_waste'],aliases:['Lixo hospitalar']},
       {official:'Scrap Metals',label:'Sucata metálica',ids:['scrap_metals']},
       {official:'Used Car Batteries',label:'Baterias usadas',ids:['used_battery','used_car_batteries','batteries'],aliases:['Baterias automotivas usadas']},
       {official:'Cement',label:'Cimento',ids:['cement']},
