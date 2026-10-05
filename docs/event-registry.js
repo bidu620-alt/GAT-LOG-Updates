@@ -3,7 +3,7 @@
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[α-ως]/g,c=>GREEK_LATIN[c]||c).replace(/[^a-z0-9]+/g,' ').trim();
   const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
   // Aliases reutilizáveis do catálogo oficial de cargas (normalizados por nome/ID).
-  const CATALOG_ALIASES={hospitalwaste:['Lixo hospitalar'],hwaste:['Lixo hospitalar']};
+  const CATALOG_ALIASES={hospitalwaste:['Lixo hospitalar'],hwaste:['Lixo hospitalar'],scrapmetals:['Sucata metálica']};
   function idVariants(v){
     const raw=compact(v);if(!raw)return [];
     const out=new Set([raw]);
@@ -44,7 +44,7 @@
       {official:'Pesticides',label:'Pesticidas',ids:['pesticide','pesticides']},
       {official:'Sulphuric Acid',label:'Ácido sulfúrico',ids:['sulfuric','sulphuric_acid']},
       {official:'Hospital Waste',label:'Resíduos hospitalares',ids:['hwaste','hospital_waste']},
-      {official:'Scrap Metals',label:'Sucata metálica',ids:['scrap_metals']},
+      {official:'Scrap Metals',label:'Metais de sucata',ids:['scrap_metals'],aliases:['Sucata metálica']},
       {official:'Used Car Batteries',label:'Baterias usadas',ids:['used_battery','used_car_batteries','batteries'],aliases:['Baterias automotivas usadas']},
       {official:'Cement',label:'Cimento',ids:['cement']},
       {official:'Iron Pipes (large)',label:'Tubos de ferro',ids:['iron_pipes']},
