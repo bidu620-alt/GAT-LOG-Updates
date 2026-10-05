@@ -99,7 +99,10 @@
     ];
   }
 
-  function currentProfile(){try{return window.GATCurrentDriverProfile||null}catch(_){return null}}
+  let achievementProfile=null;
+  function currentProfile(){try{return window.GATCurrentDriverProfile||achievementProfile||null}catch(_){return achievementProfile||null}}
+  function captureProfile(e){const p=e?.detail?.profile;if(p&&typeof p==='object'){achievementProfile=p;try{window.GATCurrentDriverProfile=p}catch(_){};setTimeout(render,0)}}
+  window.addEventListener('gat-driver-profile-updated',captureProfile);
 
   function render(){
     ensureTabs();const p=currentProfile();if(!p)return;const history=Array.isArray(p.deliveries)?p.deliveries:[],parsed=history.map(parseDelivery),st=p.safety||fallbackSafety(history),lost=parsed.reduce((s,x)=>s+x.penalty,0);
