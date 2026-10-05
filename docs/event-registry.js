@@ -55,6 +55,7 @@
   },{
     id:'children_2026', name:'Dia das Crianças 2026', title:'Dia das Crianças 2026', medal:'🎈', achievement_enabled:true,
     start:'2026-10-05T00:00:00-03:00', end:'2026-10-13T00:00:00-03:00', goal:6, sequence:true,
+    manual_completions:{gensey:{count:6,completed:true,reason:'Correção administrativa: seis entregas do evento confirmadas como concluídas para Gensey.'}},
     cargos:[
       {official:'Toys',label:'Brinquedos',origin:'Porto',destination:'Barcelona',ids:['toys'],aliases:['Brinquedos','Toy']},
       {official:'Chocolate',label:'Chocolate',origin:'Barcelona',destination:'Gênova',destination_aliases:['Genova'],ids:['chocolate'],aliases:['Chocolate']},
