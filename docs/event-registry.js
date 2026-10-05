@@ -56,10 +56,10 @@
     start:'2026-10-05T00:00:00-03:00', end:'2026-10-13T00:00:00-03:00', goal:6, sequence:true,
     cargos:[
       {official:'Toys',label:'Brinquedos',origin:'Porto',destination:'Barcelona',ids:['toys'],aliases:['Brinquedos','Toy']},
-      {official:'Chocolate',label:'Chocolate',origin:'Barcelona',destination:'Gênova',ids:['chocolate'],aliases:['Chocolate']},
-      {official:'Chewing Gum',label:'Chicletes',origin:'Gênova',destination:'Viena',ids:['chewing_gums','chewing_gum','chewinggum'],aliases:['Chicletes','Chewing Gum']},
-      {official:'Milk',label:'Leite',origin:'Viena',destination:'Varsóvia',ids:['milk'],aliases:['Leite','Milk']},
-      {official:'Clothes',label:'Roupas',origin:'Varsóvia',destination:'Budapeste',ids:['clothes'],aliases:['Roupas','Clothes']},
+      {official:'Chocolate',label:'Chocolate',origin:'Barcelona',destination:'Gênova',destination_aliases:['Genova'],ids:['chocolate'],aliases:['Chocolate']},
+      {official:'Chewing Gum',label:'Chicletes',origin:'Gênova',origin_aliases:['Genova'],destination:'Viena',destination_aliases:['Wien'],ids:['chewing_gums','chewing_gum','chewinggum'],aliases:['Chicletes','Chewing Gum']},
+      {official:'Milk',label:'Leite',origin:'Viena',origin_aliases:['Wien'],destination:'Varsóvia',destination_aliases:['Warszawa'],ids:['milk'],aliases:['Leite','Milk']},
+      {official:'Clothes',label:'Roupas',origin:'Varsóvia',origin_aliases:['Warszawa'],destination:'Budapeste',destination_aliases:['Budapest'],ids:['clothes'],aliases:['Roupas','Clothes']},
       {official:'Yoghurt',label:'Iogurte',origin:'Budapeste',destination:'Tessalônica',ids:['yoghurt','yogurt'],aliases:['Iogurte','Yogurt','Yoghurt']}
     ]
   }];
@@ -85,7 +85,9 @@
   function routeMatches(row,cargo){
     const src=norm(row?.source||row?.source_city||row?.origin||row?.origin_city||'');
     const dst=norm(row?.destination||row?.destination_city||'');
-    return src===norm(cargo.origin)&&dst===norm(cargo.destination);
+    const srcAccepted=[cargo.origin,...(cargo.origin_aliases||[])].map(norm).filter(Boolean);
+    const dstAccepted=[cargo.destination,...(cargo.destination_aliases||[])].map(norm).filter(Boolean);
+    return srcAccepted.includes(src)&&dstAccepted.includes(dst);
   }
   function progress(profile,eventId){
     const event=eventById(eventId);if(!event)return {count:0,goal:0,completed:false,completedAt:null,matched:new Map()};
