@@ -55,7 +55,7 @@
   },{
     id:'children_2026', name:'Dia das Crianças 2026', title:'Dia das Crianças 2026', medal:'🎈', achievement_enabled:true,
     start:'2026-10-05T00:00:00-03:00', end:'2026-10-13T00:00:00-03:00', goal:6, sequence:true,
-    manual_completions:{gensey:{count:6,completed:true,reason:'Correção administrativa: seis entregas do evento confirmadas como concluídas para Gensey.'}},
+    approved_steps:{gensey:[{index:3,reason:'Etapa 4 aprovada: entrega realizada enquanto a Central estava indisponível e não foi recebida pela Central.'}]},
     cargos:[
       {official:'Toys',label:'Brinquedos',origin:'Porto',destination:'Barcelona',ids:['toys'],aliases:['Brinquedos','Toy']},
       {official:'Chocolate',label:'Chocolate',origin:'Barcelona',destination:'Gênova',destination_aliases:['Genova'],ids:['chocolate'],aliases:['Chocolate']},
@@ -100,17 +100,30 @@
     const ordered=[...rows].filter(row=>{const t=rowTime(row);return Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
     if(event.sequence){
       let expected=0;
+      const user=norm(profile?.user||profile?.driver||profile?.account_user||'');
+      const approvals=new Map((Array.isArray(event.approved_steps?.[user])?event.approved_steps[user]:[]).map(item=>[Number(item.index),item]));
+      const usedApprovals=[];
+      const insertApprovedSteps=()=>{
+        while(expected>0&&approvals.has(expected)&&event.cargos?.[expected]){
+          const cargo=event.cargos[expected],approval=approvals.get(expected);
+          const row={source:cargo.origin||'',destination:cargo.destination||'',manual:true};
+          matched.set(cargo.official,{row,t:null,cargo,manual:true});
+          steps.push({row,t:null,cargo,manual:true,reason:approval.reason||''});
+          usedApprovals.push(approval);expected++;
+        }
+      };
       for(const row of ordered){
         const cargo=event.cargos?.[expected]; if(!cargo) break;
         if(cargoMatches(row,cargo)&&routeMatches(row,cargo)){
           matched.set(cargo.official,{row,t:rowTime(row),cargo}); steps.push({row,t:rowTime(row),cargo}); expected++;
+          insertApprovedSteps();
         }
       }
       const goal=Number(event.goal)||event.cargos?.length||0;
       const count=steps.length,completed=count>=goal;
-      const user=norm(profile?.user||profile?.driver||profile?.account_user||''),override=event.manual_completions?.[user]||null;
+      const override=event.manual_completions?.[user]||null;
       if(override)return {count:Math.min(Number(override.count)||goal,goal),goal,completed:override.completed!==false,completedAt:override.completedAt?Date.parse(override.completedAt):null,matched,manual:true,reason:override.reason||'',steps,completedSteps:count};
-      return {count,goal,completed,completedAt:completed?steps[steps.length-1]?.t:null,matched,manual:false,reason:'',steps,completedSteps:count};
+      return {count,goal,completed,completedAt:completed?steps[steps.length-1]?.t:null,matched,manual:usedApprovals.length>0,reason:usedApprovals.map(x=>x.reason).filter(Boolean).join(' '),steps,completedSteps:count};
     }
     for(const row of rows){
       const t=rowTime(row);if(!Number.isFinite(t)||t<start||t>=end)continue;
