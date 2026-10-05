@@ -1,5 +1,6 @@
 (()=>{
-  const GREEK_LATIN={α:'a',β:'b',γ:'g',δ:'d',ε:'e',ζ:'z',η:'i',θ:'th',ι:'i',κ:'k',λ:'l',μ:'m',ν:'n',ξ:'x',ο:'o',π:'p',ρ:'r',σ:'s',ς:'s',τ:'t',υ:'y',φ:'f',χ:'ch',ψ:'ps',ω:'o'};\n  const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[α-ως]/g,c=>GREEK_LATIN[c]||c).replace(/[^a-z0-9]+/g,' ').trim();
+  const GREEK_LATIN={α:'a',β:'b',γ:'g',δ:'d',ε:'e',ζ:'z',η:'i',θ:'th',ι:'i',κ:'k',λ:'l',μ:'m',ν:'n',ξ:'x',ο:'o',π:'p',ρ:'r',σ:'s',ς:'s',τ:'t',υ:'y',φ:'f',χ:'ch',ψ:'ps',ω:'o'};
+  const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[α-ως]/g,c=>GREEK_LATIN[c]||c).replace(/[^a-z0-9]+/g,' ').trim();
   const compact=v=>norm(v).replace(/[^a-z0-9]/g,'');
   function idVariants(v){
     const raw=compact(v);if(!raw)return [];
