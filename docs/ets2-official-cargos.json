@@ -90,12 +90,18 @@
       {
         "name": "Crawler Tractor",
         "dlc": "Farm Machinery",
-        "weight": "25"
+        "weight": "25",
+        "aliases": [
+          "Esteira de trator"
+        ]
       },
       {
         "name": "Crawler Tractor",
         "dlc": "High Power Cargo Pack",
-        "weight": "13"
+        "weight": "13",
+        "aliases": [
+          "Esteira de trator"
+        ]
       },
       {
         "name": "Disc Harrows",
@@ -145,7 +151,10 @@
       {
         "name": "Square Baler Krone BiG Pack 1290 HDP VC",
         "dlc": "KRONE Agriculture Equipment",
-        "weight": "10"
+        "weight": "10",
+        "aliases": [
+          "Enfardadeira quadradas Krone BiG Pack 1290 HDC VC"
+        ]
       },
       {
         "name": "Tractor JCB Fastrac 4220",
@@ -155,7 +164,10 @@
       {
         "name": "Tractors",
         "dlc": "Launch",
-        "weight": "8"
+        "weight": "8",
+        "aliases": [
+          "TRATOR"
+        ]
       }
     ],
     "fuel": [
@@ -193,7 +205,11 @@
         "name": "LPG",
         "name_pt": "GLP",
         "dlc": "Launch",
-        "weight": "10–22"
+        "weight": "10–22",
+        "aliases": [
+          "Gas de Cozinha",
+          "Gás de cozinha"
+        ]
       },
       {
         "name": "Petrol",
@@ -230,7 +246,10 @@
       {
         "name": "Beef",
         "dlc": "Launch",
-        "weight": "12–20"
+        "weight": "12–20",
+        "aliases": [
+          "Carne"
+        ]
       },
       {
         "name": "Canned Beans",
@@ -350,7 +369,10 @@
       {
         "name": "Pet Food",
         "dlc": "Scandinavia",
-        "weight": "9–20"
+        "weight": "9–20",
+        "aliases": [
+          "Ração"
+        ]
       },
       {
         "name": "Pork",
@@ -360,7 +382,10 @@
       {
         "name": "Potatoes",
         "dlc": "Launch",
-        "weight": "12–22"
+        "weight": "12–22",
+        "aliases": [
+          "BATATA"
+        ]
       },
       {
         "name": "Salmon Fillet",
@@ -444,7 +469,10 @@
       {
         "name": "Wood Chipper",
         "dlc": "Forest Machinery",
-        "weight": "26"
+        "weight": "26",
+        "aliases": [
+          "Picador de madeira"
+        ]
       },
       {
         "name": "Wood Shavings",
@@ -694,7 +722,10 @@
       {
         "name": "Arsenic",
         "dlc": "Launch",
-        "weight": "9–18"
+        "weight": "9–18",
+        "aliases": [
+          "Arsênico"
+        ]
       },
       {
         "name": "Boric Acid",
@@ -714,7 +745,9 @@
       {
         "name": "Chemical Sorbent",
         "name_pt": "Sorbente químico",
-        "aliases": ["Solvente químico"],
+        "aliases": [
+          "Solvente químico"
+        ],
         "dlc": "Launch",
         "weight": "4–11"
       },
@@ -731,12 +764,18 @@
       {
         "name": "Fertilizer",
         "dlc": "Launch",
-        "weight": "11–19"
+        "weight": "11–19",
+        "aliases": [
+          "Adubo"
+        ]
       },
       {
         "name": "Fertilizer Spreader",
         "dlc": "Farm Machinery",
-        "weight": "14"
+        "weight": "14",
+        "aliases": [
+          "Adubadora"
+        ]
       },
       {
         "name": "Hot Chemicals",
@@ -875,7 +914,10 @@
       {
         "name": "Metal Beams",
         "dlc": "Beyond the Baltic Sea",
-        "weight": "23"
+        "weight": "23",
+        "aliases": [
+          "Vigas de metal"
+        ]
       },
       {
         "name": "Metal Cans",
@@ -885,12 +927,18 @@
       {
         "name": "Metal Centring",
         "dlc": "Heavy Cargo Pack",
-        "weight": "28"
+        "weight": "28",
+        "aliases": [
+          "Centração de metal"
+        ]
       },
       {
         "name": "Metal Coil",
         "dlc": "Italia",
-        "weight": "12"
+        "weight": "12",
+        "aliases": [
+          "Bobina de metal"
+        ]
       },
       {
         "name": "Steel Cord",
@@ -977,7 +1025,10 @@
       {
         "name": "Industrial Cable Reel",
         "dlc": "Heavy Cargo Pack",
-        "weight": "34"
+        "weight": "34",
+        "aliases": [
+          "Rolo de cabo industrial"
+        ]
       }
     ],
     "industrial": [
@@ -1084,12 +1135,18 @@
       {
         "name": "Wind Turbine Nacelle",
         "dlc": "Scandinavia",
-        "weight": "21"
+        "weight": "21",
+        "aliases": [
+          "Nacele de Turbina Aeólica"
+        ]
       },
       {
         "name": "Wind Turbine Tower",
         "dlc": "Scandinavia",
-        "weight": "9–19"
+        "weight": "9–19",
+        "aliases": [
+          "Torre de Turbina Aeólica"
+        ]
       }
     ],
     "mining": [
@@ -1207,7 +1264,10 @@
       {
         "name": "Peanut Butter",
         "name_pt": "Manteiga de amendoim",
-        "aliases": ["Pasta de amendoim", "Massa de amendoim"],
+        "aliases": [
+          "Pasta de amendoim",
+          "Massa de amendoim"
+        ],
         "dlc": "Launch",
         "weight": "11–19"
       },
@@ -1226,7 +1286,9 @@
       {
         "name": "Hospital Waste",
         "name_pt": "Lixo hospitalar",
-        "aliases": ["Lixo hospitalar"],
+        "aliases": [
+          "Lixo hospitalar"
+        ],
         "dlc": "Launch",
         "weight": "11–23"
       },
@@ -1245,7 +1307,11 @@
       {
         "name": "Scrap Metals",
         "name_pt": "Metais de sucata",
-        "aliases": ["Sucata metálica"],
+        "aliases": [
+          "Sucata metálica",
+          "Sucata de Metal",
+          "Sucata de metal"
+        ],
         "dlc": "Launch",
         "weight": "21–26"
       },
@@ -1259,7 +1325,10 @@
       {
         "name": "Asphalt Miller - AM 0880",
         "dlc": "Heavy Cargo Pack",
-        "weight": "44"
+        "weight": "44",
+        "aliases": [
+          "Moedor de asfalto"
+        ]
       }
     ],
     "boats": [
@@ -1998,7 +2067,10 @@
       {
         "name": "Wagon Krone GX 520",
         "dlc": "KRONE Agriculture Equipment",
-        "weight": "10"
+        "weight": "10",
+        "aliases": [
+          "Vagão Krone GX 520"
+        ]
       },
       {
         "name": "Wall Panels",
