@@ -11,7 +11,7 @@ const fmtXp=v=>n(v).toLocaleString('pt-BR')+' XP';
 const fmtWeight=v=>n(v)>0?(n(v)/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' t':'—';
 const fmtDate=v=>{const d=new Date(v||'');return Number.isFinite(d.getTime())?d.toLocaleString('pt-BR'):'—'};
 function readSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||sessionStorage.getItem(SESSION_KEY)||'null')}catch(_){return null}}
-async function adminPost(path,extra={}){const s=readSession(),c=new AbortController(),t=setTimeout(()=>c.abort(),6500);try{const r=await fetch(ADMIN_API+path,{method:'POST',cache:'no-store',signal:c,headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({token:String(s?.token||''),...extra})});return {r,data:await r.json().catch(()=>null)}}finally{clearTimeout(t)}}
+async function adminPost(path,extra={}){const s=readSession(),c=new AbortController(),t=setTimeout(()=>c.abort(),6500);try{const r=await fetch(ADMIN_API+path,{method:'POST',cache:'no-store',signal:c.signal,headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({token:String(s?.token||''),...extra})});return {r,data:await r.json().catch(()=>null)}}finally{clearTimeout(t)}}
 function roleLabel(v){return ({owner:'PROPRIETÁRIO',admin:'ADMIN',moderator:'MODERADOR',driver:'MOTORISTA'})[String(v||'driver').toLowerCase()]||'MOTORISTA'}
 function stateLabel(v){const s=String(v||'assigned').toLowerCase();return s==='active'?'EM ANDAMENTO':s==='completed'?'CONCLUÍDA':s==='assigned'?'ATRIBUÍDA':s.toUpperCase()}
 function marketLabel(v){const s=String(v||'').toLowerCase();if(s==='test_any')return 'Homologação';if(s.includes('world')||s.includes('external')||s.includes('wot'))return 'World of Trucks';return v||'—'}
