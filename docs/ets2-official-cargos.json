@@ -191,6 +191,7 @@
       },
       {
         "name": "LPG",
+        "name_pt": "GLP",
         "dlc": "Launch",
         "weight": "10–22"
       },
@@ -712,6 +713,8 @@
       },
       {
         "name": "Chemical Sorbent",
+        "name_pt": "Sorbente químico",
+        "aliases": ["Solvente químico"],
         "dlc": "Launch",
         "weight": "4–11"
       },
@@ -1203,6 +1206,8 @@
       },
       {
         "name": "Peanut Butter",
+        "name_pt": "Manteiga de amendoim",
+        "aliases": ["Massa de amendoim"],
         "dlc": "Launch",
         "weight": "11–19"
       },
@@ -1936,6 +1941,7 @@
       },
       {
         "name": "Tracks",
+        "name_pt": "Faixas",
         "dlc": "High Power Cargo Pack",
         "weight": "11"
       },
