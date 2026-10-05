@@ -31,8 +31,8 @@ bindRelease('client_dotnet_version.json','clientVersion','clientDownload');
 function loadAccountSession(){
   try{const x=JSON.parse(sessionStorage.getItem(ACCOUNT_TOKEN_KEY)||'null');return x&&x.user&&x.token?x:null;}catch(_){return null;}
 }
-function saveAccountSession(user,token){accountSession={user,token};try{sessionStorage.setItem(ACCOUNT_TOKEN_KEY,JSON.stringify(accountSession));}catch(_){}updateAccountButton();}
-function clearAccountSession(){accountSession=null;try{sessionStorage.removeItem(ACCOUNT_TOKEN_KEY);}catch(_){}updateAccountButton();}
+function saveAccountSession(user,token,role=''){accountSession={user,token,role};try{sessionStorage.setItem(ACCOUNT_TOKEN_KEY,JSON.stringify(accountSession));}catch(_){}updateAccountButton();window.dispatchEvent(new CustomEvent('gat-account-change',{detail:{user,role}}));}
+function clearAccountSession(){accountSession=null;try{sessionStorage.removeItem(ACCOUNT_TOKEN_KEY);}catch(_){}updateAccountButton();window.dispatchEvent(new CustomEvent('gat-account-change',{detail:null}));}
 function setLoginStatus(text,type=''){const e=document.getElementById('loginStatus');e.textContent=text;e.className='login-status'+(type?' '+type:'');}
 function updateAccountButton(){
   const b=document.getElementById('accountButton');
@@ -74,7 +74,7 @@ async function submitLogin(event){
   try{
     const r=await accountRequest(ACCOUNT_LOGIN,{user,password});
     if(r.ok&&r.data?.ok&&r.data?.token){
-      saveAccountSession(r.data.user||user,r.data.token);
+      saveAccountSession(r.data.user||user,r.data.token,r.data.role||'driver');
       document.getElementById('loginPassword').value='';
       setLoginStatus('Conta conectada: @'+(r.data.user||user),'ok');
       setTimeout(hideAccountModal,500);
@@ -117,9 +117,9 @@ async function submitRegister(event){
 async function restoreAccount(){
   if(!accountSession?.token){updateAccountButton();return;}
   try{
-    const r=await fetch(ACCOUNT_AUTHORITY+ACCOUNT_SESSION,{cache:'no-store',headers:{Authorization:'Bearer '+accountSession.token}});
+    const r=await fetch(ACCOUNT_AUTHORITY+ACCOUNT_SESSION,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:accountSession.token})});
     const data=await r.json().catch(()=>null);
-    if(r.ok&&data?.ok&&data.user){accountSession.user=data.user;try{sessionStorage.setItem(ACCOUNT_TOKEN_KEY,JSON.stringify(accountSession));}catch(_){}updateAccountButton();return;}
+    if(r.ok&&data?.ok&&data.user){accountSession.user=data.user;accountSession.role=data.role||accountSession.role||'driver';try{sessionStorage.setItem(ACCOUNT_TOKEN_KEY,JSON.stringify(accountSession));}catch(_){}updateAccountButton();window.dispatchEvent(new CustomEvent('gat-account-change',{detail:{user:data.user,role:accountSession.role}}));return;}
   }catch(_){}
   clearAccountSession();
 }
