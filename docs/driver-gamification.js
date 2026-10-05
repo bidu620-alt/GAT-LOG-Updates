@@ -99,7 +99,7 @@
     ];
   }
 
-  function currentProfile(){try{return typeof profile!=='undefined'?profile:null}catch(_){return null}}
+  function currentProfile(){try{return window.GATCurrentDriverProfile||null}catch(_){return null}}
 
   function render(){
     ensureTabs();const p=currentProfile();if(!p)return;const history=Array.isArray(p.deliveries)?p.deliveries:[],parsed=history.map(parseDelivery),st=p.safety||fallbackSafety(history),lost=parsed.reduce((s,x)=>s+x.penalty,0);
