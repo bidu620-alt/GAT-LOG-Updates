@@ -95,7 +95,6 @@
       {id:'motorista_exemplar',title:'Motorista Exemplar',description:'Conclua 10 viagens sem excesso de velocidade e sem danos.',unlocked:exemplarTrips>=10,medal:'⭐',difficulty:'Difícil',xpReward:1000},
       {id:'rei_do_peso',title:'Rei do Peso',description:'Conclua 10 cargas de 40 toneladas ou mais.',unlocked:heavy40Trips>=10,medal:'🏋️',difficulty:'Difícil',xpReward:1000},
       {id:'maratonista',title:'Maratonista',description:'Conclua 5 viagens de 2.000 km ou mais.',unlocked:marathonTrips>=5,medal:'🏆',difficulty:'Muito difícil',xpReward:2000},
-      ...eventAchievements(p)
     ];
   }
 
