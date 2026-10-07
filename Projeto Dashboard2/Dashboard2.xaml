@@ -1,6 +1,6 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ROADLIFE Dashboard2 Green"
+        Title="ROADLIFE DASH"
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
@@ -623,3 +623,4 @@
     </Border>
   </Grid>
 </Window>
+
