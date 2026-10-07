@@ -1,0 +1,10 @@
+{
+  "app": "RoadLife Telemetria",
+  "channel": "stable",
+  "version": "1.0.68.12",
+  "display_version": "1.0.68.12",
+  "notas": "RoadLife Telemetria 1.0.68.12. Atualização centralizada pelo diretório update. Protocolo interno GAT preservado para compatibilidade com a Central.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/update/RoadLife_Telemetria_1.0.68.12.exe",
+  "sha256": "",
+  "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
+}
