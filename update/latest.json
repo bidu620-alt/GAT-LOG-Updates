@@ -1,10 +1,10 @@
 {
   "app": "RoadLife Telemetria",
   "channel": "stable",
-  "version": "1.0.68.12",
-  "display_version": "1.0.68.12",
-  "notas": "RoadLife Telemetria 1.0.68.12. Atualização centralizada pelo diretório update. Protocolo interno GAT preservado para compatibilidade com a Central.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/update/RoadLife_Telemetria_1.0.68.12.exe",
-  "sha256": "",
+  "version": "1.0.68.9",
+  "display_version": "1.0.68.9",
+  "notas": "Canal centralizado preparado para RoadLife Telemetria. A publicação da instalação 1.0.68.12 será ativada somente quando o instalador Windows estiver disponível, evitando downgrade ou link quebrado.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe",
+  "sha256": "2e85c3d83379ac0bd0dcb59629d12ae22d5d73df12897dd09c617d3b3c758356",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }
