@@ -8,6 +8,34 @@ namespace GatTelemetry;
 
 internal sealed partial class MainForm
 {
+    private sealed class RoadLifeMark044 : Control
+    {
+        public RoadLifeMark044()
+        {
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer |
+                     ControlStyles.ResizeRedraw | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
+            BackColor = Color.Transparent;
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var road = new Pen(Color.FromArgb(54, 242, 122), 5f))
+            using (var center = new Pen(Color.FromArgb(225, 255, 238), 1.5f))
+            {
+                road.StartCap = LineCap.Round; road.EndCap = LineCap.Round;
+                center.StartCap = LineCap.Round; center.EndCap = LineCap.Round;
+                var path = new GraphicsPath();
+                path.AddBezier(7, Height - 8, 7, Height / 2, Width - 5, Height / 2, Width - 5, 8);
+                e.Graphics.DrawPath(road, path);
+                center.DashStyle = DashStyle.Dash;
+                e.Graphics.DrawPath(center, path);
+                path.Dispose();
+            }
+        }
+    }
+
     private sealed class DriverAvatar044 : Control
     {
         public string Initials { get; set; } = "GAT";
@@ -24,11 +52,11 @@ internal sealed partial class MainForm
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             int d = Math.Max(24, Math.Min(Width, Height) - 8);
             var r = new Rectangle((Width - d) / 2, (Height - d) / 2, d, d);
-            using (var halo = new SolidBrush(Color.FromArgb(38, 50, 174, 255)))
+            using (var halo = new SolidBrush(Color.FromArgb(38, 54, 242, 122)))
                 e.Graphics.FillEllipse(halo, new Rectangle(r.X - 5, r.Y - 5, r.Width + 10, r.Height + 10));
-            using (var fill = new LinearGradientBrush(r, Color.FromArgb(5, 41, 74), Color.FromArgb(5, 18, 34), 90f))
+            using (var fill = new LinearGradientBrush(r, Color.FromArgb(8, 48, 31), Color.FromArgb(5, 18, 14), 90f))
                 e.Graphics.FillEllipse(fill, r);
-            using (var p = new Pen(Color.FromArgb(47, 174, 255), 2f))
+            using (var p = new Pen(Color.FromArgb(54, 242, 122), 2f))
                 e.Graphics.DrawEllipse(p, r);
             string text = string.IsNullOrWhiteSpace(Initials) ? "GAT" : Initials.Trim().ToUpperInvariant();
             if (text.Length > 2) text = text.Substring(0, 2);
@@ -48,7 +76,7 @@ internal sealed partial class MainForm
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer |
                      ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
-            BackColor = Color.FromArgb(7, 24, 43);
+            BackColor = Color.FromArgb(7, 27, 20);
             Padding = new Padding(18, 50, 18, 16);
             Margin = new Padding(7);
         }
@@ -58,9 +86,9 @@ internal sealed partial class MainForm
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             var rect = new Rectangle(1, 1, Math.Max(2, Width - 3), Math.Max(2, Height - 3));
             using (var path = Round044(rect, 14))
-            using (var border = new Pen(Color.FromArgb(34, 125, 205), 1.2f))
+            using (var border = new Pen(Color.FromArgb(38, 120, 77), 1.2f))
                 e.Graphics.DrawPath(border, path);
-            using (var line = new Pen(Color.FromArgb(30, 83, 132), 1f))
+            using (var line = new Pen(Color.FromArgb(31, 76, 52), 1f))
                 e.Graphics.DrawLine(line, 18, 42, Math.Max(19, Width - 18), 42);
             using (var f = new Font("Segoe UI Semibold", 10.5f, FontStyle.Bold))
             using (var b = new SolidBrush(Color.FromArgb(225, 239, 255)))
@@ -75,7 +103,7 @@ internal sealed partial class MainForm
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer |
                      ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
-            BackColor = Color.FromArgb(2, 11, 22);
+            BackColor = Color.FromArgb(5, 17, 12);
         }
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -92,6 +120,9 @@ internal sealed partial class MainForm
                 int y = (bounds.Height - h) / 2;
                 e.Graphics.DrawImage(HeroImage, new Rectangle(x, y, w, h));
             }
+            // A camada verde suaviza o antigo tom azul da imagem sem esconder o caminhão.
+            using (var roadlifeTint = new SolidBrush(Color.FromArgb(82, 4, 67, 37)))
+                e.Graphics.FillRectangle(roadlifeTint, bounds);
             using (var dark = new LinearGradientBrush(bounds,
                 Color.FromArgb(205, 1, 11, 23), Color.FromArgb(35, 1, 11, 23), 0f))
                 e.Graphics.FillRectangle(dark, bounds);
@@ -100,25 +131,16 @@ internal sealed partial class MainForm
                 e.Graphics.FillRectangle(bottom, bounds);
 
             float sx = 30f, sy = Math.Max(25f, Height * 0.18f);
-            using (var f1 = new Font("Segoe UI Black", Math.Max(28f, Math.Min(54f, Width / 22f)), FontStyle.Bold | FontStyle.Italic))
-            using (var white = new SolidBrush(Color.White))
-            using (var blue = new SolidBrush(Color.FromArgb(24, 154, 255)))
-            {
-                string a = "GAT";
-                e.Graphics.DrawString(a, f1, white, sx, sy);
-                var s = e.Graphics.MeasureString(a, f1);
-                e.Graphics.DrawString("LOG", f1, blue, sx + s.Width - 5, sy);
-            }
             using (var f2 = new Font("Segoe UI Semibold", 11f, FontStyle.Bold))
             using (var b = new SolidBrush(Color.FromArgb(215, 232, 249)))
-                e.Graphics.DrawString("E S T R A D A S   Q U E   N O S   U N E M", f2, b, sx + 4, sy + 66);
+                e.Graphics.DrawString("ESTRADAS QUE NOS UNEM", f2, b, sx + 4, sy);
 
             using (var f3 = new Font("Segoe UI", 9.5f))
             using (var b = new SolidBrush(Color.FromArgb(197, 219, 240)))
             {
-                e.Graphics.DrawString("● COMUNIDADE ATIVA", f3, b, sx + 4, sy + 108);
-                e.Graphics.DrawString("★ VIAGENS REAIS • AMIZADES VERDADEIRAS", f3, b, sx + 4, sy + 136);
-                e.Graphics.DrawString("▣ SEMPRE EM FRENTE", f3, b, sx + 4, sy + 164);
+                e.Graphics.DrawString("● COMUNIDADE ATIVA", f3, b, sx + 4, sy + 36);
+                e.Graphics.DrawString("★ VIAGENS REAIS • AMIZADES VERDADEIRAS", f3, b, sx + 4, sy + 64);
+                e.Graphics.DrawString("▣ SEMPRE EM FRENTE", f3, b, sx + 4, sy + 92);
             }
 
             using (var f4 = new Font("Segoe UI Semibold", 10f, FontStyle.Italic))
@@ -179,8 +201,8 @@ internal sealed partial class MainForm
             if (b == null) continue;
             b.FlatStyle = FlatStyle.Flat;
             b.FlatAppearance.BorderSize = 0;
-            b.FlatAppearance.MouseOverBackColor = Color.FromArgb(14, 64, 108);
-            b.FlatAppearance.MouseDownBackColor = Color.FromArgb(15, 91, 154);
+            b.FlatAppearance.MouseOverBackColor = Color.FromArgb(14, 64, 39);
+            b.FlatAppearance.MouseDownBackColor = Color.FromArgb(15, 91, 51);
             b.Height = 38;
             b.Font = new Font("Segoe UI Semibold", 9.2f, FontStyle.Bold);
             b.ForeColor = Color.FromArgb(218, 233, 248);
@@ -196,7 +218,7 @@ internal sealed partial class MainForm
         page.SuspendLayout();
         page.Controls.Clear();
         page.Padding = Padding.Empty;
-        page.BackColor = Color.FromArgb(2, 10, 20);
+        page.BackColor = Color.FromArgb(5, 17, 12);
 
         try
         {
@@ -255,7 +277,7 @@ internal sealed partial class MainForm
         {
             Left = 18, Top = 165, Width = 92, Height = 28,
             Text = "MOTORISTA GAT", TextAlign = ContentAlignment.MiddleCenter,
-            BackColor = Color.FromArgb(8, 68, 116), ForeColor = Color.FromArgb(108, 204, 255),
+            BackColor = Color.FromArgb(8, 68, 38), ForeColor = Color.FromArgb(135, 235, 171),
             Font = new Font("Segoe UI Semibold", 8f, FontStyle.Bold)
         };
         profile.Controls.Add(_homeAvatar044);
@@ -346,9 +368,9 @@ internal sealed partial class MainForm
             Padding = new Padding(14, 0, 8, 0),
             Cursor = Cursors.Hand
         };
-        b.FlatAppearance.BorderColor = Color.FromArgb(35, 135, 215);
+        b.FlatAppearance.BorderColor = Color.FromArgb(42, 136, 80);
         b.FlatAppearance.BorderSize = 1;
-        b.FlatAppearance.MouseOverBackColor = Color.FromArgb(235, 8, 45, 76);
+        b.FlatAppearance.MouseOverBackColor = Color.FromArgb(235, 8, 45, 28);
         return b;
     }
 
