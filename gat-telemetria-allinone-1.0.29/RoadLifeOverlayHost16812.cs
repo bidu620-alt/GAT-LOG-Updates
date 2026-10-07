@@ -266,6 +266,7 @@ internal sealed partial class MainForm
 
         double limit = RoadLifeDouble(truck["speed_limit_kmh"]);
         SetRoadLifeText("LimitText", limit > 0 ? RoadLifeInt(limit) : "—");
+        RoadLifeOverlaySetSpeedColor(RoadLifeDouble(truck["speed_kmh"]), limit);
         double cruiseSet = RoadLifeDouble(truck["cruise_speed_kmh"]);
         SetRoadLifeText("CruiseText", RoadLifeBool(truck["cruise"]) && cruiseSet > 0 ? RoadLifeInt(cruiseSet) + " km/h" : "—");
         SetRoadLifeText("EtaText", RoadLifeString(d["driver"], "—"));
@@ -282,6 +283,25 @@ internal sealed partial class MainForm
         if (_roadLifeOverlay == null) return;
         System.Windows.Controls.TextBlock tb = _roadLifeOverlay.FindName(name) as System.Windows.Controls.TextBlock;
         if (tb != null) tb.Text = value ?? string.Empty;
+    }
+
+    private void RoadLifeOverlaySetSpeedColor(double speed, double limit)
+    {
+        System.Windows.Media.Color color = System.Windows.Media.Color.FromRgb(54, 242, 122);
+        if (!double.IsNaN(speed) && !double.IsNaN(limit) && limit > 0.1)
+        {
+            double ratio = Math.Abs(speed) / limit;
+            if (ratio >= 1.0)
+                color = System.Windows.Media.Color.FromRgb(255, 65, 82);
+            else if (ratio >= 0.90)
+                color = System.Windows.Media.Color.FromRgb(255, 177, 55);
+        }
+
+        var brush = new System.Windows.Media.SolidColorBrush(color);
+        System.Windows.Controls.TextBlock speedText = _roadLifeOverlay.FindName("SpeedText") as System.Windows.Controls.TextBlock;
+        if (speedText != null) speedText.Foreground = brush;
+        System.Windows.Shapes.Ellipse ring = _roadLifeOverlay.FindName("SpeedRing") as System.Windows.Shapes.Ellipse;
+        if (ring != null) ring.Stroke = brush;
     }
 
     private void LoadRoadLifeImage(string controlName, string path)

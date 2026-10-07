@@ -52,7 +52,7 @@ internal sealed partial class MainForm
         page.SuspendLayout();
         page.Controls.Clear();
         page.Padding = Padding.Empty;
-        page.BackColor = Color.FromArgb(2, 10, 20);
+        page.BackColor = Color.FromArgb(5, 17, 12);
 
         var root = new TableLayoutPanel
         {
@@ -100,7 +100,7 @@ internal sealed partial class MainForm
         {
             Left = 16, Top = 147, Width = 88, Height = 25,
             Text = "MOTORISTA GAT", TextAlign = ContentAlignment.MiddleCenter,
-            BackColor = Color.FromArgb(8, 68, 116), ForeColor = Color.FromArgb(108, 204, 255),
+            BackColor = Color.FromArgb(8, 68, 38), ForeColor = Color.FromArgb(135, 235, 171),
             Font = new Font("Segoe UI Semibold", 7.7f, FontStyle.Bold)
         };
         profile.Controls.Add(_homeAvatar045);
@@ -191,7 +191,7 @@ internal sealed partial class MainForm
             Width = 220, Height = 25, Top = 12,
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             TextAlign = ContentAlignment.MiddleRight,
-            ForeColor = Color.FromArgb(80, 181, 255),
+            ForeColor = Color.FromArgb(92, 211, 133),
             BackColor = Color.Transparent,
             Font = new Font("Segoe UI Semibold", 9f, FontStyle.Bold)
         };
@@ -215,10 +215,10 @@ internal sealed partial class MainForm
         var g = new DataGridView
         {
             Dock = DockStyle.Fill,
-            BackgroundColor = Color.FromArgb(5, 18, 33),
+            BackgroundColor = Color.FromArgb(5, 18, 13),
             BorderStyle = BorderStyle.None,
             CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
-            GridColor = Color.FromArgb(24, 59, 89),
+            GridColor = Color.FromArgb(24, 66, 41),
             RowHeadersVisible = false,
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
             AllowUserToAddRows = false,
@@ -230,14 +230,14 @@ internal sealed partial class MainForm
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             EnableHeadersVisualStyles = false
         };
-        g.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(10, 43, 72);
+        g.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(10, 43, 28);
         g.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(220, 235, 250);
         g.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 8.2f, FontStyle.Bold);
         g.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
         g.ColumnHeadersHeight = 35;
-        g.DefaultCellStyle.BackColor = Color.FromArgb(5, 18, 33);
+        g.DefaultCellStyle.BackColor = Color.FromArgb(5, 18, 13);
         g.DefaultCellStyle.ForeColor = Color.FromArgb(220, 232, 245);
-        g.DefaultCellStyle.SelectionBackColor = Color.FromArgb(10, 55, 88);
+        g.DefaultCellStyle.SelectionBackColor = Color.FromArgb(10, 55, 31);
         g.DefaultCellStyle.SelectionForeColor = Color.White;
         g.DefaultCellStyle.Font = new Font("Segoe UI", 8.7f);
         g.RowTemplate.Height = 36;
@@ -256,7 +256,7 @@ internal sealed partial class MainForm
             if (s.IndexOf("Em rota", StringComparison.OrdinalIgnoreCase) >= 0)
                 e.CellStyle.ForeColor = Color.FromArgb(72, 235, 132);
             else if (s.IndexOf("Online", StringComparison.OrdinalIgnoreCase) >= 0)
-                e.CellStyle.ForeColor = Color.FromArgb(87, 184, 255);
+                e.CellStyle.ForeColor = Color.FromArgb(112, 203, 150);
             else
                 e.CellStyle.ForeColor = Color.FromArgb(255, 121, 121);
         };

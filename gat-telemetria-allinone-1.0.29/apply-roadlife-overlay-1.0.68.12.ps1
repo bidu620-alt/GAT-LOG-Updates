@@ -94,6 +94,20 @@ $brandReplacements=@(
   @('Canal GAT','Canal RoadLife')
 )
 foreach($pair in $brandReplacements){$hubText=$hubText.Replace($pair[0],$pair[1])}
+$headerPattern='(?s)    private Control HubHeader041\(\)\s*\{.*?\r?\n    \}'
+$headerReplacement=@'
+    private Control HubHeader041()
+    {
+        var p = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(7, 24, 18) };
+        p.Controls.Add(new RoadLifeMark044 { Left = 22, Top = 13, Width = 34, Height = 42 });
+        p.Controls.Add(new Label { Text = "ROADLIFE", Left = 64, Top = 7, AutoSize = true, ForeColor = Color.FromArgb(54, 242, 122), Font = new Font("Segoe UI Black", 26, FontStyle.Bold | FontStyle.Italic) });
+        p.Controls.Add(new Label { Text = "TELEMETRIA", Left = 251, Top = 20, AutoSize = true, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 15, FontStyle.Bold) });
+        p.Controls.Add(new Label { Text = "ETS2 • VIAGENS, ESTRADAS E AMIZADES", Left = 66, Top = 49, AutoSize = true, ForeColor = Color.FromArgb(168, 206, 181), Font = new Font("Segoe UI", 8.5f) });
+        return p;
+    }
+'@
+if(-not [regex]::IsMatch($hubText,$headerPattern)){throw 'Cabecalho Hub041 nao encontrado para aplicar a marca RoadLife.'}
+$hubText=[regex]::Replace($hubText,$headerPattern,$headerReplacement.TrimEnd(),1)
 $hubText=$hubText.Replace('Text = "ROADLIFE", Left = 22, Top = 10, AutoSize = true, ForeColor = Color.White','Text = "ROADLIFE", Left = 22, Top = 10, AutoSize = true, ForeColor = Color.FromArgb(54, 242, 122)')
 $hubText=$hubText.Replace('Color.FromArgb(8, 29, 50)','Color.FromArgb(7, 38, 26)')
 $hubText=$hubText.Replace('Color.FromArgb(38, 88, 135)','Color.FromArgb(35, 119, 75)')

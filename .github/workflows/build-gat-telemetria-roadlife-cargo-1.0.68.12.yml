@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'Projeto Dashboard2/**'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub044.cs'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub045.cs'
       - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
       - 'gat-telemetria-allinone-1.0.29/apply-roadlife-overlay-1.0.68.12.ps1'
       - 'scripts/build-roadlife-cargo-assets.py'
@@ -17,6 +19,8 @@ on:
     branches: [main]
     paths:
       - 'Projeto Dashboard2/**'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub044.cs'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub045.cs'
       - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
       - 'gat-telemetria-allinone-1.0.29/apply-roadlife-overlay-1.0.68.12.ps1'
       - 'scripts/build-roadlife-cargo-assets.py'

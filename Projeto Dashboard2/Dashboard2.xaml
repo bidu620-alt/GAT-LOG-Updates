@@ -319,7 +319,8 @@
                      HorizontalAlignment="Stretch"
                      VerticalAlignment="Stretch">
               <Grid Width="150" Height="150">
-                <Ellipse Fill="{StaticResource PanelBrush}"
+                <Ellipse Name="SpeedRing"
+                         Fill="{StaticResource PanelBrush}"
                          Stroke="{DynamicResource EdgeBrush}"
                          StrokeThickness="1.5"
                          Margin="2"/>
