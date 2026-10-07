@@ -2,6 +2,17 @@ name: Build ROADLIFE TELEMETRIA 1.0.68.12
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Projeto Dashboard2/**'
+      - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
+      - 'gat-telemetria-allinone-1.0.29/apply-roadlife-overlay-1.0.68.12.ps1'
+      - 'scripts/build-roadlife-cargo-assets.py'
+      - 'docs/assets/cargo/**'
+      - 'docs/ets2-official-cargos.json'
+      - 'docs/work-catalog.js'
+      - '.github/workflows/build-gat-telemetria-roadlife-cargo-1.0.68.12.yml'
   push:
     branches: [main]
     paths:
