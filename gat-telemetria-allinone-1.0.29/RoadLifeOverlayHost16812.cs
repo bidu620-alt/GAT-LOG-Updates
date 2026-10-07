@@ -89,6 +89,7 @@ internal sealed partial class MainForm
             }
 
             LoadRoadLifeImage("StructureImage", Path.Combine(RoadLifeOverlayRoot(), "Assets", "dashboard-structure-green.png"));
+            LoadRoadLifeImage("RoadLifeLogo", Path.Combine(RoadLifeOverlayRoot(), "Assets", "roadlife-logo-model1.png"));
 
             _roadLifeOverlay.SourceInitialized += delegate
             {

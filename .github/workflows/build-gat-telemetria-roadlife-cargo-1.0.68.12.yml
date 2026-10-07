@@ -210,6 +210,8 @@ jobs:
           if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
           if(-not(Test-Path (Join-Path $stage 'GAT_TELEMETRIA_APP.exe'))){throw 'GAT 1.0.68.12 ausente'}
           if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDash/RoadLifeDash.xaml'))){throw 'RoadLife Dash incompleto no staging'}
+          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDash/Assets/roadlife-logo-model1.png'))){throw 'Logo ROADLIFE ausente no Dash'}
+          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDash/Assets/roadlife-symbol-model1.png'))){throw 'Símbolo ROADLIFE ausente no app'}
 
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress

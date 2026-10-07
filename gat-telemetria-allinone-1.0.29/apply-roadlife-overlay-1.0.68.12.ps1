@@ -99,9 +99,13 @@ $headerReplacement=@'
     private Control HubHeader041()
     {
         var p = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(7, 24, 18) };
-        p.Controls.Add(new RoadLifeMark044 { Left = 22, Top = 13, Width = 34, Height = 42 });
-        p.Controls.Add(new Label { Text = "ROADLIFE", Left = 64, Top = 7, AutoSize = true, ForeColor = Color.FromArgb(54, 242, 122), Font = new Font("Segoe UI Black", 26, FontStyle.Bold | FontStyle.Italic) });
-        p.Controls.Add(new Label { Text = "TELEMETRIA", Left = 251, Top = 20, AutoSize = true, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 15, FontStyle.Bold) });
+        var brandMark = new PictureBox { Left = 18, Top = 10, Width = 54, Height = 54, SizeMode = PictureBoxSizeMode.Zoom, BackColor = Color.Transparent };
+        string brandMarkPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RoadLifeDash", "Assets", "roadlife-symbol-model1.png");
+        if (File.Exists(brandMarkPath)) { using (var source = Image.FromFile(brandMarkPath)) brandMark.Image = new Bitmap(source); }
+        else brandMark.Controls.Add(new RoadLifeMark044 { Dock = DockStyle.Fill });
+        p.Controls.Add(brandMark);
+        p.Controls.Add(new Label { Text = "ROADLIFE", Left = 80, Top = 7, AutoSize = true, ForeColor = Color.FromArgb(54, 242, 122), Font = new Font("Segoe UI Black", 26, FontStyle.Bold | FontStyle.Italic) });
+        p.Controls.Add(new Label { Text = "TELEMETRIA", Left = 267, Top = 20, AutoSize = true, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 15, FontStyle.Bold) });
         return p;
     }
 '@
