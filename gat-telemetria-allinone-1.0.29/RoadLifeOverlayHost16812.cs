@@ -20,12 +20,12 @@ internal sealed partial class MainForm
 
     private static string RoadLifeOverlayRoot()
     {
-        return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RoadLifeDashboard2");
+        return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RoadLifeDash");
     }
 
     private static string RoadLifeOverlayXaml()
     {
-        return Path.Combine(RoadLifeOverlayRoot(), "Dashboard2.xaml");
+        return Path.Combine(RoadLifeOverlayRoot(), "RoadLifeDash.xaml");
     }
 
     private void RoadLifeOverlayInitialize()
@@ -61,8 +61,8 @@ internal sealed partial class MainForm
             if (!File.Exists(xamlPath))
             {
                 System.Windows.Forms.MessageBox.Show(
-                    "Dashboard2.xaml não encontrado.\r\n\r\n" + xamlPath,
-                    "ROADLIFE DASHBOARD2",
+                    "RoadLifeDash.xaml não encontrado.\r\n\r\n" + xamlPath,
+                    "ROADLIFE DASH",
                     System.Windows.Forms.MessageBoxButtons.OK,
                     System.Windows.Forms.MessageBoxIcon.Warning);
                 return;
@@ -74,7 +74,7 @@ internal sealed partial class MainForm
 
             _roadLifeOverlay = loaded as System.Windows.Window;
             if (_roadLifeOverlay == null)
-                throw new InvalidOperationException("Dashboard2.xaml não contém uma Window válida.");
+                throw new InvalidOperationException("RoadLifeDash.xaml não contém uma Window válida.");
 
             System.Windows.FrameworkElement root = _roadLifeOverlay.FindName("Root") as System.Windows.FrameworkElement;
             if (root != null)
@@ -150,7 +150,7 @@ internal sealed partial class MainForm
             ClientStore.Log("RoadLife Dashboard2 abrir: " + ex);
             System.Windows.Forms.MessageBox.Show(
                 ex.Message,
-                "ROADLIFE DASHBOARD2",
+                "ROADLIFE DASH",
                 System.Windows.Forms.MessageBoxButtons.OK,
                 System.Windows.Forms.MessageBoxIcon.Warning);
         }
@@ -644,3 +644,4 @@ internal sealed partial class MainForm
         [DllImport("user32.dll")] internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
     }
 }
+
