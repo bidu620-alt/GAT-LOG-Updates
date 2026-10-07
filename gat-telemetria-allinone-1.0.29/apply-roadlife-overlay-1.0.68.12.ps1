@@ -102,7 +102,6 @@ $headerReplacement=@'
         p.Controls.Add(new RoadLifeMark044 { Left = 22, Top = 13, Width = 34, Height = 42 });
         p.Controls.Add(new Label { Text = "ROADLIFE", Left = 64, Top = 7, AutoSize = true, ForeColor = Color.FromArgb(54, 242, 122), Font = new Font("Segoe UI Black", 26, FontStyle.Bold | FontStyle.Italic) });
         p.Controls.Add(new Label { Text = "TELEMETRIA", Left = 251, Top = 20, AutoSize = true, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 15, FontStyle.Bold) });
-        p.Controls.Add(new Label { Text = "ETS2 • VIAGENS, ESTRADAS E AMIZADES", Left = 66, Top = 49, AutoSize = true, ForeColor = Color.FromArgb(168, 206, 181), Font = new Font("Segoe UI", 8.5f) });
         return p;
     }
 '@
