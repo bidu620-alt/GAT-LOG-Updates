@@ -130,7 +130,7 @@
       "official": "Peça gigante secreta",
       "label": "Peça gigante secreta",
       "ids": [
-        "secret_giant_part"
+        "mystery_box"
       ],
       "min_km": 1000,
       "xp": 1000
@@ -145,10 +145,10 @@
       "xp": 1000
     },
     {
-      "official": "Dispositivo de Alta Tecnologia",
+      "official": "Dispositivo high-tech",
       "label": "Dispositivo de Alta Tecnologia",
       "ids": [
-        "high_tech_device"
+        "mystery_cyl"
       ],
       "min_km": 1000,
       "xp": 1000
@@ -163,10 +163,10 @@
       "xp": 1000
     },
     {
-      "official": "Chassi de Caminhão",
+      "official": "Chassis de Caminhão de Mineração",
       "label": "Chassi de Caminhão",
       "ids": [
-        "truck_chassis"
+        "dumper"
       ],
       "min_km": 1000,
       "xp": 1000
