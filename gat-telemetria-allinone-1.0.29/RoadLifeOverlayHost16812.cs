@@ -1,4 +1,4 @@
-using System;
+using System; // build trigger for speed-limit update
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -20,12 +20,12 @@ internal sealed partial class MainForm
 
     private static string RoadLifeOverlayRoot()
     {
-        return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RoadLifeDashboard2");
+        return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RoadLifeDash");
     }
 
     private static string RoadLifeOverlayXaml()
     {
-        return Path.Combine(RoadLifeOverlayRoot(), "Dashboard2.xaml");
+        return Path.Combine(RoadLifeOverlayRoot(), "RoadLifeDash.xaml");
     }
 
     private void RoadLifeOverlayInitialize()
@@ -61,8 +61,8 @@ internal sealed partial class MainForm
             if (!File.Exists(xamlPath))
             {
                 System.Windows.Forms.MessageBox.Show(
-                    "Dashboard2.xaml não encontrado.\r\n\r\n" + xamlPath,
-                    "ROADLIFE DASHBOARD2",
+                    "RoadLifeDash.xaml não encontrado.\r\n\r\n" + xamlPath,
+                    "ROADLIFE DASH",
                     System.Windows.Forms.MessageBoxButtons.OK,
                     System.Windows.Forms.MessageBoxIcon.Warning);
                 return;
@@ -74,7 +74,7 @@ internal sealed partial class MainForm
 
             _roadLifeOverlay = loaded as System.Windows.Window;
             if (_roadLifeOverlay == null)
-                throw new InvalidOperationException("Dashboard2.xaml não contém uma Window válida.");
+                throw new InvalidOperationException("RoadLifeDash.xaml não contém uma Window válida.");
 
             System.Windows.FrameworkElement root = _roadLifeOverlay.FindName("Root") as System.Windows.FrameworkElement;
             if (root != null)
@@ -89,6 +89,7 @@ internal sealed partial class MainForm
             }
 
             LoadRoadLifeImage("StructureImage", Path.Combine(RoadLifeOverlayRoot(), "Assets", "dashboard-structure-green.png"));
+            LoadRoadLifeImage("RoadLifeLogo", Path.Combine(RoadLifeOverlayRoot(), "Assets", "roadlife-symbol-model1.png"));
 
             _roadLifeOverlay.SourceInitialized += delegate
             {
@@ -150,7 +151,7 @@ internal sealed partial class MainForm
             ClientStore.Log("RoadLife Dashboard2 abrir: " + ex);
             System.Windows.Forms.MessageBox.Show(
                 ex.Message,
-                "ROADLIFE DASHBOARD2",
+                "ROADLIFE DASH",
                 System.Windows.Forms.MessageBoxButtons.OK,
                 System.Windows.Forms.MessageBoxIcon.Warning);
         }
@@ -266,6 +267,7 @@ internal sealed partial class MainForm
 
         double limit = RoadLifeDouble(truck["speed_limit_kmh"]);
         SetRoadLifeText("LimitText", limit > 0 ? RoadLifeInt(limit) : "—");
+        RoadLifeOverlaySetSpeedColor(RoadLifeDouble(truck["speed_kmh"]), limit);
         double cruiseSet = RoadLifeDouble(truck["cruise_speed_kmh"]);
         SetRoadLifeText("CruiseText", RoadLifeBool(truck["cruise"]) && cruiseSet > 0 ? RoadLifeInt(cruiseSet) + " km/h" : "—");
         SetRoadLifeText("EtaText", RoadLifeString(d["driver"], "—"));
@@ -274,7 +276,6 @@ internal sealed partial class MainForm
         SetRoadLifeText("TruckDamageText", RoadLifeDec(RoadLifeDouble(damage["truck_pct"]), 1) + "%");
         SetRoadLifeText("TrailerDamageText", RoadLifeDec(RoadLifeDouble(damage["trailer_pct"]), 1) + "%");
         SetRoadLifeText("CargoDamageText", RoadLifeDec(RoadLifeDouble(damage["cargo_pct"]), 1) + "%");
-        SetRoadLifeText("OnlineText", RoadLifeBool(d["online"]) ? "● ONLINE" : "● OFFLINE");
     }
 
     private void SetRoadLifeText(string name, string value)
@@ -282,6 +283,25 @@ internal sealed partial class MainForm
         if (_roadLifeOverlay == null) return;
         System.Windows.Controls.TextBlock tb = _roadLifeOverlay.FindName(name) as System.Windows.Controls.TextBlock;
         if (tb != null) tb.Text = value ?? string.Empty;
+    }
+
+    private void RoadLifeOverlaySetSpeedColor(double speed, double limit)
+    {
+        System.Windows.Media.Color color = System.Windows.Media.Color.FromRgb(255, 255, 255);
+        if (!double.IsNaN(speed) && !double.IsNaN(limit) && limit > 0.1)
+        {
+            double currentSpeed = Math.Abs(speed);
+            if (currentSpeed > limit)
+                color = System.Windows.Media.Color.FromRgb(255, 65, 82);
+            else if (currentSpeed >= limit - 3.0)
+                color = System.Windows.Media.Color.FromRgb(255, 177, 55);
+        }
+
+        var brush = new System.Windows.Media.SolidColorBrush(color);
+        System.Windows.Controls.TextBlock speedText = _roadLifeOverlay.FindName("SpeedText") as System.Windows.Controls.TextBlock;
+        if (speedText != null) speedText.Foreground = brush;
+        System.Windows.Shapes.Ellipse ring = _roadLifeOverlay.FindName("SpeedRing") as System.Windows.Shapes.Ellipse;
+        if (ring != null) ring.Stroke = brush;
     }
 
     private void LoadRoadLifeImage(string controlName, string path)
@@ -456,9 +476,12 @@ internal sealed partial class MainForm
             speed *= 3.6;
 
         double temperature = RoadLifeOverlayNumber(tele, "truck.waterTemperature", "Truck.WaterTemperature", "waterTemperature", "water_temperature", "truck.engineTemperature");
-        double speedLimit = RoadLifeOverlayNumber(tele, "navigation.speedLimit", "Navigation.SpeedLimit", "speedLimit", "speed_limit_kmh");
+        double speedLimit = RoadLifeOverlayNumber(tele, "speed_limit_kmh", "navigation.speedLimit", "Navigation.SpeedLimit", "speedLimit");
         if (!double.IsNaN(speedLimit) && speedLimit > 0 && speedLimit < 3.0)
             speedLimit *= 3.6;
+        if ((double.IsNaN(speedLimit) || double.IsInfinity(speedLimit) || speedLimit <= 0 || speedLimit > 250)
+            && RoadLifeOverlayBoolean(tele, "game.connected", "gameConnected", "connected"))
+            speedLimit = 56.0;
 
         double cruiseSpeed = RoadLifeOverlayNumber(tele, "truck.cruiseControlSpeed", "Truck.CruiseControlSpeed", "cruiseControlSpeed", "cruise_speed");
         if (!double.IsNaN(cruiseSpeed) && cruiseSpeed > 0 && cruiseSpeed < 3.0)
@@ -644,3 +667,4 @@ internal sealed partial class MainForm
         [DllImport("user32.dll")] internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
     }
 }
+
