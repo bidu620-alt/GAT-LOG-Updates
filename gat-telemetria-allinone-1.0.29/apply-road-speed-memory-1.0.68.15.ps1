@@ -4,6 +4,7 @@ $ErrorActionPreference='Stop'
 $file=Get-ChildItem (Resolve-Path $Root).Path -Filter 'TelemetryEngine.cs' -Recurse | Select-Object -First 1
 if(-not $file){ throw 'TelemetryEngine.cs ausente' }
 $text=Get-Content $file.FullName -Raw
+$text=[regex]::Replace($text,'`r`n',"`n")
 if($text -like '*NormalizeRoadLimit(JObject m)*'){ Write-Host 'Memoria de limite ja aplicada'; exit 0 }
 $text=$text.Replace('private DateTime _lastStartAttempt = DateTime.MinValue;','private DateTime _lastStartAttempt = DateTime.MinValue;')
 $text=$text.Replace('private DateTime _lastStartAttempt = DateTime.MinValue;','private DateTime _lastStartAttempt = DateTime.MinValue;'+[Environment]::NewLine+'\tprivate static readonly object _roadLimitSync = new object();'+[Environment]::NewLine+'\tprivate static double _lastGameRoadLimitKmh = double.NaN;')
