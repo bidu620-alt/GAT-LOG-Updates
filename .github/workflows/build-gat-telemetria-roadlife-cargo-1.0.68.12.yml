@@ -1,13 +1,37 @@
-name: Build GAT Telemetria 1.0.68.12 ROADLIFE CARGA DINAMICA TESTE
+name: Build ROADLIFE TELEMETRIA 1.0.68.12
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Projeto Dashboard2/**'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub044.cs'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub045.cs'
+      - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
+      - 'gat-telemetria-allinone-1.0.29/apply-roadlife-overlay-1.0.68.12.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-road-speed-tolerance-1.0.68.13.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-default-speed-voice-1.0.68.14.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-road-speed-memory-1.0.68.15.ps1'
+      - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
+      - 'docs/regras.html'
+      - 'scripts/build-roadlife-cargo-assets.py'
+      - 'docs/assets/cargo/**'
+      - 'docs/ets2-official-cargos.json'
+      - 'docs/work-catalog.js'
+      - '.github/workflows/build-gat-telemetria-roadlife-cargo-1.0.68.12.yml'
   push:
     branches: [main]
     paths:
       - 'Projeto Dashboard2/**'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub044.cs'
+      - 'gat-telemetria-allinone-1.0.29/MainForm.Hub045.cs'
       - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
       - 'gat-telemetria-allinone-1.0.29/apply-roadlife-overlay-1.0.68.12.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-road-speed-tolerance-1.0.68.13.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-default-speed-voice-1.0.68.14.ps1'
+      - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
+      - 'docs/regras.html'
       - 'scripts/build-roadlife-cargo-assets.py'
       - 'docs/assets/cargo/**'
       - 'docs/ets2-official-cargos.json'
@@ -35,7 +59,7 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Reconstruct stable GAT and add RoadLife cargo image module
+      - name: Reconstruct stable app and add RoadLife Dash
         run: |
           $firstText = Get-Content 'gat-telemetria-dotnet-1.0.28/source.part.00' -Raw
           $first = [Convert]::FromBase64String($firstText.Trim())
@@ -84,7 +108,8 @@ jobs:
             'apply-window-layout-1.0.55-fix.ps1','apply-full-responsive-1.0.56.ps1','apply-version-only-1.0.57.ps1','apply-version-only-1.0.58.ps1',
             'apply-version-only-1.0.59.ps1','apply-full-dash-overlay-1.0.60.ps1','apply-video-borderless-1.0.61.ps1',
             'apply-voice-clean-from-61-1.0.68.8.ps1','apply-map-auto-detect-1.0.68.9.ps1',
-            'apply-roadlife-overlay-1.0.68.12.ps1'
+            'apply-roadlife-overlay-1.0.68.12.ps1','apply-road-speed-tolerance-1.0.68.13.ps1','apply-default-speed-voice-1.0.68.14.ps1'
+            ,'apply-road-speed-memory-1.0.68.15.ps1'
           )
 
           foreach($p in $patches){
@@ -105,20 +130,26 @@ jobs:
           $pt=Get-Content $project.FullName -Raw
 
           if($mt -notlike '*CurrentVersion = "1.0.68.12"*'){throw 'Versao 1.0.68.12 incorreta'}
-          foreach($m in @('ROADLIFE DASHBOARD2','ToggleRoadLifeOverlay','RoadLifeOverlayInitialize')){
+          foreach($m in @('ROADLIFE DASH','ToggleRoadLifeOverlay','OpenVideoOverlay041','RoadLifeOverlayInitialize')){
             if($ht -notlike "*$m*"){throw "Hub sem $m"}
           }
-          foreach($m in @('Dashboard2.xaml','RoadLifeOverlayPush','cargo-name-map.json','generated')){
+          foreach($m in @('RoadLifeDash.xaml','RoadLifeOverlayPush','cargo-name-map.json','generated')){
             if($ot -notlike "*$m*"){throw "Host RoadLife sem $m"}
           }
           foreach($m in @('PresentationFramework','PresentationCore','WindowsBase','System.Xaml')){
             if($pt -notlike "*$m*"){throw "Projeto sem referencia $m"}
           }
 
+          $projectDir=Split-Path $project.FullName -Parent
+          $roadLifeIcon=Join-Path $PWD 'gat-telemetria-allinone-1.0.29/roadlife-telemetria.ico'
+          if(-not(Test-Path $roadLifeIcon)){throw 'Icone RoadLife da Telemetria ausente'}
+          Copy-Item $roadLifeIcon (Join-Path $projectDir 'roadlife-telemetria.ico') -Force
+          $pt=$pt.Replace('<ApplicationIcon>app.ico</ApplicationIcon>','<ApplicationIcon>roadlife-telemetria.ico</ApplicationIcon>')
+          Set-Content $project.FullName $pt -Encoding UTF8
+
           msbuild $project.FullName /restore /t:Rebuild /p:Configuration=Release
           if($LASTEXITCODE -ne 0){throw 'Falha na compilacao 1.0.68.12'}
 
-          $projectDir=Split-Path $project.FullName -Parent
           $exe=Get-ChildItem "$projectDir/bin/Release" -Filter 'GAT_TELEMETRIA.exe' -Recurse | Select-Object -First 1
           if(-not $exe){throw 'Executavel 1.0.68.12 nao gerado'}
           "GAT16812_EXE=$($exe.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
@@ -154,21 +185,22 @@ jobs:
             Copy-Item $_.FullName (Join-Path $stage 'gat') -Recurse -Force
           }
 
-          # Instala o RoadLifeDashboard2 COMPLETO também em PCs novos.
-          # A base 1.0.68.9 nao possui o Dashboard2, entao copiamos o projeto atual do repositorio.
-          $dash=Join-Path $stage 'gat/RoadLifeDashboard2'
+          # Instala os recursos do RoadLife Dash em C# WPF; o GAT continua capturando a telemetria.
+          $dash=Join-Path $stage 'gat/RoadLifeDash'
           $roadLifeSource=Join-Path $PWD 'Projeto Dashboard2'
           if(-not(Test-Path (Join-Path $roadLifeSource 'Dashboard2.xaml'))){throw 'Projeto Dashboard2/Dashboard2.xaml ausente'}
           if(Test-Path $dash){Remove-Item $dash -Recurse -Force}
           New-Item -ItemType Directory -Force -Path $dash | Out-Null
           Copy-Item (Join-Path $roadLifeSource '*') $dash -Recurse -Force
+          Copy-Item (Join-Path $PWD 'gat-telemetria-allinone-1.0.29/roadlife-telemetria.ico') (Join-Path $stage 'gat/roadlife-telemetria.ico') -Force
+          Move-Item (Join-Path $dash 'Dashboard2.xaml') (Join-Path $dash 'RoadLifeDash.xaml') -Force
+          Remove-Item (Join-Path $dash 'Dashboard2.ps1') -Force -ErrorAction SilentlyContinue
 
           # Garante a estrutura usada pelo host interno e pelas cargas dinamicas.
           $cargo=Join-Path $dash 'Assets/cargo'
           New-Item -ItemType Directory -Force -Path (Join-Path $dash 'Assets'),$cargo | Out-Null
 
-          if(-not(Test-Path (Join-Path $dash 'Dashboard2.xaml'))){throw 'Dashboard2.xaml nao foi incluido no instalador'}
-          if(-not(Test-Path (Join-Path $dash 'Dashboard2.ps1'))){throw 'Dashboard2.ps1 nao foi incluido no instalador'}
+          if(-not(Test-Path (Join-Path $dash 'RoadLifeDash.xaml'))){throw 'RoadLifeDash.xaml nao foi incluido no instalador'}
 
           python -m pip install pillow --disable-pip-version-check
           if($LASTEXITCODE -ne 0){throw 'Falha ao instalar Pillow'}
@@ -179,23 +211,24 @@ jobs:
           if($map.aliases.tubosgrandes -ne 'largetubes'){throw 'Alias Tubos grandes incorreto'}
           if(-not(Test-Path (Join-Path $cargo 'generated/largetubes.png'))){throw 'Imagem largetubes.png nao foi gerada'}
 
-          Set-Content (Join-Path $dash 'LEIA-ME-CARGAS.txt') @(
-            'ROADLIFE DASHBOARD2 - CARGA DINAMICA',
+          Set-Content (Join-Path $dash 'LEIA-ME.txt') @(
+            'ROADLIFE DASH - CARGA DINAMICA',
             '====================================',
             '',
-            'Esta instalacao inclui a pasta RoadLifeDashboard2 completa, inclusive Dashboard2.xaml.',
-            'O GAT continua sendo o unico captador de telemetria.',
+            'O overlay e carregado pelo app ROADLIFE TELEMETRIA usando C# WPF.',
+            'ROADLIFE TELEMETRIA continua sendo o unico captador de telemetria.',
             '',
             'Assets/cargo/cargo-name-map.json = mapa de nomes/IDs de carga.',
             'Assets/cargo/generated = miniaturas individuais geradas a partir dos sprites do catalogo.',
             '',
-            'Ao engatar uma carga, o GAT identifica o ID/nome e mostra a miniatura correspondente no CargoPreview.'
+            'Ao engatar uma carga, a telemetria identifica o ID/nome e mostra a miniatura correspondente no CargoPreview.'
           ) -Encoding UTF8
 
           if(-not(Test-Path (Join-Path $stage 'trucksim/TruckSimGPS_Server.exe'))){throw 'TruckSimGPS nao preservado'}
           if(-not(Test-Path (Join-Path $stage 'GAT_TELEMETRIA_APP.exe'))){throw 'GAT 1.0.68.12 ausente'}
-          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDashboard2/Dashboard2.xaml'))){throw 'RoadLifeDashboard2 incompleto no staging'}
-          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDashboard2/Dashboard2.ps1'))){throw 'RoadLifeDashboard2 sem Dashboard2.ps1 no staging'}
+          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDash/RoadLifeDash.xaml'))){throw 'RoadLife Dash incompleto no staging'}
+          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDash/Assets/roadlife-logo-model1.png'))){throw 'Logo ROADLIFE ausente no Dash'}
+          if(-not(Test-Path (Join-Path $stage 'gat/RoadLifeDash/Assets/roadlife-symbol-model1.png'))){throw 'Símbolo ROADLIFE ausente no app'}
 
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress
@@ -207,23 +240,37 @@ jobs:
           $text=Get-Content $issSource -Raw
           $text=$text.Replace('#define AppVersion "1.0.29"','#define AppVersion "1.0.68.12"')
           $text=$text.Replace('staging\','staging-roadlife-cargo-16812\')
-          $text=$text.Replace('AppName=GAT Telemetria','AppName=GAT Telemetria BETA')
-          $text=$text.Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=GAT Telemetria BETA')
-          $text=$text.Replace('OutputBaseFilename=GAT_TELEMETRIA_SETUP_{#AppVersion}','OutputBaseFilename=GAT_TELEMETRIA_1.0.68.12_ROADLIFE_CARGA_DINAMICA_TESTE')
+          $text=$text.Replace('AppName=GAT Telemetria','AppName=ROADLIFE TELEMETRIA')
+          $text=$text.Replace('AppPublisher=GAT-LOG','AppPublisher=ROADLIFE')
+          $text=$text.Replace('DefaultDirName={autopf}\GAT Telemetria','DefaultDirName={autopf}\ROADLIFE TELEMETRIA')
+          $text=$text.Replace('DefaultGroupName=GAT Telemetria','DefaultGroupName=ROADLIFE TELEMETRIA')
+          $text=$text.Replace('{group}\GAT Telemetria','{group}\ROADLIFE TELEMETRIA')
+          $text=$text.Replace('GAT Telemetria.lnk','ROADLIFE TELEMETRIA.lnk')
+          $text=$text.Replace('Desinstalar GAT Telemetria','Desinstalar ROADLIFE TELEMETRIA')
+          $text=$text.Replace('Abrir GAT Telemetria','Abrir ROADLIFE TELEMETRIA')
+          $oldShortcutCleanup="  DeleteFile(ExpandConstant('{autodesktop}\ROADLIFE TELEMETRIA.lnk'));"
+          if($text.Contains($oldShortcutCleanup)){
+            $text=$text.Replace($oldShortcutCleanup,$oldShortcutCleanup+"`r`n  DeleteFile(ExpandConstant('{autodesktop}\GAT Telemetria.lnk'));`r`n  DelTree(ExpandConstant('{group}\GAT Telemetria'), True, True, True);")
+          }
+          $text=$text.Replace('OutputBaseFilename=GAT_TELEMETRIA_SETUP_{#AppVersion}','OutputBaseFilename=ROADLIFE_TELEMETRIA_1.0.68.12')
+          $text=$text.Replace('Compression=lzma2/ultra64','Compression=lzma2/ultra64' + "`r`nSetupIconFile=staging-roadlife-cargo-16812\gat\roadlife-telemetria.ico")
+          $text=[regex]::Replace($text,'(?m)^(Name: .*; Filename: "\{app\}\\GAT_TELEMETRIA\.exe")$','$1; IconFilename: "{app}\roadlife-telemetria.ico"')
+          $text=$text.Replace('UninstallDisplayIcon={app}\GAT_TELEMETRIA.exe','UninstallDisplayIcon={app}\roadlife-telemetria.ico')
           Set-Content $iss $text -Encoding UTF8
 
           & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' $iss
           if($LASTEXITCODE -ne 0){throw 'Falha ao gerar instalador 1.0.68.12'}
 
-          $setup='gat-telemetria-allinone-1.0.29/Output/GAT_TELEMETRIA_1.0.68.12_ROADLIFE_CARGA_DINAMICA_TESTE.exe'
+          $setup='gat-telemetria-allinone-1.0.29/Output/ROADLIFE_TELEMETRIA_1.0.68.12.exe'
           if(-not(Test-Path $setup)){throw 'Setup 1.0.68.12 nao gerado'}
 
           New-Item -ItemType Directory -Force -Path releases-test | Out-Null
-          Copy-Item $setup 'releases-test/GAT_TELEMETRIA_1.0.68.12_ROADLIFE_CARGA_DINAMICA_TESTE.exe' -Force
-          Get-FileHash 'releases-test/GAT_TELEMETRIA_1.0.68.12_ROADLIFE_CARGA_DINAMICA_TESTE.exe' -Algorithm SHA256 | Format-List
+          Copy-Item $setup 'releases-test/ROADLIFE_TELEMETRIA_1.0.68.12.exe' -Force
+          Get-FileHash 'releases-test/ROADLIFE_TELEMETRIA_1.0.68.12.exe' -Algorithm SHA256 | Format-List
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GAT-Telemetria-1.0.68.12-RoadLife-Carga-Dinamica-Teste
-          path: releases-test/GAT_TELEMETRIA_1.0.68.12_ROADLIFE_CARGA_DINAMICA_TESTE.exe
+          name: ROADLIFE-TELEMETRIA-1.0.68.12
+          path: releases-test/ROADLIFE_TELEMETRIA_1.0.68.12.exe
           if-no-files-found: error
+
