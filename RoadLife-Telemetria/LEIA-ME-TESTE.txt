@@ -1,0 +1,41 @@
+ROADLIFE TELEMETRIA 1.0.68.17 - TESTE SOBRE O V5 DO SITE
+
+BASE CONFIRMADA
+ROADLIFE_TELEMETRIA_1.0.68.12_TESTE_V5.exe enviado pelo usuario.
+SHA256: 5bb53169697f13c40197867b678739d0b12d840d99720e43b4e73b75ca4ed2ce.
+O teste anterior 1.0.68.16 utilizou uma base inadequada e deve ser substituido.
+
+COMO APLICAR
+1. Extraia todo o ZIP novo numa pasta diferente da anterior.
+2. Feche RoadLife e execute Aplicar-teste.cmd.
+3. Selecione a pasta de instalacao que contem GAT_TELEMETRIA_APP.exe.
+4. Abra pelo atalho habitual e confira a versao 1.0.68.17.
+Nao precisa reinstalar o pacote V5 antes.
+
+Este pacote substitui apenas o aplicativo e sua configuracao de runtime.
+Mantem launcher, Dashboard2, imagens, voz existente, TruckSimGPS e dados locais.
+O caminho de dados e o mesmo usado pelo V5: ROADLIFE TELEMETRIA Cliente.
+O pacote anterior nao apagou essa pasta, mas usava outro caminho de dados.
+A nova versao volta a usar o caminho correto. Nao migra historicos da 1.0.68.16.
+Arquivos substituidos ficam em backup-teste-1.0.68.17-DATA-HORA.
+
+SE QUISER VOLTAR AO V5 ORIGINAL
+Feche RoadLife. Execute Restaurar-V5.cmd e escolha a instalacao.
+Ele restaura o executavel e a configuracao extraidos do instalador enviado,
+sem executar o instalador completo nem apagar recursos ou dados.
+
+MUDANCAS
+- Novo limite valido do ETS2 entra imediatamente.
+- Ausencia de limite: conserva o ultimo por 60 segundos; depois usa 60 km/h.
+- Alternancias curtas acumulam o tempo sem sinal, sem renovar os 60 segundos.
+- 60 segundos continuos de limite valido renovam a tolerancia.
+- Voz reutiliza limite_060 existente; sintese antiga de 56 foi removida.
+- Multas locais usam o limite efetivo + 1 km/h e janela existente de 5 segundos.
+- Dashboard2 usa o limite efetivo, sem contagem regressiva.
+
+VALIDACAO
+Build passou; 21 testes de memoria/tolerancia passaram.
+22 arquivos de suporte ficaram identicos ao fonte recuperado do V5, inclusive
+ClientStore. Codigo da interface corresponde ao V5, exceto numero da versao e
+fallback do limite. Personalizacoes instaladas nao sao sobrescritas.
+Ainda exige teste visual, voz, viagens e multas no ETS2. Nao publicado.
