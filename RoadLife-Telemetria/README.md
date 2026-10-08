@@ -34,5 +34,6 @@ de teste usa recursos instalados. Consolidacao de todos os recursos e instalador
 independente permanece pendente antes de publicar o release completo.
 
 Validacao: build zero erros, sete avisos legados; 21 testes passaram. Validacao de
-aplicacao/backup/restore feita em pasta simulada. Pendente ETS2, visual, audio,
-viagens, penalidades e atualizador. Nenhum manifesto estavel foi alterado.
+aplicacao/backup/restore feita em pasta simulada. Usuario confirmou em 2026-10-08 que o teste funcionou e autorizou a publicacao. Validacao adicional do instalador UPDATE passou em instalacao simulada. As proximas verificacoes do motorista incluem
+viagens, penalidades e atualizador. A publicacao ativa client_dotnet_version.json, latest.json e update/latest.json com o mesmo pacote UPDATE e SHA256. Veja RELEASE-1.0.68.17.md.
+

@@ -10,6 +10,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            RoadLife-Telemetria
+            .github/workflows
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
@@ -29,11 +33,20 @@ jobs:
           Copy-Item RoadLife-Telemetria/Install-Test.ps1,RoadLife-Telemetria/Restore-Test.ps1,RoadLife-Telemetria/Aplicar-teste.cmd,RoadLife-Telemetria/LEIA-ME-TESTE.txt $stage
           Compress-Archive "$stage/*" ROADLIFE_TELEMETRIA_1.0.68.17_TESTE.zip
       - name: Install Inno Setup compiler
-        run: choco install innosetup --version=6.7.3 -y --no-progress
+        shell: pwsh
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'inno-setup.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+          if ((Get-FileHash $setup).Hash.ToLowerInvariant() -ne '9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732') { throw 'SHA256 do compilador Inno incorreto' }
+          $compilerDir = Join-Path $env:RUNNER_TEMP 'InnoSetup'
+          $arguments = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/NOICONS',('/DIR="' + $compilerDir + '"'))
+          $process = Start-Process $setup -ArgumentList $arguments -WindowStyle Hidden -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw 'Falha ao instalar compilador Inno' }
+          "INNO_ISCC=$compilerDir/ISCC.exe" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Build updater installer
         shell: pwsh
         run: |
-          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' /Q RoadLife-Telemetria/Installer/RoadLife-Update.iss
+          & $env:INNO_ISCC /Q RoadLife-Telemetria/Installer/RoadLife-Update.iss
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar instalador de atualizacao' }
           Get-FileHash RoadLife-Telemetria/Installer/Output/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe
       - uses: actions/upload-artifact@v4
