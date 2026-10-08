@@ -365,7 +365,184 @@
       "min_km": 1000,
       "xp": 500
     }
+  ],
+{
+  "id": "alimentando_cidades_2026",
+  "name": "Alimentando as Cidades",
+  "title": "Alimentando as Cidades — Cadeia de Alimentos",
+  "medal": "🥬",
+  "achievement_enabled": true,
+  "goal": 20,
+  "min_km": 1000,
+  "completion_xp": 5000,
+  "completion_title": "Alimentando as Cidades",
+  "completion_description": "Complete 20 entregas diferentes de alimentos e bebidas com pelo menos 1.000 km cada.",
+  "cargos": [
+    {
+      "official": "Frozen Hake",
+      "label": "Merluza congelada",
+      "ids": [
+        "frozen_hake"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Frozen Octopi",
+      "label": "Polvo congelado",
+      "ids": [
+        "froz_octopi"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Ice Cream",
+      "label": "Sorvetes",
+      "ids": [
+        "icecream"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Peanut Butter",
+      "label": "Manteiga de amendoim",
+      "ids": [
+        "pnut_butter"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Milk",
+      "label": "Leite",
+      "ids": [
+        "milk",
+        "milk_t"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Yoghurt",
+      "label": "Iogurte",
+      "ids": [
+        "yogurt"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Cheese",
+      "label": "Queijo",
+      "ids": [
+        "cheese"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Watermelons",
+      "label": "Melancias",
+      "ids": [
+        "watermelons"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Canned Beans",
+      "label": "Feijão enlatado",
+      "ids": [
+        "canned_beans"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Tomatoes",
+      "label": "Tomates",
+      "ids": [
+        "tomatoes"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Potatoes",
+      "label": "Batatas",
+      "ids": [
+        "potatoes"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Onions",
+      "label": "Cebolas",
+      "ids": [
+        "onion"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Apples",
+      "label": "Maçãs",
+      "ids": [
+        "apples",
+        "apples_c"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Canned Tuna",
+      "label": "Atum enlatado",
+      "ids": [
+        "canned_tuna"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Non-alcoholic Beer",
+      "label": "Cerveja sem álcool",
+      "ids": [
+        "nonalco_beer"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Bottled Water",
+      "label": "Água engarrafada",
+      "ids": [
+        "bottle_water"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Sugar",
+      "label": "Açúcar",
+      "ids": [
+        "sugar",
+        "sugar_b"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Flour",
+      "label": "Farinha",
+      "ids": [
+        "flour"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Canned Sardines",
+      "label": "Sardinhas enlatadas",
+      "ids": [
+        "can_sardines"
+      ],
+      "min_km": 1000
+    },
+    {
+      "official": "Canned Beef",
+      "label": "Carne enlatada",
+      "ids": [
+        "canned_beef"
+      ],
+      "min_km": 1000
+    }
   ]
+}
 }];
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
