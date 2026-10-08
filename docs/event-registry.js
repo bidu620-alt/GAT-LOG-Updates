@@ -66,7 +66,113 @@
       {official:'Clothes',label:'Roupas',origin:'Varsóvia',origin_aliases:['Warszawa'],destination:'Budapeste',destination_aliases:['Budapest'],ids:['clothes'],aliases:['Roupas','Clothes']},
       {official:'Yoghurt',label:'Iogurte',origin:'Budapeste',origin_aliases:['Budapest'],destination:'Tessalônica',destination_aliases:['Thessaloniki','Θεσσαλονίκη'],ids:['yoghurt','yogurt'],aliases:['Iogurte','Yogurt','Yoghurt']}
     ]
-  }];
+  },{
+  "id": "special_cargo_2026",
+  "name": "Carga Especial — Rei das Escoltas",
+  "title": "Carga Especial — Rei das Escoltas",
+  "medal": "👑",
+  "achievement_enabled": true,
+  "start": "2026-10-08T00:00:00-03:00",
+  "end": "2026-11-01T00:00:00-03:00",
+  "goal": 10,
+  "min_km": 1000,
+  "xp_per_cargo": 1000,
+  "completion_xp": 5000,
+  "completion_title": "Rei das Escoltas",
+  "completion_description": "Você não apenas dirige caminhões, você comanda o trânsito e as rodovias.",
+  "cargos": [
+    {
+      "official": "Escadaria para Construção",
+      "label": "Escadaria para Construção",
+      "ids": [
+        "construction_staircase"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Peça de Caldeira",
+      "label": "Peça de Caldeira",
+      "ids": [
+        "boiler_part"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Balde para Escavadeira",
+      "label": "Balde para Escavadeira",
+      "ids": [
+        "excavator_bucket"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Silo Gigante",
+      "label": "Silo Gigante",
+      "ids": [
+        "giant_silo"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Trocador de Calor",
+      "label": "Trocador de Calor",
+      "ids": [
+        "heat_exchanger"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Peça gigante secreta",
+      "label": "Peça gigante secreta",
+      "ids": [
+        "secret_giant_part"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Condensador Industrial",
+      "label": "Condensador Industrial",
+      "ids": [
+        "industrial_condenser"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Dispositivo de Alta Tecnologia",
+      "label": "Dispositivo de Alta Tecnologia",
+      "ids": [
+        "high_tech_device"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Pneus Gigantes",
+      "label": "Pneus Gigantes",
+      "ids": [
+        "giant_tires"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    },
+    {
+      "official": "Chassi de Caminhão",
+      "label": "Chassi de Caminhão",
+      "ids": [
+        "truck_chassis"
+      ],
+      "min_km": 1000,
+      "xp": 1000
+    }
+  ]
+}];
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
   function rowTime(row){const t=Date.parse(row?.delivered_at||row?.completed_at||row?.date||'');return Number.isFinite(t)?t:NaN}
@@ -131,7 +237,7 @@
     for(const row of rows){
       const t=rowTime(row);if(!Number.isFinite(t)||t<start||t>=end)continue;
       for(const cargo of event.cargos||[]){
-        if(!matched.has(cargo.official)&&cargoMatches(row,cargo))matched.set(cargo.official,{row,t,cargo});
+        if(!matched.has(cargo.official)&&cargoMatches(row,cargo)&&(!cargo.min_km||Number(row?.distance_km??row?.distance??row?.km??0)>=cargo.min_km))matched.set(cargo.official,{row,t,cargo});
       }
     }
     const goal=Number(event.goal)||event.cargos?.length||0;
@@ -144,13 +250,14 @@
     return {count,goal,completed,completedAt,matched,manual:false,reason:''};
   }
   function achievementList(profile){
-    return EVENTS.filter(e=>e.achievement_enabled!==false).map(e=>{
+    return EVENTS.filter(e=>e.achievement_enabled!==false).flatMap(e=>{
       const p=progress(profile,e.id);
-      return {
+      const individual=e.xp_per_cargo?(e.cargos||[]).map(c=>({id:'event_'+e.id+'_'+compact(c.official),eventId:e.id,title:c.label,description:'Conclua uma entrega de pelo menos '+(c.min_km||e.min_km||0)+' km.',unlocked:p.matched.has(c.official),medal:'🏅',kind:'event_cargo',progress:p.matched.has(c.official)?1:0,goal:1,xp:c.xp||e.xp_per_cargo})):[];
+      return [...individual,{
         id:'event_'+e.id,eventId:e.id,title:e.title||e.name||e.id,
         description:p.completed?'Evento concluído. Meta '+p.goal+'/'+p.goal+' atingida.':'Complete o evento. Progresso: '+p.count+'/'+p.goal+'.',
-        unlocked:p.completed,medal:e.medal||'🏆',kind:'event',progress:p.count,goal:p.goal,completedAt:p.completedAt
-      };
+        unlocked:p.completed,medal:e.medal||'🏆',kind:'event',progress:p.count,goal:p.goal,completedAt:p.completedAt,xp:e.completion_xp||0,rewardTitle:e.completion_title||'',description:e.completion_description||('Complete o evento. Progresso: '+p.count+'/'+p.goal+'.')
+      }];
     });
   }
   window.GATEventRegistry={events:EVENTS,eventById,progress,achievementList,norm,compact,cargoMatches};
