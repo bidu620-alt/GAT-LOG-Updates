@@ -171,7 +171,204 @@
       "min_km": 1000,
       "xp": 1000
     }
+  ],
+{
+  "id": "energia_total_2026",
+  "name": "Operação Energia Total",
+  "title": "Operação Energia Total — Refinaria e Combustíveis",
+  "medal": "⚡",
+  "achievement_enabled": true,
+  "start": "2026-10-08T00:00:00-03:00",
+  "end": "2026-11-01T00:00:00-03:00",
+  "goal": 20,
+  "min_km": 1000,
+  "cargos": [
+    {
+      "official": "Diesel",
+      "label": "Diesel",
+      "ids": [
+        "diesel"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Petrol",
+      "label": "Gasolina",
+      "ids": [
+        "petrol"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Kerosene",
+      "label": "Querosene",
+      "ids": [
+        "kerosene"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Fuel Oil",
+      "label": "Óleo combustível",
+      "ids": [
+        "fuel_oil"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Fuel Tanker",
+      "label": "Caminhão-tanque",
+      "ids": [
+        "fueltanker"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "LPG",
+      "label": "GLP",
+      "ids": [
+        "lpg",
+        "lpg_t"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Propane",
+      "label": "Propano",
+      "ids": [
+        "propane"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Acetylene",
+      "label": "Acetileno",
+      "ids": [
+        "acetylene"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Chemical Sorbent",
+      "label": "Solvente químico",
+      "ids": [
+        "chem_sorb_c",
+        "chem_sorbent"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Chemicals",
+      "label": "Químicos",
+      "ids": [
+        "chemicals"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Sulphuric Acid",
+      "label": "Ácido sulfúrico",
+      "ids": [
+        "sulfuric",
+        "sulfuric_t"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Hydrochloric Acid",
+      "label": "Ácido clorídrico",
+      "ids": [
+        "hydrochlor"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Sodium Hydroxide",
+      "label": "Hidróxido de sódio",
+      "ids": [
+        "sodhydro"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Pesticides",
+      "label": "Pesticidas",
+      "ids": [
+        "pesticide"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Boric Acid",
+      "label": "Ácido bórico",
+      "ids": [
+        "boric_acid"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Brake Fluid",
+      "label": "Fluído de freio",
+      "ids": [
+        "brake_fluid"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Chlorine",
+      "label": "Cloro",
+      "ids": [
+        "chlorine",
+        "chlorine_t"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Anhydrous Ammonia",
+      "label": "Amônia anidra",
+      "ids": [
+        "ammonia"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Arsenic",
+      "label": "Arsênico",
+      "ids": [
+        "arsenic"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    },
+    {
+      "official": "Hot Chemicals",
+      "label": "Produtos químicos quentes",
+      "ids": [
+        "hchemicals"
+      ],
+      "min_km": 1000,
+      "xp": 0
+    }
   ]
+}
 }];
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
