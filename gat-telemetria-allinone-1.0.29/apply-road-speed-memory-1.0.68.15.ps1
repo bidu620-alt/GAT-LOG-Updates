@@ -45,12 +45,12 @@ $method=@'
 			bool validRaw = hasRaw && !double.IsNaN(rawLimit) && !double.IsInfinity(rawLimit) && rawLimit > 0.0 && rawLimit <= 250.0;
 			if (validRaw) _lastGameRoadLimitKmh = rawLimit;
 			double effective = validRaw ? rawLimit : _lastGameRoadLimitKmh;
-			bool fallback = double.IsNaN(effective) || double.IsInfinity(effective) || effective <= 0.0;
-			if (fallback) effective = 56.0;
+			bool unavailable = double.IsNaN(effective) || double.IsInfinity(effective) || effective <= 0.0;
+			if (unavailable) effective = 0.0;
 			m["speed_limit_kmh"] = effective;
-			m["speed_limit_source"] = fallback ? "fallback_no_sign" : "game";
-			m["speed_limit_is_fallback"] = fallback;
-			m["speed_limit_preserved"] = !validRaw && !fallback;
+			m["speed_limit_source"] = unavailable ? "unavailable_no_previous_limit" : "game";
+			m["speed_limit_is_fallback"] = false;
+			m["speed_limit_preserved"] = !validRaw && !unavailable;
 		}
 	}
 '@
