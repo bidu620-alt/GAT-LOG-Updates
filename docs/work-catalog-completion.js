@@ -87,7 +87,7 @@
     let cargoIds=[],aliases=[];
     try{cargoIds=JSON.parse(card.dataset.cargoIds||'[]')}catch(_){}
     try{aliases=JSON.parse(card.dataset.cargoAliases||'[]')}catch(_){}
-    return {card,name:officialName(card),namePt:card.querySelector('.cargo-body h3')?.textContent||'',cargoIds,aliases};
+    return {card,id:card.dataset.cargoKey,name:officialName(card),namePt:card.querySelector('.cargo-body h3')?.textContent||'',cargoIds,aliases};
   }
   function cardNames(card){return GatCargoIdentity.names(cardItem(card))}
 
@@ -192,9 +192,10 @@
 
   function completedCards(){
     const items=[...document.querySelectorAll('#workCatalogGrid .full-cargo-card')].map(cardItem),done=new Set();
+    const all=GatCargoIdentity.getCatalog();
     history().forEach(row=>{
-      const found=GatCargoIdentity.match(items,row);
-      if(found.length===1){done.add(found[0].card);return}
+      const found=GatCargoIdentity.match(all,row);
+      if(found.length===1){const visible=items.find(item=>item.id===found[0].id);if(visible)done.add(visible.card);return}
       // IDs are authoritative; without an ID, ambiguous names stay unresolved.
     });
     return done;

@@ -112,7 +112,7 @@
 
   async function load(){
     injectStyle();ensureToolbar();const status=document.getElementById(STATUS);if(status)status.textContent='Carregando catálogo de cargas em português...';
-    try{const r=await fetch(CATALOG_URL+'?v=full-cargo-pt-3',{cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error('HTTP '+r.status);items=flatCatalog(data);catalogTotal=Number(data?.total_entries)||items.length;patchCopy(catalogTotal);render();if(status)status.textContent=catalogTotal+' cargas oficiais • nomes em português • busca PT/EN • sem limite de categorias.'}
+    try{const r=await fetch(CATALOG_URL+'?v=full-cargo-pt-3',{cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error('HTTP '+r.status);items=flatCatalog(data);GatCargoIdentity.setCatalog(items);catalogTotal=Number(data?.total_entries)||items.length;patchCopy(catalogTotal);render();if(status)status.textContent=catalogTotal+' cargas oficiais • nomes em português • busca PT/EN • sem limite de categorias.'}
     catch(_){items=[];catalogTotal=0;patchCopy(0);if(status)status.textContent='Não foi possível carregar o catálogo oficial agora.';render()}
   }
 

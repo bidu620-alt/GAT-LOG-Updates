@@ -6,9 +6,9 @@ const ctx={document:{readyState:'loading',addEventListener(){}},window:{addEvent
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(docs,'cargo-identity.js'),'utf8'),ctx);
 const expose=(file,code)=>vm.runInContext(fs.readFileSync(path.join(docs,file),'utf8').replace(/\}\)\(\);\s*$/,code+'})();'),ctx);
 expose('work-catalog.js','globalThis.auditFlat=flatCatalog;globalThis.auditLive=exactMatch;globalThis.auditItems=v=>items=v;');
-const items=ctx.auditFlat(source);ctx.auditItems(items);
+const items=ctx.auditFlat(source);ctx.auditItems(items);ctx.GatCargoIdentity.setCatalog(items);
 assert.equal(items.length,source.total_entries);
-const cards=items.map(item=>({dataset:{cargoIds:JSON.stringify(item.cargoIds),cargoAliases:JSON.stringify(item.aliases)},getAttribute(k){return k==='title'?'Nome oficial SCS: '+item.name:''},querySelector(q){return q==='.cargo-body h3'?{textContent:item.namePt}:null},item}));
+const cards=items.map(item=>({dataset:{cargoKey:item.id,cargoIds:JSON.stringify(item.cargoIds),cargoAliases:JSON.stringify(item.aliases)},getAttribute(k){return k==='title'?'Nome oficial SCS: '+item.name:''},querySelector(q){return q==='.cargo-body h3'?{textContent:item.namePt}:null},item}));
 ctx.document.querySelectorAll=()=>cards;
 expose('work-catalog-completion.js','globalThis.auditDone=completedCards;globalThis.auditSignature=signature;');
 for(const row of registry.cargos){
@@ -26,6 +26,10 @@ assert.equal(I.unique(items,{cargo:'Metais de sucata'}).cargoIds[0],'scrap_metal
 assert.equal(I.unique(items,{cargo:'Água com gás'}).cargoIds[0],'carb_water');
 assert.equal(I.unique(items,{cargo:'Esteira de trator'}).cargoIds[0],'dozer','Canonical name must take precedence over an old alias');
 assert.equal(I.unique(items,{cargo:'Tubos de ferro'}),null,'Ambiguous old name must not mark both types');
+ctx.profile={cargo_history:[{cargo:'Tubos de ferro'}],deliveries:[]};
+ctx.document.querySelectorAll=()=>cards.filter(c=>c.item.cargoIds.includes('iron_pipes'));
+assert.equal(ctx.auditDone().size,0,'Filtering one variant must not make an ambiguous history falsely complete it');
+ctx.document.querySelectorAll=()=>cards;
 assert.notEqual(I.unique(items,{cargo_id:'iron_pipes'}).id,I.unique(items,{cargo_id:'metal_pipes'}).id);
 assert.equal(I.unique(items,{cargo_id:'cargo.lattice'}).cargoIds[0],'lattice');
 assert.equal(I.idOf({raw_json:'invalid json'}),'');

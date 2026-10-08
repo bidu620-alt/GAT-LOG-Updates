@@ -1,4 +1,5 @@
 (()=>{
+  let catalog=[];
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   const id=v=>String(v||'').trim().toLowerCase().replace(/^cargo\./,'');
   function rawOf(row){
@@ -24,5 +25,5 @@
     // Old histories may not have IDs. Never guess between same-name cargo types.
     return null;
   }
-  globalThis.GatCargoIdentity={norm,id,idOf,names,match,unique};
+  globalThis.GatCargoIdentity={norm,id,idOf,names,match,unique,setCatalog:items=>{catalog=items},getCatalog:()=>catalog};
 })();
