@@ -623,7 +623,7 @@
   function achievementList(profile){
     return EVENTS.filter(e=>e.achievement_enabled!==false).flatMap(e=>{
       const p=progress(profile,e.id);
-      const individual=e.xp_per_cargo?(e.cargos||[]).map(c=>({id:'event_'+e.id+'_'+compact(c.official),eventId:e.id,title:c.label,description:(c.min_km||e.min_km)?'Conclua uma entrega de pelo menos '+(c.min_km||e.min_km)+' km.':'Conclua uma entrega válida desta carga especial, sem distância mínima.',unlocked:p.matched.has(c.official),medal:'🏅',kind:'event_cargo',progress:p.matched.has(c.official)?1:0,goal:1,xp:c.xp||e.xp_per_cargo})):[];
+      const individual=e.xp_per_cargo?(e.cargos||[]).map(c=>({id:'event_'+e.id+'_'+compact(c.official),eventId:e.id,title:c.label,description:(c.min_km||e.min_km)?'Conclua uma entrega de pelo menos '+(c.min_km||e.min_km)+' km.':'Conclua esta carga especial.',unlocked:p.matched.has(c.official),medal:'🏅',kind:'event_cargo',progress:p.matched.has(c.official)?1:0,goal:1,xp:c.xp||e.xp_per_cargo})):[];
       return [...individual,{
         id:'event_'+e.id,eventId:e.id,title:e.title||e.name||e.id,
         description:p.completed?'Evento concluído. Meta '+p.goal+'/'+p.goal+' atingida.':'Complete o evento. Progresso: '+p.count+'/'+p.goal+'.',
