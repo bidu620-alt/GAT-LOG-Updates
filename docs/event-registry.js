@@ -71,7 +71,7 @@
   "medal": "👑",
   "achievement_enabled": true,
       "goal": 10,
-  "min_km": 1000,
+  "min_km": 0,
   "xp_per_cargo": 1000,
   "completion_xp": 5000,
   "completion_title": "Rei das Escoltas",
@@ -83,7 +83,7 @@
       "ids": [
         "lattice"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -92,7 +92,7 @@
       "ids": [
         "boiler_parts"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -101,7 +101,7 @@
       "ids": [
         "ex_bucket"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -110,7 +110,7 @@
       "ids": [
         "silo"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -119,7 +119,7 @@
       "ids": [
         "heat_exch"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -128,7 +128,7 @@
       "ids": [
         "mystery_box"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -137,7 +137,7 @@
       "ids": [
         "condensator"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -146,7 +146,7 @@
       "ids": [
         "mystery_cyl"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -155,7 +155,7 @@
       "ids": [
         "dumper_tire"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     },
     {
@@ -164,7 +164,7 @@
       "ids": [
         "dumper"
       ],
-      "min_km": 1000,
+      "min_km": 0,
       "xp": 1000
     }
   ]
