@@ -1,5 +1,5 @@
 (()=>{
-  const CATALOG_URL='ets2-official-cargos.json';
+  const CATALOG_URL='ets2-official-cargos.json?v=game-ids-20261008';
   const GRID='workCatalogGrid',STATUS='workCatalogStatus';
   let items=[],visible=80,query='',catalogTotal=0;
 
@@ -79,34 +79,33 @@
     return box;
   }
 
-  function exactMatch(name){const n=norm(name);if(!n)return null;return items.find(x=>norm(x.name)===n||norm(x.namePt)===n)||null}
+  function exactMatch(name,t){return GatCargoIdentity.unique(items,{cargo_name:name,cargo_id:GatCargoIdentity.idOf(t)})}
 
   function renderLive(){
     const box=ensureLiveBox();if(!box)return;
     const t=currentLive(),cargo=liveCargo(t);if(!liveOnJob(t)||!cargo){box.className='full-cargo-live';box.innerHTML='';const title=document.getElementById('workTitle');if(title)title.textContent='Aguardando carga do ETS2';return}
-    const src=liveSource(t),dst=liveDestination(t),match=exactMatch(cargo),display=match?.namePt||cargo;
+    const src=liveSource(t),dst=liveDestination(t),match=exactMatch(cargo,t),display=match?.namePt||cargo;
     box.className='full-cargo-live show'+(match?' match':'');
     box.innerHTML='<div class="full-cargo-live-head"><b>CARGA ATUAL • GAT TELEMETRIA</b><span>● AO VIVO</span></div><div class="full-cargo-live-name">'+esc(display)+'</div><div class="full-cargo-live-route">'+esc(src||'Origem detectada')+' → '+esc(dst||'Destino detectado')+'</div><div class="full-cargo-live-result">'+(match?'✓ Carga encontrada no catálogo oficial'+(match.dlc?' • '+esc(dlcPt(match.dlc)):''):'Carga detectada pela telemetria. O catálogo visual não altera nem rejeita o nome recebido do jogo.')+'</div>';
     const title=document.getElementById('workTitle');if(title)title.textContent='Trabalho atual • '+display;
     const freedom=document.getElementById('workFreedom');if(freedom)freedom.textContent=display;
     document.querySelectorAll('.full-cargo-card.current').forEach(el=>el.classList.remove('current'));
-    if(match){const card=document.querySelector('[data-cargo-key="'+CSS.escape(norm(match.name))+'"]');if(card)card.classList.add('current')}
+    if(match){const card=document.querySelector('[data-cargo-key="'+CSS.escape(match.id)+'"]');if(card)card.classList.add('current')}
   }
 
   function flatCatalog(data){
     const out=[];const titles=data?.category_titles||{};const cats=data?.categories||{};
-    Object.entries(cats).forEach(([category,rows])=>{if(!Array.isArray(rows))return;rows.forEach((row,i)=>{const name=clean(row?.name);if(!name)return;out.push({id:category+'-'+i,name,namePt:clean(row?.name_pt)||toPt(name),aliases:Array.isArray(row?.aliases)?row.aliases:[],dlc:clean(row?.dlc),weight:clean(row?.weight),category,title:clean(titles[category])})})});
-    const unique=new Map();out.forEach(x=>{const k=norm(x.name);if(k&&!unique.has(k))unique.set(k,x)});
-    return [...unique.values()].sort((a,b)=>a.namePt.localeCompare(b.namePt,'pt-BR',{sensitivity:'base'}));
+    Object.entries(cats).forEach(([category,rows])=>{if(!Array.isArray(rows))return;rows.forEach((row,i)=>{const name=clean(row?.name);if(!name)return;out.push({id:category+'-'+i,name,namePt:clean(row?.name_pt)||toPt(name),cargoIds:Array.isArray(row?.cargo_ids)?row.cargo_ids:[],aliases:Array.isArray(row?.aliases)?row.aliases:[],dlc:clean(row?.dlc),weight:clean(row?.weight),category,title:clean(titles[category])})})});
+    return out.sort((a,b)=>a.namePt.localeCompare(b.namePt,'pt-BR',{sensitivity:'base'}));
   }
 
-  function filtered(){const qn=norm(query);if(!qn)return items;return items.filter(x=>norm(x.namePt+' '+x.name+' '+(x.aliases||[]).join(' ')+' '+x.dlc+' '+dlcPt(x.dlc)+' '+x.title+' '+x.category).includes(qn))}
+  function filtered(){const qn=norm(query);if(!qn)return items;return items.filter(x=>norm(x.namePt+' '+x.name+' '+(x.aliases||[]).join(' ')+' '+x.cargoIds.join(' ')+' '+x.dlc+' '+dlcPt(x.dlc)+' '+x.title+' '+x.category).includes(qn))}
 
   function render(){
     const root=document.getElementById(GRID);if(!root)return;ensureToolbar();const rows=filtered(),show=rows.slice(0,visible),liveName=liveCargo(currentLive()),liveNorm=norm(liveName);root.textContent='';
     const count=document.getElementById('fullCargoCount');if(count)count.textContent=(query?rows.length+' encontradas • ':'')+(catalogTotal||items.length)+' cargas no catálogo';
     if(!show.length){root.innerHTML='<div class="full-cargo-empty">Nenhuma carga encontrada com essa pesquisa.</div>';renderLive();return}
-    show.forEach((item,index)=>{const current=liveNorm&&(norm(item.name)===liveNorm||norm(item.namePt)===liveNorm);const card=document.createElement('article');card.className='cargo-card full-cargo-card'+(current?' current':'');card.dataset.cargoKey=norm(item.name);card.title='Nome oficial SCS: '+item.name;card.innerHTML='<div class="cargo-visual"><span class="cargo-number">#'+String(index+1).padStart(3,'0')+'</span><span class="cargo-state">OFICIAL</span><span class="cargo-icon">🚚</span></div><div class="cargo-body"><small>'+(item.dlc?'<span class="cargo-dlc">'+esc(dlcPt(item.dlc))+'</span>':'<span class="cargo-dlc">Jogo base / oficial</span>')+(item.weight?'<span class="cargo-weight">• '+esc(item.weight)+' t</span>':'')+'</small><h3>'+esc(item.namePt)+'</h3><div class="cargo-meta"><span>CARGA REAL ETS2</span><span>CATÁLOGO EM PORTUGUÊS</span></div></div>';root.appendChild(card)});
+    show.forEach((item,index)=>{const current=exactMatch(liveName,currentLive())?.id===item.id;const card=document.createElement('article');card.className='cargo-card full-cargo-card'+(current?' current':'');card.dataset.cargoKey=item.id;card.dataset.cargoIds=JSON.stringify(item.cargoIds);card.dataset.cargoAliases=JSON.stringify(item.aliases);card.dataset.cargoVariantWeight=item.weight;card.title='Nome oficial SCS: '+item.name;card.innerHTML='<div class="cargo-visual"><span class="cargo-number">#'+String(index+1).padStart(3,'0')+'</span><span class="cargo-state">OFICIAL</span><span class="cargo-icon">🚚</span></div><div class="cargo-body"><small>'+(item.dlc?'<span class="cargo-dlc">'+esc(dlcPt(item.dlc))+'</span>':'<span class="cargo-dlc">Jogo base / oficial</span>')+(item.weight?'<span class="cargo-weight">• '+esc(item.weight)+' t</span>':'')+'</small><h3>'+esc(item.namePt)+'</h3><div class="cargo-meta"><span>CARGA REAL ETS2</span><span>CATÁLOGO EM PORTUGUÊS</span></div></div>';root.appendChild(card)});
     if(rows.length>show.length){const more=document.createElement('div');more.className='full-cargo-more';more.innerHTML='<button type="button">MOSTRAR MAIS ('+(rows.length-show.length)+')</button>';more.querySelector('button').onclick=()=>{visible+=80;render()};root.appendChild(more)}
     renderLive();
   }

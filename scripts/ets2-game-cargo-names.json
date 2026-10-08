@@ -1,0 +1,6237 @@
+{
+  "game_version": "1.61.1.1",
+  "locale": "pt_br",
+  "source": "cargo_data and localization files extracted from installed ETS2 on 2026-10-08",
+  "cargos": [
+    {
+      "id": "acetylene",
+      "name_pt": "Acetileno",
+      "name_en": "Acetylene",
+      "localization_key": "cn_acetylene",
+      "package": "def",
+      "mass_definition_kg": 240.0,
+      "catalog_names": [
+        "Acetylene"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Acetileno"
+      ]
+    },
+    {
+      "id": "acid",
+      "name_pt": "Ácido",
+      "name_en": "Acid",
+      "localization_key": "cn_acid",
+      "package": "def",
+      "mass_definition_kg": 200.0,
+      "catalog_names": [
+        "Acid"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ácido"
+      ]
+    },
+    {
+      "id": "air_mails",
+      "name_pt": "Correio aéreo",
+      "name_en": "Airmail",
+      "localization_key": "cn_air_mails",
+      "package": "def",
+      "mass_definition_kg": 330.2,
+      "catalog_names": [
+        "Airmail"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Correio aéreo"
+      ]
+    },
+    {
+      "id": "aircft_tires",
+      "name_pt": "Pneus de avião",
+      "name_en": "Aircraft Tyres",
+      "localization_key": "cn_aircraft_tires",
+      "package": "def",
+      "mass_definition_kg": 549.0,
+      "catalog_names": [
+        "Aircraft Tyres"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pneus de aeronave"
+      ]
+    },
+    {
+      "id": "almond",
+      "name_pt": "Amêndoa",
+      "name_en": "Almond",
+      "localization_key": "cn_almond",
+      "package": "def",
+      "mass_definition_kg": 529.1,
+      "catalog_names": [
+        "Almond"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Amêndoa"
+      ]
+    },
+    {
+      "id": "alu_ingot",
+      "name_pt": "Lingotes de alumínio",
+      "name_en": "Aluminium Ingots",
+      "localization_key": "cn_alu_ingots",
+      "package": "def",
+      "mass_definition_kg": 793.79,
+      "catalog_names": [
+        "Aluminium Ingots"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Lingotes de alumínio"
+      ]
+    },
+    {
+      "id": "alu_profile",
+      "name_pt": "Perfis de alumínio",
+      "name_en": "Aluminium Profiles",
+      "localization_key": "cn_alu_profiles",
+      "package": "def",
+      "mass_definition_kg": 8000.0,
+      "catalog_names": [
+        "Aluminium Profiles"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Perfis de alumínio"
+      ]
+    },
+    {
+      "id": "ammonia",
+      "name_pt": "Amônia anidra",
+      "name_en": "Anhydrous Ammonia",
+      "localization_key": "cn_anhydrous_ammonia",
+      "package": "def",
+      "mass_definition_kg": 730.0,
+      "catalog_names": [
+        "Anhydrous Ammonia"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Amônia anidra"
+      ]
+    },
+    {
+      "id": "ammunition",
+      "name_pt": "Munição",
+      "name_en": "Ammunition",
+      "localization_key": "cn_ammunition",
+      "package": "def",
+      "mass_definition_kg": 570.0,
+      "catalog_names": [
+        "Ammunition"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Munição"
+      ]
+    },
+    {
+      "id": "apples",
+      "name_pt": "Maçãs",
+      "name_en": "Apples",
+      "localization_key": "cn_apples",
+      "package": "def",
+      "mass_definition_kg": 611.2,
+      "catalog_names": [
+        "Apples"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Maçãs"
+      ]
+    },
+    {
+      "id": "apples_c",
+      "name_pt": "Maçãs",
+      "name_en": "Apples",
+      "localization_key": "cn_apples",
+      "package": "def",
+      "mass_definition_kg": 611.2,
+      "catalog_names": [
+        "Apples"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Maçãs"
+      ]
+    },
+    {
+      "id": "arsenic",
+      "name_pt": "Arsênico",
+      "name_en": "Arsenic",
+      "localization_key": "cn_arsenic",
+      "package": "def",
+      "mass_definition_kg": 230.0,
+      "catalog_names": [
+        "Arsenic"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Arsênico",
+        "Arsênio"
+      ]
+    },
+    {
+      "id": "atl_cod_flt",
+      "name_pt": "Filé de Bacalhau-do-atlântico",
+      "name_en": "Atlantic Cod Fillet",
+      "localization_key": "cn_atlantic_cod_fillet",
+      "package": "def",
+      "mass_definition_kg": 498.5,
+      "catalog_names": [
+        "Atlantic Cod Fillet"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Filé de bacalhau-do-atlântico"
+      ]
+    },
+    {
+      "id": "backfl_prev",
+      "name_pt": "Válvulas de contrafluxo",
+      "name_en": "Backflow Preventers",
+      "localization_key": "cn_backflow_preventers",
+      "package": "def",
+      "mass_definition_kg": 720.7,
+      "catalog_names": [
+        "Backflow Preventers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Válvulas de retenção"
+      ]
+    },
+    {
+      "id": "barley",
+      "name_pt": "Cevada",
+      "name_en": "Barley",
+      "localization_key": "cn_barley",
+      "package": "def",
+      "mass_definition_kg": 600.0,
+      "catalog_names": [
+        "Barley"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cevada"
+      ]
+    },
+    {
+      "id": "basil",
+      "name_pt": "Manjericão",
+      "name_en": "Basil",
+      "localization_key": "cn_basil",
+      "package": "def",
+      "mass_definition_kg": 655.6,
+      "catalog_names": [
+        "Basil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Manjericão"
+      ]
+    },
+    {
+      "id": "battery",
+      "name_pt": "Baterias",
+      "name_en": "Batteries",
+      "localization_key": "cn_batteries",
+      "package": "def",
+      "mass_definition_kg": 522.1,
+      "catalog_names": [
+        "Batteries"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Baterias"
+      ]
+    },
+    {
+      "id": "beans",
+      "name_pt": "Feijão",
+      "name_en": "Beans",
+      "localization_key": "cn_beans",
+      "package": "def",
+      "mass_definition_kg": 374.5,
+      "catalog_names": [
+        "Beans"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Feijão"
+      ]
+    },
+    {
+      "id": "beef_meat",
+      "name_pt": "Carne",
+      "name_en": "Beef",
+      "localization_key": "cn_beef_meat",
+      "package": "def",
+      "mass_definition_kg": 655.2,
+      "catalog_names": [
+        "Beef"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carne",
+        "Carne bovina"
+      ]
+    },
+    {
+      "id": "beverages",
+      "name_pt": "Bebidas",
+      "name_en": "Beverages",
+      "localization_key": "cn_beverages",
+      "package": "def",
+      "mass_definition_kg": 712.9,
+      "catalog_names": [
+        "Beverages"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Bebidas"
+      ]
+    },
+    {
+      "id": "beverages_c",
+      "name_pt": "Bebidas",
+      "name_en": "Beverages",
+      "localization_key": "cn_beverages",
+      "package": "def",
+      "mass_definition_kg": 712.9,
+      "catalog_names": [
+        "Beverages"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Bebidas"
+      ]
+    },
+    {
+      "id": "beverages_t",
+      "name_pt": "Bebidas",
+      "name_en": "Beverages",
+      "localization_key": "cn_beverages",
+      "package": "def",
+      "mass_definition_kg": 1000.0,
+      "catalog_names": [
+        "Beverages"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Bebidas"
+      ]
+    },
+    {
+      "id": "big_bag_seed",
+      "name_pt": "Sacos grandes de sementes",
+      "name_en": "Big-Bags of Seeds",
+      "localization_key": "cn_big_bags_seeds",
+      "package": "def",
+      "mass_definition_kg": 584.5,
+      "catalog_names": [
+        "Big-Bags of Seeds"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Big-bags de sementes"
+      ]
+    },
+    {
+      "id": "boric_acid",
+      "name_pt": "Ácido bórico",
+      "name_en": "Boric Acid",
+      "localization_key": "cn_boric_acid",
+      "package": "def",
+      "mass_definition_kg": 511.5,
+      "catalog_names": [
+        "Boric Acid"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ácido bórico"
+      ]
+    },
+    {
+      "id": "bottle_water",
+      "name_pt": "Água engarrafada",
+      "name_en": "Bottled Water",
+      "localization_key": "cn_bottled_water",
+      "package": "def",
+      "mass_definition_kg": 726.9,
+      "catalog_names": [
+        "Bottled Water"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Água engarrafada"
+      ]
+    },
+    {
+      "id": "brake_fluid",
+      "name_pt": "Fluído de freio",
+      "name_en": "Brake Fluid",
+      "localization_key": "cn_brake_fluid",
+      "package": "def",
+      "mass_definition_kg": 177.2,
+      "catalog_names": [
+        "Brake Fluid"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Fluido de freio"
+      ]
+    },
+    {
+      "id": "brake_pads",
+      "name_pt": "Pastilhas de freio",
+      "name_en": "Brake Pads",
+      "localization_key": "cn_brake_pads",
+      "package": "def",
+      "mass_definition_kg": 630.6,
+      "catalog_names": [
+        "Brake Pads"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pastilhas de freio"
+      ]
+    },
+    {
+      "id": "bricks",
+      "name_pt": "Tijolos",
+      "name_en": "Bricks",
+      "localization_key": "cn_red_bricks",
+      "package": "def",
+      "mass_definition_kg": 613.86,
+      "catalog_names": [
+        "Bricks"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tijolos"
+      ]
+    },
+    {
+      "id": "can_sardines",
+      "name_pt": "Sardinhas enlatadas",
+      "name_en": "Canned Sardines",
+      "localization_key": "cn_canned_sardines",
+      "package": "def",
+      "mass_definition_kg": 549.4,
+      "catalog_names": [
+        "Canned Sardines"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Sardinhas enlatadas"
+      ]
+    },
+    {
+      "id": "canned_beans",
+      "name_pt": "Feijão enlatado",
+      "name_en": "Canned Beans",
+      "localization_key": "cn_canned_beans",
+      "package": "def",
+      "mass_definition_kg": 492.6,
+      "catalog_names": [
+        "Canned Beans"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Feijão enlatado"
+      ]
+    },
+    {
+      "id": "canned_beef",
+      "name_pt": "Carne enlatada",
+      "name_en": "Canned Beef",
+      "localization_key": "cn_canned_beef",
+      "package": "def",
+      "mass_definition_kg": 670.0,
+      "catalog_names": [
+        "Canned Beef"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carne bovina enlatada"
+      ]
+    },
+    {
+      "id": "canned_pork",
+      "name_pt": "Carne de porco enlatada",
+      "name_en": "Canned Pork",
+      "localization_key": "cn_canned_pork",
+      "package": "def",
+      "mass_definition_kg": 680.6,
+      "catalog_names": [
+        "Canned Pork"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carne suína enlatada"
+      ]
+    },
+    {
+      "id": "canned_tuna",
+      "name_pt": "Atum enlatado",
+      "name_en": "Canned Tuna",
+      "localization_key": "cn_canned_tuna",
+      "package": "def",
+      "mass_definition_kg": 573.3,
+      "catalog_names": [
+        "Canned Tuna"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Atum enlatado"
+      ]
+    },
+    {
+      "id": "car_balt1",
+      "name_pt": "Carros",
+      "name_en": "Cars",
+      "localization_key": "cn_cars",
+      "package": "def",
+      "mass_definition_kg": 84.0,
+      "catalog_names": [
+        "Cars",
+        "Cars"
+      ],
+      "catalog_dlc": "Beyond the Baltic Sea",
+      "aliases": [
+        "Carros"
+      ]
+    },
+    {
+      "id": "car_balt2",
+      "name_pt": "Carros",
+      "name_en": "Cars",
+      "localization_key": "cn_cars",
+      "package": "def",
+      "mass_definition_kg": 48.0,
+      "catalog_names": [
+        "Cars",
+        "Cars"
+      ],
+      "catalog_dlc": "Beyond the Baltic Sea",
+      "aliases": [
+        "Carros"
+      ]
+    },
+    {
+      "id": "car_d",
+      "name_pt": "Carros",
+      "name_en": "Cars",
+      "localization_key": "cn_cars",
+      "package": "def",
+      "mass_definition_kg": 73.5,
+      "catalog_names": [
+        "Cars",
+        "Cars"
+      ],
+      "catalog_dlc": "Launch",
+      "aliases": [
+        "Carros"
+      ]
+    },
+    {
+      "id": "car_f",
+      "name_pt": "Carros",
+      "name_en": "Cars",
+      "localization_key": "cn_cars",
+      "package": "def",
+      "mass_definition_kg": 104.0,
+      "catalog_names": [
+        "Cars",
+        "Cars"
+      ],
+      "catalog_dlc": "Launch",
+      "aliases": [
+        "Carros"
+      ]
+    },
+    {
+      "id": "car_gr",
+      "name_pt": "SUVs",
+      "name_en": "SUVs",
+      "localization_key": "cn_suvs",
+      "package": "def",
+      "mass_definition_kg": 121.8,
+      "catalog_names": [
+        "SUVs"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "SUVs"
+      ]
+    },
+    {
+      "id": "car_ibe",
+      "name_pt": "Carros",
+      "name_en": "Cars",
+      "localization_key": "cn_cars",
+      "package": "def",
+      "mass_definition_kg": 84.0,
+      "catalog_names": [
+        "Cars",
+        "Cars"
+      ],
+      "catalog_dlc": "Launch",
+      "aliases": [
+        "Carros"
+      ]
+    },
+    {
+      "id": "car_it",
+      "name_pt": "Carros",
+      "name_en": "Cars",
+      "localization_key": "cn_cars",
+      "package": "def",
+      "mass_definition_kg": 61.6,
+      "catalog_names": [
+        "Cars",
+        "Cars"
+      ],
+      "catalog_dlc": "Launch",
+      "aliases": [
+        "Carros"
+      ]
+    },
+    {
+      "id": "caravans",
+      "name_pt": "Autocaravanas",
+      "name_en": "Campervans",
+      "localization_key": "cn_caravans",
+      "package": "def",
+      "mass_definition_kg": 63.0,
+      "catalog_names": [
+        "Campervans"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Motorhomes"
+      ]
+    },
+    {
+      "id": "carb_water",
+      "name_pt": "Água com gás",
+      "name_en": "Carbonated Water",
+      "localization_key": "cn_bottled_carbonated_water",
+      "package": "def",
+      "mass_definition_kg": 726.4,
+      "catalog_names": [
+        "Carbonated Water"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Água gaseificada"
+      ]
+    },
+    {
+      "id": "carbn_pwdr_c",
+      "name_pt": "Carvão em pó",
+      "name_en": "Carbon Black Powder",
+      "localization_key": "cn_carbon_black_powder",
+      "package": "def",
+      "mass_definition_kg": 252.2,
+      "catalog_names": [
+        "Carbon Black Powder"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pó de negro de fumo"
+      ]
+    },
+    {
+      "id": "carrots",
+      "name_pt": "Cenouras",
+      "name_en": "Carrots",
+      "localization_key": "cn_carrots",
+      "package": "def",
+      "mass_definition_kg": 512.6,
+      "catalog_names": [
+        "Carrots"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cenouras"
+      ]
+    },
+    {
+      "id": "carrots_c",
+      "name_pt": "Cenouras",
+      "name_en": "Carrots",
+      "localization_key": "cn_carrots",
+      "package": "def",
+      "mass_definition_kg": 512.6,
+      "catalog_names": [
+        "Carrots"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cenouras"
+      ]
+    },
+    {
+      "id": "cars_fr",
+      "name_pt": "Carros",
+      "name_en": "Cars",
+      "localization_key": "cn_cars",
+      "package": "def",
+      "mass_definition_kg": 90.1,
+      "catalog_names": [
+        "Cars",
+        "Cars"
+      ],
+      "catalog_dlc": "Launch",
+      "aliases": [
+        "Carros"
+      ]
+    },
+    {
+      "id": "cauliflower",
+      "name_pt": "Couve-flor",
+      "name_en": "Cauliflower",
+      "localization_key": "cn_cauliflower",
+      "package": "def",
+      "mass_definition_kg": 290.3,
+      "catalog_names": [
+        "Cauliflower"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Couve-flor"
+      ]
+    },
+    {
+      "id": "caviar",
+      "name_pt": "Caviar",
+      "name_en": "Caviar",
+      "localization_key": "cn_caviar",
+      "package": "def",
+      "mass_definition_kg": 443.3,
+      "catalog_names": [
+        "Caviar"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caviar"
+      ]
+    },
+    {
+      "id": "cement",
+      "name_pt": "Cimento",
+      "name_en": "Cement",
+      "localization_key": "cn_cement",
+      "package": "def",
+      "mass_definition_kg": 1442.0,
+      "catalog_names": [
+        "Cement"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cimento"
+      ]
+    },
+    {
+      "id": "cheese",
+      "name_pt": "Queijo",
+      "name_en": "Cheese",
+      "localization_key": "cn_cheese",
+      "package": "def",
+      "mass_definition_kg": 552.4,
+      "catalog_names": [
+        "Cheese"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Queijo"
+      ]
+    },
+    {
+      "id": "chem_granule",
+      "name_pt": "Químico granulado",
+      "name_en": "Chemical Granules",
+      "localization_key": "cn_chemical_granules",
+      "package": "def",
+      "mass_definition_kg": 520.0,
+      "catalog_names": [
+        "Chemical Granules"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Grânulos químicos"
+      ]
+    },
+    {
+      "id": "chem_sorb_c",
+      "name_pt": "Solvente químico",
+      "name_en": "Chemical Sorbent",
+      "localization_key": "cn_chemical_sorbent",
+      "package": "def",
+      "mass_definition_kg": 291.72,
+      "catalog_names": [
+        "Chemical Sorbent"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Solvente químico",
+        "Sorbente químico"
+      ]
+    },
+    {
+      "id": "chem_sorbent",
+      "name_pt": "Solvente químico",
+      "name_en": "Chemical Sorbent",
+      "localization_key": "cn_chemical_sorbent",
+      "package": "def",
+      "mass_definition_kg": 360.1,
+      "catalog_names": [
+        "Chemical Sorbent"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Solvente químico",
+        "Sorbente químico"
+      ]
+    },
+    {
+      "id": "chemicals",
+      "name_pt": "Químicos",
+      "name_en": "Chemicals",
+      "localization_key": "cn_chemicals",
+      "package": "def",
+      "mass_definition_kg": 190.0,
+      "catalog_names": [
+        "Chemicals"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Produtos químicos"
+      ]
+    },
+    {
+      "id": "chewing_gums",
+      "name_pt": "Chicletes",
+      "name_en": "Chewing Gums",
+      "localization_key": "cn_chewing_gums",
+      "package": "def",
+      "mass_definition_kg": 720.4,
+      "catalog_names": [
+        "Chewing Gums"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Chicletes"
+      ]
+    },
+    {
+      "id": "chicken_meat",
+      "name_pt": "Carne de frango",
+      "name_en": "Chicken Meat",
+      "localization_key": "cn_chicken_meat",
+      "package": "def",
+      "mass_definition_kg": 518.0,
+      "catalog_names": [
+        "Chicken Meat"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carne de frango"
+      ]
+    },
+    {
+      "id": "chimney_syst",
+      "name_pt": "Sistemas de chaminés",
+      "name_en": "Chimney Systems",
+      "localization_key": "cn_chimney_systems",
+      "package": "def",
+      "mass_definition_kg": 559.1,
+      "catalog_names": [
+        "Chimney Systems"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Sistemas de chaminé"
+      ]
+    },
+    {
+      "id": "chlorine",
+      "name_pt": "Cloro",
+      "name_en": "Chlorine",
+      "localization_key": "cn_chlorine",
+      "package": "def",
+      "mass_definition_kg": 210.0,
+      "catalog_names": [
+        "Chlorine"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cloro"
+      ]
+    },
+    {
+      "id": "chlorine_t",
+      "name_pt": "Cloro",
+      "name_en": "Chlorine",
+      "localization_key": "cn_chlorine",
+      "package": "def",
+      "mass_definition_kg": 1562.0,
+      "catalog_names": [
+        "Chlorine"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cloro"
+      ]
+    },
+    {
+      "id": "chocolate",
+      "name_pt": "Chocolate",
+      "name_en": "Chocolate",
+      "localization_key": "cn_chocolate",
+      "package": "def",
+      "mass_definition_kg": 722.5,
+      "catalog_names": [
+        "Chocolate"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Chocolate"
+      ]
+    },
+    {
+      "id": "clothes",
+      "name_pt": "Roupas",
+      "name_en": "Clothes",
+      "localization_key": "cn_clothes",
+      "package": "def",
+      "mass_definition_kg": 463.7,
+      "catalog_names": [
+        "Clothes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Roupas"
+      ]
+    },
+    {
+      "id": "clothes_c",
+      "name_pt": "Roupas",
+      "name_en": "Clothes",
+      "localization_key": "cn_clothes",
+      "package": "def",
+      "mass_definition_kg": 624.0,
+      "catalog_names": [
+        "Clothes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Roupas"
+      ]
+    },
+    {
+      "id": "coal",
+      "name_pt": "Carvão",
+      "name_en": "Coal",
+      "localization_key": "cn_coal",
+      "package": "def",
+      "mass_definition_kg": 1460.0,
+      "catalog_names": [
+        "Coal"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carvão"
+      ]
+    },
+    {
+      "id": "coconut_milk",
+      "name_pt": "Leite de coco",
+      "name_en": "Coconut Milk",
+      "localization_key": "cn_coconut_milk",
+      "package": "def",
+      "mass_definition_kg": 720.9,
+      "catalog_names": [
+        "Coconut Milk"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Leite de coco"
+      ]
+    },
+    {
+      "id": "coconut_oil",
+      "name_pt": "Óleo de coco",
+      "name_en": "Coconut Oil",
+      "localization_key": "cn_coconut_oil",
+      "package": "def",
+      "mass_definition_kg": 716.1,
+      "catalog_names": [
+        "Coconut Oil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Óleo de coco"
+      ]
+    },
+    {
+      "id": "comp_process",
+      "name_pt": "Processadores de computador",
+      "name_en": "Computer Processors",
+      "localization_key": "cn_computer_processors",
+      "package": "def",
+      "mass_definition_kg": 116.8,
+      "catalog_names": [
+        "Computer Processors"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Processadores de computador"
+      ]
+    },
+    {
+      "id": "conc_juice_t",
+      "name_pt": "Suco concentrado",
+      "name_en": "Juice Concentrate",
+      "localization_key": "cn_concentrate_juices",
+      "package": "def",
+      "mass_definition_kg": 1306.3,
+      "catalog_names": [
+        "Juice Concentrate"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Concentrado de suco"
+      ]
+    },
+    {
+      "id": "concen_juice",
+      "name_pt": "Suco concentrado",
+      "name_en": "Juice Concentrate",
+      "localization_key": "cn_concentrate_juices",
+      "package": "def",
+      "mass_definition_kg": 726.3,
+      "catalog_names": [
+        "Juice Concentrate"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Concentrado de suco"
+      ]
+    },
+    {
+      "id": "concr_beams2",
+      "name_pt": "Vigas de concreto",
+      "name_en": "Concrete Beams",
+      "localization_key": "cn_concr_beams",
+      "package": "def",
+      "mass_definition_kg": 7450.0,
+      "catalog_names": [
+        "Concrete Beams",
+        "Concrete Beams"
+      ],
+      "catalog_dlc": "Beyond the Baltic Sea",
+      "aliases": [
+        "Vigas de concreto"
+      ]
+    },
+    {
+      "id": "concr_cent",
+      "name_pt": "Centração de concreto",
+      "name_en": "Concrete Centring",
+      "localization_key": "cn_concr_centering",
+      "package": "def",
+      "mass_definition_kg": 2800.0,
+      "catalog_names": [
+        "Concrete Centring"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escoramento de concreto"
+      ]
+    },
+    {
+      "id": "concr_stair",
+      "name_pt": "Escadas de concreto",
+      "name_en": "Concrete Stairs",
+      "localization_key": "cn_concr_stair",
+      "package": "def",
+      "mass_definition_kg": 6000.0,
+      "catalog_names": [
+        "Concrete Stairs"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escadas de concreto"
+      ]
+    },
+    {
+      "id": "cont_trees",
+      "name_pt": "Árvores contentorizadas",
+      "name_en": "Containerized Trees",
+      "localization_key": "cn_containerized_trees",
+      "package": "def",
+      "mass_definition_kg": 140.0,
+      "catalog_names": [
+        "Containerized Trees"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Árvores em contêineres"
+      ]
+    },
+    {
+      "id": "contamin",
+      "name_pt": "Material contaminado",
+      "name_en": "Contaminated Material",
+      "localization_key": "cn_contamin",
+      "package": "def",
+      "mass_definition_kg": 260.0,
+      "catalog_names": [
+        "Contaminated Material"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Material contaminado"
+      ]
+    },
+    {
+      "id": "copp_rf_gutt",
+      "name_pt": "Calhas de cobre para telhado",
+      "name_en": "Copper Roof Gutters",
+      "localization_key": "cn_copper_roof_gutters",
+      "package": "def",
+      "mass_definition_kg": 250.0,
+      "catalog_names": [
+        "Copper Roof Gutters"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Calhas de cobre"
+      ]
+    },
+    {
+      "id": "corks",
+      "name_pt": "Rolhas",
+      "name_en": "Corks",
+      "localization_key": "cn_corks",
+      "package": "def",
+      "mass_definition_kg": 155.5,
+      "catalog_names": [
+        "Corks"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rolhas"
+      ]
+    },
+    {
+      "id": "cott_cheese",
+      "name_pt": "Queijo tipo Cottage",
+      "name_en": "Cottage Cheese",
+      "localization_key": "cn_cottage_cheese",
+      "package": "def",
+      "mass_definition_kg": 568.2,
+      "catalog_names": [
+        "Cottage Cheese"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Queijo cottage"
+      ]
+    },
+    {
+      "id": "cott_harvest",
+      "name_pt": "Colheitadeira de algodão",
+      "name_en": "Cotton Harvester",
+      "localization_key": "cn_cotton_harvester",
+      "package": "def",
+      "mass_definition_kg": 30500.0,
+      "catalog_names": [
+        "Cotton Harvester"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Colheitadeira de algodão"
+      ]
+    },
+    {
+      "id": "crawler",
+      "name_pt": "Caminhão sobre esteiras",
+      "name_en": "Crawler Carrier",
+      "localization_key": "cn_crawler_carrier",
+      "package": "def",
+      "mass_definition_kg": 10800.0,
+      "catalog_names": [
+        "Crawler Carrier"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Transportador de esteiras"
+      ]
+    },
+    {
+      "id": "cut_flowers",
+      "name_pt": "Flores podadas",
+      "name_en": "Cut Flowers",
+      "localization_key": "cn_cut_flowers",
+      "package": "def",
+      "mass_definition_kg": 53.3,
+      "catalog_names": [
+        "Cut Flowers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Flores cortadas"
+      ]
+    },
+    {
+      "id": "cyanide",
+      "name_pt": "Cianeto",
+      "name_en": "Cyanide",
+      "localization_key": "cn_cyanide",
+      "package": "def",
+      "mass_definition_kg": 280.0,
+      "catalog_names": [
+        "Cyanide"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cianeto"
+      ]
+    },
+    {
+      "id": "czl_es300",
+      "name_pt": "Locomotiva CZ LOKO EffiShunter 300",
+      "name_en": "Locomotive CZ LOKO EffiShunter 300",
+      "localization_key": "cn_locomotive_czloko_es300",
+      "package": "def",
+      "mass_definition_kg": 36000.0,
+      "catalog_names": [
+        "Locomotive CZ LOKO EffiShunter 300"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Locomotiva CZ LOKO EffiShunter 300"
+      ]
+    },
+    {
+      "id": "czl_muv75",
+      "name_pt": "Locomotiva CZ LOKO MUV 75",
+      "name_en": "Locomotive CZ LOKO MUV 75",
+      "localization_key": "cn_locomotive_czloko_muv75",
+      "package": "def",
+      "mass_definition_kg": 14700.0,
+      "catalog_names": [
+        "Locomotive CZ LOKO MUV 75"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Locomotiva CZ LOKO MUV 75"
+      ]
+    },
+    {
+      "id": "daf_tr",
+      "name_pt": "Caminhões DAF",
+      "name_en": "Trucks DAF",
+      "localization_key": "cn_trucks_daf",
+      "package": "def",
+      "mass_definition_kg": 145.9,
+      "catalog_names": [
+        "Trucks DAF"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caminhões DAF"
+      ]
+    },
+    {
+      "id": "desinfection",
+      "name_pt": "Desinfetante",
+      "name_en": "Disinfectant",
+      "localization_key": "cn_desinfection",
+      "package": "def",
+      "mass_definition_kg": 509.7,
+      "catalog_names": [
+        "Disinfectant"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Desinfetante"
+      ]
+    },
+    {
+      "id": "diesel",
+      "name_pt": "Diesel",
+      "name_en": "Diesel",
+      "localization_key": "cn_diesel",
+      "package": "def",
+      "mass_definition_kg": 850.0,
+      "catalog_names": [
+        "Diesel"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Diesel"
+      ]
+    },
+    {
+      "id": "diesel_gen",
+      "name_pt": "Geradores à Diesel",
+      "name_en": "Diesel Generators",
+      "localization_key": "cn_diesel_generators",
+      "package": "def",
+      "mass_definition_kg": 652.0,
+      "catalog_names": [
+        "Diesel Generators"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Geradores a diesel"
+      ]
+    },
+    {
+      "id": "digger1000",
+      "name_pt": "Pá-carregadeira",
+      "name_en": "Wheel Loader",
+      "localization_key": "cn_wheel_loader",
+      "package": "def",
+      "mass_definition_kg": 15400.0,
+      "catalog_names": [
+        "Wheel Loader"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pá carregadeira"
+      ]
+    },
+    {
+      "id": "digger500",
+      "name_pt": "Retroescavadeira",
+      "name_en": "Backhoe Loader",
+      "localization_key": "cn_backhoe_loader",
+      "package": "def",
+      "mass_definition_kg": 8380.0,
+      "catalog_names": [
+        "Backhoe Loader"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Retroescavadeira"
+      ]
+    },
+    {
+      "id": "dryers",
+      "name_pt": "Secadoras",
+      "name_en": "Dryers",
+      "localization_key": "cn_dryers",
+      "package": "def",
+      "mass_definition_kg": 401.7,
+      "catalog_names": [
+        "Dryers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Secadores"
+      ]
+    },
+    {
+      "id": "drymilk",
+      "name_pt": "Leite em pó",
+      "name_en": "Dry Milk",
+      "localization_key": "cn_drymilk",
+      "package": "def",
+      "mass_definition_kg": 563.7,
+      "catalog_names": [
+        "Dry Milk"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Leite em pó"
+      ]
+    },
+    {
+      "id": "dynamite",
+      "name_pt": "Dinamite",
+      "name_en": "Dynamite",
+      "localization_key": "cn_dynamite",
+      "package": "def",
+      "mass_definition_kg": 520.0,
+      "catalog_names": [
+        "Dynamite"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Dinamite"
+      ]
+    },
+    {
+      "id": "elect_wiring",
+      "name_pt": "Fiação elétrica",
+      "name_en": "Electrical Wiring",
+      "localization_key": "cn_electric_wiring",
+      "package": "def",
+      "mass_definition_kg": 465.4,
+      "catalog_names": [
+        "Electrical Wiring"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Fiação elétrica"
+      ]
+    },
+    {
+      "id": "electronics",
+      "name_pt": "Produtos eletrônicos",
+      "name_en": "Electronics",
+      "localization_key": "cn_electronics",
+      "package": "def",
+      "mass_definition_kg": 248.3,
+      "catalog_names": [
+        "Electronics"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Eletrônicos"
+      ]
+    },
+    {
+      "id": "emp_wine_bar",
+      "name_pt": "Barris de vinho vazios",
+      "name_en": "Empty Wine Barrels",
+      "localization_key": "cn_empty_wine_barrels",
+      "package": "def",
+      "mass_definition_kg": 248.6,
+      "catalog_names": [
+        "Empty Wine Barrels"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Barris de vinho vazios"
+      ]
+    },
+    {
+      "id": "emp_wine_bot",
+      "name_pt": "Garrafas de vinho vazias",
+      "name_en": "Empty Wine Bottles",
+      "localization_key": "cn_empty_wine_bottles",
+      "package": "def",
+      "mass_definition_kg": 422.5,
+      "catalog_names": [
+        "Empty Wine Bottles"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Garrafas de vinho vazias"
+      ]
+    },
+    {
+      "id": "empty_barr",
+      "name_pt": "Barris vazios",
+      "name_en": "Empty Barrels",
+      "localization_key": "cn_empty_barrels",
+      "package": "def",
+      "mass_definition_kg": 279.6,
+      "catalog_names": [
+        "Empty Barrels"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Barris vazios"
+      ]
+    },
+    {
+      "id": "empty_palet",
+      "name_pt": "Paletes vazios\\n",
+      "name_en": "Empty Pallets",
+      "localization_key": "cn_empty_palettes",
+      "package": "def",
+      "mass_definition_kg": 668.9,
+      "catalog_names": [
+        "Empty Pallets"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Paletes vazios"
+      ]
+    },
+    {
+      "id": "empty_spool",
+      "name_pt": "Bobina vazia",
+      "name_en": "Empty Spool",
+      "localization_key": "cn_empty_spool",
+      "package": "def",
+      "mass_definition_kg": 260.0,
+      "catalog_names": [
+        "Empty Spool"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carretel vazio"
+      ]
+    },
+    {
+      "id": "emptytank",
+      "name_pt": "Tanque reservatório",
+      "name_en": "Reservoir Tank",
+      "localization_key": "cn_tank",
+      "package": "def",
+      "mass_definition_kg": 6700.0,
+      "catalog_names": [
+        "Reservoir Tank"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tanque reservatório"
+      ]
+    },
+    {
+      "id": "ethane",
+      "name_pt": "Etano",
+      "name_en": "Ethane",
+      "localization_key": "cn_ethane",
+      "package": "def",
+      "mass_definition_kg": 544.0,
+      "catalog_names": [
+        "Ethane"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Etano"
+      ]
+    },
+    {
+      "id": "excav_soil",
+      "name_pt": "Solo escavado",
+      "name_en": "Excavated Soil",
+      "localization_key": "cn_excavated_soil",
+      "package": "def",
+      "mass_definition_kg": 1300.0,
+      "catalog_names": [
+        "Excavated Soil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Solo escavado"
+      ]
+    },
+    {
+      "id": "excavator",
+      "name_pt": "Escavadeira",
+      "name_en": "Excavator",
+      "localization_key": "cn_excavator",
+      "package": "def",
+      "mass_definition_kg": 21720.0,
+      "catalog_names": [
+        "Excavator"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escavadeira"
+      ]
+    },
+    {
+      "id": "exhausts_c",
+      "name_pt": "Sistemas de escapamento",
+      "name_en": "Exhaust Systems",
+      "localization_key": "cn_exhaust_systems",
+      "package": "def",
+      "mass_definition_kg": 250.2,
+      "catalog_names": [
+        "Exhaust Systems"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Sistemas de escapamento"
+      ]
+    },
+    {
+      "id": "explosives",
+      "name_pt": "Explosivos",
+      "name_en": "Explosives",
+      "localization_key": "cn_explosives",
+      "package": "def",
+      "mass_definition_kg": 365.0,
+      "catalog_names": [
+        "Explosives"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Explosivos"
+      ]
+    },
+    {
+      "id": "fertilizer",
+      "name_pt": "Fertilizante",
+      "name_en": "Fertilizer",
+      "localization_key": "cn_fertilizer",
+      "package": "def",
+      "mass_definition_kg": 614.6,
+      "catalog_names": [
+        "Fertilizer"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Adubo",
+        "Fertilizante"
+      ]
+    },
+    {
+      "id": "fireworks",
+      "name_pt": "Fogos de artifício",
+      "name_en": "Fireworks",
+      "localization_key": "cn_fireworks",
+      "package": "def",
+      "mass_definition_kg": 300.0,
+      "catalog_names": [
+        "Fireworks"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Fogos de artifício"
+      ]
+    },
+    {
+      "id": "fish_chips",
+      "name_pt": "Peixe empanado",
+      "name_en": "Fish Fingers",
+      "localization_key": "cn_fish_chips",
+      "package": "def",
+      "mass_definition_kg": 520.0,
+      "catalog_names": [
+        "Fish Fingers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Palitos de peixe"
+      ]
+    },
+    {
+      "id": "floorpanels",
+      "name_pt": "Placas de piso",
+      "name_en": "Floor Panels",
+      "localization_key": "cn_floorpanels",
+      "package": "def",
+      "mass_definition_kg": 234.0,
+      "catalog_names": [
+        "Floor Panels"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Painéis de piso"
+      ]
+    },
+    {
+      "id": "flour",
+      "name_pt": "Farinha",
+      "name_en": "Flour",
+      "localization_key": "cn_flour",
+      "package": "def",
+      "mass_definition_kg": 612.7,
+      "catalog_names": [
+        "Flour"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Farinha"
+      ]
+    },
+    {
+      "id": "fluorine",
+      "name_pt": "Flúor",
+      "name_en": "Fluorine",
+      "localization_key": "cn_fluorine",
+      "package": "def",
+      "mass_definition_kg": 170.0,
+      "catalog_names": [
+        "Fluorine"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Flúor"
+      ]
+    },
+    {
+      "id": "food_oil_t",
+      "name_pt": "Óleo alimentício",
+      "name_en": "Food Oil",
+      "localization_key": "cn_food_oil",
+      "package": "def",
+      "mass_definition_kg": 920.0,
+      "catalog_names": [
+        "Food Oil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Óleo alimentício"
+      ]
+    },
+    {
+      "id": "forklifts",
+      "name_pt": "Empilhadeiras",
+      "name_en": "Forklifts",
+      "localization_key": "cn_forklifts",
+      "package": "def",
+      "mass_definition_kg": 4230.0,
+      "catalog_names": [
+        "Forklifts"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Empilhadeiras"
+      ]
+    },
+    {
+      "id": "fresh_fish",
+      "name_pt": "Peixe fresco",
+      "name_en": "Fresh Fish",
+      "localization_key": "cn_fresh_fish",
+      "package": "def",
+      "mass_definition_kg": 561.2,
+      "catalog_names": [
+        "Fresh Fish"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Peixe fresco"
+      ]
+    },
+    {
+      "id": "froz_octopi",
+      "name_pt": "Polvo congelado",
+      "name_en": "Frozen Octopi",
+      "localization_key": "cn_froz_octopi",
+      "package": "def",
+      "mass_definition_kg": 436.4,
+      "catalog_names": [
+        "Frozen Octopi"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Polvos congelados"
+      ]
+    },
+    {
+      "id": "frozen_hake",
+      "name_pt": "Merluza congelada",
+      "name_en": "Frozen Hake",
+      "localization_key": "cn_frozen_hake",
+      "package": "def",
+      "mass_definition_kg": 527.6,
+      "catalog_names": [
+        "Frozen Hake"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pescada congelada"
+      ]
+    },
+    {
+      "id": "frsh_herbs",
+      "name_pt": "Ervas frescas",
+      "name_en": "Fresh Herbs",
+      "localization_key": "cn_fresh_herbs",
+      "package": "def",
+      "mass_definition_kg": 171.2,
+      "catalog_names": [
+        "Fresh Herbs"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ervas frescas"
+      ]
+    },
+    {
+      "id": "fuel_oil",
+      "name_pt": "Óleo combustível",
+      "name_en": "Fuel Oil",
+      "localization_key": "cn_fuel_oil",
+      "package": "def",
+      "mass_definition_kg": 857.0,
+      "catalog_names": [
+        "Fuel Oil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Óleo combustível"
+      ]
+    },
+    {
+      "id": "fuel_tanks",
+      "name_pt": "Tanques de combustível",
+      "name_en": "Fuel Tanks",
+      "localization_key": "cn_fuel_tanks",
+      "package": "def",
+      "mass_definition_kg": 310.1,
+      "catalog_names": [
+        "Fuel Tanks"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tanques de combustível"
+      ]
+    },
+    {
+      "id": "fueltanker",
+      "name_pt": "Caminhão-tanque",
+      "name_en": "Fuel Tanker",
+      "localization_key": "cn_tanker",
+      "package": "def",
+      "mass_definition_kg": 240.0,
+      "catalog_names": [
+        "Fuel Tanker"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caminhão-tanque de combustível"
+      ]
+    },
+    {
+      "id": "furniture",
+      "name_pt": "Mobília",
+      "name_en": "Furniture",
+      "localization_key": "cn_furniture",
+      "package": "def",
+      "mass_definition_kg": 496.4,
+      "catalog_names": [
+        "Furniture"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Móveis"
+      ]
+    },
+    {
+      "id": "garlic",
+      "name_pt": "Alho",
+      "name_en": "Garlic",
+      "localization_key": "cn_garlic",
+      "package": "def",
+      "mass_definition_kg": 375.3,
+      "catalog_names": [
+        "Garlic"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Alho"
+      ]
+    },
+    {
+      "id": "glass",
+      "name_pt": "Painéis de vidro",
+      "name_en": "Glass Panels",
+      "localization_key": "cn_glass",
+      "package": "def",
+      "mass_definition_kg": 212.2,
+      "catalog_names": [
+        "Glass Panels"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Painéis de vidro"
+      ]
+    },
+    {
+      "id": "glass_packed",
+      "name_pt": "Vidro embalado",
+      "name_en": "Packed Glass",
+      "localization_key": "cn_pck_glass",
+      "package": "def",
+      "mass_definition_kg": 223.0,
+      "catalog_names": [
+        "Packed Glass"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vidro embalado"
+      ]
+    },
+    {
+      "id": "gnocchi",
+      "name_pt": "Nhoque",
+      "name_en": "Gnocchi",
+      "localization_key": "cn_gnocchi",
+      "package": "def",
+      "mass_definition_kg": 558.8,
+      "catalog_names": [
+        "Gnocchi"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Nhoque"
+      ]
+    },
+    {
+      "id": "goat_cheese",
+      "name_pt": "Queijo de cabra",
+      "name_en": "Goat Cheese",
+      "localization_key": "cn_goat_cheese",
+      "package": "def",
+      "mass_definition_kg": 477.3,
+      "catalog_names": [
+        "Goat Cheese"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Queijo de cabra"
+      ]
+    },
+    {
+      "id": "granite_cube",
+      "name_pt": "Cubos de granito",
+      "name_en": "Granite Cubes",
+      "localization_key": "cn_granite_cubes",
+      "package": "def",
+      "mass_definition_kg": 2300.0,
+      "catalog_names": [
+        "Granite Cubes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Blocos de granito"
+      ]
+    },
+    {
+      "id": "grapes",
+      "name_pt": "Uvas",
+      "name_en": "Grapes",
+      "localization_key": "cn_grapes",
+      "package": "def",
+      "mass_definition_kg": 443.0,
+      "catalog_names": [
+        "Grapes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Uvas"
+      ]
+    },
+    {
+      "id": "graph_grease",
+      "name_pt": "Graxa grafite",
+      "name_en": "Graphite Grease",
+      "localization_key": "cn_graph_grease",
+      "package": "def",
+      "mass_definition_kg": 512.4,
+      "catalog_names": [
+        "Graphite Grease"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Graxa de grafite"
+      ]
+    },
+    {
+      "id": "grass_rolls",
+      "name_pt": "Rolos de grama",
+      "name_en": "Grass Rolls",
+      "localization_key": "cn_grass_rolls",
+      "package": "def",
+      "mass_definition_kg": 463.6,
+      "catalog_names": [
+        "Grass Rolls"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rolos de grama"
+      ]
+    },
+    {
+      "id": "gravel",
+      "name_pt": "Cascalho",
+      "name_en": "Gravel",
+      "localization_key": "cn_gravel",
+      "package": "def",
+      "mass_definition_kg": 1690.0,
+      "catalog_names": [
+        "Gravel"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cascalho"
+      ]
+    },
+    {
+      "id": "guard_rails",
+      "name_pt": "Muretas",
+      "name_en": "Guard Rails",
+      "localization_key": "cn_guard_rails",
+      "package": "def",
+      "mass_definition_kg": 679.6,
+      "catalog_names": [
+        "Guard Rails"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Defensas metálicas"
+      ]
+    },
+    {
+      "id": "gummy_bears",
+      "name_pt": "Ursinhos de goma",
+      "name_en": "Gummy Bears",
+      "localization_key": "cn_gummy_bears",
+      "package": "def",
+      "mass_definition_kg": 645.1,
+      "catalog_names": [
+        "Gummy Bears"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Balas de goma"
+      ]
+    },
+    {
+      "id": "harvest_bins",
+      "name_pt": "Cestos para colheita",
+      "name_en": "Harvesting Bins",
+      "localization_key": "cn_harvesting_bins",
+      "package": "def",
+      "mass_definition_kg": 85.6,
+      "catalog_names": [
+        "Harvesting Bins"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caixas de colheita"
+      ]
+    },
+    {
+      "id": "hchemicals",
+      "name_pt": "Produtos químicos quentes",
+      "name_en": "Hot Chemicals",
+      "localization_key": "cn_hot_chem",
+      "package": "def",
+      "mass_definition_kg": 200.0,
+      "catalog_names": [
+        "Hot Chemicals"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Produtos químicos aquecidos"
+      ]
+    },
+    {
+      "id": "hi_volt_cabl",
+      "name_pt": "Cabos de alta tensão",
+      "name_en": "High Voltage Cables",
+      "localization_key": "cn_high_voltage_cables",
+      "package": "def",
+      "mass_definition_kg": 650.9,
+      "catalog_names": [
+        "High Voltage Cables"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cabos de alta tensão"
+      ]
+    },
+    {
+      "id": "hipresstank",
+      "name_pt": "Tanque pressurizado",
+      "name_en": "Pressure Tank",
+      "localization_key": "cn_presstank",
+      "package": "def",
+      "mass_definition_kg": 900.0,
+      "catalog_names": [
+        "Pressure Tank"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tanque de pressão"
+      ]
+    },
+    {
+      "id": "hmetal",
+      "name_pt": "Metais pesados",
+      "name_en": "Heavy Metals",
+      "localization_key": "cn_hmetal",
+      "package": "def",
+      "mass_definition_kg": 250.0,
+      "catalog_names": [
+        "Heavy Metals"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Metais pesados"
+      ]
+    },
+    {
+      "id": "honey",
+      "name_pt": "Mel",
+      "name_en": "Honey",
+      "localization_key": "cn_honey",
+      "package": "def",
+      "mass_definition_kg": 613.4,
+      "catalog_names": [
+        "Honey"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Mel"
+      ]
+    },
+    {
+      "id": "horse_tr",
+      "name_pt": "Reboque para cavalos",
+      "name_en": "Horse Trailer",
+      "localization_key": "cn_horse_trailer",
+      "package": "def",
+      "mass_definition_kg": 72.0,
+      "catalog_names": [
+        "Horse Trailer"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Reboque para cavalos"
+      ]
+    },
+    {
+      "id": "hvac",
+      "name_pt": "Condicionadores de ar",
+      "name_en": "Air Conditioners",
+      "localization_key": "cn_aircond",
+      "package": "def",
+      "mass_definition_kg": 3640.0,
+      "catalog_names": [
+        "Air Conditioners",
+        "Air Conditioners"
+      ],
+      "catalog_dlc": "Greece",
+      "aliases": [
+        "Ar-condicionados"
+      ]
+    },
+    {
+      "id": "hwaste",
+      "name_pt": "Lixo hospitalar",
+      "name_en": "Hospital Waste",
+      "localization_key": "cn_hwaste",
+      "package": "def",
+      "mass_definition_kg": 290.0,
+      "catalog_names": [
+        "Hospital Waste"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Lixo hospitalar"
+      ]
+    },
+    {
+      "id": "hydrochlor",
+      "name_pt": "Ácido clorídrico",
+      "name_en": "Hydrochloric Acid",
+      "localization_key": "cn_hydrochlor",
+      "package": "def",
+      "mass_definition_kg": 220.0,
+      "catalog_names": [
+        "Hydrochloric Acid"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ácido clorídrico"
+      ]
+    },
+    {
+      "id": "hydrogen",
+      "name_pt": "Hidrogênio",
+      "name_en": "Hydrogen",
+      "localization_key": "cn_hydrogen",
+      "package": "def",
+      "mass_definition_kg": 71.0,
+      "catalog_names": [
+        "Hydrogen"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Hidrogênio"
+      ]
+    },
+    {
+      "id": "ibc_cont",
+      "name_pt": "Contêineres IBC",
+      "name_en": "IBC Containers",
+      "localization_key": "cn_ibc_containers",
+      "package": "def",
+      "mass_definition_kg": 337.5,
+      "catalog_names": [
+        "IBC Containers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Contêineres IBC"
+      ]
+    },
+    {
+      "id": "icecream",
+      "name_pt": "Sorvetes",
+      "name_en": "Ice Cream",
+      "localization_key": "cn_icecream",
+      "package": "def",
+      "mass_definition_kg": 427.3,
+      "catalog_names": [
+        "Ice Cream"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Sorvete"
+      ]
+    },
+    {
+      "id": "iced_coffee",
+      "name_pt": "Café gelado enlatado",
+      "name_en": "Canned Iced Coffee",
+      "localization_key": "cn_canned_iced_coffee",
+      "package": "def",
+      "mass_definition_kg": 644.2,
+      "catalog_names": [
+        "Canned Iced Coffee"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Café gelado enlatado"
+      ]
+    },
+    {
+      "id": "iron_pipes",
+      "name_pt": "Tubos de ferro",
+      "name_en": "Iron Pipes",
+      "localization_key": "cn_pipes",
+      "package": "def",
+      "mass_definition_kg": 720.0,
+      "catalog_names": [
+        "Iron Pipes (large)"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tubos de ferro (grandes)",
+        "Tubos de ferro (pequenos)"
+      ]
+    },
+    {
+      "id": "kerosene",
+      "name_pt": "Querosene",
+      "name_en": "Kerosene",
+      "localization_key": "cn_kerosene",
+      "package": "def",
+      "mass_definition_kg": 786.0,
+      "catalog_names": [
+        "Kerosene"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Querosene"
+      ]
+    },
+    {
+      "id": "ketchup",
+      "name_pt": "Ketchup",
+      "name_en": "Ketchup",
+      "localization_key": "cn_ketchup",
+      "package": "def",
+      "mass_definition_kg": 465.2,
+      "catalog_names": [
+        "Ketchup"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ketchup"
+      ]
+    },
+    {
+      "id": "lamb_stom",
+      "name_pt": "Estômagos de ovelha",
+      "name_en": "Lamb Stomachs",
+      "localization_key": "cn_lamb_stomachs",
+      "package": "def",
+      "mass_definition_kg": 400.3,
+      "catalog_names": [
+        "Lamb Stomachs"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Estômagos de cordeiro"
+      ]
+    },
+    {
+      "id": "large_cont",
+      "name_pt": "Contêiner grande",
+      "name_en": "Large Containers",
+      "localization_key": "cn_large_containers",
+      "package": "def",
+      "mass_definition_kg": 337.5,
+      "catalog_names": [
+        "Large Containers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Contêineres grandes"
+      ]
+    },
+    {
+      "id": "largetubes",
+      "name_pt": "Tubos grandes",
+      "name_en": "Large Tubes",
+      "localization_key": "cn_largetubes",
+      "package": "def",
+      "mass_definition_kg": 3600.0,
+      "catalog_names": [
+        "Large Tubes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tubos grandes"
+      ]
+    },
+    {
+      "id": "lavender",
+      "name_pt": "Lavanda",
+      "name_en": "Lavender",
+      "localization_key": "cn_lavender",
+      "package": "def",
+      "mass_definition_kg": 466.7,
+      "catalog_names": [
+        "Lavender"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Lavanda"
+      ]
+    },
+    {
+      "id": "lead",
+      "name_pt": "Chumbo",
+      "name_en": "Lead",
+      "localization_key": "cn_lead",
+      "package": "def",
+      "mass_definition_kg": 230.0,
+      "catalog_names": [
+        "Lead"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Chumbo"
+      ]
+    },
+    {
+      "id": "limonades",
+      "name_pt": "Limonada",
+      "name_en": "Lemonade",
+      "localization_key": "cn_limonades",
+      "package": "def",
+      "mass_definition_kg": 727.2,
+      "catalog_names": [
+        "Lemonade"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Limonada"
+      ]
+    },
+    {
+      "id": "live_cattle",
+      "name_pt": "Gado bovino vivo",
+      "name_en": "Live Cattle",
+      "localization_key": "cn_live_cattle",
+      "package": "def",
+      "mass_definition_kg": 550.0,
+      "catalog_names": [
+        "Live Cattle"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Gado vivo"
+      ]
+    },
+    {
+      "id": "live_pigs",
+      "name_pt": "Porcos Vivos",
+      "name_en": "Live Pigs",
+      "localization_key": "cn_live_pigs",
+      "package": "def",
+      "mass_definition_kg": 200.0,
+      "catalog_names": [
+        "Live Pigs"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Porcos vivos"
+      ]
+    },
+    {
+      "id": "liver_paste",
+      "name_pt": "Patê de fígado",
+      "name_en": "Liver Paste",
+      "localization_key": "cn_liver_paste",
+      "package": "def",
+      "mass_definition_kg": 527.6,
+      "catalog_names": [
+        "Liver Paste"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Patê de fígado"
+      ]
+    },
+    {
+      "id": "logs",
+      "name_pt": "Troncos",
+      "name_en": "Logs",
+      "localization_key": "cn_logs",
+      "package": "def",
+      "mass_definition_kg": 750.0,
+      "catalog_names": [
+        "Logs"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Toras"
+      ]
+    },
+    {
+      "id": "lpg",
+      "name_pt": "GLP",
+      "name_en": "LPG",
+      "localization_key": "cn_lpg",
+      "package": "def",
+      "mass_definition_kg": 265.0,
+      "catalog_names": [
+        "LPG"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "GLP",
+        "Gas de Cozinha",
+        "Gás de cozinha"
+      ]
+    },
+    {
+      "id": "lpg_t",
+      "name_pt": "GLP",
+      "name_en": "LPG",
+      "localization_key": "cn_lpg",
+      "package": "def",
+      "mass_definition_kg": 550.0,
+      "catalog_names": [
+        "LPG"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "GLP",
+        "Gas de Cozinha",
+        "Gás de cozinha"
+      ]
+    },
+    {
+      "id": "lumber",
+      "name_pt": "Madeira serrada",
+      "name_en": "Lumber",
+      "localization_key": "cn_lumber",
+      "package": "def",
+      "mass_definition_kg": 5200.0,
+      "catalog_names": [
+        "Lumber"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Madeira serrada"
+      ]
+    },
+    {
+      "id": "lumber_p",
+      "name_pt": "Madeira embalada",
+      "name_en": "Packed Lumber",
+      "localization_key": "cn_packed_lumber",
+      "package": "def",
+      "mass_definition_kg": 3200.0,
+      "catalog_names": [
+        "Packed Lumber"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Madeira serrada embalada"
+      ]
+    },
+    {
+      "id": "lux_yacht",
+      "name_pt": "Iate de luxo",
+      "name_en": "Luxury Yacht",
+      "localization_key": "cn_luxury_yacht",
+      "package": "def",
+      "mass_definition_kg": 9899.7,
+      "catalog_names": [
+        "Luxury Yacht"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Iate de luxo"
+      ]
+    },
+    {
+      "id": "magnesium",
+      "name_pt": "Magnésio",
+      "name_en": "Magnesium",
+      "localization_key": "cn_magnesium",
+      "package": "def",
+      "mass_definition_kg": 220.0,
+      "catalog_names": [
+        "Magnesium"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Magnésio"
+      ]
+    },
+    {
+      "id": "maple_syrup",
+      "name_pt": "Xarope de bordo",
+      "name_en": "Maple Syrup",
+      "localization_key": "cn_maple_syrup",
+      "package": "def",
+      "mass_definition_kg": 521.6,
+      "catalog_names": [
+        "Maple Syrup"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Xarope de bordo"
+      ]
+    },
+    {
+      "id": "marb_blck",
+      "name_pt": "Blocos de mármore",
+      "name_en": "Marble Blocks",
+      "localization_key": "cn_marble_block",
+      "package": "def",
+      "mass_definition_kg": 12100.0,
+      "catalog_names": [
+        "Marble Blocks"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Blocos de mármore"
+      ]
+    },
+    {
+      "id": "marb_blck2",
+      "name_pt": "Blocos de mármore",
+      "name_en": "Marble Blocks",
+      "localization_key": "cn_marble_block",
+      "package": "def",
+      "mass_definition_kg": 10500.0,
+      "catalog_names": [
+        "Marble Blocks"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Blocos de mármore"
+      ]
+    },
+    {
+      "id": "marb_slab",
+      "name_pt": "Lâmina de mármore",
+      "name_en": "Marble Slab",
+      "localization_key": "cn_marble_slab",
+      "package": "def",
+      "mass_definition_kg": 7800.0,
+      "catalog_names": [
+        "Marble Slab"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Placa de mármore"
+      ]
+    },
+    {
+      "id": "mason_jars",
+      "name_pt": "Potes de vidro",
+      "name_en": "Mason Jars",
+      "localization_key": "cn_mason_jars",
+      "package": "def",
+      "mass_definition_kg": 222.5,
+      "catalog_names": [
+        "Mason Jars"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Potes de conserva"
+      ]
+    },
+    {
+      "id": "mat_handler",
+      "name_pt": "Manipulador de materiais",
+      "name_en": "Material Handler",
+      "localization_key": "cn_material_handler",
+      "package": "def",
+      "mass_definition_kg": 36150.0,
+      "catalog_names": [
+        "Material Handler"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Manipulador de materiais"
+      ]
+    },
+    {
+      "id": "med_equip",
+      "name_pt": "Equipamento médico",
+      "name_en": "Medical Equipment",
+      "localization_key": "cn_medical_equipment",
+      "package": "def",
+      "mass_definition_kg": 158.0,
+      "catalog_names": [
+        "Medical Equipment"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Equipamentos médicos"
+      ]
+    },
+    {
+      "id": "med_vaccine",
+      "name_pt": "Vacinas",
+      "name_en": "Medical Vaccines",
+      "localization_key": "cn_medical_vaccines",
+      "package": "def",
+      "mass_definition_kg": 164.5,
+      "catalog_names": [
+        "Medical Vaccines"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vacinas médicas"
+      ]
+    },
+    {
+      "id": "mercuric",
+      "name_pt": "Cloreto de mercúrio",
+      "name_en": "Mercuric Chloride",
+      "localization_key": "cn_mercuric",
+      "package": "def",
+      "mass_definition_kg": 280.0,
+      "catalog_names": [
+        "Mercuric Chloride"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cloreto de mercúrio"
+      ]
+    },
+    {
+      "id": "metal_beams",
+      "name_pt": "Vigas de metal",
+      "name_en": "Metal Beams",
+      "localization_key": "cn_metal_beams",
+      "package": "def",
+      "mass_definition_kg": 11500.0,
+      "catalog_names": [
+        "Metal Beams"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vigas de metal",
+        "Vigas metálicas"
+      ]
+    },
+    {
+      "id": "metal_cans",
+      "name_pt": "Latas de metal",
+      "name_en": "Metal Cans",
+      "localization_key": "cn_metal_cans",
+      "package": "def",
+      "mass_definition_kg": 287.7,
+      "catalog_names": [
+        "Metal Cans"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Latas metálicas"
+      ]
+    },
+    {
+      "id": "metal_pipes",
+      "name_pt": "Tubos de ferro",
+      "name_en": "Iron Pipes",
+      "localization_key": "cn_pipes",
+      "package": "def",
+      "mass_definition_kg": 12190.0,
+      "catalog_names": [
+        "Iron Pipes (small)"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tubos de ferro (grandes)",
+        "Tubos de ferro (pequenos)"
+      ]
+    },
+    {
+      "id": "milk",
+      "name_pt": "Leite",
+      "name_en": "Milk",
+      "localization_key": "cn_milk",
+      "package": "def",
+      "mass_definition_kg": 621.2,
+      "catalog_names": [
+        "Milk"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Leite"
+      ]
+    },
+    {
+      "id": "milk_t",
+      "name_pt": "Leite",
+      "name_en": "Milk",
+      "localization_key": "cn_milk",
+      "package": "def",
+      "mass_definition_kg": 1003.0,
+      "catalog_names": [
+        "Milk"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Leite"
+      ]
+    },
+    {
+      "id": "mobile_compr",
+      "name_pt": "Compressor de ar móvel",
+      "name_en": "Mobile Air Compressor",
+      "localization_key": "cn_mobile_air_compressor",
+      "package": "def",
+      "mass_definition_kg": 1200.0,
+      "catalog_names": [
+        "Mobile Air Compressor"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Compressor de ar móvel"
+      ]
+    },
+    {
+      "id": "mondeos",
+      "name_pt": "Carros",
+      "name_en": "Cars",
+      "localization_key": "cn_cars",
+      "package": "def",
+      "mass_definition_kg": 78.6,
+      "catalog_names": [
+        "Cars",
+        "Cars"
+      ],
+      "catalog_dlc": "Launch",
+      "aliases": [
+        "Carros"
+      ]
+    },
+    {
+      "id": "moto_tires",
+      "name_pt": "Pneus de moto",
+      "name_en": "Motorcycle Tyres",
+      "localization_key": "cn_motorcycle_tires",
+      "package": "def",
+      "mass_definition_kg": 669.4,
+      "catalog_names": [
+        "Motorcycle Tyres"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pneus de motocicleta"
+      ]
+    },
+    {
+      "id": "motor_oil",
+      "name_pt": "Óleo de motor",
+      "name_en": "Motor Oil",
+      "localization_key": "cn_motor_oil",
+      "package": "def",
+      "mass_definition_kg": 568.3,
+      "catalog_names": [
+        "Motor Oil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Óleo de motor"
+      ]
+    },
+    {
+      "id": "motor_oil_c",
+      "name_pt": "Óleo de motor",
+      "name_en": "Motor Oil",
+      "localization_key": "cn_motor_oil",
+      "package": "def",
+      "mass_definition_kg": 472.16,
+      "catalog_names": [
+        "Motor Oil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Óleo de motor"
+      ]
+    },
+    {
+      "id": "motorcycles",
+      "name_pt": "Motocicletas",
+      "name_en": "Motorcycles",
+      "localization_key": "cn_motorcycles",
+      "package": "def",
+      "mass_definition_kg": 456.0,
+      "catalog_names": [
+        "Motorcycles"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Motocicletas"
+      ]
+    },
+    {
+      "id": "mozzarela",
+      "name_pt": "Muçarela",
+      "name_en": "Mozzarella",
+      "localization_key": "cn_mozzarela",
+      "package": "def",
+      "mass_definition_kg": 608.5,
+      "catalog_names": [
+        "Mozzarella"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Mussarela"
+      ]
+    },
+    {
+      "id": "mtl_coil",
+      "name_pt": "Bobina de metal",
+      "name_en": "Metal Coil",
+      "localization_key": "cn_metal_coil",
+      "package": "def",
+      "mass_definition_kg": 12500.0,
+      "catalog_names": [
+        "Metal Coil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Bobina de metal",
+        "Bobina metálica"
+      ]
+    },
+    {
+      "id": "natur_rubber",
+      "name_pt": "Borracha natural",
+      "name_en": "Natural Rubber",
+      "localization_key": "cn_natural_rubber",
+      "package": "def",
+      "mass_definition_kg": 658.5,
+      "catalog_names": [
+        "Natural Rubber"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Borracha natural"
+      ]
+    },
+    {
+      "id": "neon",
+      "name_pt": "Neon",
+      "name_en": "Neon",
+      "localization_key": "cn_neon",
+      "package": "def",
+      "mass_definition_kg": 220.0,
+      "catalog_names": [
+        "Neon"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Neônio"
+      ]
+    },
+    {
+      "id": "nitrocel",
+      "name_pt": "Nitrocelulose",
+      "name_en": "Nitrocellulose",
+      "localization_key": "cn_nitrocel",
+      "package": "def",
+      "mass_definition_kg": 170.0,
+      "catalog_names": [
+        "Nitrocellulose"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Nitrocelulose"
+      ]
+    },
+    {
+      "id": "nitrogen",
+      "name_pt": "Nitrogênio",
+      "name_en": "Nitrogen",
+      "localization_key": "cn_nitrogen",
+      "package": "def",
+      "mass_definition_kg": 230.0,
+      "catalog_names": [
+        "Nitrogen"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Nitrogênio"
+      ]
+    },
+    {
+      "id": "nonalco_beer",
+      "name_pt": "Cerveja sem álcool",
+      "name_en": "Non-alcoholic Beer",
+      "localization_key": "cn_nonalcoholic_beer",
+      "package": "def",
+      "mass_definition_kg": 671.4,
+      "catalog_names": [
+        "Non-alcoholic Beer"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cerveja sem álcool"
+      ]
+    },
+    {
+      "id": "nuts",
+      "name_pt": "Nozes",
+      "name_en": "Nuts",
+      "localization_key": "cn_nuts",
+      "package": "def",
+      "mass_definition_kg": 546.9,
+      "catalog_names": [
+        "Nuts"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Nozes"
+      ]
+    },
+    {
+      "id": "nylon_cord",
+      "name_pt": "Fio de náilon",
+      "name_en": "Nylon Cord",
+      "localization_key": "cn_nylon_cord",
+      "package": "def",
+      "mass_definition_kg": 726.0,
+      "catalog_names": [
+        "Nylon Cord"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cordão de náilon"
+      ]
+    },
+    {
+      "id": "oil",
+      "name_pt": "Óleo",
+      "name_en": "Oil",
+      "localization_key": "cn_oil",
+      "package": "def",
+      "mass_definition_kg": 825.0,
+      "catalog_names": [
+        "Oil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Óleo"
+      ]
+    },
+    {
+      "id": "oil_filt_c",
+      "name_pt": "Filtros de óleo",
+      "name_en": "Oil Filters",
+      "localization_key": "cn_oil_filters",
+      "package": "def",
+      "mass_definition_kg": 318.46,
+      "catalog_names": [
+        "Oil Filters"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Filtros de óleo"
+      ]
+    },
+    {
+      "id": "oil_filters",
+      "name_pt": "Filtros de óleo",
+      "name_en": "Oil Filters",
+      "localization_key": "cn_oil_filters",
+      "package": "def",
+      "mass_definition_kg": 376.0,
+      "catalog_names": [
+        "Oil Filters"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Filtros de óleo"
+      ]
+    },
+    {
+      "id": "olive_oil",
+      "name_pt": "Azeite de oliva",
+      "name_en": "Olive Oil",
+      "localization_key": "cn_olive_oil",
+      "package": "def",
+      "mass_definition_kg": 534.7,
+      "catalog_names": [
+        "Olive Oil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Azeite de oliva"
+      ]
+    },
+    {
+      "id": "olive_oil_t",
+      "name_pt": "Azeite de oliva",
+      "name_en": "Olive Oil",
+      "localization_key": "cn_olive_oil",
+      "package": "def",
+      "mass_definition_kg": 920.0,
+      "catalog_names": [
+        "Olive Oil"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Azeite de oliva"
+      ]
+    },
+    {
+      "id": "olive_tree",
+      "name_pt": "Oliveiras",
+      "name_en": "Olive Trees",
+      "localization_key": "cn_olive_trees",
+      "package": "def",
+      "mass_definition_kg": 2500.0,
+      "catalog_names": [
+        "Olive Trees"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Oliveiras"
+      ]
+    },
+    {
+      "id": "olives",
+      "name_pt": "Azeitonas",
+      "name_en": "Olives",
+      "localization_key": "cn_olives",
+      "package": "def",
+      "mass_definition_kg": 554.9,
+      "catalog_names": [
+        "Olives"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Azeitonas"
+      ]
+    },
+    {
+      "id": "onion",
+      "name_pt": "Cebolas",
+      "name_en": "Onions",
+      "localization_key": "cn_onion",
+      "package": "def",
+      "mass_definition_kg": 530.1,
+      "catalog_names": [
+        "Onions"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cebolas"
+      ]
+    },
+    {
+      "id": "oranges",
+      "name_pt": "Laranjas",
+      "name_en": "Oranges",
+      "localization_key": "cn_oranges",
+      "package": "def",
+      "mass_definition_kg": 615.5,
+      "catalog_names": [
+        "Oranges"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Laranjas"
+      ]
+    },
+    {
+      "id": "ore",
+      "name_pt": "Minério",
+      "name_en": "Ore",
+      "localization_key": "cn_ore",
+      "package": "def",
+      "mass_definition_kg": 1850.0,
+      "catalog_names": [
+        "Ore"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Minério"
+      ]
+    },
+    {
+      "id": "outdr_flr_tl",
+      "name_pt": "Cerâmica de piso externo",
+      "name_en": "Outdoor Floor Tiles",
+      "localization_key": "cn_outdoor_floor_tiles",
+      "package": "def",
+      "mass_definition_kg": 623.6,
+      "catalog_names": [
+        "Outdoor Floor Tiles"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pisos externos"
+      ]
+    },
+    {
+      "id": "overweight",
+      "name_pt": "Semirreboques prancha baixa",
+      "name_en": "Low Bed Semi-trailers",
+      "localization_key": "cn_low_bed_trailers",
+      "package": "def",
+      "mass_definition_kg": 17600.0,
+      "catalog_names": [
+        "Low Bed Semi-trailers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Semirreboques prancha baixa"
+      ]
+    },
+    {
+      "id": "packag_food",
+      "name_pt": "Comida enlatada",
+      "name_en": "Packaged Food",
+      "localization_key": "cn_packaged_food",
+      "package": "def",
+      "mass_definition_kg": 526.2,
+      "catalog_names": [
+        "Packaged Food"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Alimentos embalados"
+      ]
+    },
+    {
+      "id": "paper",
+      "name_pt": "Papel de escritório",
+      "name_en": "Office Paper",
+      "localization_key": "cn_paper",
+      "package": "def",
+      "mass_definition_kg": 552.4,
+      "catalog_names": [
+        "Office Paper"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Papel de escritório"
+      ]
+    },
+    {
+      "id": "pasta",
+      "name_pt": "Macarrão",
+      "name_en": "Pasta",
+      "localization_key": "cn_pasta",
+      "package": "def",
+      "mass_definition_kg": 618.4,
+      "catalog_names": [
+        "Pasta"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Massa"
+      ]
+    },
+    {
+      "id": "pears",
+      "name_pt": "Peras",
+      "name_en": "Pears",
+      "localization_key": "cn_pears",
+      "package": "def",
+      "mass_definition_kg": 466.9,
+      "catalog_names": [
+        "Pears"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Peras"
+      ]
+    },
+    {
+      "id": "peas",
+      "name_pt": "Ervilhas",
+      "name_en": "Peas",
+      "localization_key": "cn_peas",
+      "package": "def",
+      "mass_definition_kg": 552.7,
+      "catalog_names": [
+        "Peas"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ervilhas"
+      ]
+    },
+    {
+      "id": "perfor_frks",
+      "name_pt": "Suspensão de alto desempenho",
+      "name_en": "Performance Forks",
+      "localization_key": "cn_performance_fork",
+      "package": "def",
+      "mass_definition_kg": 513.9,
+      "catalog_names": [
+        "Performance Forks"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Garfos de alto desempenho"
+      ]
+    },
+    {
+      "id": "pesticide",
+      "name_pt": "Pesticidas",
+      "name_en": "Pesticides",
+      "localization_key": "cn_pesticide",
+      "package": "def",
+      "mass_definition_kg": 270.0,
+      "catalog_names": [
+        "Pesticides"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pesticidas"
+      ]
+    },
+    {
+      "id": "pesto",
+      "name_pt": "Molho Pesto",
+      "name_en": "Pesto",
+      "localization_key": "cn_pesto",
+      "package": "def",
+      "mass_definition_kg": 573.5,
+      "catalog_names": [
+        "Pesto"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pesto"
+      ]
+    },
+    {
+      "id": "pet_food",
+      "name_pt": "Ração",
+      "name_en": "Pet Food",
+      "localization_key": "cn_pet_food",
+      "package": "def",
+      "mass_definition_kg": 623.3,
+      "catalog_names": [
+        "Pet Food"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ração",
+        "Ração para animais"
+      ]
+    },
+    {
+      "id": "pet_food_c",
+      "name_pt": "Ração",
+      "name_en": "Pet Food",
+      "localization_key": "cn_pet_food",
+      "package": "def",
+      "mass_definition_kg": 630.0,
+      "catalog_names": [
+        "Pet Food"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ração",
+        "Ração para animais"
+      ]
+    },
+    {
+      "id": "petrol",
+      "name_pt": "Gasolina",
+      "name_en": "Petrol",
+      "localization_key": "cn_petrol",
+      "package": "def",
+      "mass_definition_kg": 725.0,
+      "catalog_names": [
+        "Petrol"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Gasolina"
+      ]
+    },
+    {
+      "id": "phosphor",
+      "name_pt": "Fósforo branco",
+      "name_en": "White Phosphorus",
+      "localization_key": "cn_phosphor",
+      "package": "def",
+      "mass_definition_kg": 220.0,
+      "catalog_names": [
+        "White Phosphorus"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Fósforo branco"
+      ]
+    },
+    {
+      "id": "pickup_gr",
+      "name_pt": "Picapes",
+      "name_en": "Pickups",
+      "localization_key": "cn_pickups",
+      "package": "def",
+      "mass_definition_kg": 62.0,
+      "catalog_names": [
+        "Pickups"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Picapes"
+      ]
+    },
+    {
+      "id": "plant_substr",
+      "name_pt": "Substrato vegetal",
+      "name_en": "Plant Substrate",
+      "localization_key": "cn_plant_substrate",
+      "package": "def",
+      "mass_definition_kg": 553.9,
+      "catalog_names": [
+        "Plant Substrate"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Substrato para plantas"
+      ]
+    },
+    {
+      "id": "plast_film",
+      "name_pt": "Rolos de papel filme",
+      "name_en": "Plastic Film Rolls",
+      "localization_key": "cn_plastic_film_rolls",
+      "package": "def",
+      "mass_definition_kg": 546.0,
+      "catalog_names": [
+        "Plastic Film Rolls"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rolos de filme plástico"
+      ]
+    },
+    {
+      "id": "plast_film_c",
+      "name_pt": "Rolos de papel filme",
+      "name_en": "Plastic Film Rolls",
+      "localization_key": "cn_plastic_film_rolls",
+      "package": "def",
+      "mass_definition_kg": 378.56,
+      "catalog_names": [
+        "Plastic Film Rolls"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rolos de filme plástico"
+      ]
+    },
+    {
+      "id": "plast_pipes",
+      "name_pt": "Tubos de plástico",
+      "name_en": "Plastic Pipes",
+      "localization_key": "cn_plastic_pipes",
+      "package": "def",
+      "mass_definition_kg": 1300.0,
+      "catalog_names": [
+        "Plastic Pipes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tubos plásticos"
+      ]
+    },
+    {
+      "id": "plastic_gra",
+      "name_pt": "Plástico granulado",
+      "name_en": "Plastic Granules",
+      "localization_key": "cn_plastic",
+      "package": "def",
+      "mass_definition_kg": 1300.0,
+      "catalog_names": [
+        "Plastic Granules"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Grânulos plásticos"
+      ]
+    },
+    {
+      "id": "plumb_suppl",
+      "name_pt": "Material de encanamento",
+      "name_en": "Plumbing Supplies",
+      "localization_key": "cn_plumbing_supplies",
+      "package": "def",
+      "mass_definition_kg": 555.0,
+      "catalog_names": [
+        "Plumbing Supplies"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Materiais hidráulicos"
+      ]
+    },
+    {
+      "id": "plums",
+      "name_pt": "Plumas",
+      "name_en": "Plums",
+      "localization_key": "cn_plums",
+      "package": "def",
+      "mass_definition_kg": 512.7,
+      "catalog_names": [
+        "Plums"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ameixas"
+      ]
+    },
+    {
+      "id": "pnut_butter",
+      "name_pt": "Manteiga de amendoim",
+      "name_en": "Peanut Butter",
+      "localization_key": "cn_pnut_butter",
+      "package": "def",
+      "mass_definition_kg": 592.1,
+      "catalog_names": [
+        "Peanut Butter"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Manteiga de amendoim",
+        "Massa de amendoim",
+        "Pasta de amendoim"
+      ]
+    },
+    {
+      "id": "polyst_box",
+      "name_pt": "Caixas de poliestireno",
+      "name_en": "Polystyrene Boxes",
+      "localization_key": "cn_polystyrene_boxes",
+      "package": "def",
+      "mass_definition_kg": 94.6,
+      "catalog_names": [
+        "Polystyrene Boxes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caixas de poliestireno"
+      ]
+    },
+    {
+      "id": "pork_meat",
+      "name_pt": "Carne de porco",
+      "name_en": "Pork",
+      "localization_key": "cn_pork_meat",
+      "package": "def",
+      "mass_definition_kg": 567.7,
+      "catalog_names": [
+        "Pork"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carne suína"
+      ]
+    },
+    {
+      "id": "post_packag",
+      "name_pt": "Pacotes de encomendas",
+      "name_en": "Post Packages",
+      "localization_key": "cn_post_packages",
+      "package": "def",
+      "mass_definition_kg": 347.7,
+      "catalog_names": [
+        "Post Packages"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Encomendas postais"
+      ]
+    },
+    {
+      "id": "pot_flowers",
+      "name_pt": "Flores em vasos",
+      "name_en": "Potted Flowers",
+      "localization_key": "cn_potted_flowers",
+      "package": "def",
+      "mass_definition_kg": 109.7,
+      "catalog_names": [
+        "Potted Flowers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Flores em vasos"
+      ]
+    },
+    {
+      "id": "potahydro",
+      "name_pt": "Hidróxido de potássio",
+      "name_en": "Potassium Hydroxide",
+      "localization_key": "cn_potahydro",
+      "package": "def",
+      "mass_definition_kg": 200.0,
+      "catalog_names": [
+        "Potassium Hydroxide"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Hidróxido de potássio"
+      ]
+    },
+    {
+      "id": "potassium",
+      "name_pt": "Potássio",
+      "name_en": "Potassium",
+      "localization_key": "cn_potassium",
+      "package": "def",
+      "mass_definition_kg": 250.0,
+      "catalog_names": [
+        "Potassium"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Potássio"
+      ]
+    },
+    {
+      "id": "potatoes",
+      "name_pt": "Batatas",
+      "name_en": "Potatoes",
+      "localization_key": "cn_potatoes",
+      "package": "def",
+      "mass_definition_kg": 671.5,
+      "catalog_names": [
+        "Potatoes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "BATATA",
+        "Batatas"
+      ]
+    },
+    {
+      "id": "precast_strs",
+      "name_pt": "Escadas pré-fabricadas",
+      "name_en": "Precast Stairs",
+      "localization_key": "cn_precast_stairs",
+      "package": "def",
+      "mass_definition_kg": 673.9,
+      "catalog_names": [
+        "Precast Stairs"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escadas pré-moldadas"
+      ]
+    },
+    {
+      "id": "press_sl_val",
+      "name_pt": "Válvulas de gaveta de alta pressão",
+      "name_en": "High Pressure Slide Valves",
+      "localization_key": "cn_high_pressure_slide_valves",
+      "package": "def",
+      "mass_definition_kg": 578.1,
+      "catalog_names": [
+        "High Pressure Slide Valves"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Válvulas deslizantes de alta pressão"
+      ]
+    },
+    {
+      "id": "propane",
+      "name_pt": "Propano",
+      "name_en": "Propane",
+      "localization_key": "cn_propane",
+      "package": "def",
+      "mass_definition_kg": 493.0,
+      "catalog_names": [
+        "Propane"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Propano"
+      ]
+    },
+    {
+      "id": "prosciutto",
+      "name_pt": "Prosciutto",
+      "name_en": "Prosciutto",
+      "localization_key": "cn_prosciutto",
+      "package": "def",
+      "mass_definition_kg": 487.9,
+      "catalog_names": [
+        "Prosciutto"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Presunto cru"
+      ]
+    },
+    {
+      "id": "protec_cloth",
+      "name_pt": "Roupas de proteção",
+      "name_en": "Protective Clothing",
+      "localization_key": "cn_protective_clothing",
+      "package": "def",
+      "mass_definition_kg": 622.3,
+      "catalog_names": [
+        "Protective Clothing"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Roupas de proteção"
+      ]
+    },
+    {
+      "id": "pumps",
+      "name_pt": "Bombas",
+      "name_en": "Pumps",
+      "localization_key": "cn_pumps",
+      "package": "def",
+      "mass_definition_kg": 438.4,
+      "catalog_names": [
+        "Pumps"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Bombas"
+      ]
+    },
+    {
+      "id": "radiators",
+      "name_pt": "Radiadores",
+      "name_en": "Radiators",
+      "localization_key": "cn_radiators",
+      "package": "def",
+      "mass_definition_kg": 299.3,
+      "catalog_names": [
+        "Radiators"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Radiadores"
+      ]
+    },
+    {
+      "id": "re_bars",
+      "name_pt": "Barras de reforço",
+      "name_en": "Reinforcing Bars",
+      "localization_key": "cn_re_bars",
+      "package": "def",
+      "mass_definition_kg": 7600.0,
+      "catalog_names": [
+        "Reinforcing Bars"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Barras de aço para reforço"
+      ]
+    },
+    {
+      "id": "refl_posts",
+      "name_pt": "Postes refletores",
+      "name_en": "Reflective Posts",
+      "localization_key": "cn_reflective_posts",
+      "package": "def",
+      "mass_definition_kg": 373.5,
+      "catalog_names": [
+        "Reflective Posts"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Balizadores refletivos"
+      ]
+    },
+    {
+      "id": "rice",
+      "name_pt": "Arroz",
+      "name_en": "Rice",
+      "localization_key": "cn_rice",
+      "package": "def",
+      "mass_definition_kg": 670.2,
+      "catalog_names": [
+        "Rice"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Arroz"
+      ]
+    },
+    {
+      "id": "rice_c",
+      "name_pt": "Arroz",
+      "name_en": "Rice",
+      "localization_key": "cn_rice",
+      "package": "def",
+      "mass_definition_kg": 568.1,
+      "catalog_names": [
+        "Rice"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Arroz"
+      ]
+    },
+    {
+      "id": "roof_tiles",
+      "name_pt": "Telhas",
+      "name_en": "Roof Tiles",
+      "localization_key": "cn_roof_tiles",
+      "package": "def",
+      "mass_definition_kg": 617.1,
+      "catalog_names": [
+        "Roof Tiles"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Telhas"
+      ]
+    },
+    {
+      "id": "roofing_felt",
+      "name_pt": "Feltro de telhado",
+      "name_en": "Roofing Felt",
+      "localization_key": "cn_roofing_felt",
+      "package": "def",
+      "mass_definition_kg": 582.4,
+      "catalog_names": [
+        "Roofing Felt"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Manta asfáltica"
+      ]
+    },
+    {
+      "id": "rooflights",
+      "name_pt": "Tetos solares",
+      "name_en": "Rooflights",
+      "localization_key": "cn_rooflights",
+      "package": "def",
+      "mass_definition_kg": 359.8,
+      "catalog_names": [
+        "Rooflights"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Claraboias"
+      ]
+    },
+    {
+      "id": "rye",
+      "name_pt": "Centeio",
+      "name_en": "Rye",
+      "localization_key": "cn_rye",
+      "package": "def",
+      "mass_definition_kg": 700.0,
+      "catalog_names": [
+        "Rye"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Centeio"
+      ]
+    },
+    {
+      "id": "salm_fillet",
+      "name_pt": "Filé de salmão",
+      "name_en": "Salmon Fillet",
+      "localization_key": "cn_salmon_fillet",
+      "package": "def",
+      "mass_definition_kg": 452.1,
+      "catalog_names": [
+        "Salmon Fillet"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Filé de salmão"
+      ]
+    },
+    {
+      "id": "salt_spice_c",
+      "name_pt": "Sal e temperos",
+      "name_en": "Salt & Spices",
+      "localization_key": "cn_salt_spices",
+      "package": "def",
+      "mass_definition_kg": 421.46,
+      "catalog_names": [
+        "Salt & Spices"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Sal e especiarias"
+      ]
+    },
+    {
+      "id": "salt_spices",
+      "name_pt": "Sal e temperos",
+      "name_en": "Salt & Spices",
+      "localization_key": "cn_salt_spices",
+      "package": "def",
+      "mass_definition_kg": 491.8,
+      "catalog_names": [
+        "Salt & Spices"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Sal e especiarias"
+      ]
+    },
+    {
+      "id": "sand",
+      "name_pt": "Areia",
+      "name_en": "Sand",
+      "localization_key": "cn_sand",
+      "package": "def",
+      "mass_definition_kg": 1442.0,
+      "catalog_names": [
+        "Sand"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Areia"
+      ]
+    },
+    {
+      "id": "sandwch_pnls",
+      "name_pt": "Painéis sanduíches",
+      "name_en": "Sandwich Panels",
+      "localization_key": "cn_sandwich_panels",
+      "package": "def",
+      "mass_definition_kg": 373.3,
+      "catalog_names": [
+        "Sandwich Panels"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Painéis sanduíche"
+      ]
+    },
+    {
+      "id": "sausages",
+      "name_pt": "Salsichas",
+      "name_en": "Sausages",
+      "localization_key": "cn_sausages",
+      "package": "def",
+      "mass_definition_kg": 528.8,
+      "catalog_names": [
+        "Sausages"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Salsichas"
+      ]
+    },
+    {
+      "id": "sawpanels",
+      "name_pt": "Painéis de serragem",
+      "name_en": "Sawdust Panels",
+      "localization_key": "cn_sawpanels",
+      "package": "def",
+      "mass_definition_kg": 653.3,
+      "catalog_names": [
+        "Sawdust Panels"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Painéis de serragem"
+      ]
+    },
+    {
+      "id": "scaffoldings",
+      "name_pt": "Andaimes",
+      "name_en": "Scaffolding",
+      "localization_key": "cn_scaffoldings",
+      "package": "def",
+      "mass_definition_kg": 670.5,
+      "catalog_names": [
+        "Scaffolding"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Andaimes"
+      ]
+    },
+    {
+      "id": "scania_tr",
+      "name_pt": "Caminhões Scania",
+      "name_en": "Trucks Scania",
+      "localization_key": "cn_scania_trucks",
+      "package": "def",
+      "mass_definition_kg": 145.9,
+      "catalog_names": [
+        "Trucks Scania"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caminhões Scania"
+      ]
+    },
+    {
+      "id": "scooters",
+      "name_pt": "Scooters",
+      "name_en": "Scooters",
+      "localization_key": "cn_scooters",
+      "package": "def",
+      "mass_definition_kg": 302.4,
+      "catalog_names": [
+        "Scooters"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Scooters"
+      ]
+    },
+    {
+      "id": "scrap_metals",
+      "name_pt": "Sucata de metal",
+      "name_en": "Scrap Metals",
+      "localization_key": "cn_scrap_metals",
+      "package": "def",
+      "mass_definition_kg": 2650.0,
+      "catalog_names": [
+        "Scrap Metals"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Metais de sucata",
+        "Sucata de Metal",
+        "Sucata de metal",
+        "Sucata metálica"
+      ]
+    },
+    {
+      "id": "seal_bearing",
+      "name_pt": "Rolamentos selados",
+      "name_en": "Sealed Bearings",
+      "localization_key": "cn_sealed_bearings",
+      "package": "def",
+      "mass_definition_kg": 719.4,
+      "catalog_names": [
+        "Sealed Bearings"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rolamentos vedados"
+      ]
+    },
+    {
+      "id": "sheep_wool",
+      "name_pt": "Lã de ovelha",
+      "name_en": "Sheep Wool",
+      "localization_key": "cn_sheep_wool",
+      "package": "def",
+      "mass_definition_kg": 400.4,
+      "catalog_names": [
+        "Sheep Wool"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Lã de ovelha"
+      ]
+    },
+    {
+      "id": "shock_absorb",
+      "name_pt": "Amortecedores de impacto",
+      "name_en": "Shock Absorbers",
+      "localization_key": "cn_shock_absorbers",
+      "package": "def",
+      "mass_definition_kg": 499.7,
+      "catalog_names": [
+        "Shock Absorbers"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Amortecedores"
+      ]
+    },
+    {
+      "id": "silica",
+      "name_pt": "Silica",
+      "name_en": "Silica",
+      "localization_key": "cn_silica",
+      "package": "def",
+      "mass_definition_kg": 579.2,
+      "catalog_names": [
+        "Silica"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Sílica"
+      ]
+    },
+    {
+      "id": "smokd_eel",
+      "name_pt": "Enguia defumada",
+      "name_en": "Smoked Eel",
+      "localization_key": "cn_smoked_eel",
+      "package": "def",
+      "mass_definition_kg": 347.9,
+      "catalog_names": [
+        "Smoked Eel"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Enguia defumada"
+      ]
+    },
+    {
+      "id": "smokd_sprats",
+      "name_pt": "Arenque defumado",
+      "name_en": "Smoked Sprats",
+      "localization_key": "cn_smoked_sprats",
+      "package": "def",
+      "mass_definition_kg": 532.5,
+      "catalog_names": [
+        "Smoked Sprats"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Espadilhas defumadas"
+      ]
+    },
+    {
+      "id": "sodchlor",
+      "name_pt": "Hipoclorito de sódio",
+      "name_en": "Sodium Hypochlorite",
+      "localization_key": "cn_sodchlor",
+      "package": "def",
+      "mass_definition_kg": 190.0,
+      "catalog_names": [
+        "Sodium Hypochlorite"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Hipoclorito de sódio"
+      ]
+    },
+    {
+      "id": "sodhydro",
+      "name_pt": "Hidróxido de sódio",
+      "name_en": "Sodium Hydroxide",
+      "localization_key": "cn_sodhydro",
+      "package": "def",
+      "mass_definition_kg": 230.0,
+      "catalog_names": [
+        "Sodium Hydroxide"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Hidróxido de sódio"
+      ]
+    },
+    {
+      "id": "sodium",
+      "name_pt": "Sódio",
+      "name_en": "Sodium",
+      "localization_key": "cn_sodium",
+      "package": "def",
+      "mass_definition_kg": 240.0,
+      "catalog_names": [
+        "Sodium"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Sódio"
+      ]
+    },
+    {
+      "id": "soy_milk",
+      "name_pt": "Leite de soja",
+      "name_en": "Soy Milk",
+      "localization_key": "cn_soy_milk",
+      "package": "def",
+      "mass_definition_kg": 652.1,
+      "catalog_names": [
+        "Soy Milk"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Leite de soja"
+      ]
+    },
+    {
+      "id": "soy_milk_t",
+      "name_pt": "Leite de soja",
+      "name_en": "Soy Milk",
+      "localization_key": "cn_soy_milk",
+      "package": "def",
+      "mass_definition_kg": 1032.1,
+      "catalog_names": [
+        "Soy Milk"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Leite de soja"
+      ]
+    },
+    {
+      "id": "spher_valves",
+      "name_pt": "Válvulas esféricas",
+      "name_en": "Spherical Valves",
+      "localization_key": "cn_spherical_valves",
+      "package": "def",
+      "mass_definition_kg": 671.9,
+      "catalog_names": [
+        "Spherical Valves"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Válvulas esféricas"
+      ]
+    },
+    {
+      "id": "sq_tub",
+      "name_pt": "Tubos quadrados",
+      "name_en": "Square Tubing",
+      "localization_key": "cn_square_tubing",
+      "package": "def",
+      "mass_definition_kg": 7300.0,
+      "catalog_names": [
+        "Square Tubing"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tubos quadrados"
+      ]
+    },
+    {
+      "id": "steel_cord",
+      "name_pt": "Cabo de aço",
+      "name_en": "Steel Cord",
+      "localization_key": "cn_steel_cord",
+      "package": "def",
+      "mass_definition_kg": 450.9,
+      "catalog_names": [
+        "Steel Cord"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Cordão de aço"
+      ]
+    },
+    {
+      "id": "stone_dust",
+      "name_pt": "Pó de pedra",
+      "name_en": "Stone Dust",
+      "localization_key": "cn_stone_dust",
+      "package": "def",
+      "mass_definition_kg": 1700.0,
+      "catalog_names": [
+        "Stone Dust"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pó de pedra"
+      ]
+    },
+    {
+      "id": "stone_wool",
+      "name_pt": "Lã de pedra",
+      "name_en": "Stone Wool",
+      "localization_key": "cn_stone_wool",
+      "package": "def",
+      "mass_definition_kg": 160.0,
+      "catalog_names": [
+        "Stone Wool"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Lã de rocha"
+      ]
+    },
+    {
+      "id": "stones",
+      "name_pt": "Rochas",
+      "name_en": "Stones",
+      "localization_key": "cn_stones",
+      "package": "def",
+      "mass_definition_kg": 2100.0,
+      "catalog_names": [
+        "Stones"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pedras"
+      ]
+    },
+    {
+      "id": "straw_bales",
+      "name_pt": "Fardos de palha",
+      "name_en": "Straw Bales",
+      "localization_key": "cn_straw_bales",
+      "package": "def",
+      "mass_definition_kg": 1300.0,
+      "catalog_names": [
+        "Straw Bales"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Fardos de palha"
+      ]
+    },
+    {
+      "id": "sugar",
+      "name_pt": "Açúcar",
+      "name_en": "Sugar",
+      "localization_key": "cn_sugar",
+      "package": "def",
+      "mass_definition_kg": 677.9,
+      "catalog_names": [
+        "Sugar"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Açúcar"
+      ]
+    },
+    {
+      "id": "sugar_b",
+      "name_pt": "Açúcar",
+      "name_en": "Sugar",
+      "localization_key": "cn_sugar",
+      "package": "def",
+      "mass_definition_kg": 677.9,
+      "catalog_names": [
+        "Sugar"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Açúcar"
+      ]
+    },
+    {
+      "id": "sulfur",
+      "name_pt": "Enxofre",
+      "name_en": "Sulphur",
+      "localization_key": "cn_sulfur",
+      "package": "def",
+      "mass_definition_kg": 550.0,
+      "catalog_names": [
+        "Sulphur"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Enxofre"
+      ]
+    },
+    {
+      "id": "sulfuric",
+      "name_pt": "Ácido sulfúrico",
+      "name_en": "Sulphuric Acid",
+      "localization_key": "cn_sulfuric",
+      "package": "def",
+      "mass_definition_kg": 250.0,
+      "catalog_names": [
+        "Sulphuric Acid"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ácido sulfúrico"
+      ]
+    },
+    {
+      "id": "sulfuric_t",
+      "name_pt": "Ácido sulfúrico",
+      "name_en": "Sulphuric Acid",
+      "localization_key": "cn_sulfuric",
+      "package": "def",
+      "mass_definition_kg": 1800.0,
+      "catalog_names": [
+        "Sulphuric Acid"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Ácido sulfúrico"
+      ]
+    },
+    {
+      "id": "tableware",
+      "name_pt": "Louças",
+      "name_en": "Tableware",
+      "localization_key": "cn_tableware",
+      "package": "def",
+      "mass_definition_kg": 497.7,
+      "catalog_names": [
+        "Tableware"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Louças"
+      ]
+    },
+    {
+      "id": "ter_forklift",
+      "name_pt": "Empilhadeira para terrenos acidentados",
+      "name_en": "Rough Terrain Forklift",
+      "localization_key": "cn_rough_terrain_forklift",
+      "package": "def",
+      "mass_definition_kg": 6400.0,
+      "catalog_names": [
+        "Rough Terrain Forklift"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Empilhadeira todo-terreno"
+      ]
+    },
+    {
+      "id": "tomatoes",
+      "name_pt": "Tomates",
+      "name_en": "Tomatoes",
+      "localization_key": "cn_tomatoes",
+      "package": "def",
+      "mass_definition_kg": 552.7,
+      "catalog_names": [
+        "Tomatoes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tomates"
+      ]
+    },
+    {
+      "id": "toys",
+      "name_pt": "Brinquedos",
+      "name_en": "Toys",
+      "localization_key": "cn_toys",
+      "package": "def",
+      "mass_definition_kg": 286.1,
+      "catalog_names": [
+        "Toys"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Brinquedos"
+      ]
+    },
+    {
+      "id": "tractors",
+      "name_pt": "Tratores",
+      "name_en": "Tractors",
+      "localization_key": "cn_tractors",
+      "package": "def",
+      "mass_definition_kg": 8500.0,
+      "catalog_names": [
+        "Tractors"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "TRATOR",
+        "Tratores"
+      ]
+    },
+    {
+      "id": "train_part",
+      "name_pt": "Eixos de trem",
+      "name_en": "Train Axles",
+      "localization_key": "cn_train_parts",
+      "package": "def",
+      "mass_definition_kg": 4600.0,
+      "catalog_names": [
+        "Train Axles"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Eixos ferroviários"
+      ]
+    },
+    {
+      "id": "train_part2",
+      "name_pt": "Material rodante de trem",
+      "name_en": "Train Undercarriage",
+      "localization_key": "cn_train_part2",
+      "package": "def",
+      "mass_definition_kg": 6300.0,
+      "catalog_names": [
+        "Train Undercarriage"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Chassi ferroviário"
+      ]
+    },
+    {
+      "id": "transmis",
+      "name_pt": "Transmissões",
+      "name_en": "Transmissions",
+      "localization_key": "cn_transmissions",
+      "package": "def",
+      "mass_definition_kg": 431.5,
+      "catalog_names": [
+        "Transmissions"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Transmissões"
+      ]
+    },
+    {
+      "id": "truck_batt",
+      "name_pt": "Baterias de caminhão",
+      "name_en": "Truck Batteries",
+      "localization_key": "cn_truck_battery",
+      "package": "def",
+      "mass_definition_kg": 567.9,
+      "catalog_names": [
+        "Truck Batteries"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Baterias de caminhão"
+      ]
+    },
+    {
+      "id": "truck_batt_c",
+      "name_pt": "Baterias de caminhão",
+      "name_en": "Truck Batteries",
+      "localization_key": "cn_truck_battery",
+      "package": "def",
+      "mass_definition_kg": 484.12,
+      "catalog_names": [
+        "Truck Batteries"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Baterias de caminhão"
+      ]
+    },
+    {
+      "id": "truck_rims",
+      "name_pt": "Rodas de caminhão",
+      "name_en": "Truck Rims",
+      "localization_key": "cn_truck_rims",
+      "package": "def",
+      "mass_definition_kg": 371.1,
+      "catalog_names": [
+        "Truck Rims"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rodas de caminhão"
+      ]
+    },
+    {
+      "id": "truck_rims_c",
+      "name_pt": "Rodas de caminhão",
+      "name_en": "Truck Rims",
+      "localization_key": "cn_truck_rims",
+      "package": "def",
+      "mass_definition_kg": 333.0,
+      "catalog_names": [
+        "Truck Rims"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rodas de caminhão"
+      ]
+    },
+    {
+      "id": "truck_tyres",
+      "name_pt": "Pneus de caminhão\\n",
+      "name_en": "Truck Tyres",
+      "localization_key": "cn_truck_tyres",
+      "package": "def",
+      "mass_definition_kg": 411.4,
+      "catalog_names": [
+        "Truck Tyres"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pneus de caminhão"
+      ]
+    },
+    {
+      "id": "tyres",
+      "name_pt": "Pneus",
+      "name_en": "Tyres",
+      "localization_key": "cn_tyres",
+      "package": "def",
+      "mass_definition_kg": 493.5,
+      "catalog_names": [
+        "Tyres"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pneus"
+      ]
+    },
+    {
+      "id": "used_battery",
+      "name_pt": "Baterias automotivas usadas",
+      "name_en": "Used Car Batteries",
+      "localization_key": "cn_used_car_batteries",
+      "package": "def",
+      "mass_definition_kg": 522.1,
+      "catalog_names": [
+        "Used Car Batteries"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Baterias automotivas usadas"
+      ]
+    },
+    {
+      "id": "used_packag",
+      "name_pt": "Embalagens usadas",
+      "name_en": "Used Packaging",
+      "localization_key": "cn_used_packaging",
+      "package": "def",
+      "mass_definition_kg": 613.7,
+      "catalog_names": [
+        "Used Packaging"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Embalagens usadas"
+      ]
+    },
+    {
+      "id": "used_plast",
+      "name_pt": "Plásticos usados",
+      "name_en": "Used Plastics",
+      "localization_key": "cn_used_plastics",
+      "package": "def",
+      "mass_definition_kg": 293.1,
+      "catalog_names": [
+        "Used Plastics"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Plásticos usados"
+      ]
+    },
+    {
+      "id": "used_plast_c",
+      "name_pt": "Plásticos usados",
+      "name_en": "Used Plastics",
+      "localization_key": "cn_used_plastics",
+      "package": "def",
+      "mass_definition_kg": 238.42,
+      "catalog_names": [
+        "Used Plastics"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Plásticos usados"
+      ]
+    },
+    {
+      "id": "vans_fd",
+      "name_pt": "Vans",
+      "name_en": "Vans",
+      "localization_key": "cn_vans",
+      "package": "def",
+      "mass_definition_kg": 61.5,
+      "catalog_names": [
+        "Vans",
+        "Vans"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vans"
+      ]
+    },
+    {
+      "id": "vans_id",
+      "name_pt": "Vans",
+      "name_en": "Vans",
+      "localization_key": "cn_vans",
+      "package": "def",
+      "mass_definition_kg": 61.5,
+      "catalog_names": [
+        "Vans",
+        "Vans"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vans"
+      ]
+    },
+    {
+      "id": "vans_vt",
+      "name_pt": "Vans",
+      "name_en": "Vans",
+      "localization_key": "cn_vans",
+      "package": "def",
+      "mass_definition_kg": 84.0,
+      "catalog_names": [
+        "Vans",
+        "Vans"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vans"
+      ]
+    },
+    {
+      "id": "vent_tube",
+      "name_pt": "Duto de ventilação",
+      "name_en": "Ventilation Shaft",
+      "localization_key": "cn_vent_tube",
+      "package": "def",
+      "mass_definition_kg": 2400.0,
+      "catalog_names": [
+        "Ventilation Shaft"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Duto de ventilação"
+      ]
+    },
+    {
+      "id": "vinegar",
+      "name_pt": "Vinagre",
+      "name_en": "Vinegar",
+      "localization_key": "cn_vinegar",
+      "package": "def",
+      "mass_definition_kg": 463.6,
+      "catalog_names": [
+        "Vinegar"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vinagre"
+      ]
+    },
+    {
+      "id": "vinegar_c",
+      "name_pt": "Vinagre",
+      "name_en": "Vinegar",
+      "localization_key": "cn_vinegar",
+      "package": "def",
+      "mass_definition_kg": 327.1,
+      "catalog_names": [
+        "Vinegar"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vinagre"
+      ]
+    },
+    {
+      "id": "volvo_cars",
+      "name_pt": "SUVs de luxo",
+      "name_en": "Luxury SUVs",
+      "localization_key": "cn_luxury_suvs",
+      "package": "def",
+      "mass_definition_kg": 111.0,
+      "catalog_names": [
+        "Luxury SUVs"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "SUVs de luxo"
+      ]
+    },
+    {
+      "id": "volvo_tr",
+      "name_pt": "Caminhões Volvo",
+      "name_en": "Trucks Volvo",
+      "localization_key": "cn_volvo_trucks",
+      "package": "def",
+      "mass_definition_kg": 146.8,
+      "catalog_names": [
+        "Trucks Volvo"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caminhões Volvo"
+      ]
+    },
+    {
+      "id": "wallpanels",
+      "name_pt": "Paredes pré-fabricadas",
+      "name_en": "Wall Panels",
+      "localization_key": "cn_wallpan",
+      "package": "def",
+      "mass_definition_kg": 225.8,
+      "catalog_names": [
+        "Wall Panels"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Painéis de parede"
+      ]
+    },
+    {
+      "id": "watermelons",
+      "name_pt": "Melancias",
+      "name_en": "Watermelons",
+      "localization_key": "cn_watermelons",
+      "package": "def",
+      "mass_definition_kg": 611.2,
+      "catalog_names": [
+        "Watermelons"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Melancias"
+      ]
+    },
+    {
+      "id": "watertank",
+      "name_pt": "Tanque de água",
+      "name_en": "Water Tank",
+      "localization_key": "cn_water_tank",
+      "package": "def",
+      "mass_definition_kg": 1050.0,
+      "catalog_names": [
+        "Water Tank"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Tanque de água"
+      ]
+    },
+    {
+      "id": "wheat",
+      "name_pt": "Trigo",
+      "name_en": "Wheat",
+      "localization_key": "cn_wheat",
+      "package": "def",
+      "mass_definition_kg": 650.0,
+      "catalog_names": [
+        "Wheat"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Trigo"
+      ]
+    },
+    {
+      "id": "windml_eng",
+      "name_pt": "Nacele de Turbina Aeólica",
+      "name_en": "Wind Turbine Nacelle",
+      "localization_key": "cn_windmill_engine",
+      "package": "def",
+      "mass_definition_kg": 21300.0,
+      "catalog_names": [
+        "Wind Turbine Nacelle"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Nacele de Turbina Aeólica",
+        "Nacele de turbina eólica"
+      ]
+    },
+    {
+      "id": "windml_tube",
+      "name_pt": "Torre de Turbina Aeólica",
+      "name_en": "Wind Turbine Tower",
+      "localization_key": "cn_windmill_tube",
+      "package": "def",
+      "mass_definition_kg": 9810.0,
+      "catalog_names": [
+        "Wind Turbine Tower"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Torre de Turbina Aeólica",
+        "Torre de turbina eólica"
+      ]
+    },
+    {
+      "id": "wood_bark",
+      "name_pt": "Casca de madeira",
+      "name_en": "Wood Bark",
+      "localization_key": "cn_wood_bark",
+      "package": "def",
+      "mass_definition_kg": 240.0,
+      "catalog_names": [
+        "Wood Bark"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Casca de madeira"
+      ]
+    },
+    {
+      "id": "wooden_beams",
+      "name_pt": "Vigas de madeira",
+      "name_en": "Wooden Beams",
+      "localization_key": "cn_wooden_beams",
+      "package": "def",
+      "mass_definition_kg": 6500.0,
+      "catalog_names": [
+        "Wooden Beams"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vigas de madeira"
+      ]
+    },
+    {
+      "id": "wrk_cloth",
+      "name_pt": "Roupas de trabalho",
+      "name_en": "Work Clothes",
+      "localization_key": "cn_work_clothes",
+      "package": "def",
+      "mass_definition_kg": 498.6,
+      "catalog_names": [
+        "Work Clothes"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Roupas de trabalho"
+      ]
+    },
+    {
+      "id": "wshavings",
+      "name_pt": "Serragem",
+      "name_en": "Wood Shavings",
+      "localization_key": "cn_wshavings",
+      "package": "def",
+      "mass_definition_kg": 163.0,
+      "catalog_names": [
+        "Wood Shavings"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Aparas de madeira"
+      ]
+    },
+    {
+      "id": "yogurt",
+      "name_pt": "Iogurte",
+      "name_en": "Yoghurt",
+      "localization_key": "cn_yogurt",
+      "package": "def",
+      "mass_definition_kg": 522.1,
+      "catalog_names": [
+        "Yoghurt"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Iogurte"
+      ]
+    },
+    {
+      "id": "young_seed",
+      "name_pt": "Mudas de plantas",
+      "name_en": "Young Seedlings",
+      "localization_key": "cn_young_seedlings",
+      "package": "def",
+      "mass_definition_kg": 110.2,
+      "catalog_names": [
+        "Young Seedlings"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Mudas jovens"
+      ]
+    },
+    {
+      "id": "bob_d30",
+      "name_pt": "Empilhadeira Bobcat D30",
+      "name_en": "Forklift Bobcat D30",
+      "localization_key": "cn_forklifts_bobcat_d30",
+      "package": "dlc_bobcat",
+      "mass_definition_kg": 4500.0,
+      "catalog_names": [
+        "Forklift Bobcat D30"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Empilhadeira Bobcat D30"
+      ]
+    },
+    {
+      "id": "bob_e10e",
+      "name_pt": "Escavadeira compacta Bobcat E10e",
+      "name_en": "Mini Excavator Bobcat E10e",
+      "localization_key": "cn_mini_excavator_bobcat_e10e",
+      "package": "dlc_bobcat",
+      "mass_definition_kg": 1200.0,
+      "catalog_names": [
+        "Mini Excavator Bobcat E10e"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Mini escavadeira Bobcat E10e"
+      ]
+    },
+    {
+      "id": "bob_e60",
+      "name_pt": "Escavadeira Bobcat E60",
+      "name_en": "Excavator Bobcat E60",
+      "localization_key": "cn_excavator_bobcat_e60",
+      "package": "dlc_bobcat",
+      "mass_definition_kg": 6100.0,
+      "catalog_names": [
+        "Excavator Bobcat E60"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escavadeira Bobcat E60"
+      ]
+    },
+    {
+      "id": "bob_l95",
+      "name_pt": "Pá-carregadeira compacta sobre rodas Bobcat L95",
+      "name_en": "Wheel Loader Bobcat L95",
+      "localization_key": "cn_wheel_loader_bobcat_l95",
+      "package": "dlc_bobcat",
+      "mass_definition_kg": 5400.0,
+      "catalog_names": [
+        "Wheel Loader Bobcat L95"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pá carregadeira Bobcat L95"
+      ]
+    },
+    {
+      "id": "bob_pa127v",
+      "name_pt": "Compressor de ar Bobcat PA12.7v",
+      "name_en": "Compressor Bobcat PA12.7v",
+      "localization_key": "cn_compressor_bobcat_pa127v",
+      "package": "dlc_bobcat",
+      "mass_definition_kg": 1200.0,
+      "catalog_names": [
+        "Compressor Bobcat PA12.7v"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Compressor Bobcat PA12.7v"
+      ]
+    },
+    {
+      "id": "bob_s86",
+      "name_pt": "Minicarregadeira Bobcat S86",
+      "name_en": "Skid-Steer Loader Bobcat S86",
+      "localization_key": "cn_skid_steer_loader_bobcat_s86",
+      "package": "dlc_bobcat",
+      "mass_definition_kg": 4500.0,
+      "catalog_names": [
+        "Skid-Steer Loader Bobcat S86"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Minicarregadeira Bobcat S86"
+      ]
+    },
+    {
+      "id": "bob_tl3070a",
+      "name_pt": "Manipulador telescópico agrícola Bobcat TL30.70",
+      "name_en": "Agricultural Telehandler Bobcat TL30.70",
+      "localization_key": "cn_agricultural_telehandler_bobcat_tl3070",
+      "package": "dlc_bobcat",
+      "mass_definition_kg": 5800.0,
+      "catalog_names": [
+        "Agricultural Telehandler Bobcat TL30.70"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Manipulador telescópico agrícola Bobcat TL30.70"
+      ]
+    },
+    {
+      "id": "auger_wag",
+      "name_pt": "Carreta graneleira",
+      "name_en": "Auger Wagon",
+      "localization_key": "cn_auger_wagon",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 7900.0,
+      "catalog_names": [
+        "Auger Wagon"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carreta graneleira com rosca"
+      ]
+    },
+    {
+      "id": "disc_harrows",
+      "name_pt": "Arados de discos",
+      "name_en": "Disc Harrows",
+      "localization_key": "cn_disc_harrows",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 6000.0,
+      "catalog_names": [
+        "Disc Harrows"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Grades de discos"
+      ]
+    },
+    {
+      "id": "fert_spread",
+      "name_pt": "Adubadora",
+      "name_en": "Fertilizer Spreader",
+      "localization_key": "cn_fertilizer_spreader",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 14500.0,
+      "catalog_names": [
+        "Fertilizer Spreader"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Adubadora",
+        "Distribuidor de fertilizante"
+      ]
+    },
+    {
+      "id": "forage_harv",
+      "name_pt": "Colheitadeira de forragem",
+      "name_en": "Forage Harvester",
+      "localization_key": "cn_forage_harvester",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 13500.0,
+      "catalog_names": [
+        "Forage Harvester"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Colheitadeira de forragem"
+      ]
+    },
+    {
+      "id": "planter",
+      "name_pt": "Semeadora",
+      "name_en": "Planter",
+      "localization_key": "cn_planter",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 8900.0,
+      "catalog_names": [
+        "Planter"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Plantadeira"
+      ]
+    },
+    {
+      "id": "sprayer",
+      "name_pt": "Pulverizador",
+      "name_en": "Sprayer",
+      "localization_key": "cn_sprayer",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 15000.0,
+      "catalog_names": [
+        "Sprayer"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pulverizador"
+      ]
+    },
+    {
+      "id": "square_baler",
+      "name_pt": "Enfardadeira quadrada",
+      "name_en": "Square Baler",
+      "localization_key": "cn_square_baler",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 7900.0,
+      "catalog_names": [
+        "Square Baler"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Enfardadeira de fardos quadrados"
+      ]
+    },
+    {
+      "id": "tractor_au",
+      "name_pt": "Trator autônomo",
+      "name_en": "Autonomous Tractor",
+      "localization_key": "cn_autonomous_tractor",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 8900.0,
+      "catalog_names": [
+        "Autonomous Tractor"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Trator autônomo"
+      ]
+    },
+    {
+      "id": "tractor_c",
+      "name_pt": "Trator de esteiras",
+      "name_en": "Crawler Tractor",
+      "localization_key": "cn_crawler_tractor",
+      "package": "dlc_farm_machinery",
+      "mass_definition_kg": 25000.0,
+      "catalog_names": [
+        "Crawler Tractor"
+      ],
+      "catalog_dlc": "Farm Machinery",
+      "aliases": [
+        "Esteira de trator",
+        "Trator de esteiras"
+      ]
+    },
+    {
+      "id": "ffb_eut35",
+      "name_pt": "Feldbinder EUT",
+      "name_en": "Feldbinder EUT",
+      "localization_key": "Feldbinder EUT",
+      "package": "dlc_feldbinder",
+      "mass_definition_kg": 0.0001,
+      "catalog_names": [
+        "Feldbinder EUT"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Feldbinder EUT"
+      ]
+    },
+    {
+      "id": "ffb_kip60",
+      "name_pt": "Feldbinder KIP",
+      "name_en": "Feldbinder KIP",
+      "localization_key": "Feldbinder KIP",
+      "package": "dlc_feldbinder",
+      "mass_definition_kg": 0.0001,
+      "catalog_names": [
+        "Feldbinder KIP"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Feldbinder KIP"
+      ]
+    },
+    {
+      "id": "ffb_tsaadr22",
+      "name_pt": "Feldbinder TSA ADR",
+      "name_en": "Feldbinder TSA ADR",
+      "localization_key": "Feldbinder TSA ADR",
+      "package": "dlc_feldbinder",
+      "mass_definition_kg": 0.0001,
+      "catalog_names": [
+        "Feldbinder TSA ADR"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Feldbinder TSA ADR"
+      ]
+    },
+    {
+      "id": "ffb_tsalm32",
+      "name_pt": "Feldbinder TSA LM",
+      "name_en": "Feldbinder TSA LM",
+      "localization_key": "Feldbinder TSA LM",
+      "package": "dlc_feldbinder",
+      "mass_definition_kg": 0.0001,
+      "catalog_names": [
+        "Feldbinder TSA LM"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Feldbinder TSA LM"
+      ]
+    },
+    {
+      "id": "exc_craw",
+      "name_pt": "Escavadeira florestal sobre esteiras",
+      "name_en": "Forestry Crawler Excavator",
+      "localization_key": "cn_forestry_crawler_excavator",
+      "package": "dlc_forest_harvesting",
+      "mass_definition_kg": 17200.0,
+      "catalog_names": [
+        "Forestry Crawler Excavator"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escavadeira florestal de esteiras"
+      ]
+    },
+    {
+      "id": "forwarder",
+      "name_pt": "Trator florestal autocarregável",
+      "name_en": "Forwarder",
+      "localization_key": "cn_forwarder",
+      "package": "dlc_forest_harvesting",
+      "mass_definition_kg": 20100.0,
+      "catalog_names": [
+        "Forwarder"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Trator florestal transportador"
+      ]
+    },
+    {
+      "id": "log_harvest",
+      "name_pt": "Colheitadeira florestal",
+      "name_en": "Log Harvester",
+      "localization_key": "cn_log_harvester",
+      "package": "dlc_forest_harvesting",
+      "mass_definition_kg": 22200.0,
+      "catalog_names": [
+        "Log Harvester"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Colheitadeira florestal"
+      ]
+    },
+    {
+      "id": "log_stacker",
+      "name_pt": "Empilhador de troncos",
+      "name_en": "Log Stacker",
+      "localization_key": "cn_log_stacker",
+      "package": "dlc_forest_harvesting",
+      "mass_definition_kg": 54000.0,
+      "catalog_names": [
+        "Log Stacker"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Empilhador de toras"
+      ]
+    },
+    {
+      "id": "mob_tr_winch",
+      "name_pt": "Guincho móvel",
+      "name_en": "Mobile Traction Winch",
+      "localization_key": "cn_mobile_traction_winch",
+      "package": "dlc_forest_harvesting",
+      "mass_definition_kg": 10700.0,
+      "catalog_names": [
+        "Mobile Traction Winch"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Guincho de tração móvel"
+      ]
+    },
+    {
+      "id": "mulcher",
+      "name_pt": "Triturador florestal",
+      "name_en": "Mulcher",
+      "localization_key": "cn_mulcher",
+      "package": "dlc_forest_harvesting",
+      "mass_definition_kg": 14800.0,
+      "catalog_names": [
+        "Mulcher"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Triturador florestal"
+      ]
+    },
+    {
+      "id": "skidder",
+      "name_pt": "Arrastador de toras",
+      "name_en": "Skidder",
+      "localization_key": "cn_skidder",
+      "package": "dlc_forest_harvesting",
+      "mass_definition_kg": 19600.0,
+      "catalog_names": [
+        "Skidder"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Trator florestal arrastador"
+      ]
+    },
+    {
+      "id": "wood_chipper",
+      "name_pt": "Picador de madeira",
+      "name_en": "Wood Chipper",
+      "localization_key": "cn_wood_chipper",
+      "package": "dlc_forest_harvesting",
+      "mass_definition_kg": 26600.0,
+      "catalog_names": [
+        "Wood Chipper"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Picador de madeira"
+      ]
+    },
+    {
+      "id": "asph_miller",
+      "name_pt": "Moedor de asfalto",
+      "name_en": "Asphalt Miller",
+      "localization_key": "cn_asph_miller",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 44050.0,
+      "catalog_names": [
+        "Asphalt Miller - AM 0880"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Fresadora de asfalto - AM 0880",
+        "Moedor de asfalto"
+      ]
+    },
+    {
+      "id": "cable_reel",
+      "name_pt": "Rolo de cabo industrial",
+      "name_en": "Industrial Cable Reel",
+      "localization_key": "cn_cable_reel",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 34520.0,
+      "catalog_names": [
+        "Industrial Cable Reel"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Bobina de cabo industrial",
+        "Rolo de cabo industrial"
+      ]
+    },
+    {
+      "id": "concr_beams",
+      "name_pt": "Vigas de concreto",
+      "name_en": "Concrete Beams",
+      "localization_key": "cn_concr_beams",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 51030.0,
+      "catalog_names": [
+        "Concrete Beams",
+        "Concrete Beams"
+      ],
+      "catalog_dlc": "Heavy Cargo Pack",
+      "aliases": [
+        "Vigas de concreto"
+      ]
+    },
+    {
+      "id": "dozer",
+      "name_pt": "Esteira de trator",
+      "name_en": "Dozer Crawl",
+      "localization_key": "cn_dozer",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 39010.0,
+      "catalog_names": [
+        "Dozer Crawl - Z35K"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Esteira de trator",
+        "Trator de esteiras"
+      ]
+    },
+    {
+      "id": "locomotive",
+      "name_pt": "Locomotiva Vossloh G6",
+      "name_en": "Locomotive Vossloh G6",
+      "localization_key": "cn_locomotive",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 61750.0,
+      "catalog_names": [
+        "Locomotive - Vossloh G6"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Locomotiva - Vossloh G6"
+      ]
+    },
+    {
+      "id": "metal_center",
+      "name_pt": "Centração de metal",
+      "name_en": "Metal Centring",
+      "localization_key": "cn_metal_center",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 28200.0,
+      "catalog_names": [
+        "Metal Centring"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Centração de metal",
+        "Escoramento metálico"
+      ]
+    },
+    {
+      "id": "mob_crusher",
+      "name_pt": "Triturador móvel",
+      "name_en": "Mobile Crusher",
+      "localization_key": "cn_mobile_crusher",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 40200.0,
+      "catalog_names": [
+        "Mobile Crusher"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Britador móvel"
+      ]
+    },
+    {
+      "id": "mob_screener",
+      "name_pt": "Peneira móvel",
+      "name_en": "Mobile Screener",
+      "localization_key": "cn_mobile_screener",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 39010.0,
+      "catalog_names": [
+        "Mobile Screener"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Peneira móvel"
+      ]
+    },
+    {
+      "id": "mob_stacker",
+      "name_pt": "Esteira móvel",
+      "name_en": "Mobile Stacker",
+      "localization_key": "cn_mobile_stacker",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 10800.0,
+      "catalog_names": [
+        "Mobile Stacker"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Empilhador móvel"
+      ]
+    },
+    {
+      "id": "mobile_crane",
+      "name_pt": "Guindaste móvel",
+      "name_en": "Mobile Crane",
+      "localization_key": "cn_mobile_crane",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 36150.0,
+      "catalog_names": [
+        "Mobile Crane - UTM SD-833"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Guindaste móvel - UTM SD-833"
+      ]
+    },
+    {
+      "id": "transformat",
+      "name_pt": "Transformador",
+      "name_en": "Transformer",
+      "localization_key": "cn_transformer",
+      "package": "dlc_heavy_cargo",
+      "mass_definition_kg": 47850.0,
+      "catalog_names": [
+        "Transformer - PK900"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Transformador - PK900"
+      ]
+    },
+    {
+      "id": "jcb_bhl4cx",
+      "name_pt": "Retroescavadeira JCB 4CX",
+      "name_en": "Backhoe Loader JCB 4CX",
+      "localization_key": "cn_backhoe_loader_jcb_4cx",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 8380.0,
+      "catalog_names": [
+        "Backhoe Loader JCB 4CX"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Retroescavadeira JCB 4CX"
+      ]
+    },
+    {
+      "id": "jcb_dmp6t2",
+      "name_pt": "Basculante de obra JCB 6T-2",
+      "name_en": "Site Dumper JCB 6T-2",
+      "localization_key": "cn_site_dumper_jcb_6t2",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 5000.0,
+      "catalog_names": [
+        "Site Dumper JCB 6T-2"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Dumper de obra JCB 6T-2"
+      ]
+    },
+    {
+      "id": "jcb_dmphtd5e",
+      "name_pt": "Caçamba elétrica JCB HTD-5E",
+      "name_en": "Electric Dumpster JCB HTD-5E",
+      "localization_key": "cn_dumpster_jcb_htd5e",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 500.0,
+      "catalog_names": [
+        "Electric Dumpster JCB HTD-5E"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Dumper elétrico JCB HTD-5E"
+      ]
+    },
+    {
+      "id": "jcb_exc245xr",
+      "name_pt": "Escavadeira JCB 245XR",
+      "name_en": "Excavator JCB 245XR",
+      "localization_key": "cn_excavator_jcb_245xr",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 28000.0,
+      "catalog_names": [
+        "Excavator JCB 245XR"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escavadeira JCB 245XR"
+      ]
+    },
+    {
+      "id": "jcb_ft4220",
+      "name_pt": "Trator JCB Fastrac 4220",
+      "name_en": "Tractor JCB Fastrac 4220",
+      "localization_key": "cn_tractor_jcb_fastrac_4220",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 9240.0,
+      "catalog_names": [
+        "Tractor JCB Fastrac 4220"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Trator JCB Fastrac 4220"
+      ]
+    },
+    {
+      "id": "jcb_g100rs",
+      "name_pt": "Geradores compactos JCB G100RS",
+      "name_en": "Compact Generators JCB G100RS",
+      "localization_key": "cn_compact_generators_jcb_g100rs",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 2800.0,
+      "catalog_names": [
+        "Compact Generators JCB G100RS"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Geradores compactos JCB G100RS"
+      ]
+    },
+    {
+      "id": "jcb_mexc19ce",
+      "name_pt": "Miniescavadeira Elétrica JCB 19C-E",
+      "name_en": "Electric Mini Excavator JCB 19C-E",
+      "localization_key": "cn_excavator_jcb_19ce",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 1900.0,
+      "catalog_names": [
+        "Electric Mini Excavator JCB 19C-E"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Mini escavadeira elétrica JCB 19C-E"
+      ]
+    },
+    {
+      "id": "jcb_pw125qe",
+      "name_pt": "Gerador JCB 1.25QE",
+      "name_en": "Powerpack JCB 1.25QE",
+      "localization_key": "cn_powerpack_jcb_125qe",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 530.0,
+      "catalog_names": [
+        "Powerpack JCB 1.25QE"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Powerpack JCB 1.25QE"
+      ]
+    },
+    {
+      "id": "jcb_th540180",
+      "name_pt": "Manipulador telescópico JCB 540-180",
+      "name_en": "Telescopic Handler JCB 540-180",
+      "localization_key": "cn_telescopic_handler_jcb_540_180",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 11380.0,
+      "catalog_names": [
+        "Telescopic Handler JCB 540-180"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Manipulador telescópico JCB 540-180"
+      ]
+    },
+    {
+      "id": "jcb_wload457",
+      "name_pt": "Pá-carregadeira JCB 457",
+      "name_en": "Wheel Loader JCB 457",
+      "localization_key": "cn_wheel_loader_jcb_457",
+      "package": "dlc_jcb",
+      "mass_definition_kg": 20500.0,
+      "catalog_names": [
+        "Wheel Loader JCB 457"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pá carregadeira JCB 457"
+      ]
+    },
+    {
+      "id": "krone_box",
+      "name_pt": "Krone Box Liner",
+      "name_en": "Krone Box Liner",
+      "localization_key": "tn_krone_boxliner",
+      "package": "dlc_krone",
+      "mass_definition_kg": 108.8,
+      "catalog_names": [
+        "Krone Box Liner"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Krone Box Liner"
+      ]
+    },
+    {
+      "id": "krone_cool",
+      "name_pt": "Krone Cool Liner",
+      "name_en": "Krone Cool Liner",
+      "localization_key": "tn_krone_coolliner",
+      "package": "dlc_krone",
+      "mass_definition_kg": 0.0001,
+      "catalog_names": [
+        "Krone Cool Liner"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Krone Cool Liner"
+      ]
+    },
+    {
+      "id": "krone_profi",
+      "name_pt": "Krone Profi Liner",
+      "name_en": "Krone Profi Liner",
+      "localization_key": "tn_krone_profiliner",
+      "package": "dlc_krone",
+      "mass_definition_kg": 0.0001,
+      "catalog_names": [
+        "Krone Profi Liner"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Krone Profi Liner"
+      ]
+    },
+    {
+      "id": "krone_profib",
+      "name_pt": "Krone Profi Liner Building",
+      "name_en": "Krone Profi Liner Building",
+      "localization_key": "tn_krone_profiliner_bm",
+      "package": "dlc_krone",
+      "mass_definition_kg": 0.0001,
+      "catalog_names": [
+        "Krone Profi Liner Building"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Krone Profi Liner Building"
+      ]
+    },
+    {
+      "id": "kr_bigm450",
+      "name_pt": "Segadora condicionadora Krone BiG M 450",
+      "name_en": "Mower Conditioner Krone BiG M 450",
+      "localization_key": "cn_mower_conditioner_krone_bigm450",
+      "package": "dlc_krone_agriculture",
+      "mass_definition_kg": 15500.0,
+      "catalog_names": [
+        "Mower Conditioner Krone BiG M 45",
+        "Mower Conditioner Krone BiG M 450"
+      ],
+      "catalog_dlc": null,
+      "aliases": []
+    },
+    {
+      "id": "kr_bigp1290",
+      "name_pt": "Enfardadeira quadradas Krone BiG Pack 1290 HDC VC",
+      "name_en": "Square Baler Krone BiG Pack 1290 HDP VC",
+      "localization_key": "cn_square_baler_krone_bigp1290",
+      "package": "dlc_krone_agriculture",
+      "mass_definition_kg": 10200.0,
+      "catalog_names": [
+        "Square Baler Krone BiG Pack 1290 HDP VC"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Enfardadeira de fardos quadrados Krone BiG Pack 1290 HDP VC",
+        "Enfardadeira quadradas Krone BiG Pack 1290 HDC VC"
+      ]
+    },
+    {
+      "id": "kr_bigx1180",
+      "name_pt": "Colheitadeira de forragem Krone BiG X 1180",
+      "name_en": "Forage Harvester Krone BiG X 1180",
+      "localization_key": "cn_forage_harvester_krone_bigx1180",
+      "package": "dlc_krone_agriculture",
+      "mass_definition_kg": 17100.0,
+      "catalog_names": [
+        "Forage Harvester Krone BiG X 1180"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Colheitadeira de forragem Krone BiG X 1180"
+      ]
+    },
+    {
+      "id": "kr_ecb880cv",
+      "name_pt": "Cortadores de grama Krone EasyCut B 880 CV",
+      "name_en": "Disk Mower Krone EasyCut B 880 CV",
+      "localization_key": "cn_disk_mower_krone_ecb880cv",
+      "package": "dlc_krone_agriculture",
+      "mass_definition_kg": 2950.0,
+      "catalog_names": [
+        "Disk Mower Krone EasyCut B 880 CV"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Segadeira de discos Krone EasyCut B 880 CV"
+      ]
+    },
+    {
+      "id": "kr_gx520",
+      "name_pt": "Vagão Krone GX 520",
+      "name_en": "Wagon Krone GX 520",
+      "localization_key": "cn_wagon_krone_gx520",
+      "package": "dlc_krone_agriculture",
+      "mass_definition_kg": 10100.0,
+      "catalog_names": [
+        "Wagon Krone GX 520"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Vagão Krone GX 520",
+        "Wagon Krone GX 520"
+      ]
+    },
+    {
+      "id": "kr_stc1370",
+      "name_pt": "Ancinhos rotativos Krone Swadro TC 1370",
+      "name_en": "Rotary Rakes Krone Swadro TC 1370",
+      "localization_key": "cn_rotary_rakes_krone_stc1370",
+      "package": "dlc_krone_agriculture",
+      "mass_definition_kg": 4850.0,
+      "catalog_names": [
+        "Rotary Rakes Krone Swadro TC 1370"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Enleiradores rotativos Krone Swadro TC 1370"
+      ]
+    },
+    {
+      "id": "kr_vpv190xc",
+      "name_pt": "Enfardadeira redonda Krone VariPack V 190 XC",
+      "name_en": "Round Baler Krone VariPack V 190 XC",
+      "localization_key": "cn_round_baler_krone_vpv190xc",
+      "package": "dlc_krone_agriculture",
+      "mass_definition_kg": 4100.0,
+      "catalog_names": [
+        "Round Baler Krone VariPack V 190 XC"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Enfardadeira de fardos redondos Krone VariPack V 190 XC"
+      ]
+    },
+    {
+      "id": "art_dumper",
+      "name_pt": "Caminhão articulado",
+      "name_en": "Articulated Hauler",
+      "localization_key": "cn_articulated_hauler",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 43998.5,
+      "catalog_names": [],
+      "catalog_dlc": null,
+      "aliases": []
+    },
+    {
+      "id": "boiler_parts",
+      "name_pt": "Peça de uma caldeira",
+      "name_en": "Boiler Part",
+      "localization_key": "cn_boiler_parts",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 45000.0,
+      "catalog_names": [
+        "Boiler Part"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Peça de caldeira"
+      ]
+    },
+    {
+      "id": "condensator",
+      "name_pt": "Condensador industrial",
+      "name_en": "Industrial Condenser",
+      "localization_key": "cn_condensator",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 60000.0,
+      "catalog_names": [
+        "Industrial Condenser"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Condensador industrial"
+      ]
+    },
+    {
+      "id": "czl_es1000",
+      "name_pt": "Locomotiva CZ LOKO EffiShunter 1000",
+      "name_en": "Locomotive CZ LOKO EffiShunter 1000",
+      "localization_key": "cn_locomotive_czloko_es1000",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 80000.0,
+      "catalog_names": [
+        "Locomotive CZ LOKO EffiShunter 1000"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Locomotiva CZ LOKO EffiShunter 1000"
+      ]
+    },
+    {
+      "id": "dumper",
+      "name_pt": "Chassis de Caminhão de Mineração",
+      "name_en": "Haul Truck Chassis",
+      "localization_key": "cn_haul_truck",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 55000.0,
+      "catalog_names": [
+        "Haul Truck Chassis"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Chassi de caminhão fora de estrada"
+      ]
+    },
+    {
+      "id": "dumper_tire",
+      "name_pt": "Pneus gigantes",
+      "name_en": "Huge Tyres",
+      "localization_key": "cn_huge_tire",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 20000.0,
+      "catalog_names": [
+        "Huge Tyres"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pneus gigantes"
+      ]
+    },
+    {
+      "id": "ex_bucket",
+      "name_pt": "Balde para Escavadeira",
+      "name_en": "Excavator Bucket",
+      "localization_key": "cn_excavator_bucket",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 25000.0,
+      "catalog_names": [
+        "Excavator Bucket"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caçamba de escavadeira"
+      ]
+    },
+    {
+      "id": "heat_exch",
+      "name_pt": "Trocador de Calor",
+      "name_en": "Heat Exchanger",
+      "localization_key": "cn_heat_exchanger",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 70000.0,
+      "catalog_names": [
+        "Heat Exchanger"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Trocador de calor"
+      ]
+    },
+    {
+      "id": "lattice",
+      "name_pt": "Escadaria para Construção",
+      "name_en": "Construction Staircase",
+      "localization_key": "cn_construction_staircase",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 50000.0,
+      "catalog_names": [
+        "Construction Staircase"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escadaria de construção"
+      ]
+    },
+    {
+      "id": "load_un",
+      "name_pt": "Carregadeira subterrânea",
+      "name_en": "Underground Loader",
+      "localization_key": "cn_underground_loader",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 54400.0,
+      "catalog_names": [
+        "Underground Loader"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Carregadeira subterrânea"
+      ]
+    },
+    {
+      "id": "mystery_box",
+      "name_pt": "Peça gigante secreta",
+      "name_en": "Massive Tech Part",
+      "localization_key": "cn_mystery_box",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 44000.0,
+      "catalog_names": [
+        "Massive Tech Part"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Peça tecnológica de grande porte"
+      ]
+    },
+    {
+      "id": "mystery_cyl",
+      "name_pt": "Dispositivo high-tech",
+      "name_en": "High-Tech Device",
+      "localization_key": "cn_mystery_cyl",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 45000.0,
+      "catalog_names": [
+        "High-Tech Device"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Dispositivo de alta tecnologia"
+      ]
+    },
+    {
+      "id": "pilot_boat",
+      "name_pt": "Barco rebocador",
+      "name_en": "Service Boat",
+      "localization_key": "cn_pilot_boat",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 25000.0,
+      "catalog_names": [
+        "Service Boat"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Barco de serviço"
+      ]
+    },
+    {
+      "id": "silo",
+      "name_pt": "Silo gigante",
+      "name_en": "Giant Silo",
+      "localization_key": "cn_silo",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 40000.0,
+      "catalog_names": [
+        "Giant Silo"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Silo gigante"
+      ]
+    },
+    {
+      "id": "tank",
+      "name_pt": "Tanque reservatório grande",
+      "name_en": "Large Reservoir Tank",
+      "localization_key": "cn_ovs_tank",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 35000.0,
+      "catalog_names": [],
+      "catalog_dlc": null,
+      "aliases": []
+    },
+    {
+      "id": "wagon",
+      "name_pt": "Vagão",
+      "name_en": "Railcar",
+      "localization_key": "cn_wagon",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 39000.0,
+      "catalog_names": [],
+      "catalog_dlc": null,
+      "aliases": []
+    },
+    {
+      "id": "windblade",
+      "name_pt": "Pá de Turbina Aeólica",
+      "name_en": "Wind Turbine Blade",
+      "localization_key": "cn_windblade",
+      "package": "dlc_oversize",
+      "mass_definition_kg": 5500.0,
+      "catalog_names": [
+        "Wind Turbine Blade"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pá de turbina eólica"
+      ]
+    },
+    {
+      "id": "aircond",
+      "name_pt": "Condicionadores de ar",
+      "name_en": "Air Conditioners",
+      "localization_key": "cn_aircond",
+      "package": "dlc_trailers",
+      "mass_definition_kg": 2750.0,
+      "catalog_names": [
+        "Air Conditioners",
+        "Air Conditioners"
+      ],
+      "catalog_dlc": "High Power Cargo Pack",
+      "aliases": [
+        "Ar-condicionados"
+      ]
+    },
+    {
+      "id": "driller",
+      "name_pt": "Perfuratriz D-50",
+      "name_en": "Driller D-50",
+      "localization_key": "cn_driller",
+      "package": "dlc_trailers",
+      "mass_definition_kg": 8500.0,
+      "catalog_names": [
+        "Driller - D-50"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Perfuratriz - D-50"
+      ]
+    },
+    {
+      "id": "helicopter",
+      "name_pt": "Helicóptero",
+      "name_en": "Helicopter",
+      "localization_key": "cn_helicopter",
+      "package": "dlc_trailers",
+      "mass_definition_kg": 3500.0,
+      "catalog_names": [
+        "Helicopter - 1808TX"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Helicóptero - 1808TX"
+      ]
+    },
+    {
+      "id": "roller",
+      "name_pt": "Rolo compressor",
+      "name_en": "Roller",
+      "localization_key": "cn_roller",
+      "package": "dlc_trailers",
+      "mass_definition_kg": 8500.0,
+      "catalog_names": [
+        "Roller - DYNA CC-2200"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rolo compactador - DYNA CC-2200"
+      ]
+    },
+    {
+      "id": "tracks",
+      "name_pt": "Esteiras",
+      "name_en": "Tracks",
+      "localization_key": "cn_tracks",
+      "package": "dlc_trailers",
+      "mass_definition_kg": 11300.0,
+      "catalog_names": [
+        "Tracks"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Faixas"
+      ]
+    },
+    {
+      "id": "tractor",
+      "name_pt": "Trator de esteiras",
+      "name_en": "Crawler Tractor",
+      "localization_key": "cn_rstractor",
+      "package": "dlc_trailers",
+      "mass_definition_kg": 13400.0,
+      "catalog_names": [
+        "Crawler Tractor"
+      ],
+      "catalog_dlc": "High Power Cargo Pack",
+      "aliases": [
+        "Esteira de trator",
+        "Trator de esteiras"
+      ]
+    },
+    {
+      "id": "tube",
+      "name_pt": "Peças para gasoduto",
+      "name_en": "Gas Pipeline Parts",
+      "localization_key": "cn_tube",
+      "package": "dlc_trailers",
+      "mass_definition_kg": 21800.0,
+      "catalog_names": [
+        "Gas Pipeline Parts"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Peças de gasoduto"
+      ]
+    },
+    {
+      "id": "yacht",
+      "name_pt": "Iate",
+      "name_en": "Yacht",
+      "localization_key": "cn_yacht",
+      "package": "dlc_trailers",
+      "mass_definition_kg": 6500.0,
+      "catalog_names": [
+        "Yacht"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Iate"
+      ]
+    },
+    {
+      "id": "vol_ew240emh",
+      "name_pt": "Escavadeira Volvo EW240E MH",
+      "name_en": "Excavator Volvo EW240E MH",
+      "localization_key": "cn_excavator_volvo_ew240emh",
+      "package": "dlc_volvo_construction",
+      "mass_definition_kg": 26000.0,
+      "catalog_names": [
+        "Excavator Volvo EW240E MH"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escavadeira Volvo EW240E MH"
+      ]
+    },
+    {
+      "id": "volvo_a25g",
+      "name_pt": "Caminhão articulado Volvo A25G",
+      "name_en": "Articulated Hauler Volvo A25G",
+      "localization_key": "cn_articulated_hauler_volvo_a25g",
+      "package": "dlc_volvo_construction",
+      "mass_definition_kg": 25000.0,
+      "catalog_names": [
+        "Articulated Hauler Volvo A25G"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caminhão articulado Volvo A25G"
+      ]
+    },
+    {
+      "id": "volvo_bucket",
+      "name_pt": "Caçamba Volvo SPN P T SEG",
+      "name_en": "Rock Bucket Volvo SPN P T SEG",
+      "localization_key": "cn_bucket_volvo_spn_p_t_seg",
+      "package": "dlc_volvo_construction",
+      "mass_definition_kg": 3600.0,
+      "catalog_names": [
+        "Rock Bucket Volvo SPN P T SEG"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Caçamba para rocha Volvo SPN P T SEG"
+      ]
+    },
+    {
+      "id": "volvo_ec220e",
+      "name_pt": "Escavadeira Volvo EC220E",
+      "name_en": "Excavator Volvo EC220E",
+      "localization_key": "cn_excavator_volvo_ec220e",
+      "package": "dlc_volvo_construction",
+      "mass_definition_kg": 20470.0,
+      "catalog_names": [
+        "Excavator Volvo EC220E"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Escavadeira Volvo EC220E"
+      ]
+    },
+    {
+      "id": "volvo_l250h",
+      "name_pt": "Pá-carregadeira Volvo L250H",
+      "name_en": "Wheel Loader Volvo L250H",
+      "localization_key": "cn_wheel_loader_volvo_l250h",
+      "package": "dlc_volvo_construction",
+      "mass_definition_kg": 35300.0,
+      "catalog_names": [
+        "Wheel Loader Volvo L250H"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Pá carregadeira Volvo L250H"
+      ]
+    },
+    {
+      "id": "volvo_rims",
+      "name_pt": "Rodas Volvo",
+      "name_en": "Wheels with Volvo Rims",
+      "localization_key": "cn_wheels_with_volvo_rims",
+      "package": "dlc_volvo_construction",
+      "mass_definition_kg": 2300.0,
+      "catalog_names": [
+        "Wheels with Volvo Rims"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Rodas com aros Volvo"
+      ]
+    },
+    {
+      "id": "volvo_sd160b",
+      "name_pt": "Compactador Volvo SD160B",
+      "name_en": "Compactor Volvo SD160B",
+      "localization_key": "cn_compactor_volvo_sd160b",
+      "package": "dlc_volvo_construction",
+      "mass_definition_kg": 16691.0,
+      "catalog_names": [
+        "Compactor Volvo SD160B"
+      ],
+      "catalog_dlc": null,
+      "aliases": [
+        "Compactador Volvo SD160B"
+      ]
+    }
+  ]
+}

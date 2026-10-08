@@ -1,11 +1,11 @@
 {
   "game": "Euro Truck Simulator 2",
   "source": "https://trucksimulator.wiki.gg/wiki/Cargo_types/Euro_Truck_Simulator_2",
-  "source_note": "Cargas transportáveis atuais do Truck Simulator Wiki. Entradas marcadas como removidas foram excluídas; versão de referência conferida no conjunto AlexOQ/trucker.",
+  "source_note": "Catálogo com nomes e IDs conferidos nos arquivos oficiais instalados do ETS2; pesos e DLCs de referência preservados da Wiki quando disponíveis.",
   "reference_game_version": "1.61.1.1",
   "reference_data_refreshed": "2026-10-03",
   "generated_at": "2026-10-05T16:17:49Z",
-  "total_entries": 378,
+  "total_entries": 380,
   "category_titles": {
     "tractor": "Trator e máquinas agrícolas",
     "fuel": "Combustível",
@@ -45,8 +45,8 @@
     "drinks": 7,
     "timber": 8,
     "container": 3,
-    "heavy_machine": 23,
-    "vehicles": 13,
+    "heavy_machine": 24,
+    "vehicles": 12,
     "motorcycles": 3,
     "chemicals": 16,
     "construction": 15,
@@ -57,7 +57,7 @@
     "glass": 2,
     "pipes": 4,
     "cables": 2,
-    "industrial": 22,
+    "industrial": 24,
     "mining": 2,
     "grain": 8,
     "rural": 5,
@@ -75,131 +75,312 @@
       {
         "name": "Agricultural Telehandler Bobcat TL30.70",
         "dlc": "Bobcat Cargo Pack",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Manipulador telescópico agrícola Bobcat TL30.70",
+        "cargo_ids": [
+          "bob_tl3070a"
+        ],
+        "aliases": [
+          "Agricultural Telehandler Bobcat TL30.70"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Autonomous Tractor",
         "dlc": "Farm Machinery",
-        "weight": "8"
+        "weight": "8",
+        "name_pt": "Trator autônomo",
+        "cargo_ids": [
+          "tractor_au"
+        ],
+        "aliases": [
+          "Autonomous Tractor"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Cotton Harvester",
         "dlc": "Greece",
-        "weight": "30"
+        "weight": "30",
+        "name_pt": "Colheitadeira de algodão",
+        "cargo_ids": [
+          "cott_harvest"
+        ],
+        "aliases": [
+          "Cotton Harvester"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Crawler Tractor",
         "dlc": "Farm Machinery",
         "weight": "25",
         "aliases": [
+          "Crawler Tractor",
           "Esteira de trator"
-        ]
+        ],
+        "name_pt": "Trator de esteiras",
+        "cargo_ids": [
+          "tractor_c"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Crawler Tractor",
         "dlc": "High Power Cargo Pack",
         "weight": "13",
         "aliases": [
+          "Crawler Tractor",
           "Esteira de trator"
-        ]
+        ],
+        "name_pt": "Trator de esteiras",
+        "cargo_ids": [
+          "tractor"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Disc Harrows",
         "dlc": "Farm Machinery",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Arados de discos",
+        "cargo_ids": [
+          "disc_harrows"
+        ],
+        "aliases": [
+          "Disc Harrows",
+          "Grades de discos"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Disk Mower Krone EasyCut B 880 CV",
         "dlc": "KRONE Agriculture Equipment",
-        "weight": "2"
+        "weight": "2",
+        "name_pt": "Cortadores de grama Krone EasyCut B 880 CV",
+        "cargo_ids": [
+          "kr_ecb880cv"
+        ],
+        "aliases": [
+          "Disk Mower Krone EasyCut B 880 CV",
+          "Segadeira de discos Krone EasyCut B 880 CV"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Forage Harvester",
         "dlc": "Farm Machinery",
-        "weight": "13"
+        "weight": "13",
+        "name_pt": "Colheitadeira de forragem",
+        "cargo_ids": [
+          "forage_harv"
+        ],
+        "aliases": [
+          "Forage Harvester"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Forage Harvester Krone BiG X 1180",
         "dlc": "KRONE Agriculture Equipment",
-        "weight": "17"
+        "weight": "17",
+        "name_pt": "Colheitadeira de forragem Krone BiG X 1180",
+        "cargo_ids": [
+          "kr_bigx1180"
+        ],
+        "aliases": [
+          "Forage Harvester Krone BiG X 1180"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Log Harvester",
         "dlc": "Forest Machinery",
-        "weight": "22"
+        "weight": "22",
+        "name_pt": "Colheitadeira florestal",
+        "cargo_ids": [
+          "log_harvest"
+        ],
+        "aliases": [
+          "Log Harvester"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
-        "name": "Mower Conditioner Krone BiG M 45",
+        "name": "Mower Conditioner Krone BiG M 450",
         "dlc": "KRONE Agriculture Equipment",
-        "weight": "15"
+        "weight": "15",
+        "name_pt": "Segadora condicionadora Krone BiG M 450",
+        "cargo_ids": [
+          "kr_bigm450"
+        ],
+        "aliases": [
+          "Mower Conditioner Krone BiG M 45",
+          "Mower Conditioner Krone BiG M 450"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Round Baler Krone VariPack V 190 XC",
         "dlc": "KRONE Agriculture Equipment",
-        "weight": "4"
+        "weight": "4",
+        "name_pt": "Enfardadeira redonda Krone VariPack V 190 XC",
+        "cargo_ids": [
+          "kr_vpv190xc"
+        ],
+        "aliases": [
+          "Enfardadeira de fardos redondos Krone VariPack V 190 XC",
+          "Round Baler Krone VariPack V 190 XC"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sprayer",
         "dlc": "Farm Machinery",
-        "weight": "15"
+        "weight": "15",
+        "name_pt": "Pulverizador",
+        "cargo_ids": [
+          "sprayer"
+        ],
+        "aliases": [
+          "Sprayer"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Square Baler",
         "dlc": "Farm Machinery",
-        "weight": "7"
+        "weight": "7",
+        "name_pt": "Enfardadeira quadrada",
+        "cargo_ids": [
+          "square_baler"
+        ],
+        "aliases": [
+          "Enfardadeira de fardos quadrados",
+          "Square Baler"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Square Baler Krone BiG Pack 1290 HDP VC",
         "dlc": "KRONE Agriculture Equipment",
         "weight": "10",
         "aliases": [
-          "Enfardadeira quadradas Krone BiG Pack 1290 HDC VC"
-        ]
+          "Enfardadeira de fardos quadrados Krone BiG Pack 1290 HDP VC",
+          "Square Baler Krone BiG Pack 1290 HDP VC"
+        ],
+        "name_pt": "Enfardadeira quadradas Krone BiG Pack 1290 HDC VC",
+        "cargo_ids": [
+          "kr_bigp1290"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Tractor JCB Fastrac 4220",
         "dlc": "JCB Equipment Pack",
-        "weight": "9"
+        "weight": "9",
+        "name_pt": "Trator JCB Fastrac 4220",
+        "cargo_ids": [
+          "jcb_ft4220"
+        ],
+        "aliases": [
+          "Tractor JCB Fastrac 4220"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Tractors",
         "dlc": "Launch",
         "weight": "8",
         "aliases": [
-          "TRATOR"
-        ]
+          "TRATOR",
+          "Tractors"
+        ],
+        "name_pt": "Tratores",
+        "cargo_ids": [
+          "tractors"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "fuel": [
       {
         "name": "Diesel",
         "dlc": "Launch",
-        "weight": "20–25"
+        "weight": "20–25",
+        "name_pt": "Diesel",
+        "cargo_ids": [
+          "diesel"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Diesel Generators",
         "dlc": "Vive la France!",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Geradores à Diesel",
+        "cargo_ids": [
+          "diesel_gen"
+        ],
+        "aliases": [
+          "Diesel Generators",
+          "Geradores a diesel"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fuel Oil",
         "dlc": "Vive la France!",
-        "weight": "20–25"
+        "weight": "20–25",
+        "name_pt": "Óleo combustível",
+        "cargo_ids": [
+          "fuel_oil"
+        ],
+        "aliases": [
+          "Fuel Oil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fuel Tanker",
         "dlc": "Launch",
-        "weight": "9–19"
+        "weight": "9–19",
+        "name_pt": "Caminhão-tanque",
+        "cargo_ids": [
+          "fueltanker"
+        ],
+        "aliases": [
+          "Caminhão-tanque de combustível",
+          "Fuel Tanker"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fuel Tanks",
         "dlc": "Scandinavia",
-        "weight": "5–10"
+        "weight": "5–10",
+        "name_pt": "Tanques de combustível",
+        "cargo_ids": [
+          "fuel_tanks"
+        ],
+        "aliases": [
+          "Fuel Tanks"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Kerosene",
         "dlc": "Launch",
-        "weight": "18–23"
+        "weight": "18–23",
+        "name_pt": "Querosene",
+        "cargo_ids": [
+          "kerosene"
+        ],
+        "aliases": [
+          "Kerosene"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "LPG",
@@ -208,1078 +389,2743 @@
         "weight": "10–22",
         "aliases": [
           "Gas de Cozinha",
-          "Gás de cozinha"
-        ]
+          "Gás de cozinha",
+          "LPG"
+        ],
+        "cargo_ids": [
+          "lpg",
+          "lpg_t"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Petrol",
         "dlc": "Launch",
-        "weight": "17–21"
+        "weight": "17–21",
+        "name_pt": "Gasolina",
+        "cargo_ids": [
+          "petrol"
+        ],
+        "aliases": [
+          "Petrol"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Propane",
         "dlc": "1.47",
-        "weight": "13–19"
+        "weight": "13–19",
+        "name_pt": "Propano",
+        "cargo_ids": [
+          "propane"
+        ],
+        "aliases": [
+          "Propane"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "food": [
       {
         "name": "Almond",
         "dlc": "Launch",
-        "weight": "10–17"
+        "weight": "10–17",
+        "name_pt": "Amêndoa",
+        "cargo_ids": [
+          "almond"
+        ],
+        "aliases": [
+          "Almond"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Apples",
         "dlc": "Launch",
-        "weight": "9–20"
+        "weight": "9–20",
+        "name_pt": "Maçãs",
+        "cargo_ids": [
+          "apples",
+          "apples_c"
+        ],
+        "aliases": [
+          "Apples"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Basil",
         "dlc": "Vive la France!",
-        "weight": "14–24"
+        "weight": "14–24",
+        "name_pt": "Manjericão",
+        "cargo_ids": [
+          "basil"
+        ],
+        "aliases": [
+          "Basil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Beans",
         "dlc": "Launch",
-        "weight": "7–12"
+        "weight": "7–12",
+        "name_pt": "Feijão",
+        "cargo_ids": [
+          "beans"
+        ],
+        "aliases": [
+          "Beans"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Beef",
         "dlc": "Launch",
         "weight": "12–20",
         "aliases": [
-          "Carne"
-        ]
+          "Beef",
+          "Carne bovina"
+        ],
+        "name_pt": "Carne",
+        "cargo_ids": [
+          "beef_meat"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Canned Beans",
         "dlc": "Launch",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Feijão enlatado",
+        "cargo_ids": [
+          "canned_beans"
+        ],
+        "aliases": [
+          "Canned Beans"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Canned Beef",
         "dlc": "Scandinavia",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Carne enlatada",
+        "cargo_ids": [
+          "canned_beef"
+        ],
+        "aliases": [
+          "Canned Beef",
+          "Carne bovina enlatada"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Canned Pork",
         "dlc": "Scandinavia",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Carne de porco enlatada",
+        "cargo_ids": [
+          "canned_pork"
+        ],
+        "aliases": [
+          "Canned Pork",
+          "Carne suína enlatada"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Canned Sardines",
         "dlc": "Italia",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Sardinhas enlatadas",
+        "cargo_ids": [
+          "can_sardines"
+        ],
+        "aliases": [
+          "Canned Sardines"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Canned Tuna",
         "dlc": "Scandinavia",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Atum enlatado",
+        "cargo_ids": [
+          "canned_tuna"
+        ],
+        "aliases": [
+          "Canned Tuna"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Cauliflower",
         "dlc": "Launch",
-        "weight": "5–9"
+        "weight": "5–9",
+        "name_pt": "Couve-flor",
+        "cargo_ids": [
+          "cauliflower"
+        ],
+        "aliases": [
+          "Cauliflower"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Caviar",
         "dlc": "Scandinavia",
-        "weight": "8–14"
+        "weight": "8–14",
+        "name_pt": "Caviar",
+        "cargo_ids": [
+          "caviar"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Chewing Gums",
         "dlc": "Launch",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Chicletes",
+        "cargo_ids": [
+          "chewing_gums"
+        ],
+        "aliases": [
+          "Chewing Gums"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Chicken Meat",
         "dlc": "Scandinavia",
-        "weight": "9–17"
+        "weight": "9–17",
+        "name_pt": "Carne de frango",
+        "cargo_ids": [
+          "chicken_meat"
+        ],
+        "aliases": [
+          "Chicken Meat"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Chocolate",
         "dlc": "Launch",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Chocolate",
+        "cargo_ids": [
+          "chocolate"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fish Fingers",
         "dlc": "Scandinavia",
-        "weight": "9–17"
+        "weight": "9–17",
+        "name_pt": "Peixe empanado",
+        "cargo_ids": [
+          "fish_chips"
+        ],
+        "aliases": [
+          "Fish Fingers",
+          "Palitos de peixe"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Food Oil",
         "dlc": "1.55",
-        "weight": "22–27"
+        "weight": "22–27",
+        "name_pt": "Óleo alimentício",
+        "cargo_ids": [
+          "food_oil_t"
+        ],
+        "aliases": [
+          "Food Oil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Grapes",
         "dlc": "Launch",
-        "weight": "8–14"
+        "weight": "8–14",
+        "name_pt": "Uvas",
+        "cargo_ids": [
+          "grapes"
+        ],
+        "aliases": [
+          "Grapes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Locomotive CZ LOKO EffiShunter 1000",
         "dlc": "Special Transport (1.56)",
-        "weight": "80"
+        "weight": "80",
+        "name_pt": "Locomotiva CZ LOKO EffiShunter 1000",
+        "cargo_ids": [
+          "czl_es1000"
+        ],
+        "aliases": [
+          "Locomotive CZ LOKO EffiShunter 1000"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Locomotive CZ LOKO EffiShunter 300",
         "dlc": "1.56",
-        "weight": "36"
+        "weight": "36",
+        "name_pt": "Locomotiva CZ LOKO EffiShunter 300",
+        "cargo_ids": [
+          "czl_es300"
+        ],
+        "aliases": [
+          "Locomotive CZ LOKO EffiShunter 300"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Olive Oil",
         "dlc": "Italia",
-        "weight": "10–27"
+        "weight": "10–27",
+        "name_pt": "Azeite de oliva",
+        "cargo_ids": [
+          "olive_oil",
+          "olive_oil_t"
+        ],
+        "aliases": [
+          "Olive Oil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Olive Trees",
         "dlc": "Iberia",
-        "weight": "2"
+        "weight": "2",
+        "name_pt": "Oliveiras",
+        "cargo_ids": [
+          "olive_tree"
+        ],
+        "aliases": [
+          "Olive Trees"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Olives",
         "dlc": "Vive la France!",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Azeitonas",
+        "cargo_ids": [
+          "olives"
+        ],
+        "aliases": [
+          "Olives"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Onions",
         "dlc": "Scandinavia",
-        "weight": "10–17"
+        "weight": "10–17",
+        "name_pt": "Cebolas",
+        "cargo_ids": [
+          "onion"
+        ],
+        "aliases": [
+          "Onions"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Oranges",
         "dlc": "Launch",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Laranjas",
+        "cargo_ids": [
+          "oranges"
+        ],
+        "aliases": [
+          "Oranges"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Packaged Food",
         "dlc": "Launch",
-        "weight": "9–17"
+        "weight": "9–17",
+        "name_pt": "Comida enlatada",
+        "cargo_ids": [
+          "packag_food"
+        ],
+        "aliases": [
+          "Alimentos embalados",
+          "Packaged Food"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pasta",
         "dlc": "Italia",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Macarrão",
+        "cargo_ids": [
+          "pasta"
+        ],
+        "aliases": [
+          "Massa",
+          "Pasta"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pears",
         "dlc": "Scandinavia",
-        "weight": "8–15"
+        "weight": "8–15",
+        "name_pt": "Peras",
+        "cargo_ids": [
+          "pears"
+        ],
+        "aliases": [
+          "Pears"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pet Food",
         "dlc": "Scandinavia",
         "weight": "9–20",
         "aliases": [
-          "Ração"
-        ]
+          "Pet Food",
+          "Ração para animais"
+        ],
+        "name_pt": "Ração",
+        "cargo_ids": [
+          "pet_food",
+          "pet_food_c"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pork",
         "dlc": "Scandinavia",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Carne de porco",
+        "cargo_ids": [
+          "pork_meat"
+        ],
+        "aliases": [
+          "Carne suína",
+          "Pork"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Potatoes",
         "dlc": "Launch",
         "weight": "12–22",
         "aliases": [
-          "BATATA"
-        ]
+          "BATATA",
+          "Potatoes"
+        ],
+        "name_pt": "Batatas",
+        "cargo_ids": [
+          "potatoes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Salmon Fillet",
         "dlc": "Scandinavia",
-        "weight": "8–14"
+        "weight": "8–14",
+        "name_pt": "Filé de salmão",
+        "cargo_ids": [
+          "salm_fillet"
+        ],
+        "aliases": [
+          "Salmon Fillet"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sugar",
         "dlc": "Launch",
-        "weight": "12–22"
+        "weight": "12–22",
+        "name_pt": "Açúcar",
+        "cargo_ids": [
+          "sugar",
+          "sugar_b"
+        ],
+        "aliases": [
+          "Sugar"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Tomatoes",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Tomates",
+        "cargo_ids": [
+          "tomatoes"
+        ],
+        "aliases": [
+          "Tomatoes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "drinks": [
       {
         "name": "Beverages",
         "dlc": "Launch",
-        "weight": "10–28"
+        "weight": "10–28",
+        "name_pt": "Bebidas",
+        "cargo_ids": [
+          "beverages",
+          "beverages_c",
+          "beverages_t"
+        ],
+        "aliases": [
+          "Beverages"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Bottled Water",
         "dlc": "Launch",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Água engarrafada",
+        "cargo_ids": [
+          "bottle_water"
+        ],
+        "aliases": [
+          "Bottled Water"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Canned Iced Coffee",
         "dlc": "Vive la France!",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Café gelado enlatado",
+        "cargo_ids": [
+          "iced_coffee"
+        ],
+        "aliases": [
+          "Canned Iced Coffee"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Empty Wine Barrels",
         "dlc": "Vive la France!",
-        "weight": "4–8"
+        "weight": "4–8",
+        "name_pt": "Barris de vinho vazios",
+        "cargo_ids": [
+          "emp_wine_bar"
+        ],
+        "aliases": [
+          "Empty Wine Barrels"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Empty Wine Bottles",
         "dlc": "Vive la France!",
-        "weight": "8–13"
+        "weight": "8–13",
+        "name_pt": "Garrafas de vinho vazias",
+        "cargo_ids": [
+          "emp_wine_bot"
+        ],
+        "aliases": [
+          "Empty Wine Bottles"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Juice Concentrate",
         "dlc": "Vive la France!",
-        "weight": "13–28"
+        "weight": "13–28",
+        "name_pt": "Suco concentrado",
+        "cargo_ids": [
+          "conc_juice_t",
+          "concen_juice"
+        ],
+        "aliases": [
+          "Concentrado de suco",
+          "Juice Concentrate"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Non-alcoholic Beer",
         "dlc": "Launch",
-        "weight": "12–22"
+        "weight": "12–22",
+        "name_pt": "Cerveja sem álcool",
+        "cargo_ids": [
+          "nonalco_beer"
+        ],
+        "aliases": [
+          "Non-alcoholic Beer"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "timber": [
       {
         "name": "Logs",
         "dlc": "Launch",
-        "weight": "24"
+        "weight": "24",
+        "name_pt": "Troncos",
+        "cargo_ids": [
+          "logs"
+        ],
+        "aliases": [
+          "Logs",
+          "Toras"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Lumber",
         "dlc": "Launch",
-        "weight": "15"
+        "weight": "15",
+        "name_pt": "Madeira serrada",
+        "cargo_ids": [
+          "lumber"
+        ],
+        "aliases": [
+          "Lumber"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Packed Lumber",
         "dlc": "1.57",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Madeira embalada",
+        "cargo_ids": [
+          "lumber_p"
+        ],
+        "aliases": [
+          "Madeira serrada embalada",
+          "Packed Lumber"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sawdust Panels",
         "dlc": "Launch",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Painéis de serragem",
+        "cargo_ids": [
+          "sawpanels"
+        ],
+        "aliases": [
+          "Sawdust Panels"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wood Bark",
         "dlc": "Scandinavia",
-        "weight": "6–9"
+        "weight": "6–9",
+        "name_pt": "Casca de madeira",
+        "cargo_ids": [
+          "wood_bark"
+        ],
+        "aliases": [
+          "Wood Bark"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wood Chipper",
         "dlc": "Forest Machinery",
         "weight": "26",
         "aliases": [
-          "Picador de madeira"
-        ]
+          "Wood Chipper"
+        ],
+        "name_pt": "Picador de madeira",
+        "cargo_ids": [
+          "wood_chipper"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wood Shavings",
         "dlc": "Launch",
-        "weight": "3–6"
+        "weight": "3–6",
+        "name_pt": "Serragem",
+        "cargo_ids": [
+          "wshavings"
+        ],
+        "aliases": [
+          "Aparas de madeira",
+          "Wood Shavings"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wooden Beams",
         "dlc": "Scandinavia",
-        "weight": "6–13"
+        "weight": "6–13",
+        "name_pt": "Vigas de madeira",
+        "cargo_ids": [
+          "wooden_beams"
+        ],
+        "aliases": [
+          "Wooden Beams"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "container": [
       {
         "name": "Containerized Trees",
         "dlc": "Launch",
-        "weight": "2–4"
+        "weight": "2–4",
+        "name_pt": "Árvores contentorizadas",
+        "cargo_ids": [
+          "cont_trees"
+        ],
+        "aliases": [
+          "Containerized Trees",
+          "Árvores em contêineres"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "IBC Containers",
         "dlc": "Scandinavia",
-        "weight": "6–11"
+        "weight": "6–11",
+        "name_pt": "Contêineres IBC",
+        "cargo_ids": [
+          "ibc_cont"
+        ],
+        "aliases": [
+          "IBC Containers"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Large Containers",
         "dlc": "1.57",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Contêiner grande",
+        "cargo_ids": [
+          "large_cont"
+        ],
+        "aliases": [
+          "Contêineres grandes",
+          "Large Containers"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "heavy_machine": [
       {
         "name": "Articulated Hauler Volvo A25G",
         "dlc": "Volvo Construction Equipment",
-        "weight": "25"
+        "weight": "25",
+        "name_pt": "Caminhão articulado Volvo A25G",
+        "cargo_ids": [
+          "volvo_a25g"
+        ],
+        "aliases": [
+          "Articulated Hauler Volvo A25G"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Backhoe Loader",
         "dlc": "Launch",
-        "weight": "8"
+        "weight": "8",
+        "name_pt": "Retroescavadeira",
+        "cargo_ids": [
+          "digger500"
+        ],
+        "aliases": [
+          "Backhoe Loader"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Backhoe Loader JCB 4CX",
         "dlc": "JCB Equipment Pack",
-        "weight": "8"
+        "weight": "8",
+        "name_pt": "Retroescavadeira JCB 4CX",
+        "cargo_ids": [
+          "jcb_bhl4cx"
+        ],
+        "aliases": [
+          "Backhoe Loader JCB 4CX"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Crawler Carrier",
         "dlc": "1.57",
-        "weight": "11"
+        "weight": "11",
+        "name_pt": "Caminhão sobre esteiras",
+        "cargo_ids": [
+          "crawler"
+        ],
+        "aliases": [
+          "Crawler Carrier",
+          "Transportador de esteiras"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Dozer Crawl - Z35K",
         "dlc": "Heavy Cargo Pack",
-        "weight": "39"
+        "weight": "39",
+        "name_pt": "Esteira de trator",
+        "cargo_ids": [
+          "dozer"
+        ],
+        "aliases": [
+          "Dozer Crawl",
+          "Dozer Crawl - Z35K",
+          "Trator de esteiras"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Electric Mini Excavator JCB 19C-E",
         "dlc": "JCB Equipment Pack",
-        "weight": "5"
+        "weight": "5",
+        "name_pt": "Miniescavadeira Elétrica JCB 19C-E",
+        "cargo_ids": [
+          "jcb_mexc19ce"
+        ],
+        "aliases": [
+          "Electric Mini Excavator JCB 19C-E",
+          "Mini escavadeira elétrica JCB 19C-E"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Excavator",
         "dlc": "Launch",
-        "weight": "21"
+        "weight": "21",
+        "name_pt": "Escavadeira",
+        "cargo_ids": [
+          "excavator"
+        ],
+        "aliases": [
+          "Excavator"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Excavator Bobcat E60",
         "dlc": "Bobcat Cargo Pack",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Escavadeira Bobcat E60",
+        "cargo_ids": [
+          "bob_e60"
+        ],
+        "aliases": [
+          "Excavator Bobcat E60"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Excavator Bucket",
         "dlc": "Special Transport",
-        "weight": "25"
+        "weight": "25",
+        "name_pt": "Balde para Escavadeira",
+        "cargo_ids": [
+          "ex_bucket"
+        ],
+        "aliases": [
+          "Caçamba de escavadeira",
+          "Excavator Bucket"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Excavator JCB 245XR",
         "dlc": "JCB Equipment Pack",
-        "weight": "28"
+        "weight": "28",
+        "name_pt": "Escavadeira JCB 245XR",
+        "cargo_ids": [
+          "jcb_exc245xr"
+        ],
+        "aliases": [
+          "Excavator JCB 245XR"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Excavator Volvo EC220E",
         "dlc": "Volvo Construction Equipment",
-        "weight": "20"
+        "weight": "20",
+        "name_pt": "Escavadeira Volvo EC220E",
+        "cargo_ids": [
+          "volvo_ec220e"
+        ],
+        "aliases": [
+          "Excavator Volvo EC220E"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Excavator Volvo EW240E MH",
         "dlc": "Volvo Construction Equipment",
-        "weight": "26"
+        "weight": "26",
+        "name_pt": "Escavadeira Volvo EW240E MH",
+        "cargo_ids": [
+          "vol_ew240emh"
+        ],
+        "aliases": [
+          "Excavator Volvo EW240E MH"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Forestry Crawler Excavator",
         "dlc": "Forest Machinery",
-        "weight": "17"
+        "weight": "17",
+        "name_pt": "Escavadeira florestal sobre esteiras",
+        "cargo_ids": [
+          "exc_craw"
+        ],
+        "aliases": [
+          "Escavadeira florestal de esteiras",
+          "Forestry Crawler Excavator"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Haul Truck Chassis",
         "dlc": "Special Transport",
-        "weight": "55"
+        "weight": "55",
+        "name_pt": "Chassis de Caminhão de Mineração",
+        "cargo_ids": [
+          "dumper"
+        ],
+        "aliases": [
+          "Chassi de caminhão fora de estrada",
+          "Haul Truck Chassis"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mini Excavator Bobcat E10e",
         "dlc": "Bobcat Cargo Pack",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Escavadeira compacta Bobcat E10e",
+        "cargo_ids": [
+          "bob_e10e"
+        ],
+        "aliases": [
+          "Mini Excavator Bobcat E10e",
+          "Mini escavadeira Bobcat E10e"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mobile Crane - UTM SD-833",
         "dlc": "Heavy Cargo Pack",
-        "weight": "36"
+        "weight": "36",
+        "name_pt": "Guindaste móvel",
+        "cargo_ids": [
+          "mobile_crane"
+        ],
+        "aliases": [
+          "Guindaste móvel - UTM SD-833",
+          "Mobile Crane",
+          "Mobile Crane - UTM SD-833"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Rock Bucket Volvo SPN P T SEG",
         "dlc": "Volvo Construction Equipment",
-        "weight": "3"
+        "weight": "3",
+        "name_pt": "Caçamba Volvo SPN P T SEG",
+        "cargo_ids": [
+          "volvo_bucket"
+        ],
+        "aliases": [
+          "Caçamba para rocha Volvo SPN P T SEG",
+          "Rock Bucket Volvo SPN P T SEG"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Skid-Steer Loader Bobcat S86",
         "dlc": "Bobcat Cargo Pack",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Minicarregadeira Bobcat S86",
+        "cargo_ids": [
+          "bob_s86"
+        ],
+        "aliases": [
+          "Skid-Steer Loader Bobcat S86"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Underground Loader",
         "dlc": "Special Transport (Nordic Horizons)",
-        "weight": "54"
+        "weight": "54",
+        "name_pt": "Carregadeira subterrânea",
+        "cargo_ids": [
+          "load_un"
+        ],
+        "aliases": [
+          "Underground Loader"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wheel Loader",
         "dlc": "Launch",
-        "weight": "15"
+        "weight": "15",
+        "name_pt": "Pá-carregadeira",
+        "cargo_ids": [
+          "digger1000"
+        ],
+        "aliases": [
+          "Pá carregadeira",
+          "Wheel Loader"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wheel Loader Bobcat L95",
         "dlc": "Bobcat Cargo Pack",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Pá-carregadeira compacta sobre rodas Bobcat L95",
+        "cargo_ids": [
+          "bob_l95"
+        ],
+        "aliases": [
+          "Pá carregadeira Bobcat L95",
+          "Wheel Loader Bobcat L95"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wheel Loader JCB 457",
         "dlc": "JCB Equipment Pack",
-        "weight": "20"
+        "weight": "20",
+        "name_pt": "Pá-carregadeira JCB 457",
+        "cargo_ids": [
+          "jcb_wload457"
+        ],
+        "aliases": [
+          "Pá carregadeira JCB 457",
+          "Wheel Loader JCB 457"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wheel Loader Volvo L250H",
         "dlc": "Volvo Construction Equipment",
-        "weight": "35"
+        "weight": "35",
+        "name_pt": "Pá-carregadeira Volvo L250H",
+        "cargo_ids": [
+          "volvo_l250h"
+        ],
+        "aliases": [
+          "Pá carregadeira Volvo L250H",
+          "Wheel Loader Volvo L250H"
+        ],
+        "name_source": "ets2_locale_pt_br"
+      },
+      {
+        "name": "Articulated Hauler",
+        "name_pt": "Caminhão articulado",
+        "cargo_ids": [
+          "art_dumper"
+        ],
+        "aliases": [
+          "Articulated Hauler"
+        ],
+        "dlc": "Special Transport",
+        "weight": "43.9985",
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "vehicles": [
       {
         "name": "Campervans",
         "dlc": "West Balkans",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Autocaravanas",
+        "cargo_ids": [
+          "caravans"
+        ],
+        "aliases": [
+          "Campervans",
+          "Motorhomes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Carbon Black Powder",
         "dlc": "Italia",
-        "weight": "3–7"
+        "weight": "3–7",
+        "name_pt": "Carvão em pó",
+        "cargo_ids": [
+          "carbn_pwdr_c"
+        ],
+        "aliases": [
+          "Carbon Black Powder",
+          "Pó de negro de fumo"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Carbonated Water",
         "dlc": "Launch",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Água com gás",
+        "cargo_ids": [
+          "carb_water"
+        ],
+        "aliases": [
+          "Carbonated Water",
+          "Água gaseificada"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Carrots",
         "dlc": "Launch",
-        "weight": "7–16"
+        "weight": "7–16",
+        "name_pt": "Cenouras",
+        "cargo_ids": [
+          "carrots",
+          "carrots_c"
+        ],
+        "aliases": [
+          "Carrots"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Cars",
         "dlc": "Beyond the Baltic Sea",
-        "weight": "4"
+        "weight": "4",
+        "name_pt": "Carros",
+        "cargo_ids": [
+          "car_balt1",
+          "car_balt2"
+        ],
+        "aliases": [
+          "Cars"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Cars",
         "dlc": "Launch",
-        "weight": "6–10"
+        "weight": "6–10",
+        "name_pt": "Carros",
+        "cargo_ids": [
+          "car_d",
+          "car_f",
+          "car_ibe",
+          "car_it",
+          "cars_fr",
+          "mondeos"
+        ],
+        "aliases": [
+          "Cars"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Luxury SUVs",
         "dlc": "Scandinavia",
-        "weight": "11"
+        "weight": "11",
+        "name_pt": "SUVs de luxo",
+        "cargo_ids": [
+          "volvo_cars"
+        ],
+        "aliases": [
+          "Luxury SUVs"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pickups",
         "dlc": "Greece",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Picapes",
+        "cargo_ids": [
+          "pickup_gr"
+        ],
+        "aliases": [
+          "Pickups"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "SUVs",
         "dlc": "Greece",
-        "weight": "12"
+        "weight": "12",
+        "name_pt": "SUVs",
+        "cargo_ids": [
+          "car_gr"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Train Undercarriage",
         "dlc": "Beyond the Baltic Sea",
-        "weight": "18"
+        "weight": "18",
+        "name_pt": "Material rodante de trem",
+        "cargo_ids": [
+          "train_part2"
+        ],
+        "aliases": [
+          "Chassi ferroviário",
+          "Train Undercarriage"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Used Car Batteries",
         "dlc": "Launch",
-        "weight": "9–17"
+        "weight": "9–17",
+        "name_pt": "Baterias automotivas usadas",
+        "cargo_ids": [
+          "used_battery"
+        ],
+        "aliases": [
+          "Used Car Batteries"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Vans",
         "dlc": "Greece",
-        "weight": "8"
-      },
-      {
-        "name": "Vans",
-        "dlc": "Italia",
-        "weight": "6"
+        "weight": "8",
+        "name_pt": "Vans",
+        "cargo_ids": [
+          "vans_fd",
+          "vans_id",
+          "vans_vt"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br",
+        "catalog_variants": [
+          {
+            "dlc": "Greece",
+            "weight": "8"
+          },
+          {
+            "dlc": "Italia",
+            "weight": "6"
+          }
+        ]
       }
     ],
     "motorcycles": [
       {
         "name": "Motorcycle Tyres",
         "dlc": "Italia",
-        "weight": "10–22"
+        "weight": "10–22",
+        "name_pt": "Pneus de moto",
+        "cargo_ids": [
+          "moto_tires"
+        ],
+        "aliases": [
+          "Motorcycle Tyres",
+          "Pneus de motocicleta"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Motorcycles",
         "dlc": "Italia",
-        "weight": "8–15"
+        "weight": "8–15",
+        "name_pt": "Motocicletas",
+        "cargo_ids": [
+          "motorcycles"
+        ],
+        "aliases": [
+          "Motorcycles"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Scooters",
         "dlc": "Italia",
-        "weight": "5–9"
+        "weight": "5–9",
+        "name_pt": "Scooters",
+        "cargo_ids": [
+          "scooters"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "chemicals": [
       {
         "name": "Acetylene",
         "dlc": "Launch",
-        "weight": "9–19"
+        "weight": "9–19",
+        "name_pt": "Acetileno",
+        "cargo_ids": [
+          "acetylene"
+        ],
+        "aliases": [
+          "Acetylene"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Acid",
         "dlc": "Launch",
-        "weight": "16–19"
+        "weight": "16–19",
+        "name_pt": "Ácido",
+        "cargo_ids": [
+          "acid"
+        ],
+        "aliases": [
+          "Acid"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Anhydrous Ammonia",
         "dlc": "1.47",
-        "weight": "19–27"
+        "weight": "19–27",
+        "name_pt": "Amônia anidra",
+        "cargo_ids": [
+          "ammonia"
+        ],
+        "aliases": [
+          "Anhydrous Ammonia"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Arsenic",
         "dlc": "Launch",
         "weight": "9–18",
         "aliases": [
-          "Arsênico"
-        ]
+          "Arsenic",
+          "Arsênio"
+        ],
+        "name_pt": "Arsênico",
+        "cargo_ids": [
+          "arsenic"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Boric Acid",
         "dlc": "Vive la France!",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Ácido bórico",
+        "cargo_ids": [
+          "boric_acid"
+        ],
+        "aliases": [
+          "Boric Acid"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Brake Fluid",
         "dlc": "Scandinavia",
-        "weight": "2–5"
+        "weight": "2–5",
+        "name_pt": "Fluído de freio",
+        "cargo_ids": [
+          "brake_fluid"
+        ],
+        "aliases": [
+          "Brake Fluid",
+          "Fluido de freio"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Chemical Granules",
         "dlc": "1.59",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Químico granulado",
+        "cargo_ids": [
+          "chem_granule"
+        ],
+        "aliases": [
+          "Chemical Granules",
+          "Grânulos químicos"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Chemical Sorbent",
-        "name_pt": "Sorbente químico",
+        "name_pt": "Solvente químico",
         "aliases": [
-          "Solvente químico"
+          "Chemical Sorbent",
+          "Sorbente químico"
         ],
         "dlc": "Launch",
-        "weight": "4–11"
+        "weight": "4–11",
+        "cargo_ids": [
+          "chem_sorb_c",
+          "chem_sorbent"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Chemicals",
         "dlc": "Launch",
-        "weight": "15–18"
+        "weight": "15–18",
+        "name_pt": "Químicos",
+        "cargo_ids": [
+          "chemicals"
+        ],
+        "aliases": [
+          "Chemicals",
+          "Produtos químicos"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Chlorine",
         "dlc": "Launch",
-        "weight": "8–28"
+        "weight": "8–28",
+        "name_pt": "Cloro",
+        "cargo_ids": [
+          "chlorine",
+          "chlorine_t"
+        ],
+        "aliases": [
+          "Chlorine"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fertilizer",
         "dlc": "Launch",
         "weight": "11–19",
         "aliases": [
-          "Adubo"
-        ]
+          "Adubo",
+          "Fertilizer"
+        ],
+        "name_pt": "Fertilizante",
+        "cargo_ids": [
+          "fertilizer"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fertilizer Spreader",
         "dlc": "Farm Machinery",
         "weight": "14",
         "aliases": [
-          "Adubadora"
-        ]
+          "Distribuidor de fertilizante",
+          "Fertilizer Spreader"
+        ],
+        "name_pt": "Adubadora",
+        "cargo_ids": [
+          "fert_spread"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Hot Chemicals",
         "dlc": "Launch",
-        "weight": "16–19"
+        "weight": "16–19",
+        "name_pt": "Produtos químicos quentes",
+        "cargo_ids": [
+          "hchemicals"
+        ],
+        "aliases": [
+          "Hot Chemicals",
+          "Produtos químicos aquecidos"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Hydrochloric Acid",
         "dlc": "Launch",
-        "weight": "17–21"
+        "weight": "17–21",
+        "name_pt": "Ácido clorídrico",
+        "cargo_ids": [
+          "hydrochlor"
+        ],
+        "aliases": [
+          "Hydrochloric Acid"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pesticides",
         "dlc": "Launch",
-        "weight": "10–21"
+        "weight": "10–21",
+        "name_pt": "Pesticidas",
+        "cargo_ids": [
+          "pesticide"
+        ],
+        "aliases": [
+          "Pesticides"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sulphuric Acid",
         "dlc": "Launch",
-        "weight": "10–25"
+        "weight": "10–25",
+        "name_pt": "Ácido sulfúrico",
+        "cargo_ids": [
+          "sulfuric",
+          "sulfuric_t"
+        ],
+        "aliases": [
+          "Sulphuric Acid"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "construction": [
       {
         "name": "Bricks",
         "dlc": "Launch",
-        "weight": "17–19"
+        "weight": "17–19",
+        "name_pt": "Tijolos",
+        "cargo_ids": [
+          "bricks"
+        ],
+        "aliases": [
+          "Bricks"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Cement",
         "dlc": "Launch",
-        "weight": "24–25"
+        "weight": "24–25",
+        "name_pt": "Cimento",
+        "cargo_ids": [
+          "cement"
+        ],
+        "aliases": [
+          "Cement"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Chimney Systems",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Sistemas de chaminés",
+        "cargo_ids": [
+          "chimney_syst"
+        ],
+        "aliases": [
+          "Chimney Systems",
+          "Sistemas de chaminé"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Concrete Beams",
         "dlc": "Beyond the Baltic Sea",
-        "weight": "14"
+        "weight": "14",
+        "name_pt": "Vigas de concreto",
+        "cargo_ids": [
+          "concr_beams2"
+        ],
+        "aliases": [
+          "Concrete Beams"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Concrete Beams",
         "dlc": "Heavy Cargo Pack",
-        "weight": "51"
+        "weight": "51",
+        "name_pt": "Vigas de concreto",
+        "cargo_ids": [
+          "concr_beams"
+        ],
+        "aliases": [
+          "Concrete Beams"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Concrete Centring",
         "dlc": "Beyond the Baltic Sea",
-        "weight": "19"
+        "weight": "19",
+        "name_pt": "Centração de concreto",
+        "cargo_ids": [
+          "concr_cent"
+        ],
+        "aliases": [
+          "Concrete Centring",
+          "Escoramento de concreto"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Concrete Stairs",
         "dlc": "Beyond the Baltic Sea",
-        "weight": "18"
+        "weight": "18",
+        "name_pt": "Escadas de concreto",
+        "cargo_ids": [
+          "concr_stair"
+        ],
+        "aliases": [
+          "Concrete Stairs"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Construction Staircase",
         "dlc": "Special Transport",
-        "weight": "50"
+        "weight": "50",
+        "name_pt": "Escadaria para Construção",
+        "cargo_ids": [
+          "lattice"
+        ],
+        "aliases": [
+          "Construction Staircase",
+          "Escadaria de construção"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Granite Cubes",
         "dlc": "Vive la France!",
-        "weight": "20–27"
+        "weight": "20–27",
+        "name_pt": "Cubos de granito",
+        "cargo_ids": [
+          "granite_cube"
+        ],
+        "aliases": [
+          "Blocos de granito",
+          "Granite Cubes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Gravel",
         "dlc": "Launch",
-        "weight": "21–27"
+        "weight": "21–27",
+        "name_pt": "Cascalho",
+        "cargo_ids": [
+          "gravel"
+        ],
+        "aliases": [
+          "Gravel"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Marble Blocks",
         "dlc": "Italia",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Blocos de mármore",
+        "cargo_ids": [
+          "marb_blck",
+          "marb_blck2"
+        ],
+        "aliases": [
+          "Marble Blocks"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Marble Slab",
         "dlc": "Italia",
-        "weight": "23"
+        "weight": "23",
+        "name_pt": "Lâmina de mármore",
+        "cargo_ids": [
+          "marb_slab"
+        ],
+        "aliases": [
+          "Marble Slab",
+          "Placa de mármore"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Roof Tiles",
         "dlc": "Launch",
-        "weight": "11–19"
+        "weight": "11–19",
+        "name_pt": "Telhas",
+        "cargo_ids": [
+          "roof_tiles"
+        ],
+        "aliases": [
+          "Roof Tiles"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sand",
         "dlc": "Launch",
-        "weight": "21–27"
+        "weight": "21–27",
+        "name_pt": "Areia",
+        "cargo_ids": [
+          "sand"
+        ],
+        "aliases": [
+          "Sand"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sandwich Panels",
         "dlc": "Launch",
-        "weight": "7–12"
+        "weight": "7–12",
+        "name_pt": "Painéis sanduíches",
+        "cargo_ids": [
+          "sandwch_pnls"
+        ],
+        "aliases": [
+          "Painéis sanduíche",
+          "Sandwich Panels"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "steel": [
       {
         "name": "Aluminium Ingots",
         "dlc": "West Balkans",
-        "weight": "23"
+        "weight": "23",
+        "name_pt": "Lingotes de alumínio",
+        "cargo_ids": [
+          "alu_ingot"
+        ],
+        "aliases": [
+          "Aluminium Ingots"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Aluminium Profiles",
         "dlc": "West Balkans",
-        "weight": "16"
+        "weight": "16",
+        "name_pt": "Perfis de alumínio",
+        "cargo_ids": [
+          "alu_profile"
+        ],
+        "aliases": [
+          "Aluminium Profiles"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Copper Roof Gutters",
         "dlc": "Launch",
-        "weight": "4–8"
+        "weight": "4–8",
+        "name_pt": "Calhas de cobre para telhado",
+        "cargo_ids": [
+          "copp_rf_gutt"
+        ],
+        "aliases": [
+          "Calhas de cobre",
+          "Copper Roof Gutters"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Heavy Metals",
         "dlc": "Launch",
-        "weight": "10–20"
+        "weight": "10–20",
+        "name_pt": "Metais pesados",
+        "cargo_ids": [
+          "hmetal"
+        ],
+        "aliases": [
+          "Heavy Metals"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Iron Pipes (large)",
         "dlc": "Launch",
-        "weight": "20"
+        "weight": "20",
+        "name_pt": "Tubos de ferro",
+        "cargo_ids": [
+          "iron_pipes"
+        ],
+        "aliases": [
+          "Iron Pipes",
+          "Iron Pipes (large)",
+          "Tubos de ferro (grandes)",
+          "Tubos de ferro (pequenos)"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Iron Pipes (small)",
         "dlc": "Launch",
-        "weight": "12"
+        "weight": "12",
+        "name_pt": "Tubos de ferro",
+        "cargo_ids": [
+          "metal_pipes"
+        ],
+        "aliases": [
+          "Iron Pipes",
+          "Iron Pipes (small)",
+          "Tubos de ferro (grandes)",
+          "Tubos de ferro (pequenos)"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Lead",
         "dlc": "Launch",
-        "weight": "9–18"
+        "weight": "9–18",
+        "name_pt": "Chumbo",
+        "cargo_ids": [
+          "lead"
+        ],
+        "aliases": [
+          "Lead"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Metal Beams",
         "dlc": "Beyond the Baltic Sea",
         "weight": "23",
         "aliases": [
-          "Vigas de metal"
-        ]
+          "Metal Beams",
+          "Vigas metálicas"
+        ],
+        "name_pt": "Vigas de metal",
+        "cargo_ids": [
+          "metal_beams"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Metal Cans",
         "dlc": "Scandinavia",
-        "weight": "5–9"
+        "weight": "5–9",
+        "name_pt": "Latas de metal",
+        "cargo_ids": [
+          "metal_cans"
+        ],
+        "aliases": [
+          "Latas metálicas",
+          "Metal Cans"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Metal Centring",
         "dlc": "Heavy Cargo Pack",
         "weight": "28",
         "aliases": [
-          "Centração de metal"
-        ]
+          "Escoramento metálico",
+          "Metal Centring"
+        ],
+        "name_pt": "Centração de metal",
+        "cargo_ids": [
+          "metal_center"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Metal Coil",
         "dlc": "Italia",
         "weight": "12",
         "aliases": [
-          "Bobina de metal"
-        ]
+          "Bobina metálica",
+          "Metal Coil"
+        ],
+        "name_pt": "Bobina de metal",
+        "cargo_ids": [
+          "mtl_coil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Steel Cord",
         "dlc": "Vive la France!",
-        "weight": "8–14"
+        "weight": "8–14",
+        "name_pt": "Cabo de aço",
+        "cargo_ids": [
+          "steel_cord"
+        ],
+        "aliases": [
+          "Cordão de aço",
+          "Steel Cord"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "paper": [
       {
         "name": "Office Paper",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Papel de escritório",
+        "cargo_ids": [
+          "paper"
+        ],
+        "aliases": [
+          "Office Paper"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "electronics": [
       {
         "name": "Computer Processors",
         "dlc": "Vive la France!",
-        "weight": "2–3"
+        "weight": "2–3",
+        "name_pt": "Processadores de computador",
+        "cargo_ids": [
+          "comp_process"
+        ],
+        "aliases": [
+          "Computer Processors"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Electronics",
         "dlc": "Launch",
-        "weight": "4–8"
+        "weight": "4–8",
+        "name_pt": "Produtos eletrônicos",
+        "cargo_ids": [
+          "electronics"
+        ],
+        "aliases": [
+          "Electronics",
+          "Eletrônicos"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "High-Tech Device",
         "dlc": "Special Transport",
-        "weight": "45"
+        "weight": "45",
+        "name_pt": "Dispositivo high-tech",
+        "cargo_ids": [
+          "mystery_cyl"
+        ],
+        "aliases": [
+          "Dispositivo de alta tecnologia",
+          "High-Tech Device"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "furniture": [
       {
         "name": "Furniture",
         "dlc": "Launch",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Mobília",
+        "cargo_ids": [
+          "furniture"
+        ],
+        "aliases": [
+          "Furniture",
+          "Móveis"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Tableware",
         "dlc": "Launch",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Louças",
+        "cargo_ids": [
+          "tableware"
+        ],
+        "aliases": [
+          "Tableware"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "glass": [
       {
         "name": "Glass Panels",
         "dlc": "Launch",
-        "weight": "19–21"
+        "weight": "19–21",
+        "name_pt": "Painéis de vidro",
+        "cargo_ids": [
+          "glass"
+        ],
+        "aliases": [
+          "Glass Panels"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Packed Glass",
         "dlc": "Launch",
-        "weight": "22"
+        "weight": "22",
+        "name_pt": "Vidro embalado",
+        "cargo_ids": [
+          "glass_packed"
+        ],
+        "aliases": [
+          "Packed Glass"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "pipes": [
       {
         "name": "Backflow Preventers",
         "dlc": "Vive la France!",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Válvulas de contrafluxo",
+        "cargo_ids": [
+          "backfl_prev"
+        ],
+        "aliases": [
+          "Backflow Preventers",
+          "Válvulas de retenção"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Gas Pipeline Parts",
         "dlc": "High Power Cargo Pack",
-        "weight": "21"
+        "weight": "21",
+        "name_pt": "Peças para gasoduto",
+        "cargo_ids": [
+          "tube"
+        ],
+        "aliases": [
+          "Gas Pipeline Parts",
+          "Peças de gasoduto"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Large Tubes",
         "dlc": "Launch",
-        "weight": "21"
+        "weight": "21",
+        "name_pt": "Tubos grandes",
+        "cargo_ids": [
+          "largetubes"
+        ],
+        "aliases": [
+          "Large Tubes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Plastic Pipes",
         "dlc": "Launch",
-        "weight": "5"
+        "weight": "5",
+        "name_pt": "Tubos de plástico",
+        "cargo_ids": [
+          "plast_pipes"
+        ],
+        "aliases": [
+          "Plastic Pipes",
+          "Tubos plásticos"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "cables": [
       {
         "name": "High Voltage Cables",
         "dlc": "Vive la France!",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Cabos de alta tensão",
+        "cargo_ids": [
+          "hi_volt_cabl"
+        ],
+        "aliases": [
+          "High Voltage Cables"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Industrial Cable Reel",
         "dlc": "Heavy Cargo Pack",
         "weight": "34",
         "aliases": [
-          "Rolo de cabo industrial"
-        ]
+          "Bobina de cabo industrial",
+          "Industrial Cable Reel"
+        ],
+        "name_pt": "Rolo de cabo industrial",
+        "cargo_ids": [
+          "cable_reel"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "industrial": [
       {
         "name": "Aircraft Tyres",
         "dlc": "Vive la France!",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Pneus de avião",
+        "cargo_ids": [
+          "aircft_tires"
+        ],
+        "aliases": [
+          "Aircraft Tyres",
+          "Pneus de aeronave"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Boiler Part",
         "dlc": "Special Transport",
-        "weight": "45"
+        "weight": "45",
+        "name_pt": "Peça de uma caldeira",
+        "cargo_ids": [
+          "boiler_parts"
+        ],
+        "aliases": [
+          "Boiler Part",
+          "Peça de caldeira"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Compact Generators JCB G100RS",
         "dlc": "JCB Equipment Pack",
-        "weight": "11"
+        "weight": "11",
+        "name_pt": "Geradores compactos JCB G100RS",
+        "cargo_ids": [
+          "jcb_g100rs"
+        ],
+        "aliases": [
+          "Compact Generators JCB G100RS"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Compressor Bobcat PA12.7v",
         "dlc": "Bobcat Cargo Pack",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Compressor de ar Bobcat PA12.7v",
+        "cargo_ids": [
+          "bob_pa127v"
+        ],
+        "aliases": [
+          "Compressor Bobcat PA12.7v"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Forklift Bobcat D30",
         "dlc": "Bobcat Cargo Pack",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Empilhadeira Bobcat D30",
+        "cargo_ids": [
+          "bob_d30"
+        ],
+        "aliases": [
+          "Forklift Bobcat D30"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Forklifts",
         "dlc": "Launch",
-        "weight": "16–21"
+        "weight": "16–21",
+        "name_pt": "Empilhadeiras",
+        "cargo_ids": [
+          "forklifts"
+        ],
+        "aliases": [
+          "Forklifts"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Giant Silo",
         "dlc": "Special Transport",
-        "weight": "40"
+        "weight": "40",
+        "name_pt": "Silo gigante",
+        "cargo_ids": [
+          "silo"
+        ],
+        "aliases": [
+          "Giant Silo"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Heat Exchanger",
         "dlc": "Special Transport",
-        "weight": "70"
+        "weight": "70",
+        "name_pt": "Trocador de Calor",
+        "cargo_ids": [
+          "heat_exch"
+        ],
+        "aliases": [
+          "Heat Exchanger",
+          "Trocador de calor"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Huge Tyres",
         "dlc": "Special Transport",
-        "weight": "20"
+        "weight": "20",
+        "name_pt": "Pneus gigantes",
+        "cargo_ids": [
+          "dumper_tire"
+        ],
+        "aliases": [
+          "Huge Tyres"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Industrial Condenser",
         "dlc": "Special Transport",
-        "weight": "60"
+        "weight": "60",
+        "name_pt": "Condensador industrial",
+        "cargo_ids": [
+          "condensator"
+        ],
+        "aliases": [
+          "Industrial Condenser"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Locomotive CZ LOKO MUV 75",
         "dlc": "1.56",
-        "weight": "14"
+        "weight": "14",
+        "name_pt": "Locomotiva CZ LOKO MUV 75",
+        "cargo_ids": [
+          "czl_muv75"
+        ],
+        "aliases": [
+          "Locomotive CZ LOKO MUV 75"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Locomotive - Vossloh G6",
         "dlc": "Heavy Cargo Pack",
-        "weight": "61"
+        "weight": "61",
+        "name_pt": "Locomotiva Vossloh G6",
+        "cargo_ids": [
+          "locomotive"
+        ],
+        "aliases": [
+          "Locomotiva - Vossloh G6",
+          "Locomotive - Vossloh G6",
+          "Locomotive Vossloh G6"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mobile Air Compressor",
         "dlc": "1.59",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Compressor de ar móvel",
+        "cargo_ids": [
+          "mobile_compr"
+        ],
+        "aliases": [
+          "Mobile Air Compressor"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pressure Tank",
         "dlc": "Launch",
-        "weight": "7"
+        "weight": "7",
+        "name_pt": "Tanque pressurizado",
+        "cargo_ids": [
+          "hipresstank"
+        ],
+        "aliases": [
+          "Pressure Tank",
+          "Tanque de pressão"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Reservoir Tank",
         "dlc": "Launch",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Tanque reservatório",
+        "cargo_ids": [
+          "emptytank"
+        ],
+        "aliases": [
+          "Reservoir Tank"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Rough Terrain Forklift",
         "dlc": "Greece",
-        "weight": "12"
+        "weight": "12",
+        "name_pt": "Empilhadeira para terrenos acidentados",
+        "cargo_ids": [
+          "ter_forklift"
+        ],
+        "aliases": [
+          "Empilhadeira todo-terreno",
+          "Rough Terrain Forklift"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Transformer - PK900",
         "dlc": "Heavy Cargo Pack",
-        "weight": "47"
+        "weight": "47",
+        "name_pt": "Transformador",
+        "cargo_ids": [
+          "transformat"
+        ],
+        "aliases": [
+          "Transformador - PK900",
+          "Transformer",
+          "Transformer - PK900"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Truck Tyres",
         "dlc": "Scandinavia",
-        "weight": "7–13"
+        "weight": "7–13",
+        "name_pt": "Pneus de caminhão\\n",
+        "cargo_ids": [
+          "truck_tyres"
+        ],
+        "aliases": [
+          "Pneus de caminhão",
+          "Truck Tyres"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Tyres",
         "dlc": "Launch",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Pneus",
+        "cargo_ids": [
+          "tyres"
+        ],
+        "aliases": [
+          "Tyres"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wind Turbine Blade",
         "dlc": "Special Transport (1.57)",
-        "weight": "5"
+        "weight": "5",
+        "name_pt": "Pá de Turbina Aeólica",
+        "cargo_ids": [
+          "windblade"
+        ],
+        "aliases": [
+          "Pá de turbina eólica",
+          "Wind Turbine Blade"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wind Turbine Nacelle",
         "dlc": "Scandinavia",
         "weight": "21",
         "aliases": [
-          "Nacele de Turbina Aeólica"
-        ]
+          "Nacele de turbina eólica",
+          "Wind Turbine Nacelle"
+        ],
+        "name_pt": "Nacele de Turbina Aeólica",
+        "cargo_ids": [
+          "windml_eng"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wind Turbine Tower",
         "dlc": "Scandinavia",
         "weight": "9–19",
         "aliases": [
-          "Torre de Turbina Aeólica"
-        ]
+          "Torre de turbina eólica",
+          "Wind Turbine Tower"
+        ],
+        "name_pt": "Torre de Turbina Aeólica",
+        "cargo_ids": [
+          "windml_tube"
+        ],
+        "name_source": "ets2_locale_pt_br"
+      },
+      {
+        "name": "Large Reservoir Tank",
+        "name_pt": "Tanque reservatório grande",
+        "cargo_ids": [
+          "tank"
+        ],
+        "aliases": [
+          "Large Reservoir Tank"
+        ],
+        "dlc": "Special Transport",
+        "weight": "35",
+        "name_source": "ets2_locale_pt_br"
+      },
+      {
+        "name": "Railcar",
+        "name_pt": "Vagão",
+        "cargo_ids": [
+          "wagon"
+        ],
+        "aliases": [
+          "Railcar"
+        ],
+        "dlc": "Special Transport",
+        "weight": "39",
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "mining": [
       {
         "name": "Coal",
         "dlc": "Launch",
-        "weight": "21–27"
+        "weight": "21–27",
+        "name_pt": "Carvão",
+        "cargo_ids": [
+          "coal"
+        ],
+        "aliases": [
+          "Coal"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Ore",
         "dlc": "Launch",
-        "weight": "22–27"
+        "weight": "22–27",
+        "name_pt": "Minério",
+        "cargo_ids": [
+          "ore"
+        ],
+        "aliases": [
+          "Ore"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "grain": [
       {
         "name": "Barley",
         "dlc": "Scandinavia",
-        "weight": "14–24"
+        "weight": "14–24",
+        "name_pt": "Cevada",
+        "cargo_ids": [
+          "barley"
+        ],
+        "aliases": [
+          "Barley"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Big-Bags of Seeds",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Sacos grandes de sementes",
+        "cargo_ids": [
+          "big_bag_seed"
+        ],
+        "aliases": [
+          "Big-Bags of Seeds",
+          "Big-bags de sementes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Dryers",
         "dlc": "Launch",
-        "weight": "7–13"
+        "weight": "7–13",
+        "name_pt": "Secadoras",
+        "cargo_ids": [
+          "dryers"
+        ],
+        "aliases": [
+          "Dryers",
+          "Secadores"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Flour",
         "dlc": "Launch",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Farinha",
+        "cargo_ids": [
+          "flour"
+        ],
+        "aliases": [
+          "Flour"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Rice",
         "dlc": "Launch",
-        "weight": "8–22"
+        "weight": "8–22",
+        "name_pt": "Arroz",
+        "cargo_ids": [
+          "rice",
+          "rice_c"
+        ],
+        "aliases": [
+          "Rice"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Rye",
         "dlc": "Scandinavia",
-        "weight": "16–28"
+        "weight": "16–28",
+        "name_pt": "Centeio",
+        "cargo_ids": [
+          "rye"
+        ],
+        "aliases": [
+          "Rye"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wheat",
         "dlc": "Scandinavia",
-        "weight": "17–26"
+        "weight": "17–26",
+        "name_pt": "Trigo",
+        "cargo_ids": [
+          "wheat"
+        ],
+        "aliases": [
+          "Wheat"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Young Seedlings",
         "dlc": "Launch",
-        "weight": "2–3"
+        "weight": "2–3",
+        "name_pt": "Mudas de plantas",
+        "cargo_ids": [
+          "young_seed"
+        ],
+        "aliases": [
+          "Mudas jovens",
+          "Young Seedlings"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "rural": [
       {
         "name": "Live Cattle",
         "dlc": "Scandinavia",
-        "weight": "23–25"
+        "weight": "23–25",
+        "name_pt": "Gado bovino vivo",
+        "cargo_ids": [
+          "live_cattle"
+        ],
+        "aliases": [
+          "Gado vivo",
+          "Live Cattle"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Live Pigs",
         "dlc": "1.47",
-        "weight": "10–11"
+        "weight": "10–11",
+        "name_pt": "Porcos Vivos",
+        "cargo_ids": [
+          "live_pigs"
+        ],
+        "aliases": [
+          "Live Pigs",
+          "Porcos vivos"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sheep Wool",
         "dlc": "Scandinavia",
-        "weight": "7–13"
+        "weight": "7–13",
+        "name_pt": "Lã de ovelha",
+        "cargo_ids": [
+          "sheep_wool"
+        ],
+        "aliases": [
+          "Sheep Wool"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Stone Wool",
         "dlc": "Scandinavia",
-        "weight": "3–5"
+        "weight": "3–5",
+        "name_pt": "Lã de pedra",
+        "cargo_ids": [
+          "stone_wool"
+        ],
+        "aliases": [
+          "Lã de rocha",
+          "Stone Wool"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Straw Bales",
         "dlc": "Launch",
-        "weight": "3–7"
+        "weight": "3–7",
+        "name_pt": "Fardos de palha",
+        "cargo_ids": [
+          "straw_bales"
+        ],
+        "aliases": [
+          "Straw Bales"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "dairy": [
       {
         "name": "Cheese",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Queijo",
+        "cargo_ids": [
+          "cheese"
+        ],
+        "aliases": [
+          "Cheese"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Coconut Milk",
         "dlc": "Vive la France!",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Leite de coco",
+        "cargo_ids": [
+          "coconut_milk"
+        ],
+        "aliases": [
+          "Coconut Milk"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Cottage Cheese",
         "dlc": "Scandinavia",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Queijo tipo Cottage",
+        "cargo_ids": [
+          "cott_cheese"
+        ],
+        "aliases": [
+          "Cottage Cheese",
+          "Queijo cottage"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Dry Milk",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Leite em pó",
+        "cargo_ids": [
+          "drymilk"
+        ],
+        "aliases": [
+          "Dry Milk"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Goat Cheese",
         "dlc": "Launch",
-        "weight": "9–15"
+        "weight": "9–15",
+        "name_pt": "Queijo de cabra",
+        "cargo_ids": [
+          "goat_cheese"
+        ],
+        "aliases": [
+          "Goat Cheese"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Milk",
         "dlc": "Launch",
-        "weight": "11–28"
+        "weight": "11–28",
+        "name_pt": "Leite",
+        "cargo_ids": [
+          "milk",
+          "milk_t"
+        ],
+        "aliases": [
+          "Milk"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Peanut Butter",
         "name_pt": "Manteiga de amendoim",
         "aliases": [
+          "Massa de amendoim",
           "Pasta de amendoim",
-          "Massa de amendoim"
+          "Peanut Butter"
         ],
         "dlc": "Launch",
-        "weight": "11–19"
+        "weight": "11–19",
+        "cargo_ids": [
+          "pnut_butter"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Soy Milk",
         "dlc": "Vive la France!",
-        "weight": "12–27"
+        "weight": "12–27",
+        "name_pt": "Leite de soja",
+        "cargo_ids": [
+          "soy_milk",
+          "soy_milk_t"
+        ],
+        "aliases": [
+          "Soy Milk"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Yoghurt",
         "dlc": "Launch",
-        "weight": "9–17"
+        "weight": "9–17",
+        "name_pt": "Iogurte",
+        "cargo_ids": [
+          "yogurt"
+        ],
+        "aliases": [
+          "Yoghurt"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "medical": [
@@ -1287,38 +3133,74 @@
         "name": "Hospital Waste",
         "name_pt": "Lixo hospitalar",
         "aliases": [
-          "Lixo hospitalar"
+          "Hospital Waste"
         ],
         "dlc": "Launch",
-        "weight": "11–23"
+        "weight": "11–23",
+        "cargo_ids": [
+          "hwaste"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Medical Equipment",
         "dlc": "Launch",
-        "weight": "3–5"
+        "weight": "3–5",
+        "name_pt": "Equipamento médico",
+        "cargo_ids": [
+          "med_equip"
+        ],
+        "aliases": [
+          "Equipamentos médicos",
+          "Medical Equipment"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Medical Vaccines",
         "dlc": "Launch",
-        "weight": "3–5"
+        "weight": "3–5",
+        "name_pt": "Vacinas",
+        "cargo_ids": [
+          "med_vaccine"
+        ],
+        "aliases": [
+          "Medical Vaccines",
+          "Vacinas médicas"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "scrap": [
       {
         "name": "Scrap Metals",
-        "name_pt": "Metais de sucata",
+        "name_pt": "Sucata de metal",
         "aliases": [
-          "Sucata metálica",
+          "Metais de sucata",
+          "Scrap Metals",
           "Sucata de Metal",
-          "Sucata de metal"
+          "Sucata metálica"
         ],
         "dlc": "Launch",
-        "weight": "21–26"
+        "weight": "21–26",
+        "cargo_ids": [
+          "scrap_metals"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Used Plastics",
         "dlc": "Launch",
-        "weight": "3–9"
+        "weight": "3–9",
+        "name_pt": "Plásticos usados",
+        "cargo_ids": [
+          "used_plast",
+          "used_plast_c"
+        ],
+        "aliases": [
+          "Used Plastics"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "road_machine": [
@@ -1327,782 +3209,2055 @@
         "dlc": "Heavy Cargo Pack",
         "weight": "44",
         "aliases": [
-          "Moedor de asfalto"
-        ]
+          "Asphalt Miller",
+          "Asphalt Miller - AM 0880",
+          "Fresadora de asfalto - AM 0880"
+        ],
+        "name_pt": "Moedor de asfalto",
+        "cargo_ids": [
+          "asph_miller"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "boats": [
       {
         "name": "Luxury Yacht",
         "dlc": "Launch",
-        "weight": "9"
+        "weight": "9",
+        "name_pt": "Iate de luxo",
+        "cargo_ids": [
+          "lux_yacht"
+        ],
+        "aliases": [
+          "Luxury Yacht"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Service Boat",
         "dlc": "Special Transport",
-        "weight": "25"
+        "weight": "25",
+        "name_pt": "Barco rebocador",
+        "cargo_ids": [
+          "pilot_boat"
+        ],
+        "aliases": [
+          "Barco de serviço",
+          "Service Boat"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Yacht",
         "dlc": "High Power Cargo Pack",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Iate",
+        "cargo_ids": [
+          "yacht"
+        ],
+        "aliases": [
+          "Yacht"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "aircraft": [
       {
         "name": "Helicopter - 1808TX",
         "dlc": "High Power Cargo Pack",
-        "weight": "3"
+        "weight": "3",
+        "name_pt": "Helicóptero",
+        "cargo_ids": [
+          "helicopter"
+        ],
+        "aliases": [
+          "Helicopter",
+          "Helicopter - 1808TX",
+          "Helicóptero - 1808TX"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "refrigerated": [
       {
         "name": "Fresh Fish",
         "dlc": "Scandinavia",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Peixe fresco",
+        "cargo_ids": [
+          "fresh_fish"
+        ],
+        "aliases": [
+          "Fresh Fish"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Frozen Hake",
         "dlc": "Scandinavia",
-        "weight": "10–17"
+        "weight": "10–17",
+        "name_pt": "Merluza congelada",
+        "cargo_ids": [
+          "frozen_hake"
+        ],
+        "aliases": [
+          "Frozen Hake",
+          "Pescada congelada"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Frozen Octopi",
         "dlc": "Italia",
-        "weight": "8–14"
+        "weight": "8–14",
+        "name_pt": "Polvo congelado",
+        "cargo_ids": [
+          "froz_octopi"
+        ],
+        "aliases": [
+          "Frozen Octopi",
+          "Polvos congelados"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Ice Cream",
         "dlc": "Launch",
-        "weight": "8–14"
+        "weight": "8–14",
+        "name_pt": "Sorvetes",
+        "cargo_ids": [
+          "icecream"
+        ],
+        "aliases": [
+          "Ice Cream",
+          "Sorvete"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ],
     "custom": [
       {
         "name": "Air Conditioners",
         "dlc": "Greece",
-        "weight": "14–18"
+        "weight": "14–18",
+        "name_pt": "Condicionadores de ar",
+        "cargo_ids": [
+          "hvac"
+        ],
+        "aliases": [
+          "Air Conditioners",
+          "Ar-condicionados"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Air Conditioners",
         "dlc": "High Power Cargo Pack",
-        "weight": "16–33"
+        "weight": "16–33",
+        "name_pt": "Condicionadores de ar",
+        "cargo_ids": [
+          "aircond"
+        ],
+        "aliases": [
+          "Air Conditioners",
+          "Ar-condicionados"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Airmail",
         "dlc": "Vive la France!",
-        "weight": "6–10"
+        "weight": "6–10",
+        "name_pt": "Correio aéreo",
+        "cargo_ids": [
+          "air_mails"
+        ],
+        "aliases": [
+          "Airmail"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Ammunition",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Munição",
+        "cargo_ids": [
+          "ammunition"
+        ],
+        "aliases": [
+          "Ammunition"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Atlantic Cod Fillet",
         "dlc": "Scandinavia",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Filé de Bacalhau-do-atlântico",
+        "cargo_ids": [
+          "atl_cod_flt"
+        ],
+        "aliases": [
+          "Atlantic Cod Fillet",
+          "Filé de bacalhau-do-atlântico"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Auger Wagon",
         "dlc": "Farm Machinery",
-        "weight": "7"
+        "weight": "7",
+        "name_pt": "Carreta graneleira",
+        "cargo_ids": [
+          "auger_wag"
+        ],
+        "aliases": [
+          "Auger Wagon",
+          "Carreta graneleira com rosca"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Batteries",
         "dlc": "1.57",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Baterias",
+        "cargo_ids": [
+          "battery"
+        ],
+        "aliases": [
+          "Batteries"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Brake Pads",
         "dlc": "Italia",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Pastilhas de freio",
+        "cargo_ids": [
+          "brake_pads"
+        ],
+        "aliases": [
+          "Brake Pads"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Clothes",
         "dlc": "Launch",
-        "weight": "8–18"
+        "weight": "8–18",
+        "name_pt": "Roupas",
+        "cargo_ids": [
+          "clothes",
+          "clothes_c"
+        ],
+        "aliases": [
+          "Clothes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Coconut Oil",
         "dlc": "Vive la France!",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Óleo de coco",
+        "cargo_ids": [
+          "coconut_oil"
+        ],
+        "aliases": [
+          "Coconut Oil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Compactor Volvo SD160B",
         "dlc": "Volvo Construction Equipment",
-        "weight": "16"
+        "weight": "16",
+        "name_pt": "Compactador Volvo SD160B",
+        "cargo_ids": [
+          "volvo_sd160b"
+        ],
+        "aliases": [
+          "Compactor Volvo SD160B"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Contaminated Material",
         "dlc": "Launch",
-        "weight": "10–20"
+        "weight": "10–20",
+        "name_pt": "Material contaminado",
+        "cargo_ids": [
+          "contamin"
+        ],
+        "aliases": [
+          "Contaminated Material"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Corks",
         "dlc": "Vive la France!",
-        "weight": "2–5"
+        "weight": "2–5",
+        "name_pt": "Rolhas",
+        "cargo_ids": [
+          "corks"
+        ],
+        "aliases": [
+          "Corks"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Cut Flowers",
         "dlc": "Vive la France!",
-        "weight": "1"
+        "weight": "1",
+        "name_pt": "Flores podadas",
+        "cargo_ids": [
+          "cut_flowers"
+        ],
+        "aliases": [
+          "Cut Flowers",
+          "Flores cortadas"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Cyanide",
         "dlc": "Launch",
-        "weight": "11–22"
+        "weight": "11–22",
+        "name_pt": "Cianeto",
+        "cargo_ids": [
+          "cyanide"
+        ],
+        "aliases": [
+          "Cyanide"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Disinfectant",
         "dlc": "Scandinavia",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Desinfetante",
+        "cargo_ids": [
+          "desinfection"
+        ],
+        "aliases": [
+          "Disinfectant"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Driller - D-50",
         "dlc": "High Power Cargo Pack",
-        "weight": "8"
+        "weight": "8",
+        "name_pt": "Perfuratriz D-50",
+        "cargo_ids": [
+          "driller"
+        ],
+        "aliases": [
+          "Driller - D-50",
+          "Driller D-50",
+          "Perfuratriz - D-50"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Dynamite",
         "dlc": "Launch",
-        "weight": "9–17"
+        "weight": "9–17",
+        "name_pt": "Dinamite",
+        "cargo_ids": [
+          "dynamite"
+        ],
+        "aliases": [
+          "Dynamite"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Electric Dumpster JCB HTD-5E",
         "dlc": "JCB Equipment Pack",
-        "weight": "3"
+        "weight": "3",
+        "name_pt": "Caçamba elétrica JCB HTD-5E",
+        "cargo_ids": [
+          "jcb_dmphtd5e"
+        ],
+        "aliases": [
+          "Dumper elétrico JCB HTD-5E",
+          "Electric Dumpster JCB HTD-5E"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Electrical Wiring",
         "dlc": "Scandinavia",
-        "weight": "8–15"
+        "weight": "8–15",
+        "name_pt": "Fiação elétrica",
+        "cargo_ids": [
+          "elect_wiring"
+        ],
+        "aliases": [
+          "Electrical Wiring"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Empty Barrels",
         "dlc": "Scandinavia",
-        "weight": "5–9"
+        "weight": "5–9",
+        "name_pt": "Barris vazios",
+        "cargo_ids": [
+          "empty_barr"
+        ],
+        "aliases": [
+          "Empty Barrels"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Empty Pallets",
         "dlc": "Launch",
-        "weight": "12–22"
+        "weight": "12–22",
+        "name_pt": "Paletes vazios\\n",
+        "cargo_ids": [
+          "empty_palet"
+        ],
+        "aliases": [
+          "Empty Pallets",
+          "Paletes vazios"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Empty Spool",
         "dlc": "1.57",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Bobina vazia",
+        "cargo_ids": [
+          "empty_spool"
+        ],
+        "aliases": [
+          "Carretel vazio",
+          "Empty Spool"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Ethane",
         "dlc": "1.47",
-        "weight": "14–21"
+        "weight": "14–21",
+        "name_pt": "Etano",
+        "cargo_ids": [
+          "ethane"
+        ],
+        "aliases": [
+          "Ethane"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Excavated Soil",
         "dlc": "Launch",
-        "weight": "22–27"
+        "weight": "22–27",
+        "name_pt": "Solo escavado",
+        "cargo_ids": [
+          "excav_soil"
+        ],
+        "aliases": [
+          "Excavated Soil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Exhaust Systems",
         "dlc": "Italia",
-        "weight": "3–7"
+        "weight": "3–7",
+        "name_pt": "Sistemas de escapamento",
+        "cargo_ids": [
+          "exhausts_c"
+        ],
+        "aliases": [
+          "Exhaust Systems"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Explosives",
         "dlc": "Launch",
-        "weight": "6–12"
+        "weight": "6–12",
+        "name_pt": "Explosivos",
+        "cargo_ids": [
+          "explosives"
+        ],
+        "aliases": [
+          "Explosives"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Feldbinder EUT",
         "dlc": "Feldbinder Trailer Pack",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Feldbinder EUT",
+        "cargo_ids": [
+          "ffb_eut35"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Feldbinder KIP",
         "dlc": "Feldbinder Trailer Pack",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Feldbinder KIP",
+        "cargo_ids": [
+          "ffb_kip60"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Feldbinder TSA ADR",
         "dlc": "Feldbinder Trailer Pack",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Feldbinder TSA ADR",
+        "cargo_ids": [
+          "ffb_tsaadr22"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Feldbinder TSA LM",
         "dlc": "Feldbinder Trailer Pack",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Feldbinder TSA LM",
+        "cargo_ids": [
+          "ffb_tsalm32"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fireworks",
         "dlc": "Launch",
-        "weight": "5–9"
+        "weight": "5–9",
+        "name_pt": "Fogos de artifício",
+        "cargo_ids": [
+          "fireworks"
+        ],
+        "aliases": [
+          "Fireworks"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Floor Panels",
         "dlc": "Launch",
-        "weight": "19–21"
+        "weight": "19–21",
+        "name_pt": "Placas de piso",
+        "cargo_ids": [
+          "floorpanels"
+        ],
+        "aliases": [
+          "Floor Panels",
+          "Painéis de piso"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fluorine",
         "dlc": "Launch",
-        "weight": "6–13"
+        "weight": "6–13",
+        "name_pt": "Flúor",
+        "cargo_ids": [
+          "fluorine"
+        ],
+        "aliases": [
+          "Fluorine"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Forwarder",
         "dlc": "Forest Machinery",
-        "weight": "20"
+        "weight": "20",
+        "name_pt": "Trator florestal autocarregável",
+        "cargo_ids": [
+          "forwarder"
+        ],
+        "aliases": [
+          "Forwarder",
+          "Trator florestal transportador"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Fresh Herbs",
         "dlc": "Italia",
-        "weight": "3–5"
+        "weight": "3–5",
+        "name_pt": "Ervas frescas",
+        "cargo_ids": [
+          "frsh_herbs"
+        ],
+        "aliases": [
+          "Fresh Herbs"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Garlic",
         "dlc": "Scandinavia",
-        "weight": "7–12"
+        "weight": "7–12",
+        "name_pt": "Alho",
+        "cargo_ids": [
+          "garlic"
+        ],
+        "aliases": [
+          "Garlic"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Gnocchi",
         "dlc": "Italia",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Nhoque",
+        "cargo_ids": [
+          "gnocchi"
+        ],
+        "aliases": [
+          "Gnocchi"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Graphite Grease",
         "dlc": "Launch",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Graxa grafite",
+        "cargo_ids": [
+          "graph_grease"
+        ],
+        "aliases": [
+          "Graphite Grease",
+          "Graxa de grafite"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Grass Rolls",
         "dlc": "Launch",
-        "weight": "8–15"
+        "weight": "8–15",
+        "name_pt": "Rolos de grama",
+        "cargo_ids": [
+          "grass_rolls"
+        ],
+        "aliases": [
+          "Grass Rolls"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Guard Rails",
         "dlc": "Scandinavia",
-        "weight": "12–22"
+        "weight": "12–22",
+        "name_pt": "Muretas",
+        "cargo_ids": [
+          "guard_rails"
+        ],
+        "aliases": [
+          "Defensas metálicas",
+          "Guard Rails"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Gummy Bears",
         "dlc": "Vive la France!",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Ursinhos de goma",
+        "cargo_ids": [
+          "gummy_bears"
+        ],
+        "aliases": [
+          "Balas de goma",
+          "Gummy Bears"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Harvesting Bins",
         "dlc": "Vive la France!",
-        "weight": "1–2"
+        "weight": "1–2",
+        "name_pt": "Cestos para colheita",
+        "cargo_ids": [
+          "harvest_bins"
+        ],
+        "aliases": [
+          "Caixas de colheita",
+          "Harvesting Bins"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "High Pressure Slide Valves",
         "dlc": "Vive la France!",
-        "weight": "10–19"
+        "weight": "10–19",
+        "name_pt": "Válvulas de gaveta de alta pressão",
+        "cargo_ids": [
+          "press_sl_val"
+        ],
+        "aliases": [
+          "High Pressure Slide Valves",
+          "Válvulas deslizantes de alta pressão"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Honey",
         "dlc": "Launch",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Mel",
+        "cargo_ids": [
+          "honey"
+        ],
+        "aliases": [
+          "Honey"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Horse Trailer",
         "dlc": "Greece",
-        "weight": "7"
+        "weight": "7",
+        "name_pt": "Reboque para cavalos",
+        "cargo_ids": [
+          "horse_tr"
+        ],
+        "aliases": [
+          "Horse Trailer"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Hydrogen",
         "dlc": "Launch",
-        "weight": "2–5"
+        "weight": "2–5",
+        "name_pt": "Hidrogênio",
+        "cargo_ids": [
+          "hydrogen"
+        ],
+        "aliases": [
+          "Hydrogen"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Ketchup",
         "dlc": "Launch",
-        "weight": "8–15"
+        "weight": "8–15",
+        "name_pt": "Ketchup",
+        "cargo_ids": [
+          "ketchup"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Krone Box Liner",
         "dlc": "Krone Trailer Pack",
-        "weight": "10"
+        "weight": "10",
+        "name_pt": "Krone Box Liner",
+        "cargo_ids": [
+          "krone_box"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Krone Cool Liner",
         "dlc": "Krone Trailer Pack",
-        "weight": "8"
+        "weight": "8",
+        "name_pt": "Krone Cool Liner",
+        "cargo_ids": [
+          "krone_cool"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Krone Profi Liner",
         "dlc": "Krone Trailer Pack",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Krone Profi Liner",
+        "cargo_ids": [
+          "krone_profi"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Krone Profi Liner Building",
         "dlc": "Krone Trailer Pack",
-        "weight": "6"
+        "weight": "6",
+        "name_pt": "Krone Profi Liner Building",
+        "cargo_ids": [
+          "krone_profib"
+        ],
+        "aliases": [],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Lamb Stomachs",
         "dlc": "Scandinavia",
-        "weight": "7–13"
+        "weight": "7–13",
+        "name_pt": "Estômagos de ovelha",
+        "cargo_ids": [
+          "lamb_stom"
+        ],
+        "aliases": [
+          "Estômagos de cordeiro",
+          "Lamb Stomachs"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Lavender",
         "dlc": "Vive la France!",
-        "weight": "8–15"
+        "weight": "8–15",
+        "name_pt": "Lavanda",
+        "cargo_ids": [
+          "lavender"
+        ],
+        "aliases": [
+          "Lavender"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Lemonade",
         "dlc": "Launch",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Limonada",
+        "cargo_ids": [
+          "limonades"
+        ],
+        "aliases": [
+          "Lemonade"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Liver Paste",
         "dlc": "Scandinavia",
-        "weight": "10–17"
+        "weight": "10–17",
+        "name_pt": "Patê de fígado",
+        "cargo_ids": [
+          "liver_paste"
+        ],
+        "aliases": [
+          "Liver Paste"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Log Stacker",
         "dlc": "Forest Machinery",
-        "weight": "54"
+        "weight": "54",
+        "name_pt": "Empilhador de troncos",
+        "cargo_ids": [
+          "log_stacker"
+        ],
+        "aliases": [
+          "Empilhador de toras",
+          "Log Stacker"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Low Bed Semi-trailers",
         "dlc": "Launch",
-        "weight": "17"
+        "weight": "17",
+        "name_pt": "Semirreboques prancha baixa",
+        "cargo_ids": [
+          "overweight"
+        ],
+        "aliases": [
+          "Low Bed Semi-trailers"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Magnesium",
         "dlc": "Launch",
-        "weight": "8–17"
+        "weight": "8–17",
+        "name_pt": "Magnésio",
+        "cargo_ids": [
+          "magnesium"
+        ],
+        "aliases": [
+          "Magnesium"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Maple Syrup",
         "dlc": "Launch",
-        "weight": "9–17"
+        "weight": "9–17",
+        "name_pt": "Xarope de bordo",
+        "cargo_ids": [
+          "maple_syrup"
+        ],
+        "aliases": [
+          "Maple Syrup"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mason Jars",
         "dlc": "Launch",
-        "weight": "4–7"
+        "weight": "4–7",
+        "name_pt": "Potes de vidro",
+        "cargo_ids": [
+          "mason_jars"
+        ],
+        "aliases": [
+          "Mason Jars",
+          "Potes de conserva"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Massive Tech Part",
         "dlc": "Special Transport",
-        "weight": "44"
+        "weight": "44",
+        "name_pt": "Peça gigante secreta",
+        "cargo_ids": [
+          "mystery_box"
+        ],
+        "aliases": [
+          "Massive Tech Part",
+          "Peça tecnológica de grande porte"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Material Handler",
         "dlc": "1.57",
-        "weight": "36"
+        "weight": "36",
+        "name_pt": "Manipulador de materiais",
+        "cargo_ids": [
+          "mat_handler"
+        ],
+        "aliases": [
+          "Material Handler"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mercuric Chloride",
         "dlc": "Launch",
-        "weight": "11–22"
+        "weight": "11–22",
+        "name_pt": "Cloreto de mercúrio",
+        "cargo_ids": [
+          "mercuric"
+        ],
+        "aliases": [
+          "Mercuric Chloride"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mobile Crusher",
         "dlc": "Heavy Cargo Pack (Greece)",
-        "weight": "40"
+        "weight": "40",
+        "name_pt": "Triturador móvel",
+        "cargo_ids": [
+          "mob_crusher"
+        ],
+        "aliases": [
+          "Britador móvel",
+          "Mobile Crusher"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mobile Screener",
         "dlc": "Heavy Cargo Pack (Greece)",
-        "weight": "39"
+        "weight": "39",
+        "name_pt": "Peneira móvel",
+        "cargo_ids": [
+          "mob_screener"
+        ],
+        "aliases": [
+          "Mobile Screener"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mobile Stacker",
         "dlc": "Heavy Cargo Pack (Greece)",
-        "weight": "10"
+        "weight": "10",
+        "name_pt": "Esteira móvel",
+        "cargo_ids": [
+          "mob_stacker"
+        ],
+        "aliases": [
+          "Empilhador móvel",
+          "Mobile Stacker"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mobile Traction Winch",
         "dlc": "Forest Machinery",
-        "weight": "11"
+        "weight": "11",
+        "name_pt": "Guincho móvel",
+        "cargo_ids": [
+          "mob_tr_winch"
+        ],
+        "aliases": [
+          "Guincho de tração móvel",
+          "Mobile Traction Winch"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Motor Oil",
         "dlc": "Launch",
-        "weight": "7–18"
+        "weight": "7–18",
+        "name_pt": "Óleo de motor",
+        "cargo_ids": [
+          "motor_oil",
+          "motor_oil_c"
+        ],
+        "aliases": [
+          "Motor Oil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mozzarella",
         "dlc": "Italia",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Muçarela",
+        "cargo_ids": [
+          "mozzarela"
+        ],
+        "aliases": [
+          "Mozzarella",
+          "Mussarela"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Mulcher",
         "dlc": "Forest Machinery",
-        "weight": "15"
+        "weight": "15",
+        "name_pt": "Triturador florestal",
+        "cargo_ids": [
+          "mulcher"
+        ],
+        "aliases": [
+          "Mulcher"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Natural Rubber",
         "dlc": "Vive la France!",
-        "weight": "12–21"
+        "weight": "12–21",
+        "name_pt": "Borracha natural",
+        "cargo_ids": [
+          "natur_rubber"
+        ],
+        "aliases": [
+          "Natural Rubber"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Neon",
         "dlc": "Launch",
-        "weight": "8–17"
+        "weight": "8–17",
+        "name_pt": "Neon",
+        "cargo_ids": [
+          "neon"
+        ],
+        "aliases": [
+          "Neônio"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Nitrocellulose",
         "dlc": "Launch",
-        "weight": "6–13"
+        "weight": "6–13",
+        "name_pt": "Nitrocelulose",
+        "cargo_ids": [
+          "nitrocel"
+        ],
+        "aliases": [
+          "Nitrocellulose"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Nitrogen",
         "dlc": "Launch",
-        "weight": "9–18"
+        "weight": "9–18",
+        "name_pt": "Nitrogênio",
+        "cargo_ids": [
+          "nitrogen"
+        ],
+        "aliases": [
+          "Nitrogen"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Nuts",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Nozes",
+        "cargo_ids": [
+          "nuts"
+        ],
+        "aliases": [
+          "Nuts"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Nylon Cord",
         "dlc": "Vive la France!",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Fio de náilon",
+        "cargo_ids": [
+          "nylon_cord"
+        ],
+        "aliases": [
+          "Cordão de náilon",
+          "Nylon Cord"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Oil",
         "dlc": "Launch",
-        "weight": "19–24"
+        "weight": "19–24",
+        "name_pt": "Óleo",
+        "cargo_ids": [
+          "oil"
+        ],
+        "aliases": [
+          "Oil"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Oil Filters",
         "dlc": "Launch",
-        "weight": "4–12"
+        "weight": "4–12",
+        "name_pt": "Filtros de óleo",
+        "cargo_ids": [
+          "oil_filt_c",
+          "oil_filters"
+        ],
+        "aliases": [
+          "Oil Filters"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Outdoor Floor Tiles",
         "dlc": "Launch",
-        "weight": "11–19"
+        "weight": "11–19",
+        "name_pt": "Cerâmica de piso externo",
+        "cargo_ids": [
+          "outdr_flr_tl"
+        ],
+        "aliases": [
+          "Outdoor Floor Tiles",
+          "Pisos externos"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Peas",
         "dlc": "Launch",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Ervilhas",
+        "cargo_ids": [
+          "peas"
+        ],
+        "aliases": [
+          "Peas"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Performance Forks",
         "dlc": "Italia",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Suspensão de alto desempenho",
+        "cargo_ids": [
+          "perfor_frks"
+        ],
+        "aliases": [
+          "Garfos de alto desempenho",
+          "Performance Forks"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pesto",
         "dlc": "Italia",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Molho Pesto",
+        "cargo_ids": [
+          "pesto"
+        ],
+        "aliases": [
+          "Pesto"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Plant Substrate",
         "dlc": "Launch",
-        "weight": "9–17"
+        "weight": "9–17",
+        "name_pt": "Substrato vegetal",
+        "cargo_ids": [
+          "plant_substr"
+        ],
+        "aliases": [
+          "Plant Substrate",
+          "Substrato para plantas"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Planter",
         "dlc": "Farm Machinery",
-        "weight": "8"
+        "weight": "8",
+        "name_pt": "Semeadora",
+        "cargo_ids": [
+          "planter"
+        ],
+        "aliases": [
+          "Plantadeira",
+          "Planter"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Plastic Film Rolls",
         "dlc": "Scandinavia",
-        "weight": "5–18"
+        "weight": "5–18",
+        "name_pt": "Rolos de papel filme",
+        "cargo_ids": [
+          "plast_film",
+          "plast_film_c"
+        ],
+        "aliases": [
+          "Plastic Film Rolls",
+          "Rolos de filme plástico"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Plastic Granules",
         "dlc": "Launch",
-        "weight": "24–27"
+        "weight": "24–27",
+        "name_pt": "Plástico granulado",
+        "cargo_ids": [
+          "plastic_gra"
+        ],
+        "aliases": [
+          "Grânulos plásticos",
+          "Plastic Granules"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Plumbing Supplies",
         "dlc": "Scandinavia",
-        "weight": "10–18"
+        "weight": "10–18",
+        "name_pt": "Material de encanamento",
+        "cargo_ids": [
+          "plumb_suppl"
+        ],
+        "aliases": [
+          "Materiais hidráulicos",
+          "Plumbing Supplies"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Plums",
         "dlc": "Launch",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Plumas",
+        "cargo_ids": [
+          "plums"
+        ],
+        "aliases": [
+          "Ameixas",
+          "Plums"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Polystyrene Boxes",
         "dlc": "Scandinavia",
-        "weight": "1–3"
+        "weight": "1–3",
+        "name_pt": "Caixas de poliestireno",
+        "cargo_ids": [
+          "polyst_box"
+        ],
+        "aliases": [
+          "Polystyrene Boxes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Post Packages",
         "dlc": "Vive la France!",
-        "weight": "6–11"
+        "weight": "6–11",
+        "name_pt": "Pacotes de encomendas",
+        "cargo_ids": [
+          "post_packag"
+        ],
+        "aliases": [
+          "Encomendas postais",
+          "Post Packages"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Potassium",
         "dlc": "Launch",
-        "weight": "10–20"
+        "weight": "10–20",
+        "name_pt": "Potássio",
+        "cargo_ids": [
+          "potassium"
+        ],
+        "aliases": [
+          "Potassium"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Potassium Hydroxide",
         "dlc": "Launch",
-        "weight": "16–19"
+        "weight": "16–19",
+        "name_pt": "Hidróxido de potássio",
+        "cargo_ids": [
+          "potahydro"
+        ],
+        "aliases": [
+          "Potassium Hydroxide"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Potted Flowers",
         "dlc": "Scandinavia",
-        "weight": "2–3"
+        "weight": "2–3",
+        "name_pt": "Flores em vasos",
+        "cargo_ids": [
+          "pot_flowers"
+        ],
+        "aliases": [
+          "Potted Flowers"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Powerpack JCB 1.25QE",
         "dlc": "JCB Equipment Pack",
-        "weight": "12"
+        "weight": "12",
+        "name_pt": "Gerador JCB 1.25QE",
+        "cargo_ids": [
+          "jcb_pw125qe"
+        ],
+        "aliases": [
+          "Powerpack JCB 1.25QE"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Precast Stairs",
         "dlc": "Launch",
-        "weight": "12–22"
+        "weight": "12–22",
+        "name_pt": "Escadas pré-fabricadas",
+        "cargo_ids": [
+          "precast_strs"
+        ],
+        "aliases": [
+          "Escadas pré-moldadas",
+          "Precast Stairs"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Prosciutto",
         "dlc": "Italia",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Prosciutto",
+        "cargo_ids": [
+          "prosciutto"
+        ],
+        "aliases": [
+          "Presunto cru"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Protective Clothing",
         "dlc": "Vive la France!",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Roupas de proteção",
+        "cargo_ids": [
+          "protec_cloth"
+        ],
+        "aliases": [
+          "Protective Clothing"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Pumps",
         "dlc": "Vive la France!",
-        "weight": "8–14"
+        "weight": "8–14",
+        "name_pt": "Bombas",
+        "cargo_ids": [
+          "pumps"
+        ],
+        "aliases": [
+          "Pumps"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Radiators",
         "dlc": "Launch",
-        "weight": "5–9"
+        "weight": "5–9",
+        "name_pt": "Radiadores",
+        "cargo_ids": [
+          "radiators"
+        ],
+        "aliases": [
+          "Radiators"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Reflective Posts",
         "dlc": "Scandinavia",
-        "weight": "7–12"
+        "weight": "7–12",
+        "name_pt": "Postes refletores",
+        "cargo_ids": [
+          "refl_posts"
+        ],
+        "aliases": [
+          "Balizadores refletivos",
+          "Reflective Posts"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Reinforcing Bars",
         "dlc": "Beyond the Baltic Sea",
-        "weight": "15"
+        "weight": "15",
+        "name_pt": "Barras de reforço",
+        "cargo_ids": [
+          "re_bars"
+        ],
+        "aliases": [
+          "Barras de aço para reforço",
+          "Reinforcing Bars"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Roller - DYNA CC-2200",
         "dlc": "High Power Cargo Pack",
-        "weight": "17"
+        "weight": "17",
+        "name_pt": "Rolo compressor",
+        "cargo_ids": [
+          "roller"
+        ],
+        "aliases": [
+          "Roller",
+          "Roller - DYNA CC-2200",
+          "Rolo compactador - DYNA CC-2200"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Roofing Felt",
         "dlc": "Launch",
-        "weight": "11–19"
+        "weight": "11–19",
+        "name_pt": "Feltro de telhado",
+        "cargo_ids": [
+          "roofing_felt"
+        ],
+        "aliases": [
+          "Manta asfáltica",
+          "Roofing Felt"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Rooflights",
         "dlc": "Launch",
-        "weight": "6–11"
+        "weight": "6–11",
+        "name_pt": "Tetos solares",
+        "cargo_ids": [
+          "rooflights"
+        ],
+        "aliases": [
+          "Claraboias",
+          "Rooflights"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Rotary Rakes Krone Swadro TC 1370",
         "dlc": "KRONE Agriculture Equipment",
-        "weight": "4"
+        "weight": "4",
+        "name_pt": "Ancinhos rotativos Krone Swadro TC 1370",
+        "cargo_ids": [
+          "kr_stc1370"
+        ],
+        "aliases": [
+          "Enleiradores rotativos Krone Swadro TC 1370",
+          "Rotary Rakes Krone Swadro TC 1370"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Salt & Spices",
         "dlc": "Scandinavia",
-        "weight": "6–16"
+        "weight": "6–16",
+        "name_pt": "Sal e temperos",
+        "cargo_ids": [
+          "salt_spice_c",
+          "salt_spices"
+        ],
+        "aliases": [
+          "Sal e especiarias",
+          "Salt & Spices"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sausages",
         "dlc": "Scandinavia",
-        "weight": "10–17"
+        "weight": "10–17",
+        "name_pt": "Salsichas",
+        "cargo_ids": [
+          "sausages"
+        ],
+        "aliases": [
+          "Sausages"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Scaffolding",
         "dlc": "Scandinavia",
-        "weight": "12–22"
+        "weight": "12–22",
+        "name_pt": "Andaimes",
+        "cargo_ids": [
+          "scaffoldings"
+        ],
+        "aliases": [
+          "Scaffolding"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sealed Bearings",
         "dlc": "Italia",
-        "weight": "13–23"
+        "weight": "13–23",
+        "name_pt": "Rolamentos selados",
+        "cargo_ids": [
+          "seal_bearing"
+        ],
+        "aliases": [
+          "Rolamentos vedados",
+          "Sealed Bearings"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Shock Absorbers",
         "dlc": "Scandinavia",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Amortecedores de impacto",
+        "cargo_ids": [
+          "shock_absorb"
+        ],
+        "aliases": [
+          "Amortecedores",
+          "Shock Absorbers"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Silica",
         "dlc": "Vive la France!",
-        "weight": "11–19"
+        "weight": "11–19",
+        "name_pt": "Silica",
+        "cargo_ids": [
+          "silica"
+        ],
+        "aliases": [
+          "Sílica"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Site Dumper JCB 6T-2",
         "dlc": "JCB Equipment Pack",
-        "weight": "5"
+        "weight": "5",
+        "name_pt": "Basculante de obra JCB 6T-2",
+        "cargo_ids": [
+          "jcb_dmp6t2"
+        ],
+        "aliases": [
+          "Dumper de obra JCB 6T-2",
+          "Site Dumper JCB 6T-2"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Skidder",
         "dlc": "Forest Machinery",
-        "weight": "20"
+        "weight": "20",
+        "name_pt": "Arrastador de toras",
+        "cargo_ids": [
+          "skidder"
+        ],
+        "aliases": [
+          "Skidder",
+          "Trator florestal arrastador"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Smoked Eel",
         "dlc": "Scandinavia",
-        "weight": "6–11"
+        "weight": "6–11",
+        "name_pt": "Enguia defumada",
+        "cargo_ids": [
+          "smokd_eel"
+        ],
+        "aliases": [
+          "Smoked Eel"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Smoked Sprats",
         "dlc": "Scandinavia",
-        "weight": "10–17"
+        "weight": "10–17",
+        "name_pt": "Arenque defumado",
+        "cargo_ids": [
+          "smokd_sprats"
+        ],
+        "aliases": [
+          "Espadilhas defumadas",
+          "Smoked Sprats"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sodium",
         "dlc": "Launch",
-        "weight": "9–19"
+        "weight": "9–19",
+        "name_pt": "Sódio",
+        "cargo_ids": [
+          "sodium"
+        ],
+        "aliases": [
+          "Sodium"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sodium Hydroxide",
         "dlc": "Launch",
-        "weight": "9–18"
+        "weight": "9–18",
+        "name_pt": "Hidróxido de sódio",
+        "cargo_ids": [
+          "sodhydro"
+        ],
+        "aliases": [
+          "Sodium Hydroxide"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sodium Hypochlorite",
         "dlc": "Launch",
-        "weight": "15–18"
+        "weight": "15–18",
+        "name_pt": "Hipoclorito de sódio",
+        "cargo_ids": [
+          "sodchlor"
+        ],
+        "aliases": [
+          "Sodium Hypochlorite"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Spherical Valves",
         "dlc": "Vive la France!",
-        "weight": "12–22"
+        "weight": "12–22",
+        "name_pt": "Válvulas esféricas",
+        "cargo_ids": [
+          "spher_valves"
+        ],
+        "aliases": [
+          "Spherical Valves"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Square Tubing",
         "dlc": "Italia",
-        "weight": "14"
+        "weight": "14",
+        "name_pt": "Tubos quadrados",
+        "cargo_ids": [
+          "sq_tub"
+        ],
+        "aliases": [
+          "Square Tubing"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Stone Dust",
         "dlc": "Launch",
-        "weight": "22–27"
+        "weight": "22–27",
+        "name_pt": "Pó de pedra",
+        "cargo_ids": [
+          "stone_dust"
+        ],
+        "aliases": [
+          "Stone Dust"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Stones",
         "dlc": "Launch",
-        "weight": "21–27"
+        "weight": "21–27",
+        "name_pt": "Rochas",
+        "cargo_ids": [
+          "stones"
+        ],
+        "aliases": [
+          "Pedras",
+          "Stones"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Sulphur",
         "dlc": "1.59",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Enxofre",
+        "cargo_ids": [
+          "sulfur"
+        ],
+        "aliases": [
+          "Sulphur"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Telescopic Handler JCB 540-180",
         "dlc": "JCB Equipment Pack",
-        "weight": "11"
+        "weight": "11",
+        "name_pt": "Manipulador telescópico JCB 540-180",
+        "cargo_ids": [
+          "jcb_th540180"
+        ],
+        "aliases": [
+          "Telescopic Handler JCB 540-180"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Toys",
         "dlc": "Launch",
-        "weight": "5–9"
+        "weight": "5–9",
+        "name_pt": "Brinquedos",
+        "cargo_ids": [
+          "toys"
+        ],
+        "aliases": [
+          "Toys"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Tracks",
-        "name_pt": "Faixas",
+        "name_pt": "Esteiras",
         "dlc": "High Power Cargo Pack",
-        "weight": "11"
+        "weight": "11",
+        "cargo_ids": [
+          "tracks"
+        ],
+        "aliases": [
+          "Faixas",
+          "Tracks"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Train Axles",
         "dlc": "Beyond the Baltic Sea",
-        "weight": "23"
+        "weight": "23",
+        "name_pt": "Eixos de trem",
+        "cargo_ids": [
+          "train_part"
+        ],
+        "aliases": [
+          "Eixos ferroviários",
+          "Train Axles"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Transmissions",
         "dlc": "Scandinavia",
-        "weight": "8–14"
+        "weight": "8–14",
+        "name_pt": "Transmissões",
+        "cargo_ids": [
+          "transmis"
+        ],
+        "aliases": [
+          "Transmissions"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Truck Batteries",
         "dlc": "Scandinavia",
-        "weight": "7–18"
+        "weight": "7–18",
+        "name_pt": "Baterias de caminhão",
+        "cargo_ids": [
+          "truck_batt",
+          "truck_batt_c"
+        ],
+        "aliases": [
+          "Truck Batteries"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Truck Rims",
         "dlc": "Scandinavia",
-        "weight": "4–12"
+        "weight": "4–12",
+        "name_pt": "Rodas de caminhão",
+        "cargo_ids": [
+          "truck_rims",
+          "truck_rims_c"
+        ],
+        "aliases": [
+          "Truck Rims"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Trucks DAF",
         "dlc": "1.59",
-        "weight": "???"
+        "weight": "???",
+        "name_pt": "Caminhões DAF",
+        "cargo_ids": [
+          "daf_tr"
+        ],
+        "aliases": [
+          "Trucks DAF"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Trucks Scania",
         "dlc": "Scandinavia",
-        "weight": "14"
+        "weight": "14",
+        "name_pt": "Caminhões Scania",
+        "cargo_ids": [
+          "scania_tr"
+        ],
+        "aliases": [
+          "Trucks Scania"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Trucks Volvo",
         "dlc": "Scandinavia",
-        "weight": "14"
+        "weight": "14",
+        "name_pt": "Caminhões Volvo",
+        "cargo_ids": [
+          "volvo_tr"
+        ],
+        "aliases": [
+          "Trucks Volvo"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Used Packaging",
         "dlc": "Launch",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Embalagens usadas",
+        "cargo_ids": [
+          "used_packag"
+        ],
+        "aliases": [
+          "Used Packaging"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Ventilation Shaft",
         "dlc": "Launch",
-        "weight": "4"
+        "weight": "4",
+        "name_pt": "Duto de ventilação",
+        "cargo_ids": [
+          "vent_tube"
+        ],
+        "aliases": [
+          "Ventilation Shaft"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Vinegar",
         "dlc": "Launch",
-        "weight": "4–15"
+        "weight": "4–15",
+        "name_pt": "Vinagre",
+        "cargo_ids": [
+          "vinegar",
+          "vinegar_c"
+        ],
+        "aliases": [
+          "Vinegar"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wagon Krone GX 520",
         "dlc": "KRONE Agriculture Equipment",
         "weight": "10",
         "aliases": [
-          "Vagão Krone GX 520"
-        ]
+          "Wagon Krone GX 520"
+        ],
+        "name_pt": "Vagão Krone GX 520",
+        "cargo_ids": [
+          "kr_gx520"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wall Panels",
         "dlc": "Launch",
-        "weight": "19–20"
+        "weight": "19–20",
+        "name_pt": "Paredes pré-fabricadas",
+        "cargo_ids": [
+          "wallpanels"
+        ],
+        "aliases": [
+          "Painéis de parede",
+          "Wall Panels"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Water Tank",
         "dlc": "Greece",
-        "weight": "1–2"
+        "weight": "1–2",
+        "name_pt": "Tanque de água",
+        "cargo_ids": [
+          "watertank"
+        ],
+        "aliases": [
+          "Water Tank"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Watermelons",
         "dlc": "Launch",
-        "weight": "11–20"
+        "weight": "11–20",
+        "name_pt": "Melancias",
+        "cargo_ids": [
+          "watermelons"
+        ],
+        "aliases": [
+          "Watermelons"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Wheels with Volvo Rims",
         "dlc": "Volvo Construction Equipment",
-        "weight": "11"
+        "weight": "11",
+        "name_pt": "Rodas Volvo",
+        "cargo_ids": [
+          "volvo_rims"
+        ],
+        "aliases": [
+          "Rodas com aros Volvo",
+          "Wheels with Volvo Rims"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "White Phosphorus",
         "dlc": "Launch",
-        "weight": "8–17"
+        "weight": "8–17",
+        "name_pt": "Fósforo branco",
+        "cargo_ids": [
+          "phosphor"
+        ],
+        "aliases": [
+          "White Phosphorus"
+        ],
+        "name_source": "ets2_locale_pt_br"
       },
       {
         "name": "Work Clothes",
         "dlc": "Italia",
-        "weight": "9–16"
+        "weight": "9–16",
+        "name_pt": "Roupas de trabalho",
+        "cargo_ids": [
+          "wrk_cloth"
+        ],
+        "aliases": [
+          "Work Clothes"
+        ],
+        "name_source": "ets2_locale_pt_br"
       }
     ]
   },
-  "removed_entries_excluded": 1
+  "removed_entries_excluded": 1,
+  "name_locale": "pt_br",
+  "name_game_version": "1.61.1.1",
+  "name_source": "cargo_data and localization files extracted from installed ETS2 on 2026-10-08",
+  "cargo_id_count": 413
 }

@@ -1,5 +1,5 @@
 (()=>{
-  const CATALOG_URL='ets2-official-cargos.json';
+  const CATALOG_URL='ets2-official-cargos.json?v=game-ids-20261008';
   const ICON_DATA_URL='assets/cargo/cargo-icon-defs.json?v=1';
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   let lastSig='',variants=new Map(),totalEntries=0,applying=false;
@@ -31,10 +31,11 @@
 
   function currentProfile(){try{return typeof profile!=='undefined'?profile:null}catch(_){return null}}
   function history(){
-    const p=currentProfile(),rows=Array.isArray(p?.cargo_history)?p.cargo_history:(Array.isArray(p?.deliveries)?p.deliveries:[]);
-    return rows.map(x=>({name:norm(x?.cargo||x?.cargo_name||x?.name),weightT:(Number(x?.weight_kg)||0)/1000})).filter(x=>x.name);
+    const p=currentProfile();
+    const rows=[...(Array.isArray(p?.cargo_history)?p.cargo_history:[]),...(Array.isArray(p?.deliveries)?p.deliveries:[])];
+    return rows.map(x=>({...x,name:norm(x?.cargo_name_raw||x?.cargo||x?.cargo_name||x?.name),cargo_id:GatCargoIdentity.idOf(x),weightT:(Number(x?.weight_kg)||0)/1000})).filter(x=>x.name||x.cargo_id);
   }
-  function signature(){return history().map(x=>x.name+'@'+x.weightT.toFixed(2)).sort().join('|')}
+  function signature(){return history().map(x=>x.cargo_id+'@'+x.name+'@'+x.weightT.toFixed(2)).sort().join('|')}
 
   function ensureStyle(){
     if(document.getElementById('gatCargoCompletionStyle'))return;
@@ -82,11 +83,13 @@
     const title=String(card.getAttribute('title')||'');
     return title.replace(/^Nome oficial SCS:\s*/i,'').trim();
   }
-  function cardNames(card){
-    const pt=norm(card.querySelector('.cargo-body h3')?.textContent||'');
-    const official=norm(officialName(card));
-    return [pt,official].filter(Boolean);
+  function cardItem(card){
+    let cargoIds=[],aliases=[];
+    try{cargoIds=JSON.parse(card.dataset.cargoIds||'[]')}catch(_){}
+    try{aliases=JSON.parse(card.dataset.cargoAliases||'[]')}catch(_){}
+    return {card,name:officialName(card),namePt:card.querySelector('.cargo-body h3')?.textContent||'',cargoIds,aliases};
   }
+  function cardNames(card){return GatCargoIdentity.names(cardItem(card))}
 
   function parseWeight(spec){
     const nums=String(spec||'').replace(',','.').match(/\d+(?:\.\d+)?/g)?.map(Number)||[];
@@ -142,6 +145,7 @@
   }
   function resolveDefinition(card){
     if(!iconsReady||!iconDefs.length)return null;
+    const mapped=cardItem(card).cargoIds.map(id=>iconDefs.find(d=>d.id===id)).find(Boolean);if(mapped)return mapped;
     const name=officialName(card)||card.querySelector('.cargo-body h3')?.textContent||'';
     const hint=sourceHint(card),target=cardWeight(card);
     let best=null,bestScore=-1e9;
@@ -187,12 +191,11 @@
   }
 
   function completedCards(){
-    const cards=[...document.querySelectorAll('#workCatalogGrid .full-cargo-card')],rows=history(),done=new Set();
-    rows.forEach(row=>{
-      const named=cards.filter(card=>cardNames(card).includes(row.name));if(!named.length)return;
-      const dup=named.filter(card=>card.dataset.cargoVariantWeight!==undefined&&card.dataset.cargoVariantWeight!=='');
-      if(dup.length>1&&row.weightT>0){const candidates=dup.filter(card=>weightMatch(card.dataset.cargoVariantWeight,row.weightT));if(candidates.length){candidates.sort((a,b)=>{const ra=parseWeight(a.dataset.cargoVariantWeight),rb=parseWeight(b.dataset.cargoVariantWeight);return ((ra?.max||999)-(ra?.min||0))-((rb?.max||999)-(rb?.min||0))});done.add(candidates[0]);return}}
-      if(named.length===1)done.add(named[0]);else if(row.weightT<=0)named.forEach(card=>done.add(card));
+    const items=[...document.querySelectorAll('#workCatalogGrid .full-cargo-card')].map(cardItem),done=new Set();
+    history().forEach(row=>{
+      const found=GatCargoIdentity.match(items,row);
+      if(found.length===1){done.add(found[0].card);return}
+      // IDs are authoritative; without an ID, ambiguous names stay unresolved.
     });
     return done;
   }
@@ -212,7 +215,7 @@
     try{
       const r=await fetch(CATALOG_URL+'?v=variants-3',{cache:'no-store'}),data=await r.json();if(!r.ok)return;
       const all=[];Object.values(data?.categories||{}).forEach(rows=>{if(Array.isArray(rows))rows.forEach(x=>{if(x?.name)all.push({name:String(x.name),dlc:String(x.dlc||''),weight:String(x.weight||'')})})});
-      totalEntries=Number(data?.total_entries)||all.length;const groups=new Map();all.forEach(x=>{const k=norm(x.name);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)});variants=new Map([...groups].filter(([,rows])=>rows.length>1));apply();
+      totalEntries=Number(data?.total_entries)||all.length;const groups=new Map();all.forEach(x=>{const k=norm(x.name);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)});variants=new Map();apply();
     }catch(_){}
   }
   async function loadIcons(){

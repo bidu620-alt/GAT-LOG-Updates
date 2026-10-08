@@ -1,0 +1,36 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
+const repo=path.resolve(__dirname,'..'),docs=path.join(repo,'docs');
+const source=JSON.parse(fs.readFileSync(path.join(docs,'ets2-official-cargos.json'),'utf8'));
+const registry=JSON.parse(fs.readFileSync(path.join(__dirname,'ets2-game-cargo-names.json'),'utf8'));
+const ctx={document:{readyState:'loading',addEventListener(){}},window:{addEventListener(){}},setInterval(){},setTimeout(){},profile:{cargo_history:[],deliveries:[]},lastLive:null};
+vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(docs,'cargo-identity.js'),'utf8'),ctx);
+const expose=(file,code)=>vm.runInContext(fs.readFileSync(path.join(docs,file),'utf8').replace(/\}\)\(\);\s*$/,code+'})();'),ctx);
+expose('work-catalog.js','globalThis.auditFlat=flatCatalog;globalThis.auditLive=exactMatch;globalThis.auditItems=v=>items=v;');
+const items=ctx.auditFlat(source);ctx.auditItems(items);
+assert.equal(items.length,source.total_entries);
+const cards=items.map(item=>({dataset:{cargoIds:JSON.stringify(item.cargoIds),cargoAliases:JSON.stringify(item.aliases)},getAttribute(k){return k==='title'?'Nome oficial SCS: '+item.name:''},querySelector(q){return q==='.cargo-body h3'?{textContent:item.namePt}:null},item}));
+ctx.document.querySelectorAll=()=>cards;
+expose('work-catalog-completion.js','globalThis.auditDone=completedCards;globalThis.auditSignature=signature;');
+for(const row of registry.cargos){
+  const item=ctx.GatCargoIdentity.unique(items,{cargo_id:row.id,cargo:'different language'});
+  assert.ok(item,'Missing ID '+row.id);assert.equal(item.namePt,row.name_pt,'Wrong game translation '+row.id);
+  ctx.profile={cargo_history:[],deliveries:[{cargo:'wrong name',raw_json:JSON.stringify({mission:{cargo_id:row.id}})}]};
+  assert.equal(ctx.auditDone().size,1,'History ID not completed '+row.id);
+  assert.equal([...ctx.auditDone()][0].item.id,item.id);
+  assert.equal(ctx.auditLive('wrong name',{telemetry:{job:{cargoId:row.id}}}).id,item.id,'Live ID not recognized '+row.id);
+}
+const I=ctx.GatCargoIdentity;
+assert.equal(I.match(items,{cargo_id:'not_an_official_id',cargo:'Sucata de metal'}).length,0,'Unknown ID must not fall through to same name');
+assert.equal(I.unique(items,{cargo:'Sucata de metal'}).cargoIds[0],'scrap_metals');
+assert.equal(I.unique(items,{cargo:'Metais de sucata'}).cargoIds[0],'scrap_metals');
+assert.equal(I.unique(items,{cargo:'Água com gás'}).cargoIds[0],'carb_water');
+assert.equal(I.unique(items,{cargo:'Esteira de trator'}).cargoIds[0],'dozer','Canonical name must take precedence over an old alias');
+assert.equal(I.unique(items,{cargo:'Tubos de ferro'}),null,'Ambiguous old name must not mark both types');
+assert.notEqual(I.unique(items,{cargo_id:'iron_pipes'}).id,I.unique(items,{cargo_id:'metal_pipes'}).id);
+assert.equal(I.unique(items,{cargo_id:'cargo.lattice'}).cargoIds[0],'lattice');
+assert.equal(I.idOf({raw_json:'invalid json'}),'');
+ctx.profile={cargo_history:[{cargo:'Sucata de metal',cargo_id:'scrap_metals'}],deliveries:[{cargo:'Barco rebocador',raw_json:JSON.stringify({mission:{cargo_id:'pilot_boat'}})}]};
+assert.equal(ctx.auditDone().size,2,'All-time history and recent IDs must be combined');
+const ids=items.flatMap(i=>i.cargoIds);assert.equal(new Set(ids).size,ids.length,'IDs must not complete multiple cards');
+assert.equal(new Set(ids).size,registry.cargos.length);
+console.log(`PASS: ${registry.cargos.length} game IDs, ${items.length} exact game-name cards, live IDs, raw history IDs, old aliases, unknown IDs and ambiguous names.`);

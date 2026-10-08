@@ -41,6 +41,9 @@ jobs:
           grep -q 'radio-admin.html' docs/admin.html
           grep -q 'site não reproduz áudio' docs/radio-admin.html
 
+      - name: Validate game cargo names and IDs
+        run: node scripts/test-cargo-identity.cjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
