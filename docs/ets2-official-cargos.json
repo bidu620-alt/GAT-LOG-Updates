@@ -4,7 +4,7 @@
   "source_note": "Catálogo com nomes e IDs conferidos nos arquivos oficiais instalados do ETS2; pesos e DLCs de referência preservados da Wiki quando disponíveis.",
   "reference_game_version": "1.61.1.1",
   "reference_data_refreshed": "2026-10-03",
-  "generated_at": "2026-10-05T16:17:49Z",
+  "generated_at": "2026-10-08T16:23:58Z",
   "total_entries": 380,
   "category_titles": {
     "tractor": "Trator e máquinas agrícolas",
@@ -115,13 +115,13 @@
         "name": "Crawler Tractor",
         "dlc": "Farm Machinery",
         "weight": "25",
-        "aliases": [
-          "Crawler Tractor",
-          "Esteira de trator"
-        ],
         "name_pt": "Trator de esteiras",
         "cargo_ids": [
           "tractor_c"
+        ],
+        "aliases": [
+          "Crawler Tractor",
+          "Esteira de trator"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -129,13 +129,13 @@
         "name": "Crawler Tractor",
         "dlc": "High Power Cargo Pack",
         "weight": "13",
-        "aliases": [
-          "Crawler Tractor",
-          "Esteira de trator"
-        ],
         "name_pt": "Trator de esteiras",
         "cargo_ids": [
           "tractor"
+        ],
+        "aliases": [
+          "Crawler Tractor",
+          "Esteira de trator"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -265,13 +265,13 @@
         "name": "Square Baler Krone BiG Pack 1290 HDP VC",
         "dlc": "KRONE Agriculture Equipment",
         "weight": "10",
-        "aliases": [
-          "Enfardadeira de fardos quadrados Krone BiG Pack 1290 HDP VC",
-          "Square Baler Krone BiG Pack 1290 HDP VC"
-        ],
         "name_pt": "Enfardadeira quadradas Krone BiG Pack 1290 HDC VC",
         "cargo_ids": [
           "kr_bigp1290"
+        ],
+        "aliases": [
+          "Enfardadeira de fardos quadrados Krone BiG Pack 1290 HDP VC",
+          "Square Baler Krone BiG Pack 1290 HDP VC"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -292,13 +292,13 @@
         "name": "Tractors",
         "dlc": "Launch",
         "weight": "8",
-        "aliases": [
-          "TRATOR",
-          "Tractors"
-        ],
         "name_pt": "Tratores",
         "cargo_ids": [
           "tractors"
+        ],
+        "aliases": [
+          "TRATOR",
+          "Tractors"
         ],
         "name_source": "ets2_locale_pt_br"
       }
@@ -384,17 +384,17 @@
       },
       {
         "name": "LPG",
-        "name_pt": "GLP",
         "dlc": "Launch",
         "weight": "10–22",
+        "name_pt": "GLP",
+        "cargo_ids": [
+          "lpg",
+          "lpg_t"
+        ],
         "aliases": [
           "Gas de Cozinha",
           "Gás de cozinha",
           "LPG"
-        ],
-        "cargo_ids": [
-          "lpg",
-          "lpg_t"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -483,13 +483,13 @@
         "name": "Beef",
         "dlc": "Launch",
         "weight": "12–20",
-        "aliases": [
-          "Beef",
-          "Carne bovina"
-        ],
         "name_pt": "Carne",
         "cargo_ids": [
           "beef_meat"
+        ],
+        "aliases": [
+          "Beef",
+          "Carne bovina"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -798,14 +798,14 @@
         "name": "Pet Food",
         "dlc": "Scandinavia",
         "weight": "9–20",
-        "aliases": [
-          "Pet Food",
-          "Ração para animais"
-        ],
         "name_pt": "Ração",
         "cargo_ids": [
           "pet_food",
           "pet_food_c"
+        ],
+        "aliases": [
+          "Pet Food",
+          "Ração para animais"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -827,13 +827,13 @@
         "name": "Potatoes",
         "dlc": "Launch",
         "weight": "12–22",
-        "aliases": [
-          "BATATA",
-          "Potatoes"
-        ],
         "name_pt": "Batatas",
         "cargo_ids": [
           "potatoes"
+        ],
+        "aliases": [
+          "BATATA",
+          "Potatoes"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -1047,12 +1047,12 @@
         "name": "Wood Chipper",
         "dlc": "Forest Machinery",
         "weight": "26",
-        "aliases": [
-          "Wood Chipper"
-        ],
         "name_pt": "Picador de madeira",
         "cargo_ids": [
           "wood_chipper"
+        ],
+        "aliases": [
+          "Wood Chipper"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -1717,13 +1717,13 @@
         "name": "Arsenic",
         "dlc": "Launch",
         "weight": "9–18",
-        "aliases": [
-          "Arsenic",
-          "Arsênio"
-        ],
         "name_pt": "Arsênico",
         "cargo_ids": [
           "arsenic"
+        ],
+        "aliases": [
+          "Arsenic",
+          "Arsênio"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -1770,16 +1770,16 @@
       },
       {
         "name": "Chemical Sorbent",
-        "name_pt": "Solvente químico",
-        "aliases": [
-          "Chemical Sorbent",
-          "Sorbente químico"
-        ],
         "dlc": "Launch",
         "weight": "4–11",
+        "name_pt": "Solvente químico",
         "cargo_ids": [
           "chem_sorb_c",
           "chem_sorbent"
+        ],
+        "aliases": [
+          "Chemical Sorbent",
+          "Sorbente químico"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -1815,13 +1815,13 @@
         "name": "Fertilizer",
         "dlc": "Launch",
         "weight": "11–19",
-        "aliases": [
-          "Adubo",
-          "Fertilizer"
-        ],
         "name_pt": "Fertilizante",
         "cargo_ids": [
           "fertilizer"
+        ],
+        "aliases": [
+          "Adubo",
+          "Fertilizer"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -1829,13 +1829,13 @@
         "name": "Fertilizer Spreader",
         "dlc": "Farm Machinery",
         "weight": "14",
-        "aliases": [
-          "Distribuidor de fertilizante",
-          "Fertilizer Spreader"
-        ],
         "name_pt": "Adubadora",
         "cargo_ids": [
           "fert_spread"
+        ],
+        "aliases": [
+          "Distribuidor de fertilizante",
+          "Fertilizer Spreader"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -2201,13 +2201,13 @@
         "name": "Metal Beams",
         "dlc": "Beyond the Baltic Sea",
         "weight": "23",
-        "aliases": [
-          "Metal Beams",
-          "Vigas metálicas"
-        ],
         "name_pt": "Vigas de metal",
         "cargo_ids": [
           "metal_beams"
+        ],
+        "aliases": [
+          "Metal Beams",
+          "Vigas metálicas"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -2229,13 +2229,13 @@
         "name": "Metal Centring",
         "dlc": "Heavy Cargo Pack",
         "weight": "28",
-        "aliases": [
-          "Escoramento metálico",
-          "Metal Centring"
-        ],
         "name_pt": "Centração de metal",
         "cargo_ids": [
           "metal_center"
+        ],
+        "aliases": [
+          "Escoramento metálico",
+          "Metal Centring"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -2243,13 +2243,13 @@
         "name": "Metal Coil",
         "dlc": "Italia",
         "weight": "12",
-        "aliases": [
-          "Bobina metálica",
-          "Metal Coil"
-        ],
         "name_pt": "Bobina de metal",
         "cargo_ids": [
           "mtl_coil"
+        ],
+        "aliases": [
+          "Bobina metálica",
+          "Metal Coil"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -2458,13 +2458,13 @@
         "name": "Industrial Cable Reel",
         "dlc": "Heavy Cargo Pack",
         "weight": "34",
-        "aliases": [
-          "Bobina de cabo industrial",
-          "Industrial Cable Reel"
-        ],
         "name_pt": "Rolo de cabo industrial",
         "cargo_ids": [
           "cable_reel"
+        ],
+        "aliases": [
+          "Bobina de cabo industrial",
+          "Industrial Cable Reel"
         ],
         "name_source": "ets2_locale_pt_br"
       }
@@ -2745,13 +2745,13 @@
         "name": "Wind Turbine Nacelle",
         "dlc": "Scandinavia",
         "weight": "21",
-        "aliases": [
-          "Nacele de turbina eólica",
-          "Wind Turbine Nacelle"
-        ],
         "name_pt": "Nacele de Turbina Aeólica",
         "cargo_ids": [
           "windml_eng"
+        ],
+        "aliases": [
+          "Nacele de turbina eólica",
+          "Wind Turbine Nacelle"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -2759,13 +2759,13 @@
         "name": "Wind Turbine Tower",
         "dlc": "Scandinavia",
         "weight": "9–19",
-        "aliases": [
-          "Torre de turbina eólica",
-          "Wind Turbine Tower"
-        ],
         "name_pt": "Torre de Turbina Aeólica",
         "cargo_ids": [
           "windml_tube"
+        ],
+        "aliases": [
+          "Torre de turbina eólica",
+          "Wind Turbine Tower"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -3087,16 +3087,16 @@
       },
       {
         "name": "Peanut Butter",
+        "dlc": "Launch",
+        "weight": "11–19",
         "name_pt": "Manteiga de amendoim",
+        "cargo_ids": [
+          "pnut_butter"
+        ],
         "aliases": [
           "Massa de amendoim",
           "Pasta de amendoim",
           "Peanut Butter"
-        ],
-        "dlc": "Launch",
-        "weight": "11–19",
-        "cargo_ids": [
-          "pnut_butter"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -3131,14 +3131,14 @@
     "medical": [
       {
         "name": "Hospital Waste",
-        "name_pt": "Lixo hospitalar",
-        "aliases": [
-          "Hospital Waste"
-        ],
         "dlc": "Launch",
         "weight": "11–23",
+        "name_pt": "Lixo hospitalar",
         "cargo_ids": [
           "hwaste"
+        ],
+        "aliases": [
+          "Hospital Waste"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -3174,17 +3174,17 @@
     "scrap": [
       {
         "name": "Scrap Metals",
+        "dlc": "Launch",
+        "weight": "21–26",
         "name_pt": "Sucata de metal",
+        "cargo_ids": [
+          "scrap_metals"
+        ],
         "aliases": [
           "Metais de sucata",
           "Scrap Metals",
           "Sucata de Metal",
           "Sucata metálica"
-        ],
-        "dlc": "Launch",
-        "weight": "21–26",
-        "cargo_ids": [
-          "scrap_metals"
         ],
         "name_source": "ets2_locale_pt_br"
       },
@@ -3208,14 +3208,14 @@
         "name": "Asphalt Miller - AM 0880",
         "dlc": "Heavy Cargo Pack",
         "weight": "44",
+        "name_pt": "Moedor de asfalto",
+        "cargo_ids": [
+          "asph_miller"
+        ],
         "aliases": [
           "Asphalt Miller",
           "Asphalt Miller - AM 0880",
           "Fresadora de asfalto - AM 0880"
-        ],
-        "name_pt": "Moedor de asfalto",
-        "cargo_ids": [
-          "asph_miller"
         ],
         "name_source": "ets2_locale_pt_br"
       }
@@ -5014,9 +5014,9 @@
       },
       {
         "name": "Tracks",
-        "name_pt": "Esteiras",
         "dlc": "High Power Cargo Pack",
         "weight": "11",
+        "name_pt": "Esteiras",
         "cargo_ids": [
           "tracks"
         ],
@@ -5164,12 +5164,12 @@
         "name": "Wagon Krone GX 520",
         "dlc": "KRONE Agriculture Equipment",
         "weight": "10",
-        "aliases": [
-          "Wagon Krone GX 520"
-        ],
         "name_pt": "Vagão Krone GX 520",
         "cargo_ids": [
           "kr_gx520"
+        ],
+        "aliases": [
+          "Wagon Krone GX 520"
         ],
         "name_source": "ets2_locale_pt_br"
       },
