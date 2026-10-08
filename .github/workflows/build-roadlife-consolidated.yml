@@ -14,20 +14,32 @@ jobs:
         with:
           dotnet-version: '10.0.x'
       - run: dotnet run --project RoadLife-Telemetria/tests/RoadLimitTests.csproj -c Release
-      - run: dotnet build RoadLife-Telemetria/src/GAT_TELEMETRIA.csproj -c Release
+      - run: dotnet build RoadLife-Telemetria/src/GAT_TELEMETRIA.csproj -c Release -p:UseSharedCompilation=false
       - shell: pwsh
         run: |
           $out = 'RoadLife-Telemetria/payload'
           New-Item -ItemType Directory -Force $out | Out-Null
           Copy-Item RoadLife-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe "$out/GAT_TELEMETRIA_APP.exe"
           Copy-Item RoadLife-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe.config "$out/GAT_TELEMETRIA_APP.exe.config"
+          New-Item -ItemType Directory -Force RoadLife-Telemetria/Installer/payload | Out-Null
+          Copy-Item "$out/*" RoadLife-Telemetria/Installer/payload
           $stage = 'roadlife-test'
           New-Item -ItemType Directory $stage | Out-Null
           Copy-Item $out $stage -Recurse
           Copy-Item RoadLife-Telemetria/Install-Test.ps1,RoadLife-Telemetria/Restore-Test.ps1,RoadLife-Telemetria/Aplicar-teste.cmd,RoadLife-Telemetria/LEIA-ME-TESTE.txt $stage
           Compress-Archive "$stage/*" ROADLIFE_TELEMETRIA_1.0.68.17_TESTE.zip
+      - name: Install Inno Setup compiler
+        run: choco install innosetup --version=6.7.3 -y --no-progress
+      - name: Build updater installer
+        shell: pwsh
+        run: |
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' /Q RoadLife-Telemetria/Installer/RoadLife-Update.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar instalador de atualizacao' }
+          Get-FileHash RoadLife-Telemetria/Installer/Output/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe
       - uses: actions/upload-artifact@v4
         with:
           name: ROADLIFE_TELEMETRIA_1.0.68.17_TESTE
-          path: ROADLIFE_TELEMETRIA_1.0.68.17_TESTE.zip
+          path: |
+            ROADLIFE_TELEMETRIA_1.0.68.17_TESTE.zip
+            RoadLife-Telemetria/Installer/Output/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe
 

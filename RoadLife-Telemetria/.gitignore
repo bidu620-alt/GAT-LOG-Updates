@@ -1,3 +1,4 @@
 **/bin/
 **/obj/
-payload/
+**/payload/
+Installer/Output/
