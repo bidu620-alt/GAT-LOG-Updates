@@ -167,7 +167,8 @@
       "min_km": 1000,
       "xp": 1000
     }
-  ],
+  ]
+},
 {
   "id": "energia_total_2026",
   "name": "Operação Energia Total",
