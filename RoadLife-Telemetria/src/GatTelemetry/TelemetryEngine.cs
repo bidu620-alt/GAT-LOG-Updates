@@ -136,7 +136,7 @@ internal sealed class TelemetryEngine : IDisposable
 		}
 	}
 
-	 private static void NormalizeRoadLimit(JObject m)
+	private static void NormalizeRoadLimit(JObject m)
  {
   if (m["speed_limit_source"] != null) return;
   bool connected = false;
@@ -158,51 +158,49 @@ internal sealed class TelemetryEngine : IDisposable
  }
  private static void AddDamageAliases(JObject m)
 	{
-		double truckMax = -1.0;
-		AddTruckDamageAlias(m, "truck_engine_damage_pct", ref truckMax, "truck.wearEngine", "truck.engineWear", "truck.engineDamage");
-		AddTruckDamageAlias(m, "truck_transmission_damage_pct", ref truckMax, "truck.wearTransmission", "truck.transmissionWear", "truck.transmissionDamage");
-		AddTruckDamageAlias(m, "truck_cabin_damage_pct", ref truckMax, "truck.wearCabin", "truck.cabinWear", "truck.cabinDamage");
-		AddTruckDamageAlias(m, "truck_chassis_damage_pct", ref truckMax, "truck.wearChassis", "truck.chassisWear", "truck.chassisDamage");
-		AddTruckDamageAlias(m, "truck_wheels_damage_pct", ref truckMax, "truck.wearWheels", "truck.wheelsWear", "truck.wheelsDamage");
-		if (truckMax >= 0.0)
+		double max = -1.0;
+		AddTruckDamageAlias(m, "truck_engine_damage_pct", ref max, "truck.wearEngine", "truck.engineWear", "truck.engineDamage");
+		AddTruckDamageAlias(m, "truck_transmission_damage_pct", ref max, "truck.wearTransmission", "truck.transmissionWear", "truck.transmissionDamage");
+		AddTruckDamageAlias(m, "truck_cabin_damage_pct", ref max, "truck.wearCabin", "truck.cabinWear", "truck.cabinDamage");
+		AddTruckDamageAlias(m, "truck_chassis_damage_pct", ref max, "truck.wearChassis", "truck.chassisWear", "truck.chassisDamage");
+		AddTruckDamageAlias(m, "truck_wheels_damage_pct", ref max, "truck.wearWheels", "truck.wheelsWear", "truck.wheelsDamage");
+		if (max >= 0.0)
 		{
-			m["truck_damage_pct"] = truckMax;
+			m["truck_damage_pct"] = max;
 		}
-
-		JToken trailer = AttachedTrailer(m);
-		if (trailer != null)
+		JToken jToken = AttachedTrailer(m);
+		if (jToken != null)
 		{
-			double cargo = DamagePercentNumber(trailer["cargoDamage"] ?? trailer["CargoDamage"]);
-			if (cargo >= 0.0)
+			double num = DamagePercentNumber(jToken["cargoDamage"] ?? jToken["CargoDamage"]);
+			if (num >= 0.0)
 			{
-				m["cargo_damage_pct"] = cargo;
+				m["cargo_damage_pct"] = num;
 			}
-			double body = DamagePercentNumber(trailer["wearBody"] ?? trailer["WearBody"]);
-			double chassis = DamagePercentNumber(trailer["wearChassis"] ?? trailer["WearChassis"]);
-			double wheels = DamagePercentNumber(trailer["wearWheels"] ?? trailer["WearWheels"]);
-			double trailerMax = Math.Max(body, Math.Max(chassis, wheels));
-			if (trailerMax >= 0.0)
+			double val = DamagePercentNumber(jToken["wearBody"] ?? jToken["WearBody"]);
+			double val2 = DamagePercentNumber(jToken["wearChassis"] ?? jToken["WearChassis"]);
+			double val3 = DamagePercentNumber(jToken["wearWheels"] ?? jToken["WearWheels"]);
+			double num2 = Math.Max(val, Math.Max(val2, val3));
+			if (num2 >= 0.0)
 			{
-				m["trailer_damage_pct"] = trailerMax;
+				m["trailer_damage_pct"] = num2;
 			}
 		}
 	}
 
 	private static void AddTruckDamageAlias(JObject m, string alias, ref double max, params string[] paths)
 	{
-		if (!TryAny(m, out var raw, paths))
+		if (!TryAny(m, out var value, paths))
 		{
 			return;
 		}
-		double pct = DamagePercentNumber(raw);
-		if (pct < 0.0)
+		double num = DamagePercentNumber(value);
+		if (!(num < 0.0))
 		{
-			return;
-		}
-		m[alias] = pct;
-		if (pct > max)
-		{
-			max = pct;
+			m[alias] = num;
+			if (num > max)
+			{
+				max = num;
+			}
 		}
 	}
 
@@ -221,7 +219,11 @@ internal sealed class TelemetryEngine : IDisposable
 
 	private static double DamagePercentNumber(JToken token)
 	{
-		return TryDamageValue(token, out var raw) ? DamagePercentNumber(raw) : -1.0;
+		if (!TryDamageValue(token, out var value))
+		{
+			return -1.0;
+		}
+		return DamagePercentNumber(value);
 	}
 
 	public static TelemetryDisplay BuildDisplay(JObject m)
@@ -258,10 +260,6 @@ internal sealed class TelemetryEngine : IDisposable
 		{
 			telemetryDisplay.Weight = (value3 / 1000.0).ToString("0.00", CultureInfo.InvariantCulture) + " t";
 		}
-
-		// TruckSim GPS REST v5: carga e desgaste do reboque ficam em trailers[].
-		// Mantemos os aliases do caminhão para aceitar a extensão do servidor que expõe
-		// WearEngine/WearTransmission/WearCabin/WearChassis/WearWheels.
 		telemetryDisplay.CargoDamage = DamageTextFromAttachedTrailer(m, "cargoDamage");
 		if (telemetryDisplay.CargoDamage == "—")
 		{
@@ -278,17 +276,17 @@ internal sealed class TelemetryEngine : IDisposable
 
 	private static JToken AttachedTrailer(JObject m)
 	{
-		JArray trailers = m["trailers"] as JArray ?? m["Trailers"] as JArray;
-		if (trailers == null)
+		JArray jArray = (m["trailers"] as JArray) ?? (m["Trailers"] as JArray);
+		if (jArray == null)
 		{
 			return null;
 		}
-		foreach (JToken trailer in trailers)
+		foreach (JToken item in jArray)
 		{
-			JToken attached = trailer?["attached"] ?? trailer?["Attached"];
-			if (attached != null && attached.Type == JTokenType.Boolean && attached.Value<bool>())
+			JToken jToken = item?["attached"] ?? item?["Attached"];
+			if (jToken != null && jToken.Type == JTokenType.Boolean && jToken.Value<bool>())
 			{
-				return trailer;
+				return item;
 			}
 		}
 		return null;
@@ -296,13 +294,12 @@ internal sealed class TelemetryEngine : IDisposable
 
 	private static string DamageTextFromAttachedTrailer(JObject m, string field)
 	{
-		JToken trailer = AttachedTrailer(m);
-		if (trailer == null)
+		JToken jToken = AttachedTrailer(m);
+		if (jToken == null)
 		{
 			return "—";
 		}
-		JToken token = trailer[field] ?? trailer[char.ToUpperInvariant(field[0]) + field.Substring(1)];
-		if (!TryDamageValue(token, out var value))
+		if (!TryDamageValue(jToken[field] ?? jToken[char.ToUpperInvariant(field[0]) + field.Substring(1)], out var value))
 		{
 			return "—";
 		}
@@ -311,22 +308,25 @@ internal sealed class TelemetryEngine : IDisposable
 
 	private static string TrailerOverallDamageText(JObject m)
 	{
-		JToken trailer = AttachedTrailer(m);
-		if (trailer == null)
+		JToken jToken = AttachedTrailer(m);
+		if (jToken == null)
 		{
 			return DamageText(m, "trailer.wear", "trailer.damage", "trailerDamage", "trailer_damage", "trailer.wearChassis");
 		}
-		double max = -1.0;
-		string[] fields = { "wearBody", "wearChassis", "wearWheels" };
-		foreach (string field in fields)
+		double num = -1.0;
+		string[] array = new string[3] { "wearBody", "wearChassis", "wearWheels" };
+		foreach (string text in array)
 		{
-			JToken token = trailer[field] ?? trailer[char.ToUpperInvariant(field[0]) + field.Substring(1)];
-			if (TryDamageValue(token, out var value) && value > max)
+			if (TryDamageValue(jToken[text] ?? jToken[char.ToUpperInvariant(text[0]) + text.Substring(1)], out var value) && value > num)
 			{
-				max = value;
+				num = value;
 			}
 		}
-		return max < 0.0 ? "—" : FormatDamage(max);
+		if (!(num < 0.0))
+		{
+			return FormatDamage(num);
+		}
+		return "—";
 	}
 
 	private static bool TryDamageValue(JToken token, out double value)
@@ -346,14 +346,13 @@ internal sealed class TelemetryEngine : IDisposable
 
 	private static string FormatDamage(double value)
 	{
-		// SCS usa 0..1; alguns adaptadores já usam 0..100.
 		if (value >= 0.0 && value <= 1.0001)
 		{
 			value *= 100.0;
 		}
 		value = Math.Max(0.0, Math.Min(100.0, value));
-		string format = value > 0.0 && value < 1.0 ? "0.00" : "0.0";
-		return value.ToString(format, CultureInfo.InvariantCulture) + "%";
+		string text = ((value > 0.0 && value < 1.0) ? "0.00" : "0.0");
+		return value.ToString(text, CultureInfo.InvariantCulture) + "%";
 	}
 
 	private static string DamageText(JObject m, params string[] paths)
@@ -414,6 +413,30 @@ internal sealed class TelemetryEngine : IDisposable
 			}
 		}
 		value = 0.0;
+		return false;
+	}
+
+	private static bool TryBoolean(JObject m, params string[] paths)
+	{
+		foreach (string path in paths)
+		{
+			JToken jToken = m.SelectToken(path, errorWhenNoMatch: false);
+			if (jToken != null && jToken.Type != JTokenType.Null)
+			{
+				if (jToken.Type == JTokenType.Boolean)
+				{
+					return jToken.Value<bool>();
+				}
+				if (bool.TryParse(jToken.ToString(), out var result))
+				{
+					return result;
+				}
+				if (jToken.Type == JTokenType.Integer || jToken.Type == JTokenType.Float)
+				{
+					return jToken.Value<double>() != 0.0;
+				}
+			}
+		}
 		return false;
 	}
 

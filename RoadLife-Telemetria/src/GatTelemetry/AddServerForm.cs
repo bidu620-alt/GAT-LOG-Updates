@@ -16,12 +16,12 @@ internal sealed class AddServerForm : Form
 	public AddServerForm()
 	{
 		Text = "Adicionar servidor";
-		base.StartPosition = FormStartPosition.CenterParent;
-		base.FormBorderStyle = FormBorderStyle.FixedDialog;
-		base.MinimizeBox = false;
-		base.MaximizeBox = false;
-		base.ClientSize = new Size(510, 180);
-		base.Controls.Add(new Label
+		StartPosition = FormStartPosition.CenterParent;
+		FormBorderStyle = FormBorderStyle.FixedDialog;
+		MinimizeBox = false;
+		MaximizeBox = false;
+		ClientSize = new Size(510, 180);
+		Controls.Add(new Label
 		{
 			Text = "Nome (opcional):",
 			Left = 18,
@@ -34,8 +34,8 @@ internal sealed class AddServerForm : Form
 			Top = 17,
 			Width = 335
 		};
-		base.Controls.Add(txtName);
-		base.Controls.Add(new Label
+		Controls.Add(txtName);
+		Controls.Add(new Label
 		{
 			Text = "Endereço do servidor:",
 			Left = 18,
@@ -48,8 +48,8 @@ internal sealed class AddServerForm : Form
 			Top = 57,
 			Width = 335
 		};
-		base.Controls.Add(txtEndpoint);
-		base.Controls.Add(new Label
+		Controls.Add(txtEndpoint);
+		Controls.Add(new Label
 		{
 			Text = "Ex.: https://nome.ts.net",
 			Left = 150,
@@ -73,9 +73,9 @@ internal sealed class AddServerForm : Form
 			Top = 125,
 			Width = 96
 		};
-		base.Controls.Add(button);
-		base.Controls.Add(button2);
-		base.AcceptButton = button;
-		base.CancelButton = button2;
+		Controls.Add(button);
+		Controls.Add(button2);
+		AcceptButton = button;
+		CancelButton = button2;
 	}
 }

@@ -12,7 +12,7 @@ namespace GatTelemetry;
 
 internal static class ClientStore
 {
-	public static string DataDir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GAT Telemetria Cliente");
+	public static string DataDir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ROADLIFE TELEMETRIA Cliente");
 
 	public static string ServersFile => Path.Combine(DataDir, "servers.json");
 

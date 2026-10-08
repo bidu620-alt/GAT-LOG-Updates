@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>GAT_TELEMETRIA</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
@@ -33,6 +33,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
 </Project>
+
 
 
 

@@ -14,7 +14,7 @@ internal static class Program
 		{
 			if (!createdNew)
 			{
-				MessageBox.Show("O GAT Telemetria já está aberto.", "GAT Telemetria", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MessageBox.Show("O ROADLIFE TELEMETRIA já está aberto.", "ROADLIFE TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
 			}
 			Application.EnableVisualStyles();

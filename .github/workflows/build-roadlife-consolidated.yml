@@ -19,15 +19,15 @@ jobs:
         run: |
           $out = 'RoadLife-Telemetria/payload'
           New-Item -ItemType Directory -Force $out | Out-Null
-          Copy-Item RoadLife-Telemetria/src/bin/Release/net48/* $out -Recurse
-          Rename-Item "$out/GAT_TELEMETRIA.exe" GAT_TELEMETRIA_APP.exe
-          Rename-Item "$out/GAT_TELEMETRIA.exe.config" GAT_TELEMETRIA_APP.exe.config
+          Copy-Item RoadLife-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe "$out/GAT_TELEMETRIA_APP.exe"
+          Copy-Item RoadLife-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe.config "$out/GAT_TELEMETRIA_APP.exe.config"
           $stage = 'roadlife-test'
           New-Item -ItemType Directory $stage | Out-Null
           Copy-Item $out $stage -Recurse
           Copy-Item RoadLife-Telemetria/Install-Test.ps1,RoadLife-Telemetria/Restore-Test.ps1,RoadLife-Telemetria/Aplicar-teste.cmd,RoadLife-Telemetria/LEIA-ME-TESTE.txt $stage
-          Compress-Archive "$stage/*" ROADLIFE_TELEMETRIA_1.0.68.16_TESTE.zip
+          Compress-Archive "$stage/*" ROADLIFE_TELEMETRIA_1.0.68.17_TESTE.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: ROADLIFE_TELEMETRIA_1.0.68.16_TESTE
-          path: ROADLIFE_TELEMETRIA_1.0.68.16_TESTE.zip
+          name: ROADLIFE_TELEMETRIA_1.0.68.17_TESTE
+          path: ROADLIFE_TELEMETRIA_1.0.68.17_TESTE.zip
+

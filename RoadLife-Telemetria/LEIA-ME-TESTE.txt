@@ -1,36 +1,41 @@
-ROADLIFE TELEMETRIA 1.0.68.16 - PACOTE DE TESTE
+ROADLIFE TELEMETRIA 1.0.68.17 - TESTE SOBRE O V5 DO SITE
 
-1. Extraia este ZIP inteiro em uma pasta.
-2. Feche a RoadLife.
-3. Abra Aplicar-teste.cmd e autorize a janela do Windows.
-4. Selecione a pasta da RoadLife instalada (contem GAT_TELEMETRIA_APP.exe).
-5. Abra a RoadLife pelo atalho habitual.
+BASE CONFIRMADA
+ROADLIFE_TELEMETRIA_1.0.68.12_TESTE_V5.exe enviado pelo usuario.
+SHA256: 5bb53169697f13c40197867b678739d0b12d840d99720e43b4e73b75ca4ed2ce.
+O teste anterior 1.0.68.16 utilizou uma base inadequada e deve ser substituido.
 
-O pacote substitui o aplicativo e dependencias. Preserva o launcher, TruckSimGPS,
-Dashboard2, imagens, configuracoes, credenciais e historico existentes.
-Os arquivos substituidos ficam em backup-teste-1.0.68.16-DATA-HORA na instalacao.
-Audios limite_056/limite_56 MP3/WAV, se presentes em voz/limites, vao para o backup.
-A voz de 60 ja existente continua sendo usada. Nenhum manifesto foi publicado.
+COMO APLICAR
+1. Extraia todo o ZIP novo numa pasta diferente da anterior.
+2. Feche RoadLife e execute Aplicar-teste.cmd.
+3. Selecione a pasta de instalacao que contem GAT_TELEMETRIA_APP.exe.
+4. Abra pelo atalho habitual e confira a versao 1.0.68.17.
+Nao precisa reinstalar o pacote V5 antes.
 
-TESTAR NO ETS2
-- Sem limite reconhecido desde o inicio: placa e aviso usam 60 km/h.
-- Limite 90, sinal desaparece: conserva 90 por 60 segundos; depois usa 60.
-- Novo limite valido, incluindo menor: aplica imediatamente.
-- Alternancias breves: o tempo sem sinal acumula, sem renovar a tolerancia.
-- 60 segundos continuos com limite valido renovam a tolerancia para outra perda.
-- Confira voz, Dashboard2, viagem, multa, pontuacao, dados e botao Atualizar.
+Este pacote substitui apenas o aplicativo e sua configuracao de runtime.
+Mantem launcher, Dashboard2, imagens, voz existente, TruckSimGPS e dados locais.
+O caminho de dados e o mesmo usado pelo V5: ROADLIFE TELEMETRIA Cliente.
+O pacote anterior nao apagou essa pasta, mas usava outro caminho de dados.
+A nova versao volta a usar o caminho correto. Nao migra historicos da 1.0.68.16.
+Arquivos substituidos ficam em backup-teste-1.0.68.17-DATA-HORA.
 
-Multa local usa limite efetivo + 1 km/h e a janela existente de excesso de 5 segundos.
-A voz usa o limite efetivo; avisos podem ocorrer antes da multa por essa tolerancia.
-Nao altera multas/pontos historicos. O comportamento no jogo depende do seu teste.
+SE QUISER VOLTAR AO V5 ORIGINAL
+Feche RoadLife. Execute Restaurar-V5.cmd e escolha a instalacao.
+Ele restaura o executavel e a configuracao extraidos do instalador enviado,
+sem executar o instalador completo nem apagar recursos ou dados.
 
-VOLTA A VERSAO ANTERIOR
-Feche RoadLife. No PowerShell como administrador, execute:
-.\Restore-Test.ps1 -BackupDir "CAMINHO COMPLETO DO BACKUP"
+MUDANCAS
+- Novo limite valido do ETS2 entra imediatamente.
+- Ausencia de limite: conserva o ultimo por 60 segundos; depois usa 60 km/h.
+- Alternancias curtas acumulam o tempo sem sinal, sem renovar os 60 segundos.
+- 60 segundos continuos de limite valido renovam a tolerancia.
+- Voz reutiliza limite_060 existente; sintese antiga de 56 foi removida.
+- Multas locais usam o limite efetivo + 1 km/h e janela existente de 5 segundos.
+- Dashboard2 usa o limite efetivo, sem contagem regressiva.
 
-VALIDACAO REALIZADA
-Aplicativo .NET Framework 4.8 x64 compilado, zero erros; um aviso legado de campo nulo.
-21 verificacoes da regra de memoria/tolerancia passaram.
-Fonte base: commit 8385ec8a5b92e200c9e7be4ed5d1083e9cefe45f do GitHub.
-Nao foi possivel validar ETS2, audio e envio para a Central neste ambiente.
-Este ZIP exige a instalacao atual; nao e um instalador completo.
+VALIDACAO
+Build passou; 21 testes de memoria/tolerancia passaram.
+22 arquivos de suporte ficaram identicos ao fonte recuperado do V5, inclusive
+ClientStore. Codigo da interface corresponde ao V5, exceto numero da versao e
+fallback do limite. Personalizacoes instaladas nao sao sobrescritas.
+Ainda exige teste visual, voz, viagens e multas no ETS2. Nao publicado.

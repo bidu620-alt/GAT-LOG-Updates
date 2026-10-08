@@ -1,4 +1,4 @@
-param([string]$InstallDir, [switch]$NoPause)
+param([string]$InstallDir, [switch]$NoPause, [ValidateSet('payload','v5-original')][string]$PayloadFolder = 'payload')
 $ErrorActionPreference = 'Stop'
 try {
  if (-not $InstallDir) {
@@ -16,8 +16,9 @@ try {
  if (Get-Process -Name GAT_TELEMETRIA,GAT_TELEMETRIA_APP -ErrorAction SilentlyContinue) {
   throw 'Feche a RoadLife e tente novamente.'
  }
- $payload = Join-Path $PSScriptRoot 'payload'
- $backup = Join-Path $target ('backup-teste-1.0.68.16-' + (Get-Date -Format yyyyMMdd-HHmmss))
+ $payload = Join-Path $PSScriptRoot $PayloadFolder
+ if (-not (Test-Path -LiteralPath (Join-Path $payload 'GAT_TELEMETRIA_APP.exe'))) { throw 'Pacote incompleto. Extraia o ZIP inteiro primeiro.' }
+ $backup = Join-Path $target ('backup-teste-1.0.68.17-' + (Get-Date -Format yyyyMMdd-HHmmss-fff) + '-' + [Guid]::NewGuid().ToString('N').Substring(0,8))
  New-Item -ItemType Directory -Path $backup | Out-Null
  $manifest = @()
  foreach ($file in Get-ChildItem $payload -File -Recurse) {
@@ -49,7 +50,8 @@ try {
    $manifest | ConvertTo-Json | Set-Content (Join-Path $backup 'files.json') -Encoding UTF8
   }
  }
- Write-Host "Teste 1.0.68.16 aplicado. Backup: $backup"
+ Write-Host "Pacote $PayloadFolder aplicado. Backup: $backup"
  Write-Host 'Abra a RoadLife pelo atalho habitual. Dados e Dashboard2 existentes foram preservados.'
 } catch { if ($NoPause) { throw }; Write-Host $_.Exception.Message -ForegroundColor Red }
 if (-not $NoPause) { Read-Host 'Pressione Enter para fechar' }
+

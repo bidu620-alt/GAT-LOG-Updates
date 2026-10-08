@@ -11,6 +11,40 @@ namespace GatTelemetry;
 
 internal sealed class TripJournal
 {
+	private sealed class DamageSnapshot
+	{
+		public double Cargo = -1.0;
+
+		public double Engine = -1.0;
+
+		public double Transmission = -1.0;
+
+		public double Cabin = -1.0;
+
+		public double Chassis = -1.0;
+
+		public double Wheels = -1.0;
+
+		public double Trailer = -1.0;
+
+		public double TruckOverall
+		{
+			get
+			{
+				double num = -1.0;
+				double[] array = new double[5] { Engine, Transmission, Cabin, Chassis, Wheels };
+				foreach (double num2 in array)
+				{
+					if (num2 > num)
+					{
+						num = num2;
+					}
+				}
+				return num;
+			}
+		}
+	}
+
 	private readonly object _sync = new object();
 
 	private readonly string _file;
@@ -18,34 +52,6 @@ internal sealed class TripJournal
 	private TripJournalState _state;
 
 	private DateTime _lastDiskWrite = DateTime.MinValue;
-
-	private sealed class DamageSnapshot
-	{
-		public double Cargo = -1.0;
-		public double Engine = -1.0;
-		public double Transmission = -1.0;
-		public double Cabin = -1.0;
-		public double Chassis = -1.0;
-		public double Wheels = -1.0;
-		public double Trailer = -1.0;
-
-		public double TruckOverall
-		{
-			get
-			{
-				double max = -1.0;
-				double[] values = { Engine, Transmission, Cabin, Chassis, Wheels };
-				foreach (double value in values)
-				{
-					if (value > max)
-					{
-						max = value;
-					}
-				}
-				return max;
-			}
-		}
-	}
 
 	public int PendingCount
 	{
@@ -115,18 +121,17 @@ internal sealed class TripJournal
 				num3 = -1.0;
 			}
 			double speedKmh = Math.Abs(DoubleAny(telemetry, "speed_kmh", "truck.speedKmh", "truck.speed_kmh", "truck.speed"));
-		double roadLimitKmh = DoubleAny(telemetry, "speed_limit_kmh");
-		if (!double.IsNaN(roadLimitKmh) && roadLimitKmh > 0.0 && roadLimitKmh < 3.0)
-		{
-			roadLimitKmh *= 3.6;
-		}
-		if ((double.IsNaN(roadLimitKmh) || double.IsInfinity(roadLimitKmh) || roadLimitKmh <= 0.0 || roadLimitKmh > 250.0)
-			&& BoolAny(telemetry, "game.connected", "gameConnected", "connected"))
-		{
-			roadLimitKmh = 60.0;
-		}
-			DamageSnapshot damage = ReadDamageSnapshot(telemetry);
-			double num7 = OdometerKm(telemetry);
+			double num5 = DoubleAny(telemetry, "speed_limit_kmh");
+			if (!double.IsNaN(num5) && num5 > 0.0 && num5 < 3.0)
+			{
+				num5 *= 3.6;
+			}
+			if ((double.IsNaN(num5) || double.IsInfinity(num5) || num5 <= 0.0 || num5 > 250.0) && BoolAny(telemetry, "game.connected", "gameConnected", "connected"))
+			{
+				num5 = 60.0;
+			}
+			DamageSnapshot damageSnapshot = ReadDamageSnapshot(telemetry);
+			double num6 = OdometerKm(telemetry);
 			string text3 = TextAny(telemetry, "truck.id", "truck.unitId", "truck.unit_id", "truck.vehicleId", "truck.vehicle_id");
 			string text4 = TextAny(telemetry, "truck.make", "truck.manufacturer", "truck.brand", "truck.makeName");
 			string text5 = TextAny(telemetry, "truck.model", "truck.modelName", "truck.model_name");
@@ -148,36 +153,36 @@ internal sealed class TripJournal
 						FirstObservedRemainingKm = num3,
 						LastObservedRemainingKm = num3,
 						StartedObservedAt = DateTime.UtcNow.ToString("o"),
-						CargoDamagePct = ((damage.Cargo >= 0.0) ? damage.Cargo : 0.0),
-						CargoDamageStartPct = damage.Cargo,
-						TruckDamageStartPct = damage.TruckOverall,
-						TruckDamageMaxPct = damage.TruckOverall,
-						TruckEngineDamageStartPct = damage.Engine,
-						TruckEngineDamageMaxPct = damage.Engine,
-						TruckTransmissionDamageStartPct = damage.Transmission,
-						TruckTransmissionDamageMaxPct = damage.Transmission,
-						TruckCabinDamageStartPct = damage.Cabin,
-						TruckCabinDamageMaxPct = damage.Cabin,
-						TruckChassisDamageStartPct = damage.Chassis,
-						TruckChassisDamageMaxPct = damage.Chassis,
-						TruckWheelsDamageStartPct = damage.Wheels,
-						TruckWheelsDamageMaxPct = damage.Wheels,
-						TrailerDamageStartPct = damage.Trailer,
-						TrailerDamageMaxPct = damage.Trailer,
+						CargoDamagePct = ((damageSnapshot.Cargo >= 0.0) ? damageSnapshot.Cargo : 0.0),
+						CargoDamageStartPct = damageSnapshot.Cargo,
+						TruckDamageStartPct = damageSnapshot.TruckOverall,
+						TruckDamageMaxPct = damageSnapshot.TruckOverall,
+						TruckEngineDamageStartPct = damageSnapshot.Engine,
+						TruckEngineDamageMaxPct = damageSnapshot.Engine,
+						TruckTransmissionDamageStartPct = damageSnapshot.Transmission,
+						TruckTransmissionDamageMaxPct = damageSnapshot.Transmission,
+						TruckCabinDamageStartPct = damageSnapshot.Cabin,
+						TruckCabinDamageMaxPct = damageSnapshot.Cabin,
+						TruckChassisDamageStartPct = damageSnapshot.Chassis,
+						TruckChassisDamageMaxPct = damageSnapshot.Chassis,
+						TruckWheelsDamageStartPct = damageSnapshot.Wheels,
+						TruckWheelsDamageMaxPct = damageSnapshot.Wheels,
+						TrailerDamageStartPct = damageSnapshot.Trailer,
+						TrailerDamageMaxPct = damageSnapshot.Trailer,
 						TruckId = text3,
 						TruckMake = text4,
 						TruckModel = text5,
 						TruckPlate = text6,
 						TruckIdentity = text7,
-						StartOdometerKm = ((num7 > 0.0) ? num7 : (-1.0)),
-						EndOdometerKm = ((num7 > 0.0) ? num7 : (-1.0)),
+						StartOdometerKm = ((num6 > 0.0) ? num6 : (-1.0)),
+						EndOdometerKm = ((num6 > 0.0) ? num6 : (-1.0)),
 						DrivenDistanceKm = 0.0,
-						OdometerVerified = (num7 > 0.0),
+						OdometerVerified = (num6 > 0.0),
 						LastOdometerObservedAt = DateTime.UtcNow.ToString("o")
 					};
-					UpdateOdometerAndVehicle(_state.ActiveTrip, num7, text3, text6, text4, text5, text7);
+					UpdateOdometerAndVehicle(_state.ActiveTrip, num6, text3, text6, text4, text5, text7);
 					ApplyModIntegrity(_state.ActiveTrip);
-					UpdateSpeedFine(_state.ActiveTrip, speedKmh, roadLimitKmh);
+					UpdateSpeedFine(_state.ActiveTrip, speedKmh, num5);
 					Save(force: true);
 				}
 				else
@@ -199,16 +204,16 @@ internal sealed class TripJournal
 					{
 						activeTrip.Market = text2;
 					}
-					UpdateDamage(activeTrip, damage);
-					UpdateOdometerAndVehicle(activeTrip, num7, text3, text6, text4, text5, text7);
-					UpdateSpeedFine(activeTrip, speedKmh, roadLimitKmh);
+					UpdateDamage(activeTrip, damageSnapshot);
+					UpdateOdometerAndVehicle(activeTrip, num6, text3, text6, text4, text5, text7);
+					UpdateSpeedFine(activeTrip, speedKmh, num5);
 					Save(force: false);
 				}
 			}
 			if (_state.ActiveTrip != null)
 			{
-				UpdateDamage(_state.ActiveTrip, damage);
-				UpdateOdometerAndVehicle(_state.ActiveTrip, num7, text3, text6, text4, text5, text7);
+				UpdateDamage(_state.ActiveTrip, damageSnapshot);
+				UpdateOdometerAndVehicle(_state.ActiveTrip, num6, text3, text6, text4, text5, text7);
 				ApplyModIntegrity(_state.ActiveTrip);
 				if (!flag5)
 				{
@@ -489,37 +494,43 @@ internal sealed class TripJournal
 
 	private static void UpdateDamage(TripReceipt trip, DamageSnapshot damage)
 	{
-		if (trip == null || damage == null)
+		if (trip != null && damage != null)
 		{
-			return;
+			trip.CargoDamageStartPct = DamageStart(damage.Cargo, trip.CargoDamageStartPct);
+			trip.CargoDamagePct = DamageMax(damage.Cargo, trip.CargoDamagePct);
+			trip.TruckDamageStartPct = DamageStart(damage.TruckOverall, trip.TruckDamageStartPct);
+			trip.TruckDamageMaxPct = DamageMax(damage.TruckOverall, trip.TruckDamageMaxPct);
+			trip.TruckEngineDamageStartPct = DamageStart(damage.Engine, trip.TruckEngineDamageStartPct);
+			trip.TruckEngineDamageMaxPct = DamageMax(damage.Engine, trip.TruckEngineDamageMaxPct);
+			trip.TruckTransmissionDamageStartPct = DamageStart(damage.Transmission, trip.TruckTransmissionDamageStartPct);
+			trip.TruckTransmissionDamageMaxPct = DamageMax(damage.Transmission, trip.TruckTransmissionDamageMaxPct);
+			trip.TruckCabinDamageStartPct = DamageStart(damage.Cabin, trip.TruckCabinDamageStartPct);
+			trip.TruckCabinDamageMaxPct = DamageMax(damage.Cabin, trip.TruckCabinDamageMaxPct);
+			trip.TruckChassisDamageStartPct = DamageStart(damage.Chassis, trip.TruckChassisDamageStartPct);
+			trip.TruckChassisDamageMaxPct = DamageMax(damage.Chassis, trip.TruckChassisDamageMaxPct);
+			trip.TruckWheelsDamageStartPct = DamageStart(damage.Wheels, trip.TruckWheelsDamageStartPct);
+			trip.TruckWheelsDamageMaxPct = DamageMax(damage.Wheels, trip.TruckWheelsDamageMaxPct);
+			trip.TrailerDamageStartPct = DamageStart(damage.Trailer, trip.TrailerDamageStartPct);
+			trip.TrailerDamageMaxPct = DamageMax(damage.Trailer, trip.TrailerDamageMaxPct);
 		}
-
-		trip.CargoDamageStartPct = DamageStart(damage.Cargo, trip.CargoDamageStartPct);
-		trip.CargoDamagePct = DamageMax(damage.Cargo, trip.CargoDamagePct);
-		trip.TruckDamageStartPct = DamageStart(damage.TruckOverall, trip.TruckDamageStartPct);
-		trip.TruckDamageMaxPct = DamageMax(damage.TruckOverall, trip.TruckDamageMaxPct);
-		trip.TruckEngineDamageStartPct = DamageStart(damage.Engine, trip.TruckEngineDamageStartPct);
-		trip.TruckEngineDamageMaxPct = DamageMax(damage.Engine, trip.TruckEngineDamageMaxPct);
-		trip.TruckTransmissionDamageStartPct = DamageStart(damage.Transmission, trip.TruckTransmissionDamageStartPct);
-		trip.TruckTransmissionDamageMaxPct = DamageMax(damage.Transmission, trip.TruckTransmissionDamageMaxPct);
-		trip.TruckCabinDamageStartPct = DamageStart(damage.Cabin, trip.TruckCabinDamageStartPct);
-		trip.TruckCabinDamageMaxPct = DamageMax(damage.Cabin, trip.TruckCabinDamageMaxPct);
-		trip.TruckChassisDamageStartPct = DamageStart(damage.Chassis, trip.TruckChassisDamageStartPct);
-		trip.TruckChassisDamageMaxPct = DamageMax(damage.Chassis, trip.TruckChassisDamageMaxPct);
-		trip.TruckWheelsDamageStartPct = DamageStart(damage.Wheels, trip.TruckWheelsDamageStartPct);
-		trip.TruckWheelsDamageMaxPct = DamageMax(damage.Wheels, trip.TruckWheelsDamageMaxPct);
-		trip.TrailerDamageStartPct = DamageStart(damage.Trailer, trip.TrailerDamageStartPct);
-		trip.TrailerDamageMaxPct = DamageMax(damage.Trailer, trip.TrailerDamageMaxPct);
 	}
 
 	private static double DamageStart(double current, double start)
 	{
-		return current >= 0.0 && start < 0.0 ? current : start;
+		if (!(current >= 0.0) || !(start < 0.0))
+		{
+			return start;
+		}
+		return current;
 	}
 
 	private static double DamageMax(double current, double max)
 	{
-		return current >= 0.0 && (max < 0.0 || current > max) ? current : max;
+		if (!(current >= 0.0) || (!(max < 0.0) && !(current > max)))
+		{
+			return max;
+		}
+		return current;
 	}
 
 	private static double NormalizePercent(double v)
@@ -541,52 +552,49 @@ internal sealed class TripJournal
 
 	private static DamageSnapshot ReadDamageSnapshot(JObject m)
 	{
-		DamageSnapshot damage = new DamageSnapshot();
+		DamageSnapshot damageSnapshot = new DamageSnapshot();
 		if (m == null)
 		{
-			return damage;
+			return damageSnapshot;
 		}
-
-		damage.Engine = DamagePercentAny(m, "truck.wearEngine", "truck.wear_engine", "truck.wear.engine", "truck.engineWear", "truck.engineDamage");
-		damage.Transmission = DamagePercentAny(m, "truck.wearTransmission", "truck.wear_transmission", "truck.wear.transmission", "truck.transmissionWear", "truck.transmissionDamage");
-		damage.Cabin = DamagePercentAny(m, "truck.wearCabin", "truck.wear_cabin", "truck.wear.cabin", "truck.cabinWear", "truck.cabinDamage");
-		damage.Chassis = DamagePercentAny(m, "truck.wearChassis", "truck.wear_chassis", "truck.wear.chassis", "truck.chassisWear", "truck.chassisDamage");
-		damage.Wheels = DamagePercentAny(m, "truck.wearWheels", "truck.wear_wheels", "truck.wear.wheels", "truck.wheelsWear", "truck.wheelsDamage");
-
-		JToken trailer = AttachedTrailer(m);
-		if (trailer != null)
+		damageSnapshot.Engine = DamagePercentAny(m, "truck.wearEngine", "truck.wear_engine", "truck.wear.engine", "truck.engineWear", "truck.engineDamage");
+		damageSnapshot.Transmission = DamagePercentAny(m, "truck.wearTransmission", "truck.wear_transmission", "truck.wear.transmission", "truck.transmissionWear", "truck.transmissionDamage");
+		damageSnapshot.Cabin = DamagePercentAny(m, "truck.wearCabin", "truck.wear_cabin", "truck.wear.cabin", "truck.cabinWear", "truck.cabinDamage");
+		damageSnapshot.Chassis = DamagePercentAny(m, "truck.wearChassis", "truck.wear_chassis", "truck.wear.chassis", "truck.chassisWear", "truck.chassisDamage");
+		damageSnapshot.Wheels = DamagePercentAny(m, "truck.wearWheels", "truck.wear_wheels", "truck.wear.wheels", "truck.wheelsWear", "truck.wheelsDamage");
+		JToken jToken = AttachedTrailer(m);
+		if (jToken != null)
 		{
-			damage.Cargo = DamagePercentToken(trailer["cargoDamage"] ?? trailer["CargoDamage"]);
-			double trailerBody = DamagePercentToken(trailer["wearBody"] ?? trailer["WearBody"]);
-			double trailerChassis = DamagePercentToken(trailer["wearChassis"] ?? trailer["WearChassis"]);
-			double trailerWheels = DamagePercentToken(trailer["wearWheels"] ?? trailer["WearWheels"]);
-			damage.Trailer = MaxValid(trailerBody, trailerChassis, trailerWheels);
+			damageSnapshot.Cargo = DamagePercentToken(jToken["cargoDamage"] ?? jToken["CargoDamage"]);
+			double num = DamagePercentToken(jToken["wearBody"] ?? jToken["WearBody"]);
+			double num2 = DamagePercentToken(jToken["wearChassis"] ?? jToken["WearChassis"]);
+			double num3 = DamagePercentToken(jToken["wearWheels"] ?? jToken["WearWheels"]);
+			damageSnapshot.Trailer = MaxValid(num, num2, num3);
 		}
-
-		if (damage.Cargo < 0.0)
+		if (damageSnapshot.Cargo < 0.0)
 		{
-			damage.Cargo = DamagePercentAny(m, "cargo_damage_pct", "cargoDamage", "cargo.damage", "job.cargoDamage", "job.cargo_damage", "trailer.cargoDamage", "trailer.cargo_damage", "trailer.damageCargo");
+			damageSnapshot.Cargo = DamagePercentAny(m, "cargo_damage_pct", "cargoDamage", "cargo.damage", "job.cargoDamage", "job.cargo_damage", "trailer.cargoDamage", "trailer.cargo_damage", "trailer.damageCargo");
 		}
-		if (damage.Trailer < 0.0)
+		if (damageSnapshot.Trailer < 0.0)
 		{
-			damage.Trailer = DamagePercentAny(m, "trailer.wear", "trailer.damage", "trailerDamage", "trailer_damage", "trailer.wearChassis");
+			damageSnapshot.Trailer = DamagePercentAny(m, "trailer.wear", "trailer.damage", "trailerDamage", "trailer_damage", "trailer.wearChassis");
 		}
-		return damage;
+		return damageSnapshot;
 	}
 
 	private static JToken AttachedTrailer(JObject m)
 	{
-		JArray trailers = m?["trailers"] as JArray ?? m?["Trailers"] as JArray;
-		if (trailers == null)
+		JArray jArray = (m?["trailers"] as JArray) ?? (m?["Trailers"] as JArray);
+		if (jArray == null)
 		{
 			return null;
 		}
-		foreach (JToken trailer in trailers)
+		foreach (JToken item in jArray)
 		{
-			JToken attached = trailer?["attached"] ?? trailer?["Attached"];
-			if (attached != null && attached.Type == JTokenType.Boolean && attached.Value<bool>())
+			JToken jToken = item?["attached"] ?? item?["Attached"];
+			if (jToken != null && jToken.Type == JTokenType.Boolean && jToken.Value<bool>())
 			{
-				return trailer;
+				return item;
 			}
 		}
 		return null;
@@ -598,16 +606,16 @@ internal sealed class TripJournal
 		{
 			return -1.0;
 		}
-		double value;
+		double result;
 		if (token.Type == JTokenType.Float || token.Type == JTokenType.Integer)
 		{
-			value = token.Value<double>();
+			result = token.Value<double>();
 		}
-		else if (!double.TryParse(token.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out value))
+		else if (!double.TryParse(token.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out result))
 		{
 			return -1.0;
 		}
-		return NormalizePercent(value);
+		return NormalizePercent(result);
 	}
 
 	private static double DamagePercentAny(JObject m, params string[] paths)
@@ -621,15 +629,15 @@ internal sealed class TripJournal
 
 	private static double MaxValid(params double[] values)
 	{
-		double max = -1.0;
-		foreach (double value in values)
+		double num = -1.0;
+		foreach (double num2 in values)
 		{
-			if (value >= 0.0 && value > max)
+			if (num2 >= 0.0 && num2 > num)
 			{
-				max = value;
+				num = num2;
 			}
 		}
-		return max;
+		return num;
 	}
 
 	private static bool TryDoubleAny(JObject m, out double value, params string[] paths)
