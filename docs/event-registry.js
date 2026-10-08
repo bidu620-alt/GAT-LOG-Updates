@@ -18,8 +18,6 @@
     title:'Halloween 2026',
     medal:'🎃',
     achievement_enabled:true,
-    start:'2026-09-30T00:00:00-03:00',
-    end:'2026-11-01T00:00:00-03:00',
     goal:30,
     manual_completions:{gensey:{count:30,completed:true,reason:'Correção administrativa: evento confirmado como concluído; duas cargas com erro histórico ignoradas.'}},
     cargos:[
@@ -72,9 +70,7 @@
   "title": "Carga Especial — Rei das Escoltas",
   "medal": "👑",
   "achievement_enabled": true,
-  "start": "2026-10-08T00:00:00-03:00",
-  "end": "2026-11-01T00:00:00-03:00",
-  "goal": 10,
+      "goal": 10,
   "min_km": 1000,
   "xp_per_cargo": 1000,
   "completion_xp": 5000,
@@ -178,10 +174,11 @@
   "title": "Operação Energia Total — Refinaria e Combustíveis",
   "medal": "⚡",
   "achievement_enabled": true,
-  "start": "2026-10-08T00:00:00-03:00",
-  "end": "2026-11-01T00:00:00-03:00",
-  "goal": 20,
+      "goal": 20,
   "min_km": 1000,
+  "xp_per_cargo": 500,
+  "completion_xp": 5000,
+  "completion_title": "Operação Energia Total",
   "cargos": [
     {
       "official": "Diesel",
@@ -190,7 +187,7 @@
         "diesel"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Petrol",
@@ -199,7 +196,7 @@
         "petrol"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Kerosene",
@@ -208,7 +205,7 @@
         "kerosene"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Fuel Oil",
@@ -217,7 +214,7 @@
         "fuel_oil"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Fuel Tanker",
@@ -226,7 +223,7 @@
         "fueltanker"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "LPG",
@@ -236,7 +233,7 @@
         "lpg_t"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Propane",
@@ -245,7 +242,7 @@
         "propane"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Acetylene",
@@ -254,7 +251,7 @@
         "acetylene"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Chemical Sorbent",
@@ -264,7 +261,7 @@
         "chem_sorbent"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Chemicals",
@@ -273,7 +270,7 @@
         "chemicals"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Sulphuric Acid",
@@ -283,7 +280,7 @@
         "sulfuric_t"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Hydrochloric Acid",
@@ -292,7 +289,7 @@
         "hydrochlor"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Sodium Hydroxide",
@@ -301,7 +298,7 @@
         "sodhydro"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Pesticides",
@@ -310,7 +307,7 @@
         "pesticide"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Boric Acid",
@@ -319,7 +316,7 @@
         "boric_acid"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Brake Fluid",
@@ -328,7 +325,7 @@
         "brake_fluid"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Chlorine",
@@ -338,7 +335,7 @@
         "chlorine_t"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Anhydrous Ammonia",
@@ -347,7 +344,7 @@
         "ammonia"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Arsenic",
@@ -356,7 +353,7 @@
         "arsenic"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     },
     {
       "official": "Hot Chemicals",
@@ -365,7 +362,7 @@
         "hchemicals"
       ],
       "min_km": 1000,
-      "xp": 0
+      "xp": 500
     }
   ]
 }
@@ -399,7 +396,7 @@
   }
   function progress(profile,eventId){
     const event=eventById(eventId);if(!event)return {count:0,goal:0,completed:false,completedAt:null,matched:new Map()};
-    const start=Date.parse(event.start),end=Date.parse(event.end);
+    const start=event.start?Date.parse(event.start):-Infinity,end=event.end?Date.parse(event.end):Infinity;
     const rows=Array.isArray(profile?.deliveries)?profile.deliveries:(Array.isArray(profile?.cargo_history)?profile.cargo_history:[]);
     const matched=new Map();
     const steps=[];
