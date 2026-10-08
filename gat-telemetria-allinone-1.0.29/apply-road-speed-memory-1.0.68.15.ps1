@@ -17,7 +17,7 @@ $old=@'
 			{
 				m["speed_limit_kmh"] = roadLimitKmh;
 				m["speed_limit_source"] = "game";
-				m["speed_limit_is_fallback"] = !validRaw && !(withinGrace && !double.IsNaN(_lastGameRoadLimitKmh));
+				m["speed_limit_is_fallback"] = false;
 			}
 			else if (gameConnected)
 			{
