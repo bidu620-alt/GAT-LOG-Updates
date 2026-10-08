@@ -1,7 +1,8 @@
 {
-  "version": "1.0.68.9",
-  "name": "GAT Telemetria 1.0.68.9 AUTO MAP",
-  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe",
-  "sha256": "2e85c3d83379ac0bd0dcb59629d12ae22d5d73df12897dd09c617d3b3c758356",
+  "version": "1.0.68.17",
+  "name": "RoadLife Telemetria 1.0.68.17",
+  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe",
+  "sha256": "ba73c7659205d1338e172e5f605cfdfcc4a409e5343dc5ca16e1500379cd3b4c",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }

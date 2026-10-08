@@ -1,10 +1,11 @@
 {
   "app": "RoadLife Telemetria",
   "channel": "stable",
-  "version": "1.0.68.9",
-  "display_version": "1.0.68.9",
-  "notas": "Canal centralizado preparado para RoadLife Telemetria. A publicação da instalação 1.0.68.12 será ativada somente quando o instalador Windows estiver disponível, evitando downgrade ou link quebrado.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe",
-  "sha256": "2e85c3d83379ac0bd0dcb59629d12ae22d5d73df12897dd09c617d3b3c758356",
+  "version": "1.0.68.17",
+  "display_version": "1.0.68.17",
+  "notas": "Limite padrão de 60 km/h; conserva o último limite por até 60 segundos sem sinal, com proteção contra alternâncias rápidas. Voz, Dashboard2 e multas usam o mesmo limite efetivo. Preserva interface, configurações e histórico da RoadLife V5. Versão testada e aprovada.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe",
+  "sha256": "ba73c7659205d1338e172e5f605cfdfcc4a409e5343dc5ca16e1500379cd3b4c",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }
