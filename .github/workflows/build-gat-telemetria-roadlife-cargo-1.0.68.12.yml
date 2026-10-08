@@ -29,6 +29,7 @@ on:
       - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
       - 'gat-telemetria-allinone-1.0.29/apply-roadlife-overlay-1.0.68.12.ps1'
       - 'gat-telemetria-allinone-1.0.29/apply-road-speed-tolerance-1.0.68.13.ps1'
+      - 'gat-telemetria-allinone-1.0.29/apply-road-speed-memory-1.0.68.15.ps1'
       - 'gat-telemetria-allinone-1.0.29/apply-default-speed-voice-1.0.68.14.ps1'
       - 'gat-telemetria-allinone-1.0.29/RoadLifeOverlayHost16812.cs'
       - 'docs/regras.html'
@@ -108,7 +109,7 @@ jobs:
             'apply-window-layout-1.0.55-fix.ps1','apply-full-responsive-1.0.56.ps1','apply-version-only-1.0.57.ps1','apply-version-only-1.0.58.ps1',
             'apply-version-only-1.0.59.ps1','apply-full-dash-overlay-1.0.60.ps1','apply-video-borderless-1.0.61.ps1',
             'apply-voice-clean-from-61-1.0.68.8.ps1','apply-map-auto-detect-1.0.68.9.ps1',
-            'apply-roadlife-overlay-1.0.68.12.ps1','apply-road-speed-memory-1.0.68.15.ps1','apply-road-speed-tolerance-1.0.68.13.ps1','apply-default-speed-voice-1.0.68.14.ps1'
+            'apply-roadlife-overlay-1.0.68.12.ps1','apply-road-speed-tolerance-1.0.68.13.ps1','apply-road-speed-memory-1.0.68.15.ps1','apply-default-speed-voice-1.0.68.14.ps1'
           )
 
           foreach($p in $patches){
