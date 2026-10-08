@@ -40,12 +40,12 @@ $helpers=@'
             }
             _voiceCleanSpeech.Volume = Math.Max(0, Math.Min(100, _voiceCleanVolume));
             _voiceCleanSpeech.Rate = 0;
-            _voiceCleanSpeech.SpeakAsync("Atenção. Limite padrão da via: cinquenta e seis quilômetros por hora. Reduza a velocidade.");
+            _voiceCleanSpeech.SpeakAsync("Atenção. Limite padrão da via: sessenta quilômetros por hora. Reduza a velocidade.");
             return true;
         }
         catch (Exception ex)
         {
-            ClientStore.Log("VOZ limite padrão 56 indisponível: " + ex.Message);
+            ClientStore.Log("VOZ limite padrão 60 indisponível: " + ex.Message);
             return false;
         }
     }
@@ -58,6 +58,6 @@ if($t -notlike '*private bool VoiceCleanSpeakFallbackLimit()*'){
 }
 $t=$t.Replace('        try'+[Environment]::NewLine+'        {'+[Environment]::NewLine+'            string alias = _voiceCleanAlias;','        try'+[Environment]::NewLine+'        {'+[Environment]::NewLine+'            _voiceCleanSpeech?.SpeakAsyncCancelAll();'+[Environment]::NewLine+'            string alias = _voiceCleanAlias;')
 $t=$t.Replace('            VoiceCleanStop();'+[Environment]::NewLine+'        };','            VoiceCleanStop();'+[Environment]::NewLine+'            try { _voiceCleanSpeech?.Dispose(); _voiceCleanSpeech = null; } catch { }'+[Environment]::NewLine+'        };')
-foreach($m in @('TelemetryEngine.Normalize(tele);','speed_limit_is_fallback','VoiceCleanSpeakFallbackLimit','cinquenta e seis quilômetros por hora','_voiceCleanSpeech?.SpeakAsyncCancelAll()')){if($t -notlike "*$m*"){throw "Alerta de 56 incompleto: $m"}}
+foreach($m in @('TelemetryEngine.Normalize(tele);','speed_limit_is_fallback','VoiceCleanSpeakFallbackLimit','sessenta quilômetros por hora','_voiceCleanSpeech?.SpeakAsyncCancelAll()')){if($t -notlike "*$m*"){throw "Alerta de 60 incompleto: $m"}}
 Set-Content -LiteralPath $file.FullName -Value $t -Encoding UTF8
 Write-Host 'Alerta de voz: anuncia explicitamente limite padrão de 56 km/h; limite real mantém áudio existente.'
