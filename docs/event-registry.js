@@ -85,7 +85,7 @@
       "official": "Escadaria para Construção",
       "label": "Escadaria para Construção",
       "ids": [
-        "construction_staircase"
+        "lattice"
       ],
       "min_km": 1000,
       "xp": 1000
@@ -94,7 +94,7 @@
       "official": "Peça de Caldeira",
       "label": "Peça de Caldeira",
       "ids": [
-        "boiler_part"
+        "boiler_parts"
       ],
       "min_km": 1000,
       "xp": 1000
@@ -103,7 +103,7 @@
       "official": "Balde para Escavadeira",
       "label": "Balde para Escavadeira",
       "ids": [
-        "excavator_bucket"
+        "ex_bucket"
       ],
       "min_km": 1000,
       "xp": 1000
@@ -112,7 +112,7 @@
       "official": "Silo Gigante",
       "label": "Silo Gigante",
       "ids": [
-        "giant_silo"
+        "silo"
       ],
       "min_km": 1000,
       "xp": 1000
@@ -121,7 +121,7 @@
       "official": "Trocador de Calor",
       "label": "Trocador de Calor",
       "ids": [
-        "heat_exchanger"
+        "heat_exch"
       ],
       "min_km": 1000,
       "xp": 1000
@@ -139,7 +139,7 @@
       "official": "Condensador Industrial",
       "label": "Condensador Industrial",
       "ids": [
-        "industrial_condenser"
+        "condensator"
       ],
       "min_km": 1000,
       "xp": 1000
@@ -157,7 +157,7 @@
       "official": "Pneus Gigantes",
       "label": "Pneus Gigantes",
       "ids": [
-        "giant_tires"
+        "dumper_tire"
       ],
       "min_km": 1000,
       "xp": 1000
