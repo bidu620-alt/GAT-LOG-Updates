@@ -366,7 +366,6 @@
       "xp": 500
     }
   ]
-}
 }];
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
