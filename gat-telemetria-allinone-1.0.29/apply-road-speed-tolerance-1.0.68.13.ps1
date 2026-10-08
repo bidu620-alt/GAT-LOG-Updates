@@ -8,7 +8,7 @@ $text = Get-Content -LiteralPath $journal.FullName -Raw
 $oldRead = 'double speedKmh = Math.Abs(DoubleAny(telemetry, "speed_kmh", "truck.speedKmh", "truck.speed_kmh", "truck.speed"));'
 $newRead = @'
 double speedKmh = Math.Abs(DoubleAny(telemetry, "speed_kmh", "truck.speedKmh", "truck.speed_kmh", "truck.speed"));
-		double roadLimitKmh = DoubleAny(telemetry, "speed_limit_kmh", "navigation.speedLimit", "Navigation.SpeedLimit", "speedLimit");
+		double roadLimitKmh = DoubleAny(telemetry, "speed_limit_kmh");
 		if (!double.IsNaN(roadLimitKmh) && roadLimitKmh > 0.0 && roadLimitKmh < 3.0)
 		{
 			roadLimitKmh *= 3.6;
@@ -16,10 +16,10 @@ double speedKmh = Math.Abs(DoubleAny(telemetry, "speed_kmh", "truck.speedKmh", "
 		if ((double.IsNaN(roadLimitKmh) || double.IsInfinity(roadLimitKmh) || roadLimitKmh <= 0.0 || roadLimitKmh > 250.0)
 			&& BoolAny(telemetry, "game.connected", "gameConnected", "connected"))
 		{
-			roadLimitKmh = 56.0;
+			roadLimitKmh = 60.0;
 		}
 '@.TrimEnd()
-if ($text.Contains($oldRead) -and $text -notlike '*roadLimitKmh = 56.0*') { $text = $text.Replace($oldRead, $newRead) }
+if ($text.Contains($oldRead) -and $text -notlike '*roadLimitKmh = 60.0*') { $text = $text.Replace($oldRead, $newRead) }
 elseif ($text -notlike '*double roadLimitKmh = DoubleAny(telemetry*') { throw 'Leitura da velocidade no TripJournal nao reconhecida.' }
 
 $text = $text.Replace('UpdateSpeedFine(_state.ActiveTrip, speedKmh);', 'UpdateSpeedFine(_state.ActiveTrip, speedKmh, roadLimitKmh);')
@@ -34,7 +34,7 @@ $newThreshold = 'else if (double.IsNaN(roadLimitKmh) || double.IsInfinity(roadLi
 if ($text.Contains($oldThreshold)) { $text = $text.Replace($oldThreshold, $newThreshold) }
 elseif ($text -notlike '*speedKmh <= roadLimitKmh + 1.0*') { throw 'Regra fixa de 91 km/h nao encontrada no TripJournal.' }
 
-if ($text -notlike '*roadLimitKmh + 1.0*' -or $text -like '*UpdateSpeedFine(_state.ActiveTrip, speedKmh);*' -or $text -notlike '*roadLimitKmh = 56.0*') {
+if ($text -notlike '*roadLimitKmh + 1.0*' -or $text -like '*UpdateSpeedFine(_state.ActiveTrip, speedKmh);*' -or $text -notlike '*roadLimitKmh = 60.0*') {
     throw 'A regra de tolerancia por limite da rodovia nao foi aplicada corretamente.'
 }
 Set-Content -LiteralPath $journal.FullName -Value $text -Encoding UTF8
@@ -65,7 +65,7 @@ $engineInsert = @'
 			}
 			else if (gameConnected)
 			{
-				m["speed_limit_kmh"] = 56.0;
+				m["speed_limit_kmh"] = 60.0;
 				m["speed_limit_source"] = "fallback_no_sign";
 				m["speed_limit_is_fallback"] = true;
 			}
@@ -92,4 +92,4 @@ if ($engineText -notlike '*private static bool TryBoolean(JObject m*') {
 }
 if ($engineText -notlike '*speed_limit_is_fallback*' -or $engineText -notlike '*TryBoolean(JObject m*') { throw 'Fallback nao foi aplicado ao TelemetryEngine.' }
 Set-Content -LiteralPath $engine.FullName -Value $engineText -Encoding UTF8
-Write-Host 'TripJournal: limite real ou padrao de 56 km/h quando conectado, com tolerancia +1; sem alterar dados historicos.'
+Write-Host 'TripJournal: limite real ou padrao de 60 km/h quando conectado, com tolerancia +1; sem alterar dados historicos.'
