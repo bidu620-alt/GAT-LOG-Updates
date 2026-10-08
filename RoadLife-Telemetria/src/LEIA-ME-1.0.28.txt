@@ -1,0 +1,10 @@
+GAT TELEMETRIA C# 1.0.28
+
+Versao oficial com a nova interface GAT e leitura de danos reais:
+Carga, Motor, Cambio, Cabine, Chassi, Rodas e Reboque.
+
+O dano geral do caminhao usa o maior desgaste real entre Motor, Cambio, Cabine, Chassi e Rodas.
+O dano do reboque usa o maior desgaste real de seus componentes.
+A carga usa o dano real informado pela telemetria do ETS2.
+
+Requer TruckSim GPS com a atualizacao GAT de danos para expor os cinco desgastes do caminhao.

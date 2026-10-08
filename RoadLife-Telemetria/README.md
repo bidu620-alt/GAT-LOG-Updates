@@ -1,37 +1,30 @@
-# RoadLife Telemetria — organização do código-fonte
+# RoadLife Telemetria — base consolidada de teste 1.0.68.16
 
-## Estado atual (migração em andamento)
+`src/` contem o projeto C# completo recuperado uma unica vez do commit
+8385ec8a5b92e200c9e7be4ed5d1083e9cefe45f e seus patches ate RoadLife 1.0.68.12.
+As regras de velocidade foram corrigidas diretamente no fonte, sem os patches
+incompativeis 1.0.68.13/14/15. Nao reconstruir os ZIPs nas proximas atualizacoes.
 
-**Ainda não existe aqui uma cópia integral e compilável do aplicativo principal.** A base histórica do programa está dividida em `gat-telemetria-dotnet-1.0.28/source.part.00` e `source.bin.01` até `source.bin.05`. O workflow `.github/workflows/build-gat-telemetria-roadlife-cargo-1.0.68.12.yml` reconstrói essa base e aplica scripts de `gat-telemetria-allinone-1.0.29/`.
+Compilar: `dotnet build RoadLife-Telemetria/src/GAT_TELEMETRIA.csproj -c Release`.
+Testar: `dotnet run --project RoadLife-Telemetria/tests/RoadLimitTests.csproj -c Release`.
+O workflow `build-roadlife-consolidated.yml` compila diretamente deste projeto e
+produz um pacote de teste, sem publicar nem atualizar manifestos.
 
-### Fontes existentes
+RoadLimitState usa relogio monotonicamente crescente: 60 segundos cumulativos sem
+limite valido; sinais breves nao renovam o tempo. Novos limites validos sao sempre
+imediatos. 60 segundos continuos de sinal valido renovam a tolerancia.
+TelemetryEngine fornece o limite efetivo para voz, multas locais e Dashboard2.
+O audio existente limite_060 e reutilizado. Caminhos dos dados persistentes foram
+mantidos. O pacote faz backup dos arquivos substituidos e preserva o Dashboard
+instalado, launcher e servidor TruckSimGPS. Veja LEIA-ME-TESTE.txt.
 
-- Aplicativo principal: `gat-telemetria-dotnet-1.0.28/` (arquivo-fonte compactado, não um projeto C# editável no GitHub).
-- Correções históricas e instalador: `gat-telemetria-allinone-1.0.29/`.
-- Dashboard RoadLife: `gat-dash/roadlife/` e `Projeto Dashboard2/`.
-- Manifesto estável: `update/latest.json` (não modificar até validar pacote e SHA-256).
-- Instaladores e binários: `releases/` e `releases-test/`.
-- Automação Windows: `.github/workflows/build-gat-telemetria-roadlife-cargo-1.0.68.12.yml`.
+`Dashboard/` preserva os recursos presentes no GitHub como referencia. Nao sao
+copiados sobre as personalizacoes do motorista pelo pacote de teste.
 
-## Estrutura alvo
-
-```text
-RoadLife-Telemetria/
-  src/           # arquivos .cs e .csproj completos da base validada
-  Dashboard/     # integração e assets do painel
-  Assets/        # recursos distribuídos
-  Installer/     # configuração do instalador
-  Updater/       # atualização e manifesto
-  README.md
-```
-
-## Plano seguro de migração
-
-1. Reconstruir **uma única vez** o projeto histórico em ambiente Windows com todos os patches, identificando a última versão funcional.
-2. Verificar compilação, telemetria, limites, multas, voz, dashboard e atualização.
-3. Versionar os arquivos-fonte finais em `src/` (sem credenciais, bancos ou arquivos pessoais).
-4. Alterar o workflow para compilar **diretamente de `src/`**, sem reconstruir ZIP nem aplicar patches em cadeia.
-5. Publicar um pacote testado, gerar SHA-256 e só então atualizar o manifesto estável.
-6. Após a validação, arquivar o fluxo legado; não apagá-lo antes da migração.
-
-**Regra:** toda nova correção deve ser feita nos arquivos-fonte consolidados, revisada e compilada antes de publicação. Este diretório documenta a migração, mas não representa ainda um projeto compilável.
+Validacao local: build .NET Framework 4.8 x64 passou; 21 testes passaram. Pendente:
+teste no ETS2, voz, Central e atualizador. O worker cloudflare-central/worker.js
+inspecionado calcula penalidade a partir da contagem de multas recebida, sem uma
+regra propria de limite de velocidade; a versao realmente implantada deve ser
+confirmada no teste de viagem. Nenhum banco, token ou dado pessoal foi incluido.
+A migracao para release completo ainda exige consolidar launcher, TruckSimGPS,
+recursos distribuidos e instalador que hoje dependem do pacote instalado.

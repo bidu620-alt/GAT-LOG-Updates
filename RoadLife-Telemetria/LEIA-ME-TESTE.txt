@@ -1,0 +1,36 @@
+ROADLIFE TELEMETRIA 1.0.68.16 - PACOTE DE TESTE
+
+1. Extraia este ZIP inteiro em uma pasta.
+2. Feche a RoadLife.
+3. Abra Aplicar-teste.cmd e autorize a janela do Windows.
+4. Selecione a pasta da RoadLife instalada (contem GAT_TELEMETRIA_APP.exe).
+5. Abra a RoadLife pelo atalho habitual.
+
+O pacote substitui o aplicativo e dependencias. Preserva o launcher, TruckSimGPS,
+Dashboard2, imagens, configuracoes, credenciais e historico existentes.
+Os arquivos substituidos ficam em backup-teste-1.0.68.16-DATA-HORA na instalacao.
+Audios limite_056/limite_56 MP3/WAV, se presentes em voz/limites, vao para o backup.
+A voz de 60 ja existente continua sendo usada. Nenhum manifesto foi publicado.
+
+TESTAR NO ETS2
+- Sem limite reconhecido desde o inicio: placa e aviso usam 60 km/h.
+- Limite 90, sinal desaparece: conserva 90 por 60 segundos; depois usa 60.
+- Novo limite valido, incluindo menor: aplica imediatamente.
+- Alternancias breves: o tempo sem sinal acumula, sem renovar a tolerancia.
+- 60 segundos continuos com limite valido renovam a tolerancia para outra perda.
+- Confira voz, Dashboard2, viagem, multa, pontuacao, dados e botao Atualizar.
+
+Multa local usa limite efetivo + 1 km/h e a janela existente de excesso de 5 segundos.
+A voz usa o limite efetivo; avisos podem ocorrer antes da multa por essa tolerancia.
+Nao altera multas/pontos historicos. O comportamento no jogo depende do seu teste.
+
+VOLTA A VERSAO ANTERIOR
+Feche RoadLife. No PowerShell como administrador, execute:
+.\Restore-Test.ps1 -BackupDir "CAMINHO COMPLETO DO BACKUP"
+
+VALIDACAO REALIZADA
+Aplicativo .NET Framework 4.8 x64 compilado, zero erros; um aviso legado de campo nulo.
+21 verificacoes da regra de memoria/tolerancia passaram.
+Fonte base: commit 8385ec8a5b92e200c9e7be4ed5d1083e9cefe45f do GitHub.
+Nao foi possivel validar ETS2, audio e envio para a Central neste ambiente.
+Este ZIP exige a instalacao atual; nao e um instalador completo.

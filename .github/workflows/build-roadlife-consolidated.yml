@@ -1,0 +1,33 @@
+name: RoadLife consolidated test
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['RoadLife-Telemetria/**', '.github/workflows/build-roadlife-consolidated.yml']
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet run --project RoadLife-Telemetria/tests/RoadLimitTests.csproj -c Release
+      - run: dotnet build RoadLife-Telemetria/src/GAT_TELEMETRIA.csproj -c Release
+      - shell: pwsh
+        run: |
+          $out = 'RoadLife-Telemetria/payload'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          Copy-Item RoadLife-Telemetria/src/bin/Release/net48/* $out -Recurse
+          Rename-Item "$out/GAT_TELEMETRIA.exe" GAT_TELEMETRIA_APP.exe
+          Rename-Item "$out/GAT_TELEMETRIA.exe.config" GAT_TELEMETRIA_APP.exe.config
+          $stage = 'roadlife-test'
+          New-Item -ItemType Directory $stage | Out-Null
+          Copy-Item $out $stage -Recurse
+          Copy-Item RoadLife-Telemetria/Install-Test.ps1,RoadLife-Telemetria/Restore-Test.ps1,RoadLife-Telemetria/Aplicar-teste.cmd,RoadLife-Telemetria/LEIA-ME-TESTE.txt $stage
+          Compress-Archive "$stage/*" ROADLIFE_TELEMETRIA_1.0.68.16_TESTE.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ROADLIFE_TELEMETRIA_1.0.68.16_TESTE
+          path: ROADLIFE_TELEMETRIA_1.0.68.16_TESTE.zip
