@@ -365,7 +365,8 @@
       "min_km": 1000,
       "xp": 500
     }
-  ],
+  ]
+},
 {
   "id": "alimentando_cidades_2026",
   "name": "Alimentando as Cidades",
@@ -542,7 +543,6 @@
       "min_km": 1000
     }
   ]
-}
 }];
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
