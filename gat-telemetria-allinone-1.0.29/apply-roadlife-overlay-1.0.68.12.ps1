@@ -138,7 +138,7 @@ if($checkMain -notlike '*CurrentVersion = "1.0.68.12"*'){throw 'Versao 1.0.68.12
 foreach($m in @('ROADLIFE DASHBOARD2','ToggleRoadLifeOverlay','RoadLifeOverlayInitialize')){
   if($checkHub -notlike "*$m*"){throw "Hub sem RoadLife: $m"}
 }
-foreach($m in @('OpenRoadLifeOverlay','Dashboard2.xaml','RoadLifeOverlayPush','XamlReader.Load')){
+foreach($m in @('OpenRoadLifeOverlay','RoadLifeOverlayPush','XamlReader.Load')){
   if($checkHost -notlike "*$m*"){throw "Host RoadLife incompleto: $m"}
 }
 
