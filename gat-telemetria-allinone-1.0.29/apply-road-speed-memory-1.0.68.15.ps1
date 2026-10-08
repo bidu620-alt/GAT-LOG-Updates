@@ -1,5 +1,5 @@
 param([Parameter(Mandatory=$true)][string]$Root)
-# Build trigger: limite efetivo sem fallback de 56 km/h.
+# Build trigger: limite efetivo sem fallback de 56 km/h. Teste V5.
 $ErrorActionPreference='Stop'
 $file=Get-ChildItem (Resolve-Path $Root).Path -Filter 'TelemetryEngine.cs' -Recurse | Select-Object -First 1
 if(-not $file){ throw 'TelemetryEngine.cs ausente' }
