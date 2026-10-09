@@ -54,8 +54,7 @@
     </Style>
   </Window.Resources>
 
-  <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
-  <Grid Width="1192" Height="289" Name="Root" Background="Transparent" Margin="4" ClipToBounds="True">
+  <Grid Name="Root" Background="Transparent" Margin="4" ClipToBounds="True">
     <Grid.RowDefinitions>
       <RowDefinition Height="2.40*"/>
       <RowDefinition Height="1*"/>
@@ -88,13 +87,15 @@
             <RowDefinition Height="Auto"/>
           </Grid.RowDefinitions>
 
-          <Image Name="RoadLifeLogo"
-                 Grid.Row="0"
-                 Stretch="Uniform"
-                 HorizontalAlignment="Stretch"
-                 VerticalAlignment="Stretch"
-                 Margin="6,8"
-                 SnapsToDevicePixels="True"/>
+          <Viewbox Grid.Row="0" Stretch="Uniform" StretchDirection="DownOnly" Margin="4,8"
+                   HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel>
+              <TextBlock Text="ROADBETS2" Foreground="#FF36F27A" FontFamily="Segoe UI"
+                         FontWeight="Bold" FontSize="20" TextAlignment="Center"/>
+              <TextBlock Text="TELEMETRIA" Foreground="White" FontFamily="Segoe UI"
+                         FontWeight="SemiBold" FontSize="12" TextAlignment="Center" Margin="0,3,0,0"/>
+            </StackPanel>
+          </Viewbox>
 
           <TextBlock Name="DateText"
                      Grid.Row="2"
@@ -601,7 +602,6 @@
       </Grid>
     </Border>
   </Grid>
-  </Viewbox>
 </Window>
 
 
