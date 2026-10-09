@@ -360,7 +360,7 @@ internal sealed class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.17";
+	private const string CurrentVersion = "1.0.68.21";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -752,7 +752,7 @@ internal sealed class MainForm : Form
 
 	public MainForm()
 	{
-		Text = "ROADLIFE TELEMETRIA BETA";
+		Text = "ROADBETS2 TELEMETRIA BETA";
 		StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new System.Drawing.Size(900, 700);
 		Size = new System.Drawing.Size(940, 740);
@@ -778,7 +778,7 @@ internal sealed class MainForm : Form
 			{
 				string text = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GAT-LOG", "GAT-Telemetria");
 				Directory.CreateDirectory(text);
-				File.AppendAllText(System.IO.Path.Combine(text, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.17: " + ex?.ToString() + Environment.NewLine);
+				File.AppendAllText(System.IO.Path.Combine(text, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.21: " + ex?.ToString() + Environment.NewLine);
 			}
 			catch
 			{
@@ -904,7 +904,7 @@ internal sealed class MainForm : Form
 			Anchor = (AnchorStyles.Top | AnchorStyles.Right)
 		};
 		Controls.Add(value4);
-		ModernCard modernCard = NewCard("CONTA ROADLIFE", 24, 88, ClientSize.Width - 48, 172);
+		ModernCard modernCard = NewCard("CONTA ROADBETS2", 24, 88, ClientSize.Width - 48, 172);
 		modernCard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 		Controls.Add(modernCard);
 		modernCard.Controls.Add(NewCaption("Usuário", 28, 48, 205));
@@ -1025,7 +1025,7 @@ internal sealed class MainForm : Form
 		btnEnter = MakeButton("ENTRAR / AGUARDAR", 0, 0, 1, 1, EnterClicked);
 		btnEnter.Visible = false;
 		Controls.Add(btnEnter);
-		lblSession = MakeValue("ROADLIFE: parado", 0, 0, 1);
+		lblSession = MakeValue("ROADBETS2: parado", 0, 0, 1);
 		lblSession.Visible = false;
 		Controls.Add(lblSession);
 		ModernCard modernCard3 = NewCard("TELEMETRIA", 24, 416, ClientSize.Width - 48, 154);
@@ -1038,7 +1038,7 @@ internal sealed class MainForm : Form
 		lblTruck = MakeValue("TruckSim GPS: aguardando", 28, 50, 260);
 		lblCargo = MakeValue("Carga: Sem carga", 28, 81, 260);
 		lblDistance = MakeValue("Restante: -", 28, 112, 260);
-		lblTelemetry = MakeValue("Central RoadLife: aguardando", 330, 50, 260);
+		lblTelemetry = MakeValue("Central RoadBETS2: aguardando", 330, 50, 260);
 		lblRoute = MakeValue("Rota: -", 330, 81, 260);
 		lblSpeed = MakeValue("Velocidade: 0 km/h", 330, 112, 260);
 		lblWeight = MakeValue("Peso: -", 630, 50, 225);
@@ -1088,7 +1088,7 @@ internal sealed class MainForm : Form
 		{
 			DashMediaBridge.Stop();
 		};
-		System.Windows.Forms.Button button = MakeButton("RÁDIO ROADLIFE", 278, 654, 190, 36, delegate
+		System.Windows.Forms.Button button = MakeButton("RÁDIO ROADBETS2", 278, 654, 190, 36, delegate
 		{
 			if (radioForm == null || radioForm.IsDisposed)
 			{
@@ -1111,7 +1111,7 @@ internal sealed class MainForm : Form
 		Controls.Add(btnUpdate);
 		lblVersion = new System.Windows.Forms.Label
 		{
-			Text = "Cliente 1.0.68.17",
+			Text = "Cliente 1.0.68.21",
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(105, 118, 136),
 			Anchor = (AnchorStyles.Bottom | AnchorStyles.Right),
@@ -1368,7 +1368,7 @@ internal sealed class MainForm : Form
 		string text2 = txtAccountPassword.Text ?? string.Empty;
 		if (text.Length == 0 || text2.Length == 0)
 		{
-			System.Windows.Forms.MessageBox.Show("Informe o usuário e a senha criados no site ROADLIFE.", "Conta RoadLife", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+			System.Windows.Forms.MessageBox.Show("Informe o usuário e a senha criados no site ROADBETS2.", "Conta RoadBETS2", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			return;
 		}
 		btnAccountLogin.Enabled = false;
@@ -1379,14 +1379,14 @@ internal sealed class MainForm : Form
 			if (apiResponse.StatusCode != 200 || apiResponse.Json == null || !ApiClient.Bool(apiResponse.Json["ok"]))
 			{
 				lblAccount.Text = "Conta: login inválido";
-				System.Windows.Forms.MessageBox.Show("Usuário ou senha inválidos. Use a mesma conta cadastrada no site.", "Conta RoadLife", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				System.Windows.Forms.MessageBox.Show("Usuário ou senha inválidos. Use a mesma conta cadastrada no site.", "Conta RoadBETS2", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
 			string text3 = ApiClient.Str(apiResponse.Json["user"]);
 			string text4 = ApiClient.Str(apiResponse.Json["token"]);
 			if (string.IsNullOrWhiteSpace(text3) || string.IsNullOrWhiteSpace(text4))
 			{
-				throw new InvalidOperationException("O servidor não retornou a sessão da Conta RoadLife.");
+				throw new InvalidOperationException("O servidor não retornou a sessão da Conta RoadBETS2.");
 			}
 			ClientStore.SaveAccountCredential(text3, text4);
 			txtAccountUser.Text = text3;
@@ -1396,7 +1396,7 @@ internal sealed class MainForm : Form
 			_loggedIn = false;
 			_driver = string.Empty;
 			_token = string.Empty;
-			lblSession.Text = "ROADLIFE: conta reconhecida, aguardando sessão";
+			lblSession.Text = "ROADBETS2: conta reconhecida, aguardando sessão";
 			if (chkAuto.Checked && cmbServers.SelectedItem is ServerEntry)
 			{
 				BeginWaiting(manual: false);
@@ -1404,8 +1404,8 @@ internal sealed class MainForm : Form
 		}
 		catch (Exception ex)
 		{
-			ClientStore.Log("Conta RoadLife: " + ex);
-			System.Windows.Forms.MessageBox.Show("Falha ao entrar na Conta RoadLife: " + ex.Message, "Conta RoadLife", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			ClientStore.Log("Conta RoadBETS2: " + ex);
+			System.Windows.Forms.MessageBox.Show("Falha ao entrar na Conta RoadBETS2: " + ex.Message, "Conta RoadBETS2", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 		finally
 		{
@@ -1433,7 +1433,7 @@ internal sealed class MainForm : Form
 			}
 			if (lblPcRegisterDetail != null)
 			{
-				lblPcRegisterDetail.Text = "A Central RoadLife confirma o vínculo automaticamente.";
+				lblPcRegisterDetail.Text = "A Central RoadBETS2 confirma o vínculo automaticamente.";
 			}
 			return;
 		}
@@ -1452,8 +1452,8 @@ internal sealed class MainForm : Form
 		{
 			lblPcRegisterDetail.Text = "Entre na conta para validar este PC.";
 		}
-		lblSession.Text = "ROADLIFE: entre na Conta RoadLife";
-		lblTelemetry.Text = "Central RoadLife: aguardando conta";
+		lblSession.Text = "ROADBETS2: entre na Conta RoadBETS2";
+		lblTelemetry.Text = "Central RoadBETS2: aguardando conta";
 	}
 
 	private void SetPcRegistrationState(bool linked, string pairingCode)
@@ -1506,7 +1506,7 @@ internal sealed class MainForm : Form
 			{
 				lblPcRegister.Text = "Validando registro do PC";
 				lblPcRegister.ForeColor = System.Drawing.Color.Gold;
-				lblPcRegisterDetail.Text = "A Central RoadLife vai tentar novamente automaticamente.";
+				lblPcRegisterDetail.Text = "A Central RoadBETS2 vai tentar novamente automaticamente.";
 			}
 		}
 		catch (Exception ex)
@@ -1519,7 +1519,7 @@ internal sealed class MainForm : Form
 			}
 			if (lblPcRegisterDetail != null)
 			{
-				lblPcRegisterDetail.Text = "A Central RoadLife vai tentar novamente automaticamente.";
+				lblPcRegisterDetail.Text = "A Central RoadBETS2 vai tentar novamente automaticamente.";
 			}
 		}
 	}
@@ -1672,7 +1672,7 @@ internal sealed class MainForm : Form
 			{
 				int num = ((apiResponse.Json["xp_awarded"] != null) ? apiResponse.Json["xp_awarded"].Value<int>() : 0);
 				int num2 = ((apiResponse.Json["penalty_xp"] != null) ? apiResponse.Json["penalty_xp"].Value<int>() : 0);
-				lblTelemetry.Text = ((num2 > 0) ? ("Central RoadLife: ENTREGA " + num + " XP (-" + num2 + ")") : ("Central RoadLife: ENTREGA " + num + " XP"));
+				lblTelemetry.Text = ((num2 > 0) ? ("Central RoadBETS2: ENTREGA " + num + " XP (-" + num2 + ")") : ("Central RoadBETS2: ENTREGA " + num + " XP"));
 			}
 			ClientStore.Log("recibo de viagem confirmado: " + receipt.TripId);
 			return;
@@ -1693,12 +1693,12 @@ internal sealed class MainForm : Form
 				System.Windows.Forms.Label label = lblTelemetry;
 				label.Text = text switch
 				{
-					"integrity_not_verified" => "Central RoadLife: ENTREGA NAO VALIDADA - INTEGRIDADE", 
-					"integrity_mod_blocked" => "Central RoadLife: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
-					"actual_distance_below_minimum" => "Central RoadLife: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
-					_ => "Central RoadLife: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+					"integrity_not_verified" => "Central RoadBETS2: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+					"integrity_mod_blocked" => "Central RoadBETS2: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+					"actual_distance_below_minimum" => "Central RoadBETS2: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+					_ => "Central RoadBETS2: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
 				};
-				ClientStore.Log("entrega nao validada pela Central RoadLife: " + text + " / " + receipt.TripId);
+				ClientStore.Log("entrega nao validada pela Central RoadBETS2: " + text + " / " + receipt.TripId);
 				return;
 			}
 			}
@@ -2062,14 +2062,14 @@ internal sealed class MainForm : Form
 		catch (Exception ex)
 		{
 			ClientStore.Log("fila local recusada por integridade: " + ex.Message);
-			lblTelemetry.Text = "Central RoadLife: caixa-preta local com erro de integridade";
+			lblTelemetry.Text = "Central RoadBETS2: caixa-preta local com erro de integridade";
 			return 1;
 		}
 		if (packets.Count == 0)
 		{
 			return 0;
 		}
-		lblTelemetry.Text = "Central RoadLife: enviando viagem pendente...";
+		lblTelemetry.Text = "Central RoadBETS2: enviando viagem pendente...";
 		int sent = 0;
 		int limit = Math.Min(240, packets.Count);
 		for (int i = 0; i < limit; i++)
@@ -2108,7 +2108,7 @@ internal sealed class MainForm : Form
 		if (tele == null)
 		{
 			lblTruck.Text = "TruckSim GPS: aguardando";
-			lblTelemetry.Text = "Central RoadLife: aguardando ETS2";
+			lblTelemetry.Text = "Central RoadBETS2: aguardando ETS2";
 			return;
 		}
 		tele["gat_account_user"] = _accountUser;
@@ -2142,7 +2142,7 @@ internal sealed class MainForm : Form
 				lblAccount.Text = (string.IsNullOrWhiteSpace(text) ? ("Conta: @" + _accountUser) : ("Vincular PC: " + text));
 				lblAccount.ForeColor = System.Drawing.Color.Gold;
 				SetPcRegistrationState(linked: false, text);
-				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central RoadLife: computador ainda nao vinculado" : ("Central RoadLife: digite o codigo " + text + " no site"));
+				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central RoadBETS2: computador ainda nao vinculado" : ("Central RoadBETS2: digite o codigo " + text + " no site"));
 				return;
 			}
 			if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
@@ -2158,7 +2158,7 @@ internal sealed class MainForm : Form
 			}
 			if (string.IsNullOrWhiteSpace(centralClientToken))
 			{
-				lblTelemetry.Text = ((apiResponse.StatusCode == 0) ? "Central RoadLife: reconectando..." : ("Central RoadLife: falha ao vincular HTTP " + apiResponse.StatusCode));
+				lblTelemetry.Text = ((apiResponse.StatusCode == 0) ? "Central RoadBETS2: reconectando..." : ("Central RoadBETS2: falha ao vincular HTTP " + apiResponse.StatusCode));
 				return;
 			}
 		}
@@ -2167,7 +2167,7 @@ internal sealed class MainForm : Form
 		if (await FlushCentralTelemetryQueueAsync(centralDriver, centralClientToken) > 0)
 		{
 			QueueCentralTelemetry(tele);
-			lblTelemetry.Text = "Central RoadLife: viagem salva • aguardando servidor";
+			lblTelemetry.Text = "Central RoadBETS2: viagem salva • aguardando servidor";
 			return;
 		}
 		ApiResponse apiResponse2 = await _api.SendTelemetryAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, centralClientToken, tele);
@@ -2198,19 +2198,19 @@ internal sealed class MainForm : Form
 			UpdateWorkStatus(apiResponse2.Json);
 			if (flag2)
 			{
-				lblTelemetry.Text = "Central RoadLife: ONLINE • MISSÃO CONCLUÍDA";
+				lblTelemetry.Text = "Central RoadBETS2: ONLINE • MISSÃO CONCLUÍDA";
 			}
 			else if (flag)
 			{
-				lblTelemetry.Text = "Central RoadLife: ONLINE • MISSÃO INICIADA";
+				lblTelemetry.Text = "Central RoadBETS2: ONLINE • MISSÃO INICIADA";
 			}
 			else if (BoolAny(tele, "job_latched") || BoolAny(tele, "on_job"))
 			{
-				lblTelemetry.Text = "Central RoadLife: ONLINE • TRABALHO EM ANDAMENTO";
+				lblTelemetry.Text = "Central RoadBETS2: ONLINE • TRABALHO EM ANDAMENTO";
 			}
 			else
 			{
-				lblTelemetry.Text = "Central RoadLife: ONLINE";
+				lblTelemetry.Text = "Central RoadBETS2: ONLINE";
 			}
 		}
 		else if (apiResponse2.StatusCode == 401)
@@ -2222,30 +2222,30 @@ internal sealed class MainForm : Form
 				lblAccount.Text = "Vincular PC: " + text2;
 				lblAccount.ForeColor = System.Drawing.Color.Gold;
 				SetPcRegistrationState(linked: false, text2);
-				lblTelemetry.Text = "Central RoadLife: digite o codigo " + text2 + " no site";
+				lblTelemetry.Text = "Central RoadBETS2: digite o codigo " + text2 + " no site";
 			}
 			else
 			{
-				lblTelemetry.Text = "Central RoadLife: dispositivo precisa ser vinculado";
+				lblTelemetry.Text = "Central RoadBETS2: dispositivo precisa ser vinculado";
 			}
 		}
 		else if (apiResponse2.StatusCode == 0)
 		{
 			QueueCentralTelemetry(tele);
-			lblTelemetry.Text = "Central RoadLife: viagem salva • aguardando servidor";
+			lblTelemetry.Text = "Central RoadBETS2: viagem salva • aguardando servidor";
 		}
 		else if (apiResponse2.StatusCode == 429 || apiResponse2.StatusCode >= 500)
 		{
 			QueueCentralTelemetry(tele);
-			lblTelemetry.Text = "Central RoadLife: viagem salva • aguardando servidor";
+			lblTelemetry.Text = "Central RoadBETS2: viagem salva • aguardando servidor";
 		}
 		else if (apiResponse2.StatusCode == 404)
 		{
-			lblTelemetry.Text = "Central RoadLife: atualize o servidor central";
+			lblTelemetry.Text = "Central RoadBETS2: atualize o servidor central";
 		}
 		else
 		{
-			lblTelemetry.Text = "Central RoadLife: falha HTTP " + apiResponse2.StatusCode;
+			lblTelemetry.Text = "Central RoadBETS2: falha HTTP " + apiResponse2.StatusCode;
 		}
 	}
 
@@ -2295,11 +2295,11 @@ internal sealed class MainForm : Form
 	{
 		if (!AccountReady)
 		{
-			System.Windows.Forms.MessageBox.Show("Entre primeiro com a mesma conta criada no site ROADLIFE.", "ROADLIFE TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+			System.Windows.Forms.MessageBox.Show("Entre primeiro com a mesma conta criada no site ROADBETS2.", "ROADBETS2 TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 		}
 		else if (!(cmbServers.SelectedItem is ServerEntry))
 		{
-			System.Windows.Forms.MessageBox.Show("Adicione ou selecione um servidor primeiro.", "ROADLIFE TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+			System.Windows.Forms.MessageBox.Show("Adicione ou selecione um servidor primeiro.", "ROADBETS2 TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 		}
 		else
 		{
@@ -2311,7 +2311,7 @@ internal sealed class MainForm : Form
 	{
 		if (!AccountReady)
 		{
-			lblSession.Text = "ROADLIFE: entre na Conta RoadLife";
+			lblSession.Text = "ROADBETS2: entre na Conta RoadBETS2";
 			lblTelemetry.Text = "Envio: aguardando conta";
 		}
 		else if (cmbServers.SelectedItem is ServerEntry serverEntry)
@@ -2324,7 +2324,7 @@ internal sealed class MainForm : Form
 			{
 				_loggedIn = false;
 			}
-			lblSession.Text = "ROADLIFE: aguardando sessão...";
+			lblSession.Text = "ROADBETS2: aguardando sessão...";
 			lblTelemetry.Text = "Envio: aguardando motorista";
 			ClientStore.Log("aguardando sessao em " + _endpoint);
 		}
@@ -2468,7 +2468,7 @@ internal sealed class MainForm : Form
 			{
 				_loggedIn = false;
 				_waiting = false;
-				lblTelemetry.Text = "Central RoadLife: aguardando conta";
+				lblTelemetry.Text = "Central RoadBETS2: aguardando conta";
 				return;
 			}
 			await SendCentralTelemetryAsync();
@@ -2487,13 +2487,13 @@ internal sealed class MainForm : Form
 			if (!_serverInfo.Reachable)
 			{
 				_loggedIn = false;
-				lblSession.Text = "ROADLIFE: servidor indisponível";
+				lblSession.Text = "ROADBETS2: servidor indisponível";
 				return;
 			}
 			if (_serverInfo.Supported && !_serverInfo.Online)
 			{
 				_loggedIn = false;
-				lblSession.Text = "ROADLIFE: servidor ETS2 offline";
+				lblSession.Text = "ROADBETS2: servidor ETS2 offline";
 				return;
 			}
 			PlayersResult players = null;
@@ -2518,7 +2518,7 @@ internal sealed class MainForm : Form
 				{
 					_loggedIn = false;
 					lblDriver.Text = "Motorista: -";
-					lblSession.Text = ((players.Players.Count == 0) ? "ROADLIFE: aguardando você entrar na sessão" : "ROADLIFE: aguardando motorista conhecido");
+					lblSession.Text = ((players.Players.Count == 0) ? "ROADBETS2: aguardando você entrar na sessão" : "ROADBETS2: aguardando motorista conhecido");
 					return;
 				}
 				if (!string.Equals(_driver, text, StringComparison.OrdinalIgnoreCase))
@@ -2990,13 +2990,13 @@ internal sealed class MainForm : Form
 		}
 		if (!IsAccepted(apiResponse))
 		{
-			lblSession.Text = "ROADLIFE: login recusado";
+			lblSession.Text = "ROADBETS2: login recusado";
 			ClientStore.Log("login recusado " + apiResponse.StatusCode + " " + apiResponse.Text);
 			return false;
 		}
 		if (!string.Equals(ApiClient.Str(apiResponse.Json?["account_user"]), _accountUser, StringComparison.OrdinalIgnoreCase))
 		{
-			lblSession.Text = "ROADLIFE: servidor precisa da versão 1.0.12";
+			lblSession.Text = "ROADBETS2: servidor precisa da versão 1.0.12";
 			lblTelemetry.Text = "Envio: conta não vinculada";
 			return false;
 		}
@@ -3021,7 +3021,7 @@ internal sealed class MainForm : Form
 			ClientStore.SaveCredential(_endpoint, text, text2);
 		}
 		lblDriver.Text = "Motorista: " + text;
-		lblSession.Text = "ROADLIFE: CONECTADO";
+		lblSession.Text = "ROADBETS2: CONECTADO";
 		lblTelemetry.Text = "Envio: iniciando telemetria";
 		ClientStore.Log("login ok: " + text);
 		return true;
@@ -3159,7 +3159,7 @@ internal sealed class MainForm : Form
 			string name = (string.IsNullOrWhiteSpace(addServerForm.ServerName) ? endpoint : addServerForm.ServerName.Trim());
 			if (_servers.Any((ServerEntry x) => string.Equals(ClientStore.NormalizeEndpoint(x.Endpoint), endpoint, StringComparison.OrdinalIgnoreCase)))
 			{
-				System.Windows.Forms.MessageBox.Show("Esse servidor já está cadastrado.", "ROADLIFE TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				System.Windows.Forms.MessageBox.Show("Esse servidor já está cadastrado.", "ROADBETS2 TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
 			}
 			_servers.Add(new ServerEntry
@@ -3176,7 +3176,7 @@ internal sealed class MainForm : Form
 	private void RemoveServerClicked(object sender, EventArgs e)
 	{
 		int selectedIndex = cmbServers.SelectedIndex;
-		if (selectedIndex >= 0 && selectedIndex < _servers.Count && System.Windows.Forms.MessageBox.Show("Remover este servidor da lista?", "ROADLIFE TELEMETRIA", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+		if (selectedIndex >= 0 && selectedIndex < _servers.Count && System.Windows.Forms.MessageBox.Show("Remover este servidor da lista?", "ROADBETS2 TELEMETRIA", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 		{
 			_servers.RemoveAt(selectedIndex);
 			ClientStore.SaveServers(_servers);
@@ -3202,7 +3202,7 @@ internal sealed class MainForm : Form
 			})
 			{
 				RemoteVersion remoteVersion = JsonConvert.DeserializeObject<RemoteVersion>(await http.GetStringAsync("https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json"));
-				if (remoteVersion != null && IsNewer(remoteVersion.Version, "1.0.68.17") && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
+				if (remoteVersion != null && IsNewer(remoteVersion.Version, "1.0.68.21") && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
 				{
 					_availableUpdate = remoteVersion;
 					btnUpdate.Text = "ATUALIZAR CLIENTE 1.0.32";
@@ -3214,14 +3214,14 @@ internal sealed class MainForm : Form
 			btnUpdate.Text = "VERIFICAR ATUALIZAÇÃO";
 			if (showNoUpdate)
 			{
-				System.Windows.Forms.MessageBox.Show("Você já está na versão mais recente.", "ROADLIFE TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				System.Windows.Forms.MessageBox.Show("Você já está na versão mais recente.", "ROADBETS2 TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			}
 		}
 		catch (Exception ex)
 		{
 			if (showNoUpdate)
 			{
-				System.Windows.Forms.MessageBox.Show("Não foi possível verificar atualização.\r\n\r\n" + ex.Message, "ROADLIFE TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				System.Windows.Forms.MessageBox.Show("Não foi possível verificar atualização.\r\n\r\n" + ex.Message, "ROADBETS2 TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
 		}
 	}
@@ -3234,7 +3234,7 @@ internal sealed class MainForm : Form
 		}
 		else
 		{
-			if (System.Windows.Forms.MessageBox.Show("Instalar atualizacao do ROADLIFE TELEMETRIA BETA?\r\n\r\n" + (_availableUpdate.Notes ?? string.Empty), "Atualizacao ROADLIFE TELEMETRIA BETA", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) != DialogResult.Yes)
+			if (System.Windows.Forms.MessageBox.Show("Instalar atualizacao do ROADBETS2 TELEMETRIA BETA?\r\n\r\n" + (_availableUpdate.Notes ?? string.Empty), "Atualizacao ROADBETS2 TELEMETRIA BETA", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) != DialogResult.Yes)
 			{
 				return;
 			}
@@ -3273,7 +3273,7 @@ internal sealed class MainForm : Form
 			{
 				btnUpdate.Enabled = true;
 				btnUpdate.Text = "TENTAR ATUALIZAÇÃO";
-				System.Windows.Forms.MessageBox.Show("Falha ao atualizar:\r\n\r\n" + ex.Message, "ROADLIFE TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				System.Windows.Forms.MessageBox.Show("Falha ao atualizar:\r\n\r\n" + ex.Message, "ROADBETS2 TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
 	}
@@ -3296,10 +3296,10 @@ internal sealed class MainForm : Form
 		_hubApplied041 = true;
 		SuspendLayout();
 		List<System.Windows.Forms.Control> source = Controls.Cast<System.Windows.Forms.Control>().ToList();
-		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA ROADLIFE");
+		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA ROADBETS2");
 		_hubServerCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
 		Controls.Clear();
-		Text = "ROADLIFE TELEMETRIA 1.0.68.17";
+		Text = "ROADBETS2 TELEMETRIA 1.0.68.21";
 		MinimumSize = new System.Drawing.Size(740, 500);
 		AutoScaleMode = AutoScaleMode.Dpi;
 		System.Drawing.Rectangle workingArea = Screen.FromControl(this).WorkingArea;
@@ -3333,7 +3333,7 @@ internal sealed class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "ROADLIFE ETS2  •  Cliente 1.0.68.17  •  conexão que move distâncias",
+			Text = "ROADBETS2 ETS2  •  Cliente 1.0.68.21  •  conexão que move distâncias",
 			Padding = new Padding(20, 0, 0, 0),
 			TextAlign = ContentAlignment.MiddleLeft,
 			ForeColor = System.Drawing.Color.FromArgb(104, 128, 155),
@@ -3954,7 +3954,7 @@ internal sealed class MainForm : Form
 			SizeMode = PictureBoxSizeMode.Zoom,
 			BackColor = System.Drawing.Color.Transparent
 		};
-		string text = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RoadLifeDash", "Assets", "roadlife-symbol-model1.png");
+		string text = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RoadLifeDash", "Assets", "roadbets2-logo.png");
 		if (File.Exists(text))
 		{
 			using System.Drawing.Image original = System.Drawing.Image.FromFile(text);
@@ -3970,7 +3970,7 @@ internal sealed class MainForm : Form
 		panel.Controls.Add(pictureBox);
 		panel.Controls.Add(new System.Windows.Forms.Label
 		{
-			Text = "ROADLIFE",
+			Text = "ROADBETS2",
 			Left = 80,
 			Top = 7,
 			AutoSize = true,
@@ -4003,7 +4003,7 @@ internal sealed class MainForm : Form
 		};
 		Nav041(flowLayoutPanel, "home", "INÍCIO", 105);
 		Nav041(flowLayoutPanel, "dash", "DASHBOARD", 120);
-		Nav041(flowLayoutPanel, "radio", "RÁDIO ROADLIFE", 125);
+		Nav041(flowLayoutPanel, "radio", "RÁDIO ROADBETS2", 125);
 		Nav041(flowLayoutPanel, "gps", "GPS", 80);
 		Nav041(flowLayoutPanel, "server", "COMBOIO / SERVIDOR", 175);
 		Nav041(flowLayoutPanel, "updates", "ATUALIZAÇÕES", 135);
@@ -4102,9 +4102,9 @@ internal sealed class MainForm : Form
 		{
 			tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
 		}
-		_hAccount041 = StatusCard041(tableLayoutPanel, 0, "CONTA ROADLIFE", "Conta não conectada");
+		_hAccount041 = StatusCard041(tableLayoutPanel, 0, "CONTA ROADBETS2", "Conta não conectada");
 		_hEts041 = StatusCard041(tableLayoutPanel, 1, "ETS2 / TELEMETRIA", "Aguardando TruckSim GPS");
-		_hCentral041 = StatusCard041(tableLayoutPanel, 2, "CENTRAL ROADLIFE", "Aguardando conexão");
+		_hCentral041 = StatusCard041(tableLayoutPanel, 2, "CENTRAL ROADBETS2", "Aguardando conexão");
 		_hServer041 = StatusCard041(tableLayoutPanel, 3, "COMBOIO / SERVIDOR", "Opcional");
 		panel.Controls.Add(tableLayoutPanel);
 		FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel
@@ -4117,8 +4117,8 @@ internal sealed class MainForm : Form
 			WrapContents = false,
 			AutoScroll = true
 		};
-		Module041(flowLayoutPanel, "DASHBOARD", "RoadLife Dash e sobreposição de vídeo", "dash");
-		Module041(flowLayoutPanel, "RÁDIO ROADLIFE", "Canal RoadLife e Meu Vídeo", "radio");
+		Module041(flowLayoutPanel, "DASHBOARD", "RoadBETS2 Dash e sobreposição de vídeo", "dash");
+		Module041(flowLayoutPanel, "RÁDIO ROADBETS2", "Canal RoadBETS2 e Meu Vídeo", "radio");
 		Module041(flowLayoutPanel, "GPS", "Navegação e alertas", "gps");
 		Module041(flowLayoutPanel, "COMBOIO", "Servidor e sala", "server");
 		Module041(flowLayoutPanel, "CONFIGURAÇÕES", "Conta e preferências", "settings");
@@ -4130,7 +4130,7 @@ internal sealed class MainForm : Form
 			Width = panel.Width,
 			Height = 85,
 			Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
-			Text = "TUDO EM UM SÓ LUGAR\r\nNovos recursos passam a abrir como páginas dentro do RoadLife Telemetria, sem precisar criar outro aplicativo.",
+			Text = "TUDO EM UM SÓ LUGAR\r\nNovos recursos passam a abrir como páginas dentro do RoadBETS2 Telemetria, sem precisar criar outro aplicativo.",
 			ForeColor = System.Drawing.Color.FromArgb(122, 164, 210),
 			Font = new Font("Segoe UI Semibold", 11f)
 		});
@@ -4183,7 +4183,7 @@ internal sealed class MainForm : Form
 	private System.Windows.Forms.Panel Dash041()
 	{
 		System.Windows.Forms.Panel panel = Page041();
-		panel.Controls.Add(Head041("DASHBOARD", "ROADLIFE TELEMETRIA • escolha um dos overlays."));
+		panel.Controls.Add(Head041("DASHBOARD", "ROADBETS2 TELEMETRIA • escolha um dos overlays."));
 		System.Windows.Forms.Panel panel2 = new System.Windows.Forms.Panel
 		{
 			Left = 0,
@@ -4193,7 +4193,7 @@ internal sealed class MainForm : Form
 			Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
 			BackColor = System.Drawing.Color.FromArgb(5, 24, 17)
 		};
-		System.Windows.Forms.Button button = HubButton041("ROADLIFE DASH", 190);
+		System.Windows.Forms.Button button = HubButton041("ROADBETS2 DASH", 190);
 		button.Left = 10;
 		button.Top = 9;
 		button.Height = 40;
@@ -4218,7 +4218,7 @@ internal sealed class MainForm : Form
 			Top = 145,
 			Width = 760,
 			Height = 62,
-			Text = "RoadLife Dash mostra os dados recebidos pelo RoadLife Telemetria.\r\nA sobreposição de vídeo abre em uma janela flutuante.",
+			Text = "RoadBETS2 Dash mostra os dados recebidos pelo RoadBETS2 Telemetria.\r\nA sobreposição de vídeo abre em uma janela flutuante.",
 			ForeColor = System.Drawing.Color.FromArgb(176, 205, 188),
 			Font = new Font("Segoe UI", 10.5f)
 		};
@@ -4229,7 +4229,7 @@ internal sealed class MainForm : Form
 	private System.Windows.Forms.Panel Radio041()
 	{
 		System.Windows.Forms.Panel panel = Page041();
-		panel.Controls.Add(Head041("RÁDIO ROADLIFE", "Rádio RoadLife integrada ao aplicativo e pelo overlay de vídeo."));
+		panel.Controls.Add(Head041("RÁDIO ROADBETS2", "Rádio RoadBETS2 integrada ao aplicativo e pelo overlay de vídeo."));
 		_hubRadioHost041 = new System.Windows.Forms.Panel
 		{
 			Left = 0,
@@ -4261,7 +4261,7 @@ internal sealed class MainForm : Form
 	private System.Windows.Forms.Panel Settings041()
 	{
 		System.Windows.Forms.Panel panel = Page041();
-		panel.Controls.Add(Head041("CONFIGURAÇÕES", "Conta RoadLife e preferências. Novas opções de voz entram aqui depois."));
+		panel.Controls.Add(Head041("CONFIGURAÇÕES", "Conta RoadBETS2 e preferências. Novas opções de voz entram aqui depois."));
 		if (_hubAccountCard041 != null)
 		{
 			_hubAccountCard041.Left = 0;
@@ -4276,7 +4276,7 @@ internal sealed class MainForm : Form
 
 	private System.Windows.Forms.Panel Updates041()
 	{
-		System.Windows.Forms.Panel panel = Simple041("ATUALIZAÇÕES", "Verifique novas versões do RoadLife Telemetria sem sair do aplicativo.");
+		System.Windows.Forms.Panel panel = Simple041("ATUALIZAÇÕES", "Verifique novas versões do RoadBETS2 Telemetria sem sair do aplicativo.");
 		System.Windows.Forms.Button button = HubButton041("VERIFICAR ATUALIZAÇÃO", 230);
 		button.Left = 0;
 		button.Top = 100;
@@ -4331,7 +4331,7 @@ internal sealed class MainForm : Form
 		}
 		if (_hCentral041 != null)
 		{
-			_hCentral041.Text = Safe041(lblTelemetry, "Central RoadLife: aguardando");
+			_hCentral041.Text = Safe041(lblTelemetry, "Central RoadBETS2: aguardando");
 		}
 		if (_hServer041 != null)
 		{
@@ -4383,7 +4383,7 @@ internal sealed class MainForm : Form
 			_hubRadioHost041.Controls.Add(new System.Windows.Forms.Label
 			{
 				Dock = DockStyle.Fill,
-				Text = "Rádio RoadLife indisponível.\r\n" + ex.Message,
+				Text = "Rádio RoadBETS2 indisponível.\r\n" + ex.Message,
 				TextAlign = ContentAlignment.MiddleCenter,
 				ForeColor = System.Drawing.Color.OrangeRed
 			});
@@ -4472,7 +4472,7 @@ internal sealed class MainForm : Form
 		{
 			if (!AccountReady)
 			{
-				await DashJs041("window.gatDashLoginTransportError('Entre primeiro na Conta RoadLife em Configurações.')");
+				await DashJs041("window.gatDashLoginTransportError('Entre primeiro na Conta RoadBETS2 em Configurações.')");
 				return;
 			}
 			JObject jObject = new JObject
@@ -4515,7 +4515,7 @@ internal sealed class MainForm : Form
 		}
 		catch
 		{
-			await DashJs041("window.gatDashMediaError('Rádio RoadLife indisponível')");
+			await DashJs041("window.gatDashMediaError('Rádio RoadBETS2 indisponível')");
 		}
 	}
 
@@ -4603,7 +4603,7 @@ internal sealed class MainForm : Form
 		}
 		catch (Exception ex)
 		{
-			System.Windows.Forms.MessageBox.Show("Não foi possível abrir o ROADLIFE DASH completo.\r\n" + ex.Message, "ROADLIFE DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			System.Windows.Forms.MessageBox.Show("Não foi possível abrir o ROADBETS2 DASH completo.\r\n" + ex.Message, "ROADBETS2 DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 		}
 	}
 
@@ -4707,7 +4707,7 @@ internal sealed class MainForm : Form
 			return;
 		}
 		_hub042Applied = true;
-		Text = "ROADLIFE TELEMETRIA BETA 1.0.44";
+		Text = "ROADBETS2 TELEMETRIA BETA 1.0.44";
 		RebuildHome042();
 		ImproveDash042();
 		WireMediaRouting042();
@@ -4785,7 +4785,7 @@ internal sealed class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "INÍCIO\r\nSeu perfil, sua viagem e o ecossistema ROADLIFE em um só lugar.",
+			Text = "INÍCIO\r\nSeu perfil, sua viagem e o ecossistema ROADBETS2 em um só lugar.",
 			ForeColor = System.Drawing.Color.White,
 			Font = new Font("Segoe UI Semibold", 12f, System.Drawing.FontStyle.Bold),
 			TextAlign = ContentAlignment.MiddleLeft
@@ -4828,7 +4828,7 @@ internal sealed class MainForm : Form
 			Height = 88,
 			ForeColor = System.Drawing.Color.FromArgb(159, 187, 214),
 			Font = new Font("Segoe UI", 9.5f),
-			Text = "Conta RoadLife aguardando..."
+			Text = "Conta RoadBETS2 aguardando..."
 		};
 		panel.Controls.Add(_avatar042);
 		panel.Controls.Add(_profileName042);
@@ -4839,7 +4839,7 @@ internal sealed class MainForm : Form
 			Top = 157,
 			Width = 92,
 			Height = 27,
-			Text = "ROADLIFE",
+			Text = "ROADBETS2",
 			TextAlign = ContentAlignment.MiddleCenter,
 			BackColor = System.Drawing.Color.FromArgb(10, 76, 130),
 			ForeColor = System.Drawing.Color.FromArgb(177, 224, 255),
@@ -4857,14 +4857,14 @@ internal sealed class MainForm : Form
 		};
 		panel2.Controls.Add(_trip042);
 		tableLayoutPanel2.Controls.Add(panel2, 1, 0);
-		System.Windows.Forms.Panel panel3 = Card042("RÁDIO / TV ROADLIFE • TOCANDO AGORA");
+		System.Windows.Forms.Panel panel3 = Card042("RÁDIO / TV ROADBETS2 • TOCANDO AGORA");
 		_radio042 = new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
 			Padding = new Padding(0, 8, 0, 0),
 			ForeColor = System.Drawing.Color.Gainsboro,
 			Font = new Font("Segoe UI Semibold", 10f),
-			Text = "Canal RoadLife\r\nAguardando mídia..."
+			Text = "Canal RoadBETS2\r\nAguardando mídia..."
 		};
 		panel3.Controls.Add(_radio042);
 		tableLayoutPanel2.Controls.Add(panel3, 2, 0);
@@ -4881,7 +4881,7 @@ internal sealed class MainForm : Form
 		};
 		banner.Controls.Add(new System.Windows.Forms.Label
 		{
-			Text = "ROADLIFE ETS2\r\nCONEXÃO QUE MOVE DISTÂNCIAS",
+			Text = "ROADBETS2 ETS2\r\nCONEXÃO QUE MOVE DISTÂNCIAS",
 			Left = 28,
 			Top = 36,
 			Width = 500,
@@ -4891,7 +4891,7 @@ internal sealed class MainForm : Form
 		});
 		banner.Controls.Add(new System.Windows.Forms.Label
 		{
-			Text = "Telemetria • comunidade • rádio • dashboard • GPS • comboios\r\nTudo integrado no mesmo ROADLIFE TELEMETRIA.",
+			Text = "Telemetria • comunidade • rádio • dashboard • GPS • comboios\r\nTudo integrado no mesmo ROADBETS2 TELEMETRIA.",
 			Left = 30,
 			Top = 132,
 			Width = 540,
@@ -4908,7 +4908,7 @@ internal sealed class MainForm : Form
 		};
 		System.Windows.Forms.Label gatTruck = new System.Windows.Forms.Label
 		{
-			Text = "ROADLIFE",
+			Text = "ROADBETS2",
 			Width = 150,
 			Height = 34,
 			Top = 150,
@@ -4956,7 +4956,7 @@ internal sealed class MainForm : Form
 			}
 			if (_profileMeta042 != null)
 			{
-				_profileMeta042.Text = (AccountReady ? ("@" + text + "\r\nConta RoadLife conectada\r\nPC vinculado a esta instalação") : "Conta RoadLife não conectada\r\nAbra Configurações para entrar.");
+				_profileMeta042.Text = (AccountReady ? ("@" + text + "\r\nConta RoadBETS2 conectada\r\nPC vinculado a esta instalação") : "Conta RoadBETS2 não conectada\r\nAbra Configurações para entrar.");
 			}
 			if (_trip042 != null)
 			{
@@ -4972,7 +4972,7 @@ internal sealed class MainForm : Form
 				}
 				else
 				{
-					text4 = ((text3 == "web") ? "CANAL WEB" : "CANAL ROADLIFE");
+					text4 = ((text3 == "web") ? "CANAL WEB" : "CANAL ROADBETS2");
 				}
 				string text5 = "";
 				try
@@ -4993,7 +4993,7 @@ internal sealed class MainForm : Form
 			}
 			if (_connect042 != null)
 			{
-				_connect042.Text = Safe041(lblTelemetry, "Central RoadLife: aguardando") + "\r\n" + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.44 TESTE";
+				_connect042.Text = Safe041(lblTelemetry, "Central RoadBETS2: aguardando") + "\r\n" + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.44 TESTE";
 			}
 		}
 		catch
@@ -5191,7 +5191,7 @@ internal sealed class MainForm : Form
 			return;
 		}
 		_hub044Applied = true;
-		Text = "ROADLIFE TELEMETRIA BETA 1.0.50";
+		Text = "ROADBETS2 TELEMETRIA BETA 1.0.50";
 		MinimumSize = new System.Drawing.Size(1100, 720);
 		if (Width < 1240 || Height < 820)
 		{
@@ -5200,7 +5200,7 @@ internal sealed class MainForm : Form
 		StyleHub044();
 		BuildHome044();
 		ReplaceTextRecursive044(this, "Cliente 1.0.43 TESTE", "Cliente 1.0.50 TESTE");
-		ReplaceTextRecursive044(this, "Central principal do ecossistema ROADLIFE ETS2 • tudo em um só lugar", "Conectando motoristas, estradas e amizades • ROADLIFE ETS2");
+		ReplaceTextRecursive044(this, "Central principal do ecossistema ROADBETS2 ETS2 • tudo em um só lugar", "Conectando motoristas, estradas e amizades • ROADBETS2 ETS2");
 		_hubStatusTimer041.Tick += delegate
 		{
 			SyncHome044();
@@ -5317,7 +5317,7 @@ internal sealed class MainForm : Form
 			Top = 98,
 			Width = 270,
 			Height = 105,
-			Text = "Conta RoadLife aguardando...",
+			Text = "Conta RoadBETS2 aguardando...",
 			ForeColor = System.Drawing.Color.FromArgb(161, 193, 222),
 			Font = new Font("Segoe UI", 9.5f)
 		};
@@ -5356,13 +5356,13 @@ internal sealed class MainForm : Form
 		tableLayoutPanel2.Controls.Add(glassCard2, 1, 0);
 		GlassCard044 glassCard3 = new GlassCard044
 		{
-			Caption = "RÁDIO ROADLIFE • TOCANDO AGORA",
+			Caption = "RÁDIO ROADBETS2 • TOCANDO AGORA",
 			Dock = DockStyle.Fill
 		};
 		_homeRadio044 = new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "Canal RoadLife\r\nAguardando mídia...",
+			Text = "Canal RoadBETS2\r\nAguardando mídia...",
 			ForeColor = System.Drawing.Color.FromArgb(225, 236, 248),
 			Font = new Font("Segoe UI Semibold", 10.2f),
 			TextAlign = ContentAlignment.MiddleLeft,
@@ -5468,7 +5468,7 @@ internal sealed class MainForm : Form
 				}
 				else
 				{
-					text4 = ((text3 == "web") ? "CANAL WEB" : "CANAL ROADLIFE");
+					text4 = ((text3 == "web") ? "CANAL WEB" : "CANAL ROADBETS2");
 				}
 				string text5 = "";
 				try
@@ -5485,11 +5485,11 @@ internal sealed class MainForm : Form
 				{
 					text5 = "Fonte selecionada: " + text4;
 				}
-				_homeRadio044.Text = text4 + "\r\n\r\n" + text5 + "\r\n\r\nMídia compartilhada com o ROADLIFE DASH e o overlay.";
+				_homeRadio044.Text = text4 + "\r\n\r\n" + text5 + "\r\n\r\nMídia compartilhada com o ROADBETS2 DASH e o overlay.";
 			}
 			if (_homeSystem044 != null)
 			{
-				_homeSystem044.Text = "● SISTEMA GAT\r\n" + Safe041(lblTelemetry, "Central RoadLife: aguardando") + "   •   " + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.50 TESTE";
+				_homeSystem044.Text = "● SISTEMA GAT\r\n" + Safe041(lblTelemetry, "Central RoadBETS2: aguardando") + "   •   " + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.50 TESTE";
 			}
 		}
 		catch
@@ -5552,7 +5552,7 @@ internal sealed class MainForm : Form
 		if (!_hub045Applied)
 		{
 			_hub045Applied = true;
-			Text = "ROADLIFE TELEMETRIA 1.0.68.17";
+			Text = "ROADBETS2 TELEMETRIA 1.0.68.21";
 			ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
 			BuildHome045();
 			_hubStatusTimer041.Tick += async delegate
@@ -5632,7 +5632,7 @@ internal sealed class MainForm : Form
 			Top = 89,
 			Width = 270,
 			Height = 92,
-			Text = "Conta RoadLife aguardando...",
+			Text = "Conta RoadBETS2 aguardando...",
 			ForeColor = System.Drawing.Color.FromArgb(161, 193, 222),
 			Font = new Font("Segoe UI", 9.2f)
 		};
@@ -5677,7 +5677,7 @@ internal sealed class MainForm : Form
 		_homeSystem045 = new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "Central RoadLife: aguardando...",
+			Text = "Central RoadBETS2: aguardando...",
 			ForeColor = System.Drawing.Color.FromArgb(191, 219, 242),
 			Font = new Font("Segoe UI Semibold", 9.6f),
 			TextAlign = ContentAlignment.MiddleLeft,
@@ -5878,9 +5878,9 @@ internal sealed class MainForm : Form
 			}
 			if (_homeSystem045 != null)
 			{
-				string text3 = Safe041(lblTelemetry, "Central RoadLife: aguardando");
+				string text3 = Safe041(lblTelemetry, "Central RoadBETS2: aguardando");
 				string text4 = Safe041(lblServer, "Servidor: opcional");
-				_homeSystem045.Text = "● " + text3 + "\r\n● " + text4 + "\r\n● Cliente: 1.0.68.9\r\n\r\n" + (AccountReady ? "✓ Ecossistema GAT conectado." : "Aguardando Conta RoadLife.");
+				_homeSystem045.Text = "● " + text3 + "\r\n● " + text4 + "\r\n● Cliente: 1.0.68.9\r\n\r\n" + (AccountReady ? "✓ Ecossistema GAT conectado." : "Aguardando Conta RoadBETS2.");
 				_homeSystem045.ForeColor = (AccountReady ? System.Drawing.Color.FromArgb(125, 231, 154) : System.Drawing.Color.FromArgb(191, 219, 242));
 			}
 		}
@@ -6404,7 +6404,7 @@ internal sealed class MainForm : Form
 			string text = RoadLifeOverlayXaml();
 			if (!File.Exists(text))
 			{
-				System.Windows.Forms.MessageBox.Show("RoadLifeDash.xaml não encontrado.\r\n\r\n" + text, "ROADLIFE DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				System.Windows.Forms.MessageBox.Show("RoadLifeDash.xaml não encontrado.\r\n\r\n" + text, "ROADBETS2 DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
 			string xaml = File.ReadAllText(text);
@@ -6437,7 +6437,7 @@ internal sealed class MainForm : Form
 				};
 			}
 			LoadRoadLifeImage("StructureImage", System.IO.Path.Combine(RoadLifeOverlayRoot(), "Assets", "dashboard-structure-green.png"));
-			LoadRoadLifeImage("RoadLifeLogo", System.IO.Path.Combine(RoadLifeOverlayRoot(), "Assets", "roadlife-logo-shield.png"));
+			LoadRoadLifeImage("RoadLifeLogo", System.IO.Path.Combine(RoadLifeOverlayRoot(), "Assets", "roadbets2-logo.png"));
 			RoadLifeThemeWire();
 			_roadLifeOverlay.SourceInitialized += delegate
 			{
@@ -6522,12 +6522,12 @@ internal sealed class MainForm : Form
 			_roadLifeOverlay.Show();
 			SetRoadLifeText("DateText", DateTime.Now.ToString("dd/MM/yy"));
 			SetRoadLifeText("TimeText", DateTime.Now.ToString("HH:mm:ss"));
-			ClientStore.Log("RoadLife Dashboard2 aberto como overlay interno do GAT Telemetria.");
+			ClientStore.Log("RoadBETS2 Dashboard2 aberto como overlay interno do GAT Telemetria.");
 		}
 		catch (Exception ex)
 		{
-			ClientStore.Log("RoadLife Dashboard2 abrir: " + ex);
-			System.Windows.Forms.MessageBox.Show(ex.Message, "ROADLIFE DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			ClientStore.Log("RoadBETS2 Dashboard2 abrir: " + ex);
+			System.Windows.Forms.MessageBox.Show(ex.Message, "ROADBETS2 DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 		}
 	}
 
@@ -6610,7 +6610,7 @@ internal sealed class MainForm : Form
 		}
 		catch (Exception ex)
 		{
-			ClientStore.Log("RoadLife Dashboard2 atualizar: " + ex.Message);
+			ClientStore.Log("RoadBETS2 Dashboard2 atualizar: " + ex.Message);
 		}
 	}
 
@@ -6676,14 +6676,11 @@ internal sealed class MainForm : Form
 		if (!double.IsNaN(speed) && !double.IsNaN(limit) && limit > 0.1)
 		{
 			double num = Math.Abs(speed);
-			if (num > limit)
+			if (num > limit + 1.0)
 			{
 				color = System.Windows.Media.Color.FromRgb(byte.MaxValue, 65, 82);
 			}
-			else if (num >= limit - 2.0)
-			{
-				color = System.Windows.Media.Color.FromRgb(byte.MaxValue, 177, 55);
-			}
+
 		}
 		SolidColorBrush solidColorBrush = new SolidColorBrush(color);
 		if (_roadLifeOverlay.FindName("SpeedText") is TextBlock textBlock)
@@ -6801,7 +6798,7 @@ internal sealed class MainForm : Form
 		}
 		catch (Exception ex)
 		{
-			ClientStore.Log("RoadLife cargo aliases: " + ex.Message);
+			ClientStore.Log("RoadBETS2 cargo aliases: " + ex.Message);
 		}
 	}
 
@@ -7393,7 +7390,7 @@ internal sealed class MainForm : Form
 			_voiceCleanOver = false;
 			return;
 		}
-		bool flag2 = num > num2;
+		bool flag2 = num > num2 + 1.0;
 		bool flag3 = _voiceCleanLastEventLimit > 0 && num3 != _voiceCleanLastEventLimit;
 		bool flag4 = !double.IsNaN(_voiceCleanLastRealLimit) && Math.Abs(num2 - _voiceCleanLastRealLimit) >= 1.0;
 		if (!flag2)

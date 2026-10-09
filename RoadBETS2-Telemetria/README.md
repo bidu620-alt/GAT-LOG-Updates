@@ -1,3 +1,11 @@
+# RoadBETS2 Telemetria — teste 1.0.68.21
+
+Nome exibido atualizado, logo com transparencia e Dashboard2 com escala proporcional (Viewbox Uniform). Voz e cores usam tolerancia de 1 km/h; velocidade branca ate o limite + 1, vermelha acima.
+
+A pasta do projeto agora e RoadBETS2-Telemetria. Os nomes internos do executavel, launcher, pasta de dados e RoadLifeDash permanecem compativeis com as instalacoes existentes. Nenhum manifesto publico do atualizador foi alterado: aguarda teste local no jogo.
+
+## Historico da base
+
 # RoadLife Telemetria — teste 1.0.68.17 baseado no V5 do site
 
 A base autoritativa e ROADLIFE_TELEMETRIA_1.0.68.12_TESTE_V5.exe, enviado pelo usuario
@@ -12,8 +20,8 @@ recompilado com dependencias NuGet equivalentes ao V5 (hashes iguais de
 Newtonsoft.Json e WebView2.Core). Nao usar mais a cadeia de patches de 1.0.28.
 A tentativa anterior 1.0.68.16 nao correspondia ao V5 e foi substituida aqui.
 
-Compilar: dotnet build RoadLife-Telemetria/src/GAT_TELEMETRIA.csproj -c Release
-Testar: dotnet run --project RoadLife-Telemetria/tests/RoadLimitTests.csproj -c Release
+Compilar: dotnet build RoadBETS2-Telemetria/src/GAT_TELEMETRIA.csproj -c Release
+Testar: dotnet run --project RoadBETS2-Telemetria/tests/RoadLimitTests.csproj -c Release
 O workflow compila este projeto diretamente e produz ZIP de teste, sem publicar.
 
 Preservados do V5: interface e nomes RoadLife, caminho ROADLIFE TELEMETRIA Cliente,
