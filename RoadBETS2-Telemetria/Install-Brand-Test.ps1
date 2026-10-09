@@ -20,14 +20,14 @@ try {
   $backup=Join-Path $PSScriptRoot 'backup'
   $backupManifest=Join-Path $backup 'files.json'
   if($Mode -eq 'Restore'){
-    $saved=@(Get-Content -LiteralPath $backupManifest -Raw | ConvertFrom-Json)
+    $saved=Get-Content -LiteralPath $backupManifest -Raw | ConvertFrom-Json
     foreach($entry in $saved){
       $dest=Within $target $entry.Path
       if($entry.Existed){Copy-Item -LiteralPath (Within $backup $entry.Path) -Destination $dest -Force}
       elseif(Test-Path -LiteralPath $dest){Remove-Item -LiteralPath $dest}
     }
   } else {
-    $files=@(Get-Content (Join-Path $PSScriptRoot 'sha256.json') -Raw | ConvertFrom-Json)
+    $files=Get-Content (Join-Path $PSScriptRoot 'sha256.json') -Raw | ConvertFrom-Json
     foreach($entry in $files){
       if((Get-FileHash -LiteralPath (Within $payload $entry.Path)).Hash -ne $entry.Hash){throw 'SHA256 incorreto: '+$entry.Path}
     }
@@ -54,7 +54,7 @@ try {
         if((Get-FileHash $dest).Hash -ne $entry.Hash){throw 'Arquivo instalado nao confere: '+$entry.Path}
       }
     } catch {
-      foreach($entry in @(Get-Content $backupManifest -Raw | ConvertFrom-Json)){
+      foreach($entry in (Get-Content $backupManifest -Raw | ConvertFrom-Json)){
         $dest=Within $target $entry.Path
         if($entry.Existed){Copy-Item -LiteralPath (Within $backup $entry.Path) -Destination $dest -Force}
         elseif(Test-Path -LiteralPath $dest){Remove-Item -LiteralPath $dest}
