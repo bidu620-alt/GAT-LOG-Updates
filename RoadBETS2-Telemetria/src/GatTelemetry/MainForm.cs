@@ -360,7 +360,7 @@ internal sealed class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.21";
+	private const string CurrentVersion = "1.0.68.22";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -778,7 +778,7 @@ internal sealed class MainForm : Form
 			{
 				string text = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GAT-LOG", "GAT-Telemetria");
 				Directory.CreateDirectory(text);
-				File.AppendAllText(System.IO.Path.Combine(text, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.21: " + ex?.ToString() + Environment.NewLine);
+				File.AppendAllText(System.IO.Path.Combine(text, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.22: " + ex?.ToString() + Environment.NewLine);
 			}
 			catch
 			{
@@ -1111,7 +1111,7 @@ internal sealed class MainForm : Form
 		Controls.Add(btnUpdate);
 		lblVersion = new System.Windows.Forms.Label
 		{
-			Text = "Cliente 1.0.68.21",
+			Text = "Cliente 1.0.68.22",
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(105, 118, 136),
 			Anchor = (AnchorStyles.Bottom | AnchorStyles.Right),
@@ -3202,7 +3202,7 @@ internal sealed class MainForm : Form
 			})
 			{
 				RemoteVersion remoteVersion = JsonConvert.DeserializeObject<RemoteVersion>(await http.GetStringAsync("https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json"));
-				if (remoteVersion != null && IsNewer(remoteVersion.Version, "1.0.68.21") && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
+				if (remoteVersion != null && IsNewer(remoteVersion.Version, "1.0.68.22") && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
 				{
 					_availableUpdate = remoteVersion;
 					btnUpdate.Text = "ATUALIZAR CLIENTE 1.0.32";
@@ -3299,7 +3299,7 @@ internal sealed class MainForm : Form
 		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA ROADBETS2");
 		_hubServerCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
 		Controls.Clear();
-		Text = "ROADBETS2 TELEMETRIA 1.0.68.21";
+		Text = "ROADBETS2 TELEMETRIA 1.0.68.22";
 		MinimumSize = new System.Drawing.Size(740, 500);
 		AutoScaleMode = AutoScaleMode.Dpi;
 		System.Drawing.Rectangle workingArea = Screen.FromControl(this).WorkingArea;
@@ -3333,7 +3333,7 @@ internal sealed class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "ROADBETS2 ETS2  •  Cliente 1.0.68.21  •  conexão que move distâncias",
+			Text = "ROADBETS2 ETS2  •  Cliente 1.0.68.22  •  conexão que move distâncias",
 			Padding = new Padding(20, 0, 0, 0),
 			TextAlign = ContentAlignment.MiddleLeft,
 			ForeColor = System.Drawing.Color.FromArgb(104, 128, 155),
@@ -3968,7 +3968,7 @@ internal sealed class MainForm : Form
 			});
 		}
 		panel.Controls.Add(pictureBox);
-		panel.Controls.Add(new System.Windows.Forms.Label
+		var brandTitle = new System.Windows.Forms.Label
 		{
 			Text = "ROADBETS2",
 			Left = 80,
@@ -3976,16 +3976,20 @@ internal sealed class MainForm : Form
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(54, 242, 122),
 			Font = new Font("Segoe UI Black", 26f, System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic)
-		});
-		panel.Controls.Add(new System.Windows.Forms.Label
+		};
+		panel.Controls.Add(brandTitle);
+		var brandSubtitle = new System.Windows.Forms.Label
 		{
 			Text = "TELEMETRIA",
-			Left = 267,
+			Left = brandTitle.Right + 12,
 			Top = 20,
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.White,
 			Font = new Font("Segoe UI Semibold", 15f, System.Drawing.FontStyle.Bold)
-		});
+		};
+		panel.Controls.Add(brandSubtitle);
+		brandTitle.SizeChanged += delegate { brandSubtitle.Left = brandTitle.Right + 12; };
+		panel.Layout += delegate { brandSubtitle.Left = brandTitle.Right + 12; };
 		return panel;
 	}
 
@@ -5552,7 +5556,7 @@ internal sealed class MainForm : Form
 		if (!_hub045Applied)
 		{
 			_hub045Applied = true;
-			Text = "ROADBETS2 TELEMETRIA 1.0.68.21";
+			Text = "ROADBETS2 TELEMETRIA 1.0.68.22";
 			ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
 			BuildHome045();
 			_hubStatusTimer041.Tick += async delegate
