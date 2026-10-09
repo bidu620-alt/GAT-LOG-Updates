@@ -1,10 +1,10 @@
 {
-  "app": "RoadLife Telemetria",
+  "app": "BIDUTRUCK Telemetria",
   "channel": "stable",
-  "version": "1.0.68.17",
-  "display_version": "1.0.68.17",
-  "notas": "Limite padrão de 60 km/h; conserva o último limite por até 60 segundos sem sinal, com proteção contra alternâncias rápidas. Voz, Dashboard2 e multas usam o mesmo limite efetivo. Preserva interface, configurações e histórico da RoadLife V5. Versão testada e aprovada.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/ROADLIFE_TELEMETRIA_UPDATE_1.0.68.17.exe",
-  "sha256": "ba73c7659205d1338e172e5f605cfdfcc4a409e5343dc5ca16e1500379cd3b4c"
+  "version": "1.0.68.24",
+  "display_version": "1.0.68.24",
+  "notas": "BIDUTRUCK TELEMETRIA: novo nome no aplicativo e overlay; redimensionamento original mantido; texto maior na coluna esquerda e cabecalho sem sobreposicao. Voz com tolerancia de 1 km/h. Velocidade branca ate limite + 1 km/h e vermelha acima. Preserva dados e configuracoes, com backup do aplicativo e painel.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe",
+  "sha256": "da695fe8a7f9b24724c3039fadb4baf1bb3b583e5481232943e372057ca7256d"
 }

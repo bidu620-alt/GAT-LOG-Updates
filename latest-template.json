@@ -1,7 +1,8 @@
 {
-  "version": "1.0.68.9",
-  "name": "GAT Telemetria 1.0.68.9 AUTO MAP",
-  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_1.0.68.9_AUTO_MAP.exe",
-  "sha256": "2e85c3d83379ac0bd0dcb59629d12ae22d5d73df12897dd09c617d3b3c758356",
+  "version": "1.0.68.24",
+  "name": "BIDUTRUCK Telemetria 1.0.68.24",
+  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe",
+  "sha256": "da695fe8a7f9b24724c3039fadb4baf1bb3b583e5481232943e372057ca7256d",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }
