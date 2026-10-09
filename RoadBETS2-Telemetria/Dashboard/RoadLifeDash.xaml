@@ -1,6 +1,6 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ROADTRUCK DASH"
+        Title="BIDUTRUCK DASH"
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
@@ -90,7 +90,7 @@
           <Viewbox Grid.Row="0" Stretch="Uniform" StretchDirection="DownOnly" Margin="4,8"
                    HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel>
-              <TextBlock Text="ROADTRUCK" Foreground="#FF36F27A" FontFamily="Segoe UI"
+              <TextBlock Text="BIDUTRUCK" Foreground="#FF36F27A" FontFamily="Segoe UI"
                          FontWeight="Bold" FontSize="22" TextAlignment="Center"/>
               <TextBlock Text="TELEMETRIA" Foreground="White" FontFamily="Segoe UI"
                          FontWeight="SemiBold" FontSize="14" TextAlignment="Center" Margin="0,3,0,0"/>
