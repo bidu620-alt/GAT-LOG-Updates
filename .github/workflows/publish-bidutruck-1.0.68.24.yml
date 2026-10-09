@@ -1,0 +1,97 @@
+name: Publish BIDUTRUCK Telemetria 1.0.68.24
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-bidutruck-1.0.68.24.yml']
+permissions:
+  contents: write
+concurrency:
+  group: publish-bidutruck-1.0.68.24
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Test and build approved version
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet run --project RoadBETS2-Telemetria/tests/RoadLimitTests.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
+          dotnet build RoadBETS2-Telemetria/src/GAT_TELEMETRIA.csproj -c Release -p:UseSharedCompilation=false
+          if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
+          $binary = 'RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe'
+          if ((Get-Item $binary).VersionInfo.FileVersion -ne '1.0.68.24') { throw 'Incorrect version' }
+          $xaml = Get-Content RoadBETS2-Telemetria/Dashboard/RoadLifeDash.xaml -Raw
+          if ($xaml -notmatch 'Text="BIDUTRUCK"' -or $xaml -match 'Text="ROADBETS2"|Text="ROADTRUCK"') { throw 'Incorrect overlay branding' }
+          $payload = 'RoadBETS2-Telemetria/Installer/payload'
+          New-Item -ItemType Directory -Force "$payload/RoadLifeDash" | Out-Null
+          Copy-Item $binary "$payload/GAT_TELEMETRIA_APP.exe"
+          Copy-Item "$binary.config" "$payload/GAT_TELEMETRIA_APP.exe.config"
+          Copy-Item RoadBETS2-Telemetria/Dashboard/RoadLifeDash.xaml "$payload/RoadLifeDash/RoadLifeDash.xaml"
+      - name: Install verified Inno Setup compiler
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $setup = Join-Path $env:RUNNER_TEMP 'inno-setup.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+          if ((Get-FileHash $setup).Hash.ToLowerInvariant() -ne '9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732') { throw 'Incorrect compiler SHA256' }
+          $compilerDir = Join-Path $env:RUNNER_TEMP 'InnoSetup'
+          $process = Start-Process $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/NOICONS',('/DIR="' + $compilerDir + '"')) -WindowStyle Hidden -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw 'Compiler installation failed' }
+          "INNO_ISCC=$compilerDir/ISCC.exe" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Build and test updater installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & $env:INNO_ISCC /Q RoadBETS2-Telemetria/Installer/RoadLife-Update.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          $setup = (Resolve-Path 'RoadBETS2-Telemetria/Installer/Output/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe').Path
+          $fixture = Join-Path $env:RUNNER_TEMP 'update-fixture'
+          New-Item -ItemType Directory -Force "$fixture/RoadLifeDash" | Out-Null
+          $payload = 'RoadBETS2-Telemetria/Installer/payload'
+          Copy-Item "$payload/GAT_TELEMETRIA_APP.exe" "$fixture/GAT_TELEMETRIA_APP.exe"
+          'previous-overlay' | Set-Content "$fixture/RoadLifeDash/RoadLifeDash.xaml"
+          $oldXamlHash = (Get-FileHash "$fixture/RoadLifeDash/RoadLifeDash.xaml").Hash
+          $process = Start-Process $setup -ArgumentList @('/CURRENTUSER','/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="' + $fixture + '"'),('/LOG="' + $fixture + '/install.log"')) -WindowStyle Hidden -Wait -PassThru
+          if ($process.ExitCode -ne 0) { Get-Content "$fixture/install.log"; throw 'Installer test failed' }
+          foreach ($relative in @('GAT_TELEMETRIA_APP.exe','GAT_TELEMETRIA_APP.exe.config','RoadLifeDash/RoadLifeDash.xaml')) {
+            if ((Get-FileHash "$fixture/$relative").Hash -ne (Get-FileHash "$payload/$relative").Hash) { throw "Installed file mismatch: $relative" }
+          }
+          $backups = @(Get-ChildItem $fixture -Directory -Filter 'backup-update-1.0.68.24-*')
+          if ($backups.Count -ne 1 -or (Get-FileHash "$($backups[0].FullName)/RoadLifeDash/RoadLifeDash.xaml").Hash -ne $oldXamlHash) { throw 'Backup test failed' }
+          New-Item -ItemType Directory -Force releases | Out-Null
+          Copy-Item $setup releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe
+      - name: Publish installer and updater manifests atomically
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = 'releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe'
+          $sha = (Get-FileHash $installer).Hash.ToLowerInvariant()
+          $url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/' + $installer
+          $notes = 'BIDUTRUCK TELEMETRIA: novo nome no aplicativo e overlay; redimensionamento original mantido; texto maior na coluna esquerda e cabecalho sem sobreposicao. Voz com tolerancia de 1 km/h. Velocidade branca ate limite + 1 km/h e vermelha acima. Preserva dados e configuracoes, com backup do aplicativo e painel.'
+          $manifest = [ordered]@{app='BIDUTRUCK Telemetria';channel='stable';version='1.0.68.24';display_version='1.0.68.24';notas=$notes;setup_url=$url;download_url=$url;sha256=$sha}
+          $utf8 = [Text.UTF8Encoding]::new($false)
+          [IO.File]::WriteAllText((Join-Path $PWD 'client_dotnet_version.json'), ($manifest | ConvertTo-Json) + "`n", $utf8)
+          $latest = [ordered]@{version='1.0.68.24';name='BIDUTRUCK Telemetria 1.0.68.24';url=$url;setup_url=$url;sha256=$sha;args='/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-'}
+          foreach ($path in @('latest.json','latest-template.json')) { [IO.File]::WriteAllText((Join-Path $PWD $path), ($latest | ConvertTo-Json) + "`n", $utf8) }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $installer client_dotnet_version.json latest.json latest-template.json
+          git commit -m 'Publish approved BIDUTRUCK Telemetria 1.0.68.24 updater'
+          if ($LASTEXITCODE -ne 0) { throw 'Publication commit failed' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE -ne 0) { throw 'Publication push failed' }
+          "Published installer SHA256: $sha"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24
+          path: releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe
