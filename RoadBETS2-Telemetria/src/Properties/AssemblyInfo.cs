@@ -5,11 +5,11 @@ using System.Runtime.Versioning;
 using System.Security;
 using System.Security.Permissions;
 
-[assembly: AssemblyCompany("RoadTruck Telemetria")]
+[assembly: AssemblyCompany("BiduTruck Telemetria")]
 [assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyFileVersion("1.0.68.23")]
-[assembly: AssemblyInformationalVersion("1.0.68.23+gat-damage-v3")]
-[assembly: AssemblyProduct("RoadTruck Telemetria")]
-[assembly: AssemblyTitle("RoadTruck Telemetria")]
-[assembly: AssemblyVersion("1.0.68.23")]
+[assembly: AssemblyFileVersion("1.0.68.24")]
+[assembly: AssemblyInformationalVersion("1.0.68.24+gat-damage-v3")]
+[assembly: AssemblyProduct("BiduTruck Telemetria")]
+[assembly: AssemblyTitle("BiduTruck Telemetria")]
+[assembly: AssemblyVersion("1.0.68.24")]
 
