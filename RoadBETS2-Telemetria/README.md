@@ -1,6 +1,6 @@
 # RoadBETS2 Telemetria — teste 1.0.68.21
 
-Nome exibido atualizado, logo com transparencia e Dashboard2 com escala proporcional (Viewbox Uniform). Voz e cores usam tolerancia de 1 km/h; velocidade branca ate o limite + 1, vermelha acima.
+Nome exibido atualizado, logo com transparencia no aplicativo e Dashboard2 com redimensionamento original e nome em texto na coluna esquerda. Voz e cores usam tolerancia de 1 km/h; velocidade branca ate o limite + 1, vermelha acima.
 
 A pasta do projeto agora e RoadBETS2-Telemetria. Os nomes internos do executavel, launcher, pasta de dados e RoadLifeDash permanecem compativeis com as instalacoes existentes. Nenhum manifesto publico do atualizador foi alterado: aguarda teste local no jogo.
 
