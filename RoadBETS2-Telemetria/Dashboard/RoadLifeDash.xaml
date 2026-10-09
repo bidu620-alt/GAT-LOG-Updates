@@ -91,9 +91,9 @@
                    HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel>
               <TextBlock Text="ROADBETS2" Foreground="#FF36F27A" FontFamily="Segoe UI"
-                         FontWeight="Bold" FontSize="20" TextAlignment="Center"/>
+                         FontWeight="Bold" FontSize="22" TextAlignment="Center"/>
               <TextBlock Text="TELEMETRIA" Foreground="White" FontFamily="Segoe UI"
-                         FontWeight="SemiBold" FontSize="12" TextAlignment="Center" Margin="0,3,0,0"/>
+                         FontWeight="SemiBold" FontSize="14" TextAlignment="Center" Margin="0,3,0,0"/>
             </StackPanel>
           </Viewbox>
 
