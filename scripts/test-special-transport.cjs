@@ -1,0 +1,43 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),ctx={window:{}};
+vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'docs/event-registry.js'),'utf8'),ctx);
+const registry=ctx.window.GATEventRegistry,event=registry.eventById('special_cargo_2026');
+const progress=rows=>registry.progress({user:'xuxa01',deliveries:rows},event.id);
+const row=(id='boiler_parts',extra={})=>({id:862,cargo:'Peça de uma caldeira',distance_km:179,xp:163,xp_awarded:163,delivered_at:'2026-10-09T14:12:55.122Z',raw_json:JSON.stringify({mission:{cargo_id:id,state:'active'},delivery_details:{distanceKm:179}}),...extra});
+assert.equal(event.min_km,0);
+assert.ok(event.cargos.every(c=>c.min_km===0));
+const delivery=row(),before=JSON.stringify(delivery),result=progress([delivery]);
+assert.equal(result.count,1);assert.equal(result.matched.get('Peça de Caldeira').row.id,862);
+assert.equal(progress([delivery,delivery]).count,1);
+assert.equal(progress([row('boiler_parts',{distance_km:0})]).count,1);
+assert.equal(progress([row('unknown',{cargo:'Peça de Caldeira'})]).count,0);
+assert.equal(progress([row('',{cargo:'Peça de Caldeira'})]).count,0);
+assert.equal(progress([row('boiler_parts',{delivered_at:null})]).count,0);
+for(const status of ['cancelled','canceled','rejected','failed','pending','assigned'])assert.equal(progress([row('boiler_parts',{status})]).count,0,status);
+assert.equal(progress([row('boiler_parts',{completed:false})]).count,0);
+assert.equal(progress([row('boiler_parts',{raw_json:'invalid'})]).count,0);
+assert.equal(progress([row('boiler_parts',{cargo_id:'wrong'})]).count,0);
+assert.equal(progress([row('boiler_parts',{raw_json:{mission:{cargo_id:'boiler_parts'}}})]).count,1);
+assert.equal(progress([row('',{cargo_id:'cargo.boiler_parts'})]).count,1);
+const all=event.cargos.map(c=>row(c.ids[0]));
+assert.equal(progress(all).count,10);assert.equal(progress(all).completed,true);
+const achievements=registry.achievementList({deliveries:all});
+const final=achievements.find(a=>a.id==='event_special_cargo_2026');
+assert.equal(final.title,'O Rei do Special Transport');assert.equal(final.unlocked,true);
+assert.equal(achievements.filter(a=>a.eventId===event.id&&a.kind==='event_cargo'&&a.unlocked).length,10);
+assert.ok(achievements.filter(a=>a.eventId===event.id).every(a=>!a.description.includes('1.000 km')));
+for(let i=0;i<3;i++){progress([delivery]);registry.achievementList({deliveries:[delivery]});}
+assert.equal(JSON.stringify(delivery),before,'Recalculating progress must not mutate the delivery or its XP');
+assert.equal(registry.progress({deliveries:[row('diesel',{cargo:'Diesel'})]},'energia_total_2026').count,0);
+assert.equal(registry.progress({deliveries:[row('diesel',{cargo:'Diesel',distance_km:1000})]},'energia_total_2026').count,1);
+if(process.argv[2]){
+  const data=JSON.parse(fs.readFileSync(process.argv[2],'utf8').replace(/^\uFEFF/,''));
+  const profile=data.profile||data,actual=profile.deliveries.find(d=>d.id===862),snapshot=JSON.stringify(profile);
+  assert.ok(actual);assert.equal(actual.xp,163);
+  const actualProgress=registry.progress(profile,event.id);
+  assert.ok(actualProgress.matched.has('Peça de Caldeira'));
+  assert.equal(registry.progress({...profile,deliveries:[actual]},event.id).count,1);
+  registry.achievementList(profile);assert.equal(JSON.stringify(profile),snapshot);
+  console.log(JSON.stringify({driver:profile.user,delivery:862,eventProgress:actualProgress.count+'/10',deliveryXP:actual.xp,profileXP:profile.xp}));
+}
+console.log('Special Transport: short deliveries, strict IDs, completion, deduplication and XP preservation passed.');

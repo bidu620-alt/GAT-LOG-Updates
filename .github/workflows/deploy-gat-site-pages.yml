@@ -44,6 +44,9 @@ jobs:
       - name: Validate game cargo names and IDs
         run: node scripts/test-cargo-identity.cjs
 
+      - name: Validate Special Transport event and achievement
+        run: node scripts/test-special-transport.cjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:

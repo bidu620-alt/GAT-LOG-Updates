@@ -68,8 +68,10 @@
   "id": "special_cargo_2026",
   "name": "Carga Especial — Rei das Escoltas",
   "title": "Carga Especial — Rei das Escoltas",
+  "achievement_title": "O Rei do Special Transport",
   "medal": "👑",
   "achievement_enabled": true,
+  "require_cargo_id": true,
       "goal": 10,
   "min_km": 0,
   "xp_per_cargo": 1000,
@@ -546,9 +548,23 @@
 }];
 
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
+  function rawOf(row){
+    if(row?.raw_json&&typeof row.raw_json==='object')return row.raw_json;
+    try{return JSON.parse(row?.raw_json||'{}')||{}}catch{return {}}
+  }
+  function completedDelivery(row){
+    const raw=rawOf(row);
+    const states=[row?.state,row?.status,raw?.state,raw?.status,raw?.mission?.state].map(norm);
+    return Number.isFinite(rowTime(row))&&row?.completed!==false&&row?.delivered!==false&&
+      !states.some(s=>['cancelled','canceled','rejected','failed','assigned','pending'].includes(s));
+  }
   function rowTime(row){const t=Date.parse(row?.delivered_at||row?.completed_at||row?.date||'');return Number.isFinite(t)?t:NaN}
   function catalogAliases(cargo){return [cargo?.official,...(cargo?.ids||[])].flatMap(value=>CATALOG_ALIASES[compact(value)]||[])}
-  function cargoMatches(row,cargo){
+  function cargoMatches(row,cargo,requireId=false){
+    const raw=rawOf(row);
+    const cargoId=row?.cargo_id||row?.cargoId||row?.cargo_identity?.cargo_id_raw||row?.cargo_identity?.cargo_id||row?.mission?.cargo_id||raw?.cargo_identity?.cargo_id_raw||raw?.cargo_identity?.cargo_id||raw?.mission?.cargo_id||raw?.cargo_id;
+    const acceptedIds=(cargo.ids||[]).flatMap(idVariants);
+    if(requireId)return acceptedIds.some(x=>idVariants(cargoId).includes(x));
     const rowNames=[
       row?.cargo,row?.cargo_name,row?.cargo_name_raw,row?.name,row?.title,
       row?.cargo_identity?.cargo_name_raw,row?.cargo_identity?.cargo_name
@@ -559,9 +575,8 @@
     const rowIds=[
       row?.cargo_id,row?.cargoId,row?.catalog_id,
       row?.cargo_identity?.cargo_id_raw,row?.cargo_identity?.cargo_id,
-      row?.mission?.cargo_id
+      row?.mission?.cargo_id,raw?.cargo_identity?.cargo_id_raw,raw?.cargo_identity?.cargo_id,raw?.mission?.cargo_id,raw?.cargo_id
     ].flatMap(idVariants);
-    const acceptedIds=(cargo.ids||[]).flatMap(idVariants);
     return acceptedIds.some(x=>rowIds.includes(x));
   }
   function routeMatches(row,cargo){
@@ -607,8 +622,9 @@
     }
     for(const row of rows){
       const t=rowTime(row);if(!Number.isFinite(t)||t<start||t>=end)continue;
+      if(event.require_cargo_id&&!completedDelivery(row))continue;
       for(const cargo of event.cargos||[]){
-        if(!matched.has(cargo.official)&&cargoMatches(row,cargo)&&(!cargo.min_km||Number(row?.distance_km??row?.distance??row?.km??0)>=cargo.min_km))matched.set(cargo.official,{row,t,cargo});
+        if(!matched.has(cargo.official)&&cargoMatches(row,cargo,event.require_cargo_id)&&(!cargo.min_km||Number(row?.distance_km??row?.distance??row?.km??0)>=cargo.min_km))matched.set(cargo.official,{row,t,cargo});
       }
     }
     const goal=Number(event.goal)||event.cargos?.length||0;
@@ -625,7 +641,7 @@
       const p=progress(profile,e.id);
       const individual=e.xp_per_cargo?(e.cargos||[]).map(c=>({id:'event_'+e.id+'_'+compact(c.official),eventId:e.id,title:c.label,description:(c.min_km||e.min_km)?'Conclua uma entrega de pelo menos '+(c.min_km||e.min_km)+' km.':'Conclua esta carga especial.',unlocked:p.matched.has(c.official),medal:'🏅',kind:'event_cargo',progress:p.matched.has(c.official)?1:0,goal:1,xp:c.xp||e.xp_per_cargo})):[];
       return [...individual,{
-        id:'event_'+e.id,eventId:e.id,title:e.title||e.name||e.id,
+        id:'event_'+e.id,eventId:e.id,title:e.achievement_title||e.title||e.name||e.id,
         description:p.completed?'Evento concluído. Meta '+p.goal+'/'+p.goal+' atingida.':'Complete o evento. Progresso: '+p.count+'/'+p.goal+'.',
         unlocked:p.completed,medal:e.medal||'🏆',kind:'event',progress:p.count,goal:p.goal,completedAt:p.completedAt,xp:e.completion_xp||0,rewardTitle:e.completion_title||'',description:e.completion_description||('Complete o evento. Progresso: '+p.count+'/'+p.goal+'.')
       }];

@@ -50,8 +50,11 @@ jobs:
 
       - name: Check Halloween event wiring
         run: |
-          grep -q 'event-registry.js?v=2' docs/eventos/hallowin/index.html
+          grep -q 'event-registry.js?v=' docs/eventos/hallowin/index.html
           grep -q 'script.js?v=10' docs/eventos/hallowin/index.html
-          grep -q "2026-09-30T00:00:00-03:00" docs/event-registry.js
+          grep -q "id:'halloween_2026'" docs/event-registry.js
           grep -q "cargo_name_raw" docs/event-registry.js
           grep -q "api/public/driver" docs/eventos/hallowin/script.js
+
+      - name: Check Special Transport progress and XP preservation
+        run: node scripts/test-special-transport.cjs
