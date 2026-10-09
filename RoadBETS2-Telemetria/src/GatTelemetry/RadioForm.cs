@@ -125,7 +125,7 @@ internal sealed class RadioForm : Form
 
 	public RadioForm()
 	{
-		Text = "Rádio / TV RoadTruck";
+		Text = "Rádio / TV BiduTruck";
 		StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new Size(760, 680);
 		Size = new Size(840, 740);
@@ -192,7 +192,7 @@ internal sealed class RadioForm : Form
 
 	private void BuildUi()
 	{
-		_title.Text = "RÁDIO / TV ROADTRUCK";
+		_title.Text = "RÁDIO / TV BIDUTRUCK";
 		_title.Left = 24;
 		_title.Top = 16;
 		_title.Width = 360;
@@ -200,14 +200,14 @@ internal sealed class RadioForm : Form
 		_title.Font = new Font("Segoe UI Semibold", 20f, FontStyle.Bold);
 		_title.ForeColor = Color.White;
 		Controls.Add(_title);
-		_description.Text = "Escolha o Canal RoadTruck para todos ou o MEU VÍDEO somente para você.";
+		_description.Text = "Escolha o Canal BiduTruck para todos ou o MEU VÍDEO somente para você.";
 		_description.Left = 26;
 		_description.Top = 53;
 		_description.Width = 720;
 		_description.Height = 28;
 		_description.ForeColor = Color.FromArgb(168, 181, 199);
 		Controls.Add(_description);
-		SetupButton(_channelGat, "\ud83d\udce1 CANAL ROADTRUCK", 24, 82, 145);
+		SetupButton(_channelGat, "\ud83d\udce1 CANAL BIDUTRUCK", 24, 82, 145);
 		_channelGat.Click += async delegate
 		{
 			await SwitchModeAsync(personal: false);
@@ -233,7 +233,7 @@ internal sealed class RadioForm : Form
 			ToggleOverlayMode();
 		};
 		Controls.Add(_overlay);
-		_personalLabel.Text = "Seu vídeo/playlist do YouTube (fica disponível também no ROADTRUCK DASH):";
+		_personalLabel.Text = "Seu vídeo/playlist do YouTube (fica disponível também no BIDUTRUCK DASH):";
 		_personalLabel.Left = 24;
 		_personalLabel.Top = 126;
 		_personalLabel.Width = 560;
@@ -270,7 +270,7 @@ internal sealed class RadioForm : Form
 		_web.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 		_web.BackColor = Color.Black;
 		Controls.Add(_web);
-		_state.Text = "Rádio: conectando à Central RoadTruck...";
+		_state.Text = "Rádio: conectando à Central BiduTruck...";
 		_state.Left = 26;
 		_state.Top = 555;
 		_state.Width = 760;
@@ -390,8 +390,8 @@ internal sealed class RadioForm : Form
 		}
 		if (flag)
 		{
-			_description.Text = "CANAL ROADTRUCK toca para todos os motoristas. Admin/Moderador define a programação aqui no Telemetria.";
-			_personalLabel.Text = (CanEditChannel049() ? "Link do CANAL ROADTRUCK para todos (YouTube vídeo/playlist ou Rádio Online MP3/AAC):" : "CANAL ROADTRUCK • programação compartilhada com todos os motoristas:");
+			_description.Text = "CANAL BIDUTRUCK toca para todos os motoristas. Admin/Moderador define a programação aqui no Telemetria.";
+			_personalLabel.Text = (CanEditChannel049() ? "Link do CANAL BIDUTRUCK para todos (YouTube vídeo/playlist ou Rádio Online MP3/AAC):" : "CANAL BIDUTRUCK • programação compartilhada com todos os motoristas:");
 			_personalInput.Enabled = CanEditChannel049();
 			_loadPersonal.Enabled = CanEditChannel049();
 			_loadPersonal.Text = "SALVAR P/ TODOS";
@@ -402,7 +402,7 @@ internal sealed class RadioForm : Form
 		}
 		else
 		{
-			_description.Text = "MEU VÍDEO é individual: a fonte fica somente neste PC e não altera o Canal RoadTruck dos outros motoristas.";
+			_description.Text = "MEU VÍDEO é individual: a fonte fica somente neste PC e não altera o Canal BiduTruck dos outros motoristas.";
 			_personalLabel.Text = "Seu vídeo/playlist ou Rádio Online (somente neste PC):";
 			_personalInput.Enabled = true;
 			_loadPersonal.Enabled = true;
@@ -500,13 +500,13 @@ internal sealed class RadioForm : Form
 		_openYoutube.Enabled = !string.IsNullOrWhiteSpace(_serverSourceUrl);
 		if (!flag2)
 		{
-			_state.Text = "Canal RoadTruck: DESLIGADO pela Central";
+			_state.Text = "Canal BiduTruck: DESLIGADO pela Central";
 			_state.ForeColor = Color.FromArgb(168, 181, 199);
 			_source.Text = "Fonte oficial: nenhuma programação ativa";
 		}
 		else
 		{
-			_state.Text = (_listening ? "Canal RoadTruck: AO VIVO • ouvindo" : "Canal RoadTruck: AO VIVO • clique em OUVIR RÁDIO");
+			_state.Text = (_listening ? "Canal BiduTruck: AO VIVO • ouvindo" : "Canal BiduTruck: AO VIVO • clique em OUVIR RÁDIO");
 			_state.ForeColor = Color.FromArgb(130, 224, 69);
 			_source.Text = "Fonte oficial: " + SourceDescription(_serverSourceType) + " • revisão " + _serverRevision;
 		}
@@ -629,7 +629,7 @@ internal sealed class RadioForm : Form
 	{
 		if (!CanEditChannel049())
 		{
-			_state.Text = "Canal RoadTruck: sua conta não tem permissão para alterar a programação global.";
+			_state.Text = "Canal BiduTruck: sua conta não tem permissão para alterar a programação global.";
 			_state.ForeColor = Color.OrangeRed;
 			return;
 		}
@@ -640,21 +640,21 @@ internal sealed class RadioForm : Form
 		bool enabled = !string.IsNullOrWhiteSpace(text);
 		if (enabled && !TryParseMediaSource(text, out sourceType, out sourceId, out canonical))
 		{
-			_state.Text = "Canal RoadTruck: link inválido. Use YouTube ou URL direta de Rádio Online MP3/AAC.";
+			_state.Text = "Canal BiduTruck: link inválido. Use YouTube ou URL direta de Rádio Online MP3/AAC.";
 			_state.ForeColor = Color.OrangeRed;
 			return;
 		}
 		try
 		{
 			_loadPersonal.Enabled = false;
-			_state.Text = (enabled ? "Canal RoadTruck: salvando para todos..." : "Canal RoadTruck: desligando programação global...");
+			_state.Text = (enabled ? "Canal BiduTruck: salvando para todos..." : "Canal BiduTruck: desligando programação global...");
 			_state.ForeColor = Color.FromArgb(168, 181, 199);
 			JObject jObject = new JObject
 			{
 				["token"] = _accountToken049,
 				["enabled"] = enabled,
 				["playlist_url"] = (enabled ? canonical : string.Empty),
-				["label"] = "Canal RoadTruck"
+				["label"] = "Canal BiduTruck"
 			};
 			using (StringContent content = new StringContent(jObject.ToString(Formatting.None), Encoding.UTF8, "application/json"))
 			{
@@ -671,19 +671,19 @@ internal sealed class RadioForm : Form
 				if (!response.IsSuccessStatusCode || jObject2 == null || jObject2.Value<bool?>("ok") != true)
 				{
 					string text2 = ((jObject2 == null) ? ("HTTP " + (int)response.StatusCode) : (Convert.ToString(jObject2["error"]) ?? ("HTTP " + (int)response.StatusCode)));
-					_state.Text = "Canal RoadTruck: não foi possível salvar • " + text2;
+					_state.Text = "Canal BiduTruck: não foi possível salvar • " + text2;
 					_state.ForeColor = Color.OrangeRed;
 					return;
 				}
 			}
 			_personalInput.Text = (enabled ? canonical : string.Empty);
 			await RefreshRadioAsync(force: true);
-			_state.Text = (enabled ? "Canal RoadTruck: programação salva para todos os motoristas ✓" : "Canal RoadTruck: programação global desligada ✓");
+			_state.Text = (enabled ? "Canal BiduTruck: programação salva para todos os motoristas ✓" : "Canal BiduTruck: programação global desligada ✓");
 			_state.ForeColor = Color.FromArgb(130, 224, 69);
 		}
 		catch (Exception ex)
 		{
-			_state.Text = "Canal RoadTruck: falha ao salvar • " + ex.Message;
+			_state.Text = "Canal BiduTruck: falha ao salvar • " + ex.Message;
 			_state.ForeColor = Color.OrangeRed;
 		}
 		finally
@@ -931,7 +931,7 @@ internal sealed class RadioForm : Form
 		switch (code)
 		{
 		case 100:
-			return "Este vídeo foi removido, é privado ou não está disponível. Em playlist, a Rádio RoadTruck tenta pular para o próximo.";
+			return "Este vídeo foi removido, é privado ou não está disponível. Em playlist, a Rádio BiduTruck tenta pular para o próximo.";
 		case 101:
 		case 150:
 			return "Este videoclipe bloqueia reprodução incorporada. Em playlist ele será pulado; para vídeo único use ABRIR FONTE.";
@@ -1055,7 +1055,7 @@ internal sealed class RadioForm : Form
 			JObject jObject = JObject.Parse(await _http.GetStringAsync("https://api.gatlogets2.com.br/api/public/radio?t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
 			if (!(jObject["radio"] is JObject jObject2) || jObject.Value<bool?>("ok") != true)
 			{
-				throw new InvalidDataException("Resposta inválida da Central RoadTruck.");
+				throw new InvalidDataException("Resposta inválida da Central BiduTruck.");
 			}
 			bool valueOrDefault = jObject2.Value<bool?>("enabled") == true;
 			string text = (Convert.ToString(jObject2["source_type"]) ?? string.Empty).Trim().ToLowerInvariant();
@@ -1104,7 +1104,7 @@ internal sealed class RadioForm : Form
 		{
 			if (!_personalMode && !_webMode)
 			{
-				_state.Text = "Canal RoadTruck: Central temporariamente indisponível.";
+				_state.Text = "Canal BiduTruck: Central temporariamente indisponível.";
 				_state.ForeColor = Color.Orange;
 				_track.Text = "Detalhe: " + ex.Message;
 			}
@@ -1188,7 +1188,7 @@ internal sealed class RadioForm : Form
 		}
 		catch (Exception ex)
 		{
-			MessageBox.Show(this, "Não foi possível abrir no navegador.\r\n\r\n" + ex.Message, "Rádio RoadTruck", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			MessageBox.Show(this, "Não foi possível abrir no navegador.\r\n\r\n" + ex.Message, "Rádio BiduTruck", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 		}
 	}
 
@@ -1628,6 +1628,6 @@ internal sealed class RadioForm : Form
 
 	private static string PlayerHtml()
 	{
-		return "<!doctype html>\n<html><head><meta charset='utf-8'><meta name='referrer' content='strict-origin-when-cross-origin'>\n<style>\nhtml,body{margin:0;width:100%;height:100%;background:#020711;overflow:hidden;font-family:Segoe UI,Arial,sans-serif;color:#eaf2ff}\n#player,#streamPane{width:100%;height:100%}#streamPane{display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#0d3155 0,#06192c 45%,#020711 100%)}\n.radioCard{text-align:center;max-width:86%;padding:28px}.radioIcon{font-size:64px;margin-bottom:14px}.radioTitle{font-size:25px;font-weight:700}.radioSub{margin-top:8px;color:#9eb6d1;font-size:14px}.radioUrl{margin-top:16px;color:#6f8daa;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:680px}\n</style></head>\n<body><div id='player'></div><div id='streamPane'><div class='radioCard'><div class='radioIcon'>\ud83d\udcfb</div><div class='radioTitle'>RÁDIO ONLINE • AO VIVO</div><div class='radioSub'>Stream direto MP3/AAC reproduzido somente neste ROADTRUCK TELEMETRIA.</div><div id='streamUrl' class='radioUrl'></div></div><audio id='streamAudio' preload='none'></audio></div>\n<script src='https://www.youtube.com/iframe_api'></script><script>\nlet player=null,ytReady=false,pendingType='',pendingId='',currentType='';\nconst audio=document.getElementById('streamAudio'),playerBox=document.getElementById('player'),streamPane=document.getElementById('streamPane'),streamUrl=document.getElementById('streamUrl');\nfunction post(o){try{chrome.webview.postMessage(o)}catch(e){}}\nfunction showYoutube(){playerBox.style.display='block';streamPane.style.display='none'}\nfunction showStream(url){playerBox.style.display='none';streamPane.style.display='flex';streamUrl.textContent=url||''}\nfunction stopYoutube(){if(ytReady&&player){try{player.pauseVideo()}catch(e){}}}\nfunction stopStream(clear){try{audio.pause();if(clear){audio.removeAttribute('src');audio.load()}}catch(e){}}\nfunction loadPending(){if(!ytReady||!pendingId)return;let t=pendingType,id=pendingId;pendingType='';pendingId='';if(t==='video')gatLoadVideo(id);else if(t==='playlist')gatLoadPlaylist(id)}\nfunction onYouTubeIframeAPIReady(){player=new YT.Player('player',{width:'100%',height:'100%',playerVars:{controls:1,disablekb:0,fs:1,playsinline:1,rel:0,origin:'https://radio.gatlogets2.local',widget_referrer:'https://radio.gatlogets2.local/'},events:{onReady:function(){ytReady=true;loadPending()},onStateChange:function(e){if(e.data===YT.PlayerState.PLAYING){let d=player.getVideoData()||{};post({type:'track',title:d.title||''})}},onError:function(e){post({type:'error',code:e.data});if(currentType==='playlist'&&(e.data===100||e.data===101||e.data===150)){setTimeout(function(){try{player.nextVideo()}catch(x){}},700)}}}})}\nfunction gatLoadPlaylist(id){currentType='playlist';stopStream(true);showYoutube();if(!ytReady){pendingType='playlist';pendingId=id;return}try{player.loadPlaylist({listType:'playlist',list:id,index:0,startSeconds:0})}catch(e){post({type:'error',code:'load'})}}\nfunction gatLoadVideo(id){currentType='video';stopStream(true);showYoutube();if(!ytReady){pendingType='video';pendingId=id;return}try{player.loadVideoById(id)}catch(e){post({type:'error',code:'load'})}}\nfunction gatLoadStream(url){currentType='stream';pendingType='';pendingId='';stopYoutube();showStream(url);try{audio.pause();audio.src=url;audio.load();audio.play().catch(function(){post({type:'error',code:900})})}catch(e){post({type:'error',code:900})}}\nfunction gatPause(){if(currentType==='stream')stopStream(false);else stopYoutube()}\nfunction gatVolume(v){let n=Math.max(0,Math.min(100,Number(v)||0));if(ytReady&&player){try{player.setVolume(n)}catch(e){}}audio.volume=n/100}\naudio.addEventListener('playing',function(){post({type:'track',title:'Rádio online • AO VIVO'})});\naudio.addEventListener('waiting',function(){post({type:'track',title:'Rádio online • conectando...'})});\naudio.addEventListener('stalled',function(){post({type:'error',code:901})});\naudio.addEventListener('error',function(){post({type:'error',code:900})});\nsetTimeout(function(){post({type:'ready'})},0);\n</script></body></html>";
+		return "<!doctype html>\n<html><head><meta charset='utf-8'><meta name='referrer' content='strict-origin-when-cross-origin'>\n<style>\nhtml,body{margin:0;width:100%;height:100%;background:#020711;overflow:hidden;font-family:Segoe UI,Arial,sans-serif;color:#eaf2ff}\n#player,#streamPane{width:100%;height:100%}#streamPane{display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#0d3155 0,#06192c 45%,#020711 100%)}\n.radioCard{text-align:center;max-width:86%;padding:28px}.radioIcon{font-size:64px;margin-bottom:14px}.radioTitle{font-size:25px;font-weight:700}.radioSub{margin-top:8px;color:#9eb6d1;font-size:14px}.radioUrl{margin-top:16px;color:#6f8daa;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:680px}\n</style></head>\n<body><div id='player'></div><div id='streamPane'><div class='radioCard'><div class='radioIcon'>\ud83d\udcfb</div><div class='radioTitle'>RÁDIO ONLINE • AO VIVO</div><div class='radioSub'>Stream direto MP3/AAC reproduzido somente neste BIDUTRUCK TELEMETRIA.</div><div id='streamUrl' class='radioUrl'></div></div><audio id='streamAudio' preload='none'></audio></div>\n<script src='https://www.youtube.com/iframe_api'></script><script>\nlet player=null,ytReady=false,pendingType='',pendingId='',currentType='';\nconst audio=document.getElementById('streamAudio'),playerBox=document.getElementById('player'),streamPane=document.getElementById('streamPane'),streamUrl=document.getElementById('streamUrl');\nfunction post(o){try{chrome.webview.postMessage(o)}catch(e){}}\nfunction showYoutube(){playerBox.style.display='block';streamPane.style.display='none'}\nfunction showStream(url){playerBox.style.display='none';streamPane.style.display='flex';streamUrl.textContent=url||''}\nfunction stopYoutube(){if(ytReady&&player){try{player.pauseVideo()}catch(e){}}}\nfunction stopStream(clear){try{audio.pause();if(clear){audio.removeAttribute('src');audio.load()}}catch(e){}}\nfunction loadPending(){if(!ytReady||!pendingId)return;let t=pendingType,id=pendingId;pendingType='';pendingId='';if(t==='video')gatLoadVideo(id);else if(t==='playlist')gatLoadPlaylist(id)}\nfunction onYouTubeIframeAPIReady(){player=new YT.Player('player',{width:'100%',height:'100%',playerVars:{controls:1,disablekb:0,fs:1,playsinline:1,rel:0,origin:'https://radio.gatlogets2.local',widget_referrer:'https://radio.gatlogets2.local/'},events:{onReady:function(){ytReady=true;loadPending()},onStateChange:function(e){if(e.data===YT.PlayerState.PLAYING){let d=player.getVideoData()||{};post({type:'track',title:d.title||''})}},onError:function(e){post({type:'error',code:e.data});if(currentType==='playlist'&&(e.data===100||e.data===101||e.data===150)){setTimeout(function(){try{player.nextVideo()}catch(x){}},700)}}}})}\nfunction gatLoadPlaylist(id){currentType='playlist';stopStream(true);showYoutube();if(!ytReady){pendingType='playlist';pendingId=id;return}try{player.loadPlaylist({listType:'playlist',list:id,index:0,startSeconds:0})}catch(e){post({type:'error',code:'load'})}}\nfunction gatLoadVideo(id){currentType='video';stopStream(true);showYoutube();if(!ytReady){pendingType='video';pendingId=id;return}try{player.loadVideoById(id)}catch(e){post({type:'error',code:'load'})}}\nfunction gatLoadStream(url){currentType='stream';pendingType='';pendingId='';stopYoutube();showStream(url);try{audio.pause();audio.src=url;audio.load();audio.play().catch(function(){post({type:'error',code:900})})}catch(e){post({type:'error',code:900})}}\nfunction gatPause(){if(currentType==='stream')stopStream(false);else stopYoutube()}\nfunction gatVolume(v){let n=Math.max(0,Math.min(100,Number(v)||0));if(ytReady&&player){try{player.setVolume(n)}catch(e){}}audio.volume=n/100}\naudio.addEventListener('playing',function(){post({type:'track',title:'Rádio online • AO VIVO'})});\naudio.addEventListener('waiting',function(){post({type:'track',title:'Rádio online • conectando...'})});\naudio.addEventListener('stalled',function(){post({type:'error',code:901})});\naudio.addEventListener('error',function(){post({type:'error',code:900})});\nsetTimeout(function(){post({type:'ready'})},0);\n</script></body></html>";
 	}
 }
