@@ -2,7 +2,7 @@
   if(typeof renderDriverDetail!=='function'||typeof renderDetailHistory!=='function'||typeof adminPost!=='function')return;
   const num=v=>Number(v)||0;
   const fmt=v=>num(v).toLocaleString('pt-BR');
-  const pct=v=>num(v).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+  const pct=v=>num(v)>0&&num(v)<0.005?'&lt;0,01%':num(v).toLocaleString('pt-BR',{maximumFractionDigits:2})+'%';
   const safe=v=>typeof esc==='function'?esc(v):String(v??'');
   const date=v=>typeof fmtDate==='function'?fmtDate(v):String(v||'—');
   const km=v=>typeof fmtKm1==='function'?fmtKm1(v):Math.round(num(v))+' km';
@@ -29,7 +29,7 @@
     const speed=Math.max(0,num(d?.speed_penalty_xp)||fines*3),cargo=Math.max(0,num(d?.cargo_penalty_xp)),truck=Math.max(0,num(d?.truck_penalty_xp));
     const penalty=Math.max(0,num(d?.penalty_xp)||speed+cargo+truck),bonus=Math.max(0,num(d?.perfect_bonus_xp)),expected=Math.max(0,base-penalty+bonus);
     const final=(d&&Object.prototype.hasOwnProperty.call(d,'xp_awarded')&&Number.isFinite(Number(d.xp_awarded)))?Math.max(0,Number(d.xp_awarded)):expected;
-    return {distance,base,fines,speed,cargo,truck,penalty,bonus,expected,final,perfect:!!d?.perfect_trip||bonus>0,cargoDamage:Math.max(0,num(d?.cargo_damage_pct)),truckDamage:Math.max(0,num(d?.truck_damage_delta_pct))};
+    return {distance,base,fines,speed,cargo,truck,penalty,bonus,expected,final,perfect:!!d?.perfect_trip||bonus>0,cargoDamage:Math.max(0,num(d?.cargo_damage_pct)),truckDamage:Math.max(0,num(d?.truck_damage_delta_pct)),trailerDamage:Math.max(0,num(d?.trailer_damage_delta_pct)),vehicleSource:num(d?.trailer_damage_delta_pct)>num(d?.truck_damage_delta_pct)?'reboque':num(d?.truck_damage_delta_pct)>num(d?.trailer_damage_delta_pct)?'caminhão':'caminhão/reboque'};
   }
 
   function rankReasonText(v){
@@ -79,7 +79,7 @@
       if(canEdit&&id)actions+='<button class="gat-admin-adjust-xp" data-adjust-xp="'+safe(id)+'" data-user="'+safe(user)+'" data-current="'+x.final+'">AJUSTAR XP</button> <button data-delete-delivery="'+safe(id)+'" data-delivery-user="'+safe(user)+'">EXCLUIR</button>';
       if(!actions)actions='—';
       const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${safe(date(d?.completed_at))}</td><td class="route-cell"><b>${safe(route)}</b><small class="gat-admin-audit-note">${safe(d?.cargo||'Carga')}</small></td><td>${safe(km(d?.distance_km))}<small class="gat-admin-audit-note">${safe(weight(d?.weight_kg))}</small></td><td><b>${fmt(x.base)} XP</b>${x.bonus?'<div class="gat-admin-xp-breakdown"><span class="gat-admin-xp-chip gold">PERFEITA +'+fmt(x.bonus)+' XP</span></div>':''}</td><td><div class="gat-admin-xp-breakdown"><span class="gat-admin-xp-chip ${x.speed?'bad':''}">${x.fines} multa${x.fines===1?'':'s'}</span><span class="gat-admin-xp-chip ${x.speed?'bad':''}">${x.speed?'-'+fmt(x.speed):'0'} XP</span></div></td><td><div class="gat-admin-xp-breakdown"><span class="gat-admin-xp-chip ${x.cargo?'bad':''}">Carga ${pct(x.cargoDamage)} ${x.cargo?'-'+fmt(x.cargo)+' XP':''}</span><span class="gat-admin-xp-chip ${x.truck?'bad':''}">Caminhão +${pct(x.truckDamage)} ${x.truck?'-'+fmt(x.truck)+' XP':''}</span></div></td><td><span class="gat-admin-xp-final">${fmt(x.final)} XP</span>${x.perfect?'<small class="gat-admin-audit-note" style="color:#ffd46b">VIAGEM PERFEITA</small>':''}${manual?'<small class="gat-admin-audit-note">ajuste manual</small>':''}</td><td>${gatHtml}</td><td>#${safe(d?.sequence||'—')}</td><td>${actions}</td>`;
+      tr.innerHTML=`<td>${safe(date(d?.completed_at))}</td><td class="route-cell"><b>${safe(route)}</b><small class="gat-admin-audit-note">${safe(d?.cargo||'Carga')}</small></td><td>${safe(km(d?.distance_km))}<small class="gat-admin-audit-note">${safe(weight(d?.weight_kg))}</small></td><td><b>${fmt(x.base)} XP</b>${x.bonus?'<div class="gat-admin-xp-breakdown"><span class="gat-admin-xp-chip gold">PERFEITA +'+fmt(x.bonus)+' XP</span></div>':''}</td><td><div class="gat-admin-xp-breakdown"><span class="gat-admin-xp-chip ${x.speed?'bad':''}">${x.fines} multa${x.fines===1?'':'s'}</span><span class="gat-admin-xp-chip ${x.speed?'bad':''}">${x.speed?'-'+fmt(x.speed):'0'} XP</span></div></td><td><div class="gat-admin-xp-breakdown"><span class="gat-admin-xp-chip ${x.cargo?'bad':''}">Carga ${pct(x.cargoDamage)} ${x.cargo?'-'+fmt(x.cargo)+' XP':''}</span><span class="gat-admin-xp-chip">Caminhão +${pct(x.truckDamage)}</span><span class="gat-admin-xp-chip">Reboque +${pct(x.trailerDamage)}</span>${x.truck?`<span class="gat-admin-xp-chip bad" title="Maior dano novo entre caminhão e reboque, sem somar.">Veículo −${fmt(x.truck)} pts • ${x.vehicleSource}</span>`:''}</div></td><td><span class="gat-admin-xp-final">${fmt(x.final)} XP</span>${x.perfect?'<small class="gat-admin-audit-note" style="color:#ffd46b">VIAGEM PERFEITA</small>':''}${manual?'<small class="gat-admin-audit-note">ajuste manual</small>':''}</td><td>${gatHtml}</td><td>#${safe(d?.sequence||'—')}</td><td>${actions}</td>`;
       rows.appendChild(tr);
     });
     rows.querySelectorAll('[data-gat-review]').forEach(b=>b.onclick=()=>reviewGatPoints(b.dataset.gatUser,b.dataset.gatDelivery,b.dataset.gatReview,Number(b.dataset.gatSuggested)||0));

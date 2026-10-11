@@ -7,7 +7,7 @@
   const pretty=v=>{const s=clean(v).replace(/[._-]+/g,' ');return s.replace(/\b\w/g,c=>c.toUpperCase())||'Motorista'};
   const fmt=v=>n(v).toLocaleString('pt-BR');
   const fmtKm=v=>Math.round(n(v)).toLocaleString('pt-BR')+' km';
-  const fmtPct=v=>n(v).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:1})+'%';
+  const fmtPct=v=>n(v)>0&&n(v)<0.005?'&lt;0,01%':n(v).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:2})+'%';
 
   function injectStyle(){
     if(document.getElementById('gatDriverEnhancementStyle'))return;
@@ -181,6 +181,8 @@
       const gatPoints=(x&&Object.prototype.hasOwnProperty.call(x,'gat_points')&&Number.isFinite(Number(x.gat_points)))?Math.max(0,Number(x.gat_points)):(rankEligible?Math.max(0,100-totalPenalty):0);
       const cargoDamage=Math.max(0,n(x?.cargo_damage_pct));
       const truckDamage=Math.max(0,n(x?.truck_damage_delta_pct));
+      const trailerDamage=Math.max(0,n(x?.trailer_damage_delta_pct));
+      const vehicleSource=trailerDamage>truckDamage?'REBOQUE':truckDamage>trailerDamage?'CAMINHÃO':'CAMINHÃO / REBOQUE';
       const route=(x?.source||'?')+' → '+(x?.destination||'?');
       const row=document.createElement('div');row.className='delivery-row gat-delivery-row';
       row.innerHTML=`<span><b>${esc(route)}</b></span><span>${esc(x?.cargo||'Carga')}</span><span>${typeof kg==='function'?kg(x?.weight_kg):'—'}</span><span>${fmtKm(distance)}</span><span>#${esc(x?.sequence||'—')}</span><span class="done">CONCLUÍDA<b class="gat-delivery-xp">${fmt(finalXp)} XP</b></span>`;
@@ -191,7 +193,10 @@
         if(speedingPenalty>0||speedingRatio>0)chips+=`<span class="gat-xp-chip penalty"><span>EXCESSO DE VELOCIDADE • ${fmtPct(speedingRatio)}</span><b>-${fmt(speedingPenalty)} PONTOS</b></span>`;
         if(trafficPenalty>0||fines>0)chips+=`<span class="gat-xp-chip penalty"><span>INFRAÇÃO DE TRÂNSITO${fines?' • '+fines+' ocorrência'+(fines===1?'':'s'):''}</span><b>-${fmt(trafficPenalty)} PONTOS</b></span>`;
         if(cargoPenalty>0||cargoDamage>0)chips+=`<span class="gat-xp-chip ${cargoPenalty>0?'penalty':''}"><span>CARGA • ${fmtPct(cargoDamage)}</span><b>${cargoPenalty>0?'-'+fmt(cargoPenalty)+' PONTOS':'OK'}</b></span>`;
-        if(truckPenalty>0||truckDamage>0)chips+=`<span class="gat-xp-chip ${truckPenalty>0?'penalty':''}"><span>CAMINHÃO • +${fmtPct(truckDamage)}</span><b>${truckPenalty>0?'-'+fmt(truckPenalty)+' PONTOS':'OK'}</b></span>`;
+        if(truckPenalty>0||truckDamage>0||trailerDamage>0){
+          chips+=`<span class="gat-xp-chip"><span>CAMINHÃO • +${fmtPct(truckDamage)}</span></span><span class="gat-xp-chip"><span>REBOQUE • +${fmtPct(trailerDamage)}</span></span>`;
+          if(truckPenalty>0)chips+=`<span class="gat-xp-chip penalty" title="O desconto usa o maior dano novo entre caminhão e reboque; as porcentagens não são somadas."><span>VEÍCULO • ${vehicleSource}</span><b>-${fmt(truckPenalty)} PONTOS</b></span>`;
+        }
       }else{
         chips+=`<span class="gat-xp-chip penalty"><span>PONTOS GAT</span><b>0 • ${esc(rankReasonText(x?.ranking_reason))}</b></span>`;
       }
