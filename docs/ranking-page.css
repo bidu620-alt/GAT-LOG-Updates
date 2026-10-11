@@ -19,3 +19,15 @@
 .footer{margin-top:0}
 @media(max-width:900px){.ranking-hero{grid-template-columns:1fr}.ranking-board-head{align-items:flex-start;flex-direction:column}.ranking-controls{justify-content:flex-start}.ranking-explain{grid-template-columns:1fr}}
 @media(max-width:600px){.ranking-page{padding-top:16px}.ranking-hero{padding:21px}.ranking-hero h1{font-size:37px}.ranking-controls{width:100%}.ranking-controls label,.ranking-controls select{width:100%}.rank-tabs{width:100%}.rank-tab{flex:1}.ranking-columns,.ranking-row{grid-template-columns:42px 1fr}.ranking-columns span:last-child{display:none}.ranking-score{grid-column:2;text-align:left;margin-top:-5px}.ranking-row{padding:12px 7px}}
+
+.rank-podium[hidden]{display:none}
+.rank-podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:end;margin:25px 0}
+.podium-place{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:22px 12px;border:1px solid #6c5323;border-radius:18px;background:linear-gradient(160deg,#302712,#101923);color:#e6eef8;text-decoration:none;min-width:0}
+.podium-place-1{grid-column:2;grid-row:1;min-height:285px;border-color:#d3a738;box-shadow:0 0 26px #d3a73820}
+.podium-place-2{grid-column:1;grid-row:1;min-height:245px;border-color:#8093a8;background:linear-gradient(160deg,#27313c,#101923)}
+.podium-place-3{grid-column:3;grid-row:1;min-height:225px;border-color:#a97149;background:linear-gradient(160deg,#35251d,#101923)}
+.podium-medal{font-size:36px}.podium-position{font-size:11px;font-weight:900;color:#e9c76b}
+.podium-avatar{display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:#132e49;color:#9dd4ff;font-size:24px;font-weight:900}
+.podium-place strong{font-size:18px;overflow-wrap:anywhere}.podium-place small{font-size:11px;color:#92a8bd;overflow-wrap:anywhere}.podium-place b{font-size:15px;margin-top:auto;padding-top:10px;color:#f4da95}
+.podium-place:hover{filter:brightness(1.12)}
+@media(max-width:600px){.rank-podium{gap:6px}.podium-place{padding:14px 5px;gap:6px;min-height:195px}.podium-place-1{min-height:235px}.podium-place-2{min-height:215px}.podium-medal{font-size:27px}.podium-place strong{font-size:13px}.podium-place b{font-size:10px}.podium-position,.podium-place small{font-size:9px}.podium-avatar{width:38px;height:38px;font-size:18px}}
