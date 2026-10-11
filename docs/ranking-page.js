@@ -1,19 +1,30 @@
-(()=>{const API='https://api.gatlogets2.com.br';
-const OCT='2026-10';
-const RANKING=API+'/api/public/ranking?month='+OCT+'&rev=20261001';
-const SAFETY=API+'/api/public/safety-ranking';
-let gat=null,safe=null,mode='gat';
-const n=v=>Number(v)||0;
+(()=>{'use strict';
+const API='https://api.gatlogets2.com.br';
+const q=id=>document.getElementById(id),n=v=>Number(v)||0;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const label=u=>{const s=String(u||'motorista').replace(/^@/,'');return s.charAt(0).toUpperCase()+s.slice(1)};
-const level=xp=>Math.max(1,Math.floor(n(xp)/2000)+1);
-async function json(url){const c=new AbortController(),t=setTimeout(()=>c.abort(),8000);try{const r=await fetch(url,{cache:'no-store',signal:c.signal});const j=await r.json().catch(()=>null);return r.ok?j:null}finally{clearTimeout(t)}}
-function metric(item){if(mode==='xp')return{main:n(item.xp).toLocaleString('pt-BR')+' XP',sub:'Nível '+level(item.xp)};if(mode==='safe')return{main:n(item.perfect_trips).toLocaleString('pt-BR')+' PERFEITAS',sub:n(item.speed_fines)+' multas • '+n(item.penalty_xp).toLocaleString('pt-BR')+' penalidade'};return{main:n(item.points).toLocaleString('pt-BR')+' PONTOS',sub:n(item.monthly_completed).toLocaleString('pt-BR')+' entregas • '+Math.round(n(item.monthly_km)).toLocaleString('pt-BR')+' km'}}
-function rows(){if(mode==='safe'){const a=Array.isArray(safe?.ranking)?safe.ranking.slice():[];a.sort((a,b)=>n(b.perfect_trips)-n(a.perfect_trips)||n(a.penalty_xp)-n(b.penalty_xp)||n(a.speed_fines)-n(b.speed_fines)||String(a.user||'').localeCompare(String(b.user||''),'pt-BR'));return a}const a=Array.isArray(gat?.ranking)?gat.ranking.slice():[];if(mode==='xp')a.sort((a,b)=>n(b.xp)-n(a.xp)||String(a.user||'').localeCompare(String(b.user||''),'pt-BR'));return a}
-function render(){const root=document.getElementById('rankList'),status=document.getElementById('rankingStatus');if(!root||!status)return;const list=rows();root.textContent='';if(mode==='gat')status.textContent='Ranking mensal de Outubro de 2026. 99 km completos = 10 pontos + bônus de peso − multas − danos.';else if(mode==='xp')status.textContent='XP e nível são dados acumulados da carreira e não zeram mensalmente.';else status.textContent='Cargas perfeitas são exibidas pela qualidade registrada na carreira.';list.slice(0,50).forEach((item,i)=>{const a=document.createElement('a');a.className='ranking-row';a.href='motorista.html?u='+encodeURIComponent(item.user||'');const m=metric(item),initial=label(item.user).charAt(0);a.innerHTML='<span class="ranking-pos">'+(i+1)+'</span><span class="ranking-driver"><span class="ranking-avatar">'+esc(initial)+'</span><span><b>'+esc(label(item.user))+'</b><small>@'+esc(item.user||'motorista')+'</small></span></span><span class="ranking-score"><b>'+esc(m.main)+'</b><small>'+esc(m.sub)+'</small></span>';root.appendChild(a)})}
-function fixedHeader(){const title=document.getElementById('rankingSeasonTitle'),state=document.getElementById('rankingSeasonState'),sel=document.getElementById('rankMonth');if(title)title.textContent='Outubro de 2026';if(state)state.textContent='Ranking mensal ativo';if(sel){sel.innerHTML='<option value="2026-10">Outubro de 2026 • atual</option>';sel.value='2026-10';sel.disabled=true}}
-async function loadGat(){const s=document.getElementById('rankingStatus');fixedHeader();try{const d=await json(RANKING);if(d?.ok&&d.season===OCT){gat=d;render();return}if(s)s.textContent='Ranking de outubro temporariamente indisponível.'}catch(_){if(s)s.textContent='Aguardando conexão com a Central GAT.'}}
-async function loadSafe(){if(safe)return render();try{const d=await json(SAFETY);if(d?.ok){safe=d;render();return}}catch(_){}const s=document.getElementById('rankingStatus');if(s)s.textContent='Cargas perfeitas temporariamente indisponíveis.'}
-document.querySelectorAll('.rank-tab').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.rankMode||'gat';document.querySelectorAll('.rank-tab').forEach(x=>x.classList.toggle('active',x===btn));if(mode==='safe')loadSafe();else render()}));
-loadGat();
-})();
+const fmt=v=>n(v).toLocaleString('pt-BR');
+const monthNow=new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit'}).format(new Date());
+let data=null,mode='gat',scope='month',period=monthNow,request=0,months=[monthNow],years=[monthNow.slice(0,4)];
+const monthLabel=m=>new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(m+'-01T12:00:00Z'));
+const periodLabel=()=>scope==='total'?'Histórico total':scope==='year'?'Ano '+period:monthLabel(period);
+function controls(){q('rankMonth').innerHTML=(scope==='total'?['total']:scope==='year'?years:months).map(v=>'<option value="'+esc(v)+'">'+esc(scope==='total'?'Toda a carreira':scope==='year'?v:monthLabel(v))+'</option>').join('');q('rankMonth').value=period;q('rankMonth').disabled=scope==='total';q('rankingSeasonTitle').textContent=periodLabel();q('rankingSeasonState').textContent='Classificação por '+(scope==='month'?'mês':scope==='year'?'ano':'histórico total');}
+function render(){if(!data)return;const list=[...data.ranking];
+const field=mode==='xp'?'xp':mode==='safe'?'perfect_trips':mode==='achievements'?'achievements':'points';
+list.sort((a,b)=>n(b[field])-n(a[field])||(mode==='safe'?n(a.penalty_xp)-n(b.penalty_xp)||n(a.speed_fines)-n(b.speed_fines):mode==='gat'?n(b.monthly_completed)-n(a.monthly_completed)||n(b.monthly_km)-n(a.monthly_km)||n(b.perfect_trips)-n(a.perfect_trips)||n(a.penalty_xp)-n(b.penalty_xp)||n(a.speed_fines)-n(b.speed_fines):0)||String(a.user).localeCompare(String(b.user),'pt-BR'));
+q('rankingStatus').textContent=periodLabel()+'. '+(mode==='achievements'?'Quantidade de conquistas desbloqueadas no período, sem conceder novos pontos ou XP.':mode==='xp'?'XP do período; nível acumulado da carreira.':'Valores registrados nas entregas, sem mudar as regras de pontuação.')+(data.legacy?' A Central ainda precisa receber a atualização para os outros períodos e conquistas.':'');
+q('rankList').innerHTML=list.slice(0,50).map((item,i)=>{const user=String(item.user||'motorista'),name=user.charAt(0).toUpperCase()+user.slice(1);let main,sub;
+if(mode==='xp'){main=fmt(item.xp)+' XP';sub='Nível '+Math.max(1,Math.floor(n(item.career_xp??item.xp)/2000)+1)+' de carreira';}
+else if(mode==='safe'){main=fmt(item.perfect_trips)+' PERFEITAS';sub=fmt(item.speed_fines)+' multas • '+fmt(item.penalty_xp)+' penalidade';}
+else if(mode==='achievements'){main=fmt(item.achievements)+' CONQUISTAS';sub='Desbloqueadas no período';}
+else{main=fmt(item.points)+' PONTOS';sub=fmt(item.monthly_completed)+' entregas • '+fmt(Math.round(n(item.monthly_km)))+' km';}
+return '<a class="ranking-row" href="motorista.html?u='+encodeURIComponent(user)+'"><span class="ranking-pos">'+(i+1)+'</span><span class="ranking-driver"><span class="ranking-avatar">'+esc(name[0])+'</span><span><b>'+esc(name)+'</b><small>@'+esc(user)+'</small></span></span><span class="ranking-score"><b>'+esc(main)+'</b><small>'+esc(sub)+'</small></span></a>';}).join('');if(!list.length)q('rankingStatus').textContent='Nenhum motorista registrado neste período.';}
+async function fetchJson(url){const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error('HTTP '+response.status);return response.json();}
+async function load(){const serial=++request;data=null;q('rankList').textContent='';q('rankingStatus').textContent='Carregando '+periodLabel()+'…';controls();try{let result;
+try{result=await fetchJson(API+'/api/public/ranking-period?'+new URLSearchParams({scope,period}));}
+catch(error){if(scope!=='month'||mode==='achievements')throw error;result=await fetchJson(API+'/api/public/ranking?month='+period);result.legacy=true;}
+if(serial!==request)return;if(!result.ok||!Array.isArray(result.ranking))throw Error('Dados indisponíveis');data=result;months=result.available_months||months;years=result.available_years||[...new Set(months.map(m=>m.slice(0,4)))];controls();render();}
+catch(error){if(serial===request){q('rankingStatus').textContent='Este ranking está indisponível. A Central pode precisar receber a atualização dos períodos e conquistas.';}}}
+q('rankScope').addEventListener('change',()=>{scope=q('rankScope').value;period=scope==='total'?'total':scope==='year'?monthNow.slice(0,4):monthNow;load();});
+q('rankMonth').addEventListener('change',()=>{period=q('rankMonth').value;load();});
+document.querySelectorAll('.rank-tab').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.rankMode;document.querySelectorAll('.rank-tab').forEach(x=>x.classList.toggle('active',x===btn));if(data&&!data.legacy)render();else load();}));
+load();})();
