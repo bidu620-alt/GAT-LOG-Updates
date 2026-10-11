@@ -27,7 +27,7 @@
   <div>
     <span class="eyebrow">CLASSIFICAÇÃO OFICIAL GAT-LOG</span>
     <h1>Ranking GAT</h1>
-    <p>O Ranking GAT é mensal. A classificação do mês começa do zero, enquanto XP, nível, quilômetros e histórico de carreira continuam acumulados no perfil de cada motorista.</p>
+    <p>Escolha o mês, o ano ou o histórico total e compare Pontos GAT, XP, cargas perfeitas e conquistas. As pontuações registradas e o nível de carreira são preservados.</p>
     <div class="ranking-hero-badges"><span>99 KM = 10 PONTOS</span><span>BÔNUS DE PESO</span><span>MULTAS E DANOS DESCONTAM</span><span>HISTÓRICO POR MÊS</span></div>
   </div>
   <div class="ranking-hero-side">
@@ -44,11 +44,11 @@
       <h2>Motoristas GAT</h2>
     </div>
     <div class="ranking-controls">
-      <label>MÊS<select id="rankMonth" aria-label="Escolher mês do ranking"><option value="">Mês atual</option></select></label>
+      <label>PERÍODO<select id="rankScope" aria-label="Tipo de período"><option value="month">Por mês</option><option value="year">Anual</option><option value="total">Total</option></select></label><label>DATA<select id="rankMonth" aria-label="Escolher mês do ranking"><option value="">Mês atual</option></select></label>
       <div class="rank-tabs">
         <button class="rank-tab active" type="button" data-rank-mode="gat">Pontos GAT</button>
         <button class="rank-tab" type="button" data-rank-mode="xp">XP / Nível</button>
-        <button class="rank-tab" type="button" data-rank-mode="safe">Cargas Perfeitas</button>
+        <button class="rank-tab" type="button" data-rank-mode="safe">Cargas Perfeitas</button><button class="rank-tab" type="button" data-rank-mode="achievements">Conquistas</button>
       </div>
     </div>
   </header>
@@ -58,14 +58,14 @@
 </section>
 
 <section class="ranking-explain">
-  <article><span>01</span><div><small>RANKING GAT</small><b>Competição mensal</b><p>Pontos do mês atual, com histórico acessível pelo seletor de mês.</p></div></article>
-  <article><span>02</span><div><small>XP / NÍVEL</small><b>Carreira acumulada</b><p>Mostra a progressão geral do motorista e não zera na virada mensal.</p></div></article>
+  <article><span>01</span><div><small>RANKING GAT</small><b>Competição mensal</b><p>Pontos já registrados nas entregas do período escolhido.</p></div></article>
+  <article><span>02</span><div><small>XP / NÍVEL</small><b>Carreira acumulada</b><p>Exibe o XP ganho no período e o nível acumulado da carreira. No total, mostra o XP atual do perfil.</p></div></article>
   <article><span>03</span><div><small>CARGAS PERFEITAS</small><b>Qualidade de condução</b><p>Destaca entregas sem penalidades, multas ou danos relevantes.</p></div></article>
 </section>
 </main>
 
 <footer class="footer"><div class="shell">GAT-LOG • Ranking oficial da comunidade.</div></footer>
-<script src="ranking-page.js?v=8"></script>
+<script src="ranking-page.js?v=20261010-periods"></script>
 <script src="event-nav-live-v3.js"></script>
 </body>
 </html>
