@@ -547,6 +547,8 @@
   ]
 }];
 
+  EVENTS.push({"id":"fazenda_bidu_2026","name":"Fazenda do Bidu","title":"Fazenda do Bidu — Do Campo ao Mundo","medal":"🌾","draft":false,"achievement_enabled":true,"require_cargo_id":true,"goal":150,"min_km":1000,"repetitions":10,"cargos":[{"official":"Live Cattle","label":"Gado bovino vivo","emoji":"🐄","ids":["live_cattle"],"aliases":["Gado bovino vivo","Gado vivo","Live Cattle"],"catalog_name":"Gado bovino vivo","dlc":"Scandinavia","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Live Pigs","label":"Porcos Vivos","emoji":"🐖","ids":["live_pigs"],"aliases":["Porcos Vivos","Live Pigs","Porcos vivos"],"catalog_name":"Porcos Vivos","dlc":"1.47","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Sheep Wool","label":"Lã de ovelha","emoji":"🐑","ids":["sheep_wool"],"aliases":["Lã de ovelha","Sheep Wool"],"catalog_name":"Lã de ovelha","dlc":"Scandinavia","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Cheese","label":"Queijo","emoji":"🧀","ids":["cheese"],"aliases":["Queijo","Cheese"],"catalog_name":"Queijo","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Milk","label":"Leite","emoji":"🥛","ids":["milk","milk_t"],"aliases":["Leite","Milk"],"catalog_name":"Leite","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Non-alcoholic Beer","label":"Cerveja sem álcool","emoji":"🍺","ids":["nonalco_beer"],"aliases":["Cerveja sem álcool","Non-alcoholic Beer"],"catalog_name":"Cerveja sem álcool","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Beef","label":"Carne","emoji":"🥩","ids":["beef_meat"],"aliases":["Carne","Beef","Carne bovina"],"catalog_name":"Carne","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Pork","label":"Carne de porco","emoji":"🥩","ids":["pork_meat"],"aliases":["Carne de porco","Carne suína","Pork"],"catalog_name":"Carne de porco","dlc":"Scandinavia","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Chicken Meat","label":"Carne de frango","emoji":"🍗","ids":["chicken_meat"],"aliases":["Carne de frango","Chicken Meat"],"catalog_name":"Carne de frango","dlc":"Scandinavia","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Pet Food","label":"Ração","emoji":"🌾","ids":["pet_food","pet_food_c"],"aliases":["Ração","Pet Food","Ração para animais"],"catalog_name":"Ração","dlc":"Scandinavia","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Straw Bales","label":"Fardos de palha","emoji":"🌿","ids":["straw_bales"],"aliases":["Fardos de palha","Straw Bales"],"catalog_name":"Fardos de palha","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Fertilizer","label":"Fertilizante","emoji":"🌱","ids":["fertilizer"],"aliases":["Fertilizante","Adubo","Fertilizer"],"catalog_name":"Fertilizante","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Big-Bags of Seeds","label":"Sacos grandes de sementes","emoji":"🌻","ids":["big_bag_seed"],"aliases":["Sacos grandes de sementes","Big-Bags of Seeds","Big-bags de sementes"],"catalog_name":"Sacos grandes de sementes","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Dry Milk","label":"Leite em pó","emoji":"🥛","ids":["drymilk"],"aliases":["Leite em pó","Dry Milk"],"catalog_name":"Leite em pó","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false},{"official":"Young Seedlings","label":"Mudas de plantas","emoji":"🌱","ids":["young_seed"],"aliases":["Mudas de plantas","Mudas jovens","Young Seedlings"],"catalog_name":"Mudas de plantas","dlc":"Launch","min_km":1000,"required_deliveries":10,"pending_catalog":false}]});
+
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
   function rawOf(row){
     if(row?.raw_json&&typeof row.raw_json==='object')return row.raw_json;
@@ -593,6 +595,31 @@
     const matched=new Map();
     const steps=[];
     const ordered=[...rows].filter(row=>{const t=rowTime(row);return Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
+    if(event.repetitions){
+      const cargoCounts=new Map((event.cargos||[]).map(c=>[c.official,0]));
+      const seen=new Set();let completedAt=null;
+      const history=Array.isArray(profile?.event_deliveries)?profile.event_deliveries:ordered;
+      const valid=[...history].filter(row=>{const t=rowTime(row);return Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
+      for(const row of valid){
+        if(!completedDelivery(row))continue;
+        const raw=rawOf(row),id=row.id??row.delivery_id??raw.delivery_id;
+        // Server delivery IDs are stable; the fingerprint supports exported histories without IDs.
+        const key=id!=null?'id:'+String(id):JSON.stringify([rowTime(row),row.cargo_id||raw?.mission?.cargo_id||'',row.source||'',row.destination||'',row.distance_km??row.distance??row.km]);
+        if(seen.has(key))continue;seen.add(key);
+        for(const cargo of event.cargos||[]){
+          if(cargo.pending_catalog||!cargo.ids?.length)continue;
+          const distance=Number(row.distance_km??row.distance??row.km);
+          if(!Number.isFinite(distance)||distance<(cargo.min_km??event.min_km??0)||!cargoMatches(row,cargo,event.require_cargo_id))continue;
+          const required=Number(cargo.required_deliveries||event.repetitions),n=cargoCounts.get(cargo.official)||0;
+          if(n<required){cargoCounts.set(cargo.official,n+1);completedAt=rowTime(row);}
+          if(n+1>=required&&!matched.has(cargo.official))matched.set(cargo.official,{row,t:rowTime(row),cargo});
+          break;
+        }
+      }
+      const count=[...cargoCounts.values()].reduce((a,b)=>a+b,0),goal=event.goal;
+      const completed=(event.cargos||[]).every(c=>!c.pending_catalog&&(cargoCounts.get(c.official)||0)>=Number(c.required_deliveries||event.repetitions));
+      return {count,goal,completed,completedAt:completed?completedAt:null,matched,cargoCounts,manual:false,reason:'',historyLimited:!Array.isArray(profile?.event_deliveries)};
+    }
     if(event.sequence){
       let expected=0;
       const user=norm(profile?.user||profile?.driver||profile?.account_user||'');
