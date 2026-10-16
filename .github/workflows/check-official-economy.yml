@@ -1,0 +1,20 @@
+name: Check official economy
+on:
+  push:
+    branches: [main]
+    paths: ['central-economy/**', 'docs/economy*', '.github/workflows/check-official-economy.yml']
+  pull_request:
+    paths: ['central-economy/**', 'docs/economy*', '.github/workflows/check-official-economy.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  economy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test central-economy/tests/*.test.mjs
+      - run: node --check docs/economy.js && node --check docs/economy-nav.js && node --check docs/economy-admin.js

@@ -1,0 +1,65 @@
+import assert from 'node:assert/strict';
+import {LocalDatabase} from '../database.mjs';
+import {ensureEconomy,economyAction,state,economyTrack,economyFinish} from '../economy-official.js';
+const db=new LocalDatabase(':memory:');
+db.sql.exec(`CREATE TABLE accounts(user TEXT PRIMARY KEY,role TEXT,disabled INTEGER DEFAULT 0);
+CREATE TABLE profiles(user TEXT PRIMARY KEY,current_mission_json TEXT);
+CREATE TABLE audit(at TEXT,actor TEXT,action TEXT,target TEXT,details TEXT);
+CREATE TABLE telemetry_live(account_user TEXT,updated_at TEXT,telemetry_json TEXT);
+CREATE TABLE deliveries(id INTEGER PRIMARY KEY,user TEXT,delivered_at TEXT,raw_json TEXT);`);
+const owner={user:'owner',role:'owner'},alice={user:'alice',role:'driver'},bob={user:'bob',role:'driver'},charlie={user:'charlie',role:'driver'};
+for(const s of [owner,alice,bob,charlie]){db.sql.prepare('INSERT INTO accounts(user,role) VALUES(?,?)').run(s.user,s.role);db.sql.prepare('INSERT INTO profiles(user) VALUES(?)').run(s.user)}
+ensureEconomy(db);
+let seq=0;const operation=()=>('operation_'+String(++seq).padStart(12,'0'));
+function act(s,path,data={}){return economyAction(db,s,path,{...data,op_id:data.op_id||operation()})}
+function seed(user,gold,bcoin=0){state(db,{user,role:'driver'});db.sql.prepare('UPDATE eco_wallets SET gold_units=?,bcoin_units=? WHERE user=?').run(gold*100,bcoin*100,user)}
+seed('alice',200000);seed('bob',10);seed('charlie',200000);
+assert.equal(state(db,alice).gold_balance,200000);
+assert.throws(()=>act(alice,'admin/overview'),/forbidden/);
+assert.throws(()=>act(alice,'purchase',{product_id:'brand:volvo',currency:'pix',terms_accepted:true}),/supplier_setup/);
+act(owner,'admin/supplier',{name:'Fornecedor de testes',document:'12345678901234',address:'Endereco de testes 123',enable_pix:true});
+const bought=act(alice,'purchase',{product_id:'brand:volvo',currency:'gold',terms_accepted:true});
+assert.equal(state(db,alice).gold_balance,180000);assert.equal(state(db,alice).garage[0].brand_key,'volvo');
+assert.throws(()=>act(alice,'purchase',{product_id:'brand:volvo',currency:'gold',terms_accepted:true}),/already_owned/);
+act(alice,'select-truck',{model_key:'volvo'});
+const opid=operation(),payload={recipient:'bob',amount:'1000.01',recipient_confirmed:true,op_id:opid};
+const transferred=act(alice,'transfer',payload);assert.equal(transferred.fee,50.01);assert.equal(state(db,bob).gold_balance,1010.01);
+const gold=state(db,alice).gold_balance;act(alice,'transfer',payload);assert.equal(state(db,alice).gold_balance,gold);
+assert.throws(()=>act(alice,'transfer',{...payload,amount:'1001'}),/operation_id_reused/);
+assert.throws(()=>act(alice,'transfer',{recipient:'alice',amount:1,recipient_confirmed:true}),/self_transfer/);
+assert.throws(()=>act(bob,'transfer',{recipient:'alice',amount:999999,recipient_confirmed:true}),/insufficient/);
+assert.equal(state(db,bob).gold_balance,1010.01);
+const pix=act(bob,'purchase',{product_id:'brand:scania',currency:'pix',terms_accepted:true});
+act(bob,'payment-claim',{order_id:pix.order_id,payment_id:'USER-CLAIM-12345',payer_name:'teste'});
+assert.equal(state(db,bob).garage.length,0);
+assert.throws(()=>act(bob,'admin/confirm-payment',{order_id:pix.order_id,received_reais:10,payment_id:'BANK-12345678',bank_statement_checked:true}),/forbidden/);
+assert.throws(()=>act(owner,'admin/confirm-payment',{order_id:pix.order_id,received_reais:9,payment_id:'BANK-12345678',bank_statement_checked:true}),/amount_mismatch/);
+act(owner,'admin/confirm-payment',{order_id:pix.order_id,received_reais:10,payment_id:'BANK-12345678',bank_statement_checked:true});
+assert.equal(state(db,bob).garage[0].brand_key,'scania');
+act(owner,'admin/confirm-payment',{order_id:pix.order_id,received_reais:10,payment_id:'BANK-12345678',bank_statement_checked:true});assert.equal(state(db,bob).garage.length,1);
+const other=act(charlie,'purchase',{product_id:'brand:man',currency:'pix',terms_accepted:true});
+assert.throws(()=>act(owner,'admin/confirm-payment',{order_id:other.order_id,received_reais:10,payment_id:'BANK-12345678',bank_statement_checked:true}),/payment_already_used/);
+assert.equal(state(db,charlie).garage.length,0);
+const coins=act(charlie,'purchase',{product_id:'bcoin:10',currency:'pix',terms_accepted:true});act(owner,'admin/confirm-payment',{order_id:coins.order_id,received_reais:10,payment_id:'BANK-87654321',bank_statement_checked:true});assert.equal(state(db,charlie).bcoin_balance,10);
+assert.throws(()=>act(charlie,'transfer-bcoin',{recipient:'bob',amount:1}),/not_found/);
+assert.throws(()=>act(charlie,'convert',{amount:1}),/not_found/);
+const beforeCompany=state(db,alice).gold_balance;act(alice,'company-create',{name:'Amigos da estrada',tag:'TESTE'});assert.equal(state(db,alice).gold_balance,beforeCompany-35000);
+act(alice,'company-slot');assert.equal(state(db,alice).company.capacity,2);
+act(alice,'company-invite',{user:'bob'});const invite=state(db,bob).invites[0];act(bob,'company-accept',{invite_id:invite.id});assert.equal(state(db,bob).company.members.length,2);
+assert.throws(()=>act(bob,'company-slot'),/management_required/);
+act(alice,'company-role',{user:'bob',role:'manager'});assert.throws(()=>act(bob,'company-slot'),/owner_required/);
+assert.equal(Object.hasOwn(state(db,bob).company,'gold_balance'),false);
+// Delivery reward uses authoritative GAT, observed brand, authenticated journal,
+// ownership at start, launch timestamp and an idempotent database record.
+db.sql.prepare("UPDATE eco_config SET value=? WHERE key='gold_starts_at'").run('2026-10-16T00:00:00Z');
+const start=new Date(Date.now()+1000).toISOString(),end=new Date(Date.now()+6000).toISOString();
+const mission={id:'real-delivery',state:'active',started_at:start};db.sql.prepare('UPDATE profiles SET current_mission_json=? WHERE user=?').run(JSON.stringify(mission),'alice');
+const packet=model=>({game:{connected:true,paused:false},truck:{make:'Volvo',model},on_job:true,gat_journal_verified:true,gat_journal_version:'3'});
+economyTrack(db,'alice',packet('FH4'),start);economyTrack(db,'alice',packet('FH6'),end);
+db.sql.prepare('INSERT INTO deliveries VALUES(?,?,?,?)').run(1,'alice',end,JSON.stringify({mission,audit:{gat_points:266,rank_eligible:true}}));
+const balance=state(db,alice).gold_balance;economyFinish(db,'alice',end,{type:'delivery_completed'});economyFinish(db,'alice',end,{type:'delivery_completed'});assert.equal(state(db,alice).gold_balance,balance+266);
+db.sql.prepare('UPDATE profiles SET current_mission_json=? WHERE user=?').run(JSON.stringify({...mission,id:'bad-delivery'}),'alice');economyTrack(db,'alice',{...packet('FH6'),gat_journal_verified:false},start);economyTrack(db,'alice',packet('FH6'),end);
+db.sql.prepare('INSERT INTO deliveries VALUES(?,?,?,?)').run(2,'alice',end,JSON.stringify({mission:{...mission,id:'bad-delivery'},audit:{gat_points:1000,rank_eligible:true}}));economyFinish(db,'alice',end,{type:'delivery_completed'});assert.equal(state(db,alice).gold_balance,balance+266);
+assert.equal(db.sql.prepare('SELECT gold_units FROM eco_rewards WHERE delivery_id=2').get().gold_units,0);
+console.log('PASS: wallet cents, fee, rollback, idempotency, ownership, manual Pix gate, payment uniqueness, Bcoin, no cashout/conversion, company roles/capacity, brand rewards and journal rejection.');
+db.close();
