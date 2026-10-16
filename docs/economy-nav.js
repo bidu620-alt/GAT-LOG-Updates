@@ -1,0 +1,10 @@
+(()=>{'use strict';
+ const root=new URL('.',document.currentScript.src),api='https://api.gatlogets2.com.br';let busy=false;
+ const session=()=>{try{return JSON.parse(localStorage.getItem('gat_driver_account_v1')||sessionStorage.getItem('gat_driver_account_v1')||'null')}catch{return null}};
+ let css=document.getElementById('eco-css');if(!css){css=document.createElement('link');css.id='eco-css';css.rel='stylesheet';css.href=new URL('economy.css?v=official-1',root);document.head.append(css)}
+ const nav=document.querySelector('.topbar nav');if(nav){for(const [text,hash] of [['Loja','loja'],['Empresas','empresa']]){if(!nav.querySelector('[data-eco-link="'+hash+'"]')){const a=document.createElement('a');a.textContent=text;a.href=new URL('economia.html#'+hash,root);a.dataset.ecoLink=hash;nav.append(a)}}}
+ const top=document.querySelector('.topbar');if(!top)return;
+ let wallet=document.querySelector('.eco-wallet-nav');if(!wallet){wallet=document.createElement('a');wallet.className='eco-wallet-nav';wallet.href=new URL('economia.html#carteira',root);wallet.setAttribute('aria-label','Abrir carteira de Gold e Bcoin');const login=top.querySelector('#accountButton');if(login)login.before(wallet);else top.append(wallet)}
+ async function refresh(){const s=session();wallet.textContent=s?.token?'Carteira • carregando…':'Carteira • entrar';if(!s?.token||busy)return;busy=true;try{const r=await fetch(api+'/api/economy/state',{method:'POST',cache:'no-store',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({token:s.token})});const d=await r.json();if(session()?.user!==s.user)return;if(r.ok&&d.ok){wallet.textContent='Gold '+Number(d.gold_balance).toLocaleString('pt-BR',{maximumFractionDigits:2})+' • Bcoin '+Number(d.bcoin_balance).toLocaleString('pt-BR',{maximumFractionDigits:2})}else wallet.textContent=r.status===401?'Carteira • entrar novamente':'Carteira • indisponível'}catch{wallet.textContent='Carteira • aguardando Central'}finally{busy=false}}
+ refresh();window.addEventListener('gat-account-change',refresh);setInterval(()=>{if(!document.hidden)refresh()},30000);
+})();

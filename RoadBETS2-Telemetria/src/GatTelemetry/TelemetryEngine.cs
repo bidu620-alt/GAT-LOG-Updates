@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -133,6 +133,7 @@ internal sealed class TelemetryEngine : IDisposable
 			CopyAlias(m, "Job.PlannedDistanceKm", "planned_distance_km", onlyIfMissing: true);
 			CopyAlias(m, "gameplay.onJob", "on_job");
 			AddDamageAliases(m);
+			TruckModelEvidence.Stamp(m);
 		}
 	}
 

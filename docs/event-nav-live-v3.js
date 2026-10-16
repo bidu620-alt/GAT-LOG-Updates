@@ -17,3 +17,5 @@ function apply(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 setInterval(apply,60000);
 })();
+
+(()=>{const root=new URL('.',document.currentScript.src);function add(){if(document.querySelector('script[src*="economy-nav.js"]'))return;const script=document.createElement('script');script.src=new URL('economy-nav.js?v=official-1',root);document.body.appendChild(script)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add()})();

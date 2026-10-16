@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -33,7 +33,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GatTelemetry;
 
-internal sealed class MainForm : Form
+internal sealed partial class MainForm : Form
 {
 	private sealed class SteamIdentity
 	{
@@ -360,7 +360,7 @@ internal sealed class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.24";
+	private const string CurrentVersion = "1.0.68.30";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -778,12 +778,13 @@ internal sealed class MainForm : Form
 			{
 				string text = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GAT-LOG", "GAT-Telemetria");
 				Directory.CreateDirectory(text);
-				File.AppendAllText(System.IO.Path.Combine(text, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.24: " + ex?.ToString() + Environment.NewLine);
+				File.AppendAllText(System.IO.Path.Combine(text, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.30: " + ex?.ToString() + Environment.NewLine);
 			}
 			catch
 			{
 			}
 		}
+		InitializeEconomy();
 		LoadMapMode();
 		LoadServerList();
 		chkAuto.Checked = _settings.AutoConnect;
@@ -1111,7 +1112,7 @@ internal sealed class MainForm : Form
 		Controls.Add(btnUpdate);
 		lblVersion = new System.Windows.Forms.Label
 		{
-			Text = "Cliente 1.0.68.24",
+			Text = "Cliente 1.0.68.30",
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(105, 118, 136),
 			Anchor = (AnchorStyles.Bottom | AnchorStyles.Right),
@@ -1644,6 +1645,7 @@ internal sealed class MainForm : Form
 		{
 			JObject jObject = await _telemetry.ReadAsync();
 			_lastTripCapture = DateTime.UtcNow;
+			ObserveEconomyTruck(jObject);
 			if (jObject != null)
 			{
 				_tripJournal.Observe(jObject);
@@ -1830,7 +1832,7 @@ internal sealed class MainForm : Form
 			using ICryptoTransform cryptoTransform = aes.CreateDecryptor();
 			bytes = cryptoTransform.TransformFinalBlock(array4, 0, array4.Length);
 		}
-		return JObject.Parse(Encoding.UTF8.GetString(bytes));
+		return TelemetryCanonical.ParseObject(Encoding.UTF8.GetString(bytes));
 	}
 
 	private void StampCentralTelemetry(JObject tele)
@@ -1886,12 +1888,13 @@ internal sealed class MainForm : Form
 		}
 		num++;
 		JObject jObject2 = (JObject)tele.DeepClone();
-		string[] array = new string[7] { "gat_journal_seq", "gat_journal_prev", "gat_journal_chain", "gat_journal_payload_sha256", "gat_journal_version", "gat_journal_verified", "gat_journal_invalid" };
+		string[] array = new string[8] { "gat_journal_seq", "gat_journal_prev", "gat_journal_chain", "gat_journal_payload_sha256", "gat_journal_version", "gat_journal_verified", "gat_journal_invalid", "gat_journal_payload" };
 		foreach (string propertyName in array)
 		{
 			jObject2.Remove(propertyName);
 		}
-		string text2 = Sha256Hex(jObject2.ToString(Newtonsoft.Json.Formatting.None));
+		string payloadJson = jObject2.ToString(Newtonsoft.Json.Formatting.None);
+		string text2 = Sha256Hex(payloadJson);
 		string text3 = TextAny(tele, "gat_packet_id");
 		string text4 = TextAny(tele, "gat_collected_at");
 		string text5 = TextAny(tele, "gat_trip_id");
@@ -1906,7 +1909,8 @@ internal sealed class MainForm : Form
 		{
 			text6 = BitConverter.ToString(hMACSHA.ComputeHash(Encoding.UTF8.GetBytes(s))).Replace("-", string.Empty).ToLowerInvariant();
 		}
-		tele["gat_journal_version"] = "1";
+		tele["gat_journal_version"] = "3";
+		tele["gat_journal_payload"] = payloadJson;
 		tele["gat_journal_seq"] = num;
 		tele["gat_journal_prev"] = text;
 		tele["gat_journal_payload_sha256"] = text2;
@@ -2112,7 +2116,7 @@ internal sealed class MainForm : Form
 			return;
 		}
 		tele["gat_account_user"] = _accountUser;
-		tele["gat_client_version"] = "1.0.32";
+		tele["gat_client_version"] = CurrentVersion;
 		ModIntegrityResult modIntegrityResult = ModIntegrityScanner.Check();
 		tele["gat_integrity_status"] = modIntegrityResult.Status ?? "unknown";
 		tele["gat_integrity_reason"] = modIntegrityResult.Reason ?? string.Empty;
@@ -2464,6 +2468,7 @@ internal sealed class MainForm : Form
 		try
 		{
 			await CaptureTripJournalAsync();
+			_ = PollEconomy();
 			if (!AccountReady)
 			{
 				_loggedIn = false;
@@ -3202,7 +3207,7 @@ internal sealed class MainForm : Form
 			})
 			{
 				RemoteVersion remoteVersion = JsonConvert.DeserializeObject<RemoteVersion>(await http.GetStringAsync("https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json"));
-				if (remoteVersion != null && IsNewer(remoteVersion.Version, "1.0.68.24") && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
+				if (remoteVersion != null && IsNewer(remoteVersion.Version, "1.0.68.30") && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
 				{
 					_availableUpdate = remoteVersion;
 					btnUpdate.Text = "ATUALIZAR CLIENTE 1.0.32";
@@ -3299,7 +3304,7 @@ internal sealed class MainForm : Form
 		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA BIDUTRUCK");
 		_hubServerCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
 		Controls.Clear();
-		Text = "BIDUTRUCK TELEMETRIA 1.0.68.24";
+		Text = "BIDUTRUCK TELEMETRIA 1.0.68.30";
 		MinimumSize = new System.Drawing.Size(740, 500);
 		AutoScaleMode = AutoScaleMode.Dpi;
 		System.Drawing.Rectangle workingArea = Screen.FromControl(this).WorkingArea;
@@ -3333,7 +3338,7 @@ internal sealed class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "BIDUTRUCK ETS2  •  Cliente 1.0.68.24  •  conexão que move distâncias",
+			Text = "BIDUTRUCK ETS2  •  Cliente 1.0.68.30  •  conexão que move distâncias",
 			Padding = new Padding(20, 0, 0, 0),
 			TextAlign = ContentAlignment.MiddleLeft,
 			ForeColor = System.Drawing.Color.FromArgb(104, 128, 155),
@@ -5547,7 +5552,7 @@ internal sealed class MainForm : Form
 		if (!_hub045Applied)
 		{
 			_hub045Applied = true;
-			Text = "BIDUTRUCK TELEMETRIA 1.0.68.24";
+			Text = "BIDUTRUCK TELEMETRIA 1.0.68.30";
 			ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
 			BuildHome045();
 			_hubStatusTimer041.Tick += async delegate
@@ -5875,7 +5880,7 @@ internal sealed class MainForm : Form
 			{
 				string text3 = Safe041(lblTelemetry, "Central BiduTruck: aguardando");
 				string text4 = Safe041(lblServer, "Servidor: opcional");
-				_homeSystem045.Text = "● " + text3 + "\r\n● " + text4 + "\r\n● Cliente: 1.0.68.9\r\n\r\n" + (AccountReady ? "✓ Ecossistema GAT conectado." : "Aguardando Conta BiduTruck.");
+				_homeSystem045.Text = "● " + text3 + "\r\n● " + text4 + "\r\n● Cliente: " + CurrentVersion + "\r\n\r\n" + (AccountReady ? "✓ Ecossistema GAT conectado." : "Aguardando Conta BiduTruck.");
 				_homeSystem045.ForeColor = (AccountReady ? System.Drawing.Color.FromArgb(125, 231, 154) : System.Drawing.Color.FromArgb(191, 219, 242));
 			}
 		}

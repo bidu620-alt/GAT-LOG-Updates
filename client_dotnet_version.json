@@ -1,10 +1,10 @@
 {
   "app": "BIDUTRUCK Telemetria",
   "channel": "stable",
-  "version": "1.0.68.24",
-  "display_version": "1.0.68.24",
-  "notas": "BIDUTRUCK TELEMETRIA: novo nome no aplicativo e overlay; redimensionamento original mantido; texto maior na coluna esquerda e cabecalho sem sobreposicao. Voz com tolerancia de 1 km/h. Velocidade branca ate limite + 1 km/h e vermelha acima. Preserva dados e configuracoes, com backup do aplicativo e painel.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe",
-  "sha256": "da695fe8a7f9b24724c3039fadb4baf1bb3b583e5481232943e372057ca7256d"
+  "version": "1.0.68.30",
+  "display_version": "1.0.68.30",
+  "notas": "Garagem por marca: todos os modelos da marca adquirida. Carteira Gold oficial, saldo com centavos e aviso vermelho de bloqueio. Validação assinada v3, dashboard Ouro ativo e backup do aplicativo/painel. Adquira e selecione uma marca no site antes de iniciar uma nova entrega.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.30.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.30.exe",
+  "sha256": "7880b6ab29fca4353fe5db83abe44fb87bf745d1cabd048cbd71c2ea65665000"
 }

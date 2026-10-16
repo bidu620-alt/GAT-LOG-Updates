@@ -14,13 +14,13 @@
 <section id="adminGate" class="admin-gate"><div class="shield">G</div><h2>Área restrita</h2><p id="gateText">Entre com uma Conta GAT administrativa para continuar.</p><button id="adminLoginButton" class="btn primary" type="button">ENTRAR NA CONTA GAT</button></section>
 <div id="adminContent" hidden>
 <section class="admin-stats"><article><small>MOTORISTAS</small><b id="statDrivers">0</b></article><article><small>ONLINE AGORA</small><b id="statOnline">0</b></article><article><small>MISSÕES ATIVAS</small><b id="statMissions">0</b></article><article><small>BLOQUEADOS</small><b id="statBlocked">0</b></article></section>
-<nav class="admin-tabs"><button class="active" data-tab="drivers" type="button">MOTORISTAS</button><button data-tab="audit" type="button">AUDITORIA</button></nav>
+<nav class="admin-tabs"><button class="active" data-tab="drivers" type="button">MOTORISTAS</button><button data-tab="audit" type="button">AUDITORIA</button><button data-tab="economy" type="button">ECONOMIA / PIX</button></nav>
 <section class="admin-panel active" data-panel="drivers">
 <div class="admin-toolbar"><div><span class="eyebrow">CONTAS GAT</span><h2>Motoristas cadastrados</h2></div><div class="admin-tools"><input id="adminSearch" type="search" placeholder="Buscar motorista..."><button id="refreshAdmin" class="btn ghost" type="button">ATUALIZAR</button></div></div>
 <div id="adminStatus" class="admin-status">Carregando Central GAT...</div>
 <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>MOTORISTA</th><th>ACESSO</th><th>TELEMETRIA</th><th>MISSÃO</th><th>PROGRESSO</th><th>CAMINHÃO / CARGA</th><th>AÇÕES</th></tr></thead><tbody id="adminRows"></tbody></table></div>
 </section>
-<section class="admin-panel" data-panel="audit"><div class="admin-toolbar"><div><span class="eyebrow">SEGURANÇA</span><h2>Log administrativo</h2></div><button id="refreshAudit" class="btn ghost" type="button">ATUALIZAR LOG</button></div><div id="auditStatus" class="admin-status">Abra esta aba para consultar as últimas ações.</div><div id="auditList" class="audit-list"></div></section>
+<section class="admin-panel" data-panel="economy"><div id="economyAdminRoot"></div></section><section class="admin-panel" data-panel="audit"><div class="admin-toolbar"><div><span class="eyebrow">SEGURANÇA</span><h2>Log administrativo</h2></div><button id="refreshAudit" class="btn ghost" type="button">ATUALIZAR LOG</button></div><div id="auditStatus" class="admin-status">Abra esta aba para consultar as últimas ações.</div><div id="auditList" class="audit-list"></div></section>
 </div>
 </main>
 
@@ -51,4 +51,4 @@
 
 <footer class="footer"><div class="shell">GAT-LOG • Administração da Central GAT</div></footer>
 <script src="official-v5.js"></script><script src="event-registry.js?v=special-transport-20261009-1"></script><script src="admin.js?v=7"></script><script src="admin-cargo-classification.js?v=1"></script><script src="admin-mission-review.js?v=1"></script><script src="admin-driving-audit.js?v=vehicle-damage-20261011"></script><script src="admin-health.js?v=2"></script>
-<script src="event-nav-live-v3.js"></script></body></html>
+<script src="event-nav-live-v3.js"></script><script src="economy-nav.js?v=official-1"></script><script src="economy-admin.js?v=official-1"></script></body></html>
