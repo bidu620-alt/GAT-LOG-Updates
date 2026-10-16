@@ -40,7 +40,7 @@ act(owner,'admin/confirm-payment',{order_id:pix.order_id,received_reais:10,payme
 const other=act(charlie,'purchase',{product_id:'brand:man',currency:'pix',terms_accepted:true});
 assert.throws(()=>act(owner,'admin/confirm-payment',{order_id:other.order_id,received_reais:10,payment_id:'BANK-12345678',bank_statement_checked:true}),/payment_already_used/);
 assert.equal(state(db,charlie).garage.length,0);
-const coins=act(charlie,'purchase',{product_id:'bcoin:10',currency:'pix',terms_accepted:true});act(owner,'admin/confirm-payment',{order_id:coins.order_id,received_reais:10,payment_id:'BANK-87654321',bank_statement_checked:true});assert.equal(state(db,charlie).bcoin_balance,10);
+assert.throws(()=>act(charlie,'purchase',{product_id:'bcoin:10',currency:'pix',terms_accepted:true}),/bcoin_purchase_disabled/);assert.equal(state(db,charlie).catalog.some(p=>p.kind==='bcoin'),false);assert.equal(state(db,charlie).bcoin_balance,0);
 assert.throws(()=>act(charlie,'transfer-bcoin',{recipient:'bob',amount:1}),/not_found/);
 assert.throws(()=>act(charlie,'convert',{amount:1}),/not_found/);
 const beforeCompany=state(db,alice).gold_balance;act(alice,'company-create',{name:'Amigos da estrada',tag:'TESTE'});assert.equal(state(db,alice).gold_balance,beforeCompany-35000);

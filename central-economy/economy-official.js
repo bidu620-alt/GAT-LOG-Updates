@@ -34,10 +34,9 @@ function op(db,s,b,action,fn){
 function existsUser(db,value){const user=clean(value);if(!/^[a-z0-9._-]{3,32}$/.test(user))fail(400,'invalid_recipient');const a=sql(db).prepare('SELECT user,disabled FROM accounts WHERE user=?').get(user);if(!a||a.disabled)fail(404,'recipient_not_found');return user}
 function catalog(db){return [
  ...Object.entries(BRANDS).map(([key,title])=>({id:'brand:'+key,kind:'brand',brand_key:key,title:'Chave '+title,description:'Libera todos os modelos '+title+' para ganhar Gold em entregas válidas. Não altera o caminhão dentro do ETS2.',cash_centavos:1000,gold_units:2000000,bcoin_units:0})),
- ...[10,20,50].map(n=>({id:'bcoin:'+n,kind:'bcoin',title:n+' Bcoin',description:'Crédito virtual para itens, passes e eventos com preço em Bcoin. Não permite saque ou conversão em Gold.',cash_centavos:n*100,gold_units:0,bcoin_units:0,bcoin_credit:n*100})),
  ...sql(db).prepare('SELECT * FROM eco_products WHERE active=1 ORDER BY title').all().map(p=>({...p,cash_centavos:0}))
  ]}
-function product(db,id){const p=catalog(db).find(x=>x.id===id);if(!p)fail(404,'product_not_found');return p}
+function product(db,id,legacy=false){if(legacy&&/^bcoin:(10|20|50)$/.test(id)){const n=Number(id.split(':')[1]);return{id,kind:'bcoin',title:n+' Bcoin',bcoin_credit:n*100};}const p=catalog(db).find(x=>x.id===id);if(!p)fail(404,'product_not_found');return p}
 function owned(db,user,key){return sql(db).prepare('SELECT * FROM eco_brands WHERE user=? AND brand_key=?').get(user,key)}
 function alreadyOwned(db,user,p){return p.kind==='brand'?owned(db,user,p.brand_key):p.kind!=='bcoin'?sql(db).prepare('SELECT 1 FROM eco_entitlements WHERE user=? AND product_id=?').get(user,p.id):false}
 function fulfil(db,order,p){
@@ -112,6 +111,7 @@ export function economyAction(db,s,path,b){
   const amount=units(b.amount),fee=Math.ceil(amount*5/100),ref=randomUUID();
   ledger(db,s.user,'gold',-(amount+fee),'transfer_sent',ref,{recipient:to,amount_units:amount,fee_units:fee});ledger(db,to,'gold',amount,'transfer_received',ref,{sender:s.user});audit(db,s.user,'gold_transfer',to,{ref,amount_units:amount,fee_units:fee});return{ok:true,amount:amount/100,fee:fee/100,total:(amount+fee)/100}
  });
+ if(path==='purchase'&&String(b.product_id||'').startsWith('bcoin:'))fail(403,'bcoin_purchase_disabled');
  if(path==='purchase')return op(db,s,b,path,()=>{
   if(b.terms_accepted!==true)fail(400,'terms_required');const p=product(db,String(b.product_id||''));if(alreadyOwned(db,s.user,p))fail(409,'product_already_owned');
   const currency=String(b.currency||'');let price=currency==='gold'?p.gold_units:currency==='bcoin'?p.bcoin_units:currency==='pix'?p.cash_centavos:0;if(!price)fail(400,'payment_method_unavailable');
@@ -152,7 +152,7 @@ function adminAction(db,s,path,b){
  if(path==='confirm-payment')return op(db,s,b,path,()=>{
   const order=sql(db).prepare('SELECT * FROM eco_orders WHERE id=?').get(String(b.order_id||''));if(!order)fail(404,'order_not_found');if(order.status==='fulfilled')return{ok:true,already_confirmed:true};if(!['pending_payment','awaiting_review'].includes(order.status))fail(409,'order_not_pending');
   if(b.bank_statement_checked!==true)fail(400,'bank_confirmation_required');const payment=String(b.payment_id||'').trim();if(!/^[a-zA-Z0-9._:-]{8,80}$/.test(payment))fail(400,'bank_payment_id_required');const amount=units(b.received_reais);if(amount!==order.amount_centavos)fail(409,'payment_amount_mismatch');if(sql(db).prepare('SELECT 1 FROM eco_pix_receipts WHERE payment_id=?').get(payment))fail(409,'payment_already_used');
-  const p=product(db,order.product_id);sql(db).prepare('INSERT INTO eco_pix_receipts VALUES(?,?,?,?,?)').run(payment,order.id,amount,s.user,now());sql(db).prepare('UPDATE eco_orders SET payment_id=?,confirmed_by=?,updated_at=? WHERE id=?').run(payment,s.user,now(),order.id);fulfil(db,order,p);audit(db,s.user,'pix_confirmed',order.user,{order_id:order.id,payment_id:payment,amount_centavos:amount});return{ok:true}
+  const p=product(db,order.product_id,true);sql(db).prepare('INSERT INTO eco_pix_receipts VALUES(?,?,?,?,?)').run(payment,order.id,amount,s.user,now());sql(db).prepare('UPDATE eco_orders SET payment_id=?,confirmed_by=?,updated_at=? WHERE id=?').run(payment,s.user,now(),order.id);fulfil(db,order,p);audit(db,s.user,'pix_confirmed',order.user,{order_id:order.id,payment_id:payment,amount_centavos:amount});return{ok:true}
  });
  if(path==='supplier')return op(db,s,b,path,()=>{
   const supplier={name:String(b.name||'').trim().slice(0,150),document:String(b.document||'').replace(/\D/g,''),address:String(b.address||'').trim().slice(0,300),support_discord:'bidu0576'};

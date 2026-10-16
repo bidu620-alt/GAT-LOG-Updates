@@ -21,3 +21,6 @@ CREATE TABLE IF NOT EXISTS eco_companies(id TEXT PRIMARY KEY,name TEXT NOT NULL,
 CREATE TABLE IF NOT EXISTS eco_company_members(user TEXT PRIMARY KEY REFERENCES accounts(user),company_id TEXT NOT NULL REFERENCES eco_companies(id),role TEXT NOT NULL CHECK(role IN ('owner','manager','driver')),joined_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS eco_company_invites(id TEXT PRIMARY KEY,company_id TEXT NOT NULL REFERENCES eco_companies(id),user TEXT NOT NULL REFERENCES accounts(user),invited_by TEXT NOT NULL,status TEXT NOT NULL,expires_at TEXT NOT NULL,created_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS eco_support(id TEXT PRIMARY KEY,user TEXT NOT NULL REFERENCES accounts(user),order_id TEXT NOT NULL,reason TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'open',created_at TEXT NOT NULL);
+
+CREATE TRIGGER IF NOT EXISTS eco_no_new_bcoin_orders BEFORE INSERT ON eco_orders WHEN NEW.product_id GLOB 'bcoin:*' BEGIN SELECT RAISE(ABORT,'bcoin_purchase_disabled'); END;
+INSERT OR REPLACE INTO eco_config(key,value) VALUES('bcoin_sales_enabled','0');
