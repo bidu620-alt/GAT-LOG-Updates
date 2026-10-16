@@ -18,4 +18,4 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(apply,60000);
 })();
 
-(()=>{const root=new URL('.',document.currentScript.src);function add(){if(document.querySelector('script[src*="economy-nav.js"]'))return;const script=document.createElement('script');script.src=new URL('economy-nav.js?v=official-2',root);document.body.appendChild(script)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add()})();
+(()=>{const root=new URL('.',document.currentScript.src);function add(){if(document.querySelector('script[src*="economy-nav.js"]'))return;const script=document.createElement('script');script.src=new URL('economy-nav.js?v=official-3',root);document.body.appendChild(script)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add()})();
