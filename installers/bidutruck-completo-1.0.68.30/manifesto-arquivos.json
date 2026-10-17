@@ -1,0 +1,2361 @@
+{
+  "version": "1.0.68.30",
+  "source": "instalação validada no PC, conferida contra o build publicado",
+  "files": [
+    {
+      "path": "gat-home-hero-1.0.44.jpg",
+      "size": 10493,
+      "sha256": "ebf776da23592a0546dcaa7d2518b8091dcc4dc2636a394444033385da6e9bb3"
+    },
+    {
+      "path": "GAT_TELEMETRIA.exe",
+      "size": 5120,
+      "sha256": "ab680e9383e9e18164159db660da0b8a89e223c05d56c6b6c9075c6cc875152e"
+    },
+    {
+      "path": "GAT_TELEMETRIA_APP.exe",
+      "size": 466432,
+      "sha256": "beca74f1ec7db589660b7ae7b302f459eee384fce14a1eca4411ec9856b2050c"
+    },
+    {
+      "path": "GAT_TELEMETRIA_APP.exe.config",
+      "size": 174,
+      "sha256": "051099983b896673909e01a1f631b6652abb88da95c9f06f3efef4be033091fa"
+    },
+    {
+      "path": "Microsoft.Web.WebView2.Core.dll",
+      "size": 589376,
+      "sha256": "a5878dec68ba65280d0bb450b1029dad9bb380b9f24cdac4503ee6a919581e56"
+    },
+    {
+      "path": "Microsoft.Web.WebView2.WinForms.dll",
+      "size": 38472,
+      "sha256": "234c53621521aa7f45849e5980bfa5ffffb7dc1cb08b054dd634c2c82f679bd7"
+    },
+    {
+      "path": "Microsoft.Web.WebView2.Wpf.dll",
+      "size": 82512,
+      "sha256": "bdf97ef62b93a0599973ce28aa300b74d0407c51c9f9067a97723366ea0c81d4"
+    },
+    {
+      "path": "Newtonsoft.Json.dll",
+      "size": 711952,
+      "sha256": "e1e27af7b07eeedf5ce71a9255f0422816a6fc5849a483c6714e1b472044fa9d"
+    },
+    {
+      "path": "ROADLIFE_TELEMETRIA.ico",
+      "size": 111812,
+      "sha256": "c57f481f463aea0b5235436dd5dc6d02fc6c007ae9e715d5d3355781372dbb98"
+    },
+    {
+      "path": "WebView2Loader.dll",
+      "size": 165440,
+      "sha256": "9468470d6a4d11179ec179183d130465a380e0dedfdbe1fc2ab404c86c45a85e"
+    },
+    {
+      "path": "gatdash-www/app.css",
+      "size": 48477,
+      "sha256": "77450d3964533d7478118a2e8617e618ac3de83c355800a1d0ce42b0b73310c8"
+    },
+    {
+      "path": "gatdash-www/app.js",
+      "size": 15280,
+      "sha256": "e825906f55162f665a4023ce2abb71c3609898e5aa1cc3f18047ca08d8c6a18a"
+    },
+    {
+      "path": "gatdash-www/index.html",
+      "size": 8395,
+      "sha256": "cf1ee154e4f2ebf635edda9014ae6f07ebb49456bc4e822c524ed83c879c7592"
+    },
+    {
+      "path": "gatdash-www/media.js",
+      "size": 4820,
+      "sha256": "caa430a6a392fcc3495457529e615852c9e469c051f6cdf997ad11de19236bcc"
+    },
+    {
+      "path": "RoadLifeDash/dashboard-structure-green.png",
+      "size": 7616,
+      "sha256": "7f29cc91ee89b98909838341e4a76c0a2c598601ae8be5b2b71b708e24b9a2ae"
+    },
+    {
+      "path": "RoadLifeDash/Dashboard2.ps1",
+      "size": 17767,
+      "sha256": "1a56ea58abf673618e648fe4bd8ab7b56f7576d407811163abff1deb9a00e3ac"
+    },
+    {
+      "path": "RoadLifeDash/Dashboard2.xaml",
+      "size": 26449,
+      "sha256": "03ca492ed9f9766fa51eb5b1636710660a6d0c18bd6fe001211fd54e81bb5d33"
+    },
+    {
+      "path": "RoadLifeDash/LEIA-ME.txt",
+      "size": 476,
+      "sha256": "7f69f505ff534c1b1141e3746619f4a451b3ec3305a1c2b093e7b1a1c729b2e2"
+    },
+    {
+      "path": "RoadLifeDash/README.md",
+      "size": 288,
+      "sha256": "b1a4a196726ba5ca2c3fed566940c03d8226c3e188a5995aee79069ce42c148e"
+    },
+    {
+      "path": "RoadLifeDash/RoadLifeDash.xaml",
+      "size": 25888,
+      "sha256": "3b1da0d99d333153b4481a2100eac4bf3f04c0c3fe26b4f0d450463d746d1c9f"
+    },
+    {
+      "path": "TruckSimGPS/TruckSimGPS_Server.exe",
+      "size": 560128,
+      "sha256": "69442ee8aff0a3739f847a5e05889f98c0c78a7380ac0e296dd9ff716b6bf2f3"
+    },
+    {
+      "path": "TruckSimGPS/TruckSimGPS_Server.exe.config",
+      "size": 3666,
+      "sha256": "b155fb0119335f89bdcd2ee79ee0b0e426aa3903fb2c015bb912d002fb4dd1ec"
+    },
+    {
+      "path": "RoadLifeDash/Assets/roadbets2-logo.png",
+      "size": 1228469,
+      "sha256": "38b51d6ef3b0024326d6dda0bfceb966688b7a9ae3ba93346463636029e53941"
+    },
+    {
+      "path": "RoadLifeDash/Assets/roadlife-logo-model1.png",
+      "size": 109417,
+      "sha256": "fb4a49c569092017392f8ddf7e72347e62fe9e7698d11b90880ae6f0d18d5303"
+    },
+    {
+      "path": "RoadLifeDash/Assets/roadlife-logo-shield.png",
+      "size": 1684711,
+      "sha256": "f0fd273d6fc584035f09e1fb260ab117e0511579172458ffb9d98bf6cb69e000"
+    },
+    {
+      "path": "RoadLifeDash/Assets/roadlife-symbol-model1.png",
+      "size": 60439,
+      "sha256": "653c5eb5b943c825972bd4c603f1b0097a58bb022bdc069416f91fdaecb3a8d7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-icon-defs.json",
+      "size": 50331,
+      "sha256": "7bb1cb8fd1e8687d1d7102b92b5feeb9bde73f487ed003fdddf4228824f83537"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-name-map.json",
+      "size": 26441,
+      "sha256": "8dc39d4e425162523ccf68eae48df952f7b8d7fa519c686f694b7a0b5e60db72"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-sprite-0.webp",
+      "size": 280748,
+      "sha256": "f78523228cbc57d970a7a6d34c7e3f157155e2546c59e0511fb56b989bcb0766"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-sprite-1.webp",
+      "size": 288800,
+      "sha256": "cad12ffa5fd15184d548939e3e327ba04fa59212b600f304c48d8178cd6c7504"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-sprite-2.webp",
+      "size": 277490,
+      "sha256": "3060d6f1014ae0bb8c50f237af495fcf261bcad0238419c0cad57eae9a4266a7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-sprite-3.webp",
+      "size": 284064,
+      "sha256": "7be1fc44084337426f074925f570163591b5460647cd13ff9b1667dc8d812ef1"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-sprite-4.webp",
+      "size": 288454,
+      "sha256": "58554c4af10358aa7ec2e3cfa82c7090ec079dee8e8d1e3737cd0947000fb22a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-sprite-5.webp",
+      "size": 274438,
+      "sha256": "189ccc589e8bf1d1cdc6e1edf9c7ffb199ad6d9321cc9d17061b5fc055ef9588"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-sprite-6.webp",
+      "size": 274982,
+      "sha256": "854eef5d6c542d36796f9e96f0ab030a3a88f540dc5d3d818e29131c119dc230"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/cargo-sprite-7.webp",
+      "size": 251976,
+      "sha256": "2db9bd93b5989ed7eb79370f48b5a0eb57c4fdf958e314d1bb492902e799afda"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/acetylene.png",
+      "size": 22310,
+      "sha256": "82560ace65651ac0d09f879cc4f980c3a0b5005cc0bc18150ef4761d488f3b7f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/acid.png",
+      "size": 23903,
+      "sha256": "974408d07e295450157599cd5b1a3386bd04b8f6dc41f8defb79953f8d6c1f30"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/aircft_tires.png",
+      "size": 23204,
+      "sha256": "89c9bd66313782be2fa25e4dd0ede164c6ae98dc7534936456316bc295812298"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/air_mails.png",
+      "size": 21936,
+      "sha256": "b5c82af86656c8362925d07882e920c05952c005b00eb2e95e90827d92a1d9b6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/almond.png",
+      "size": 19409,
+      "sha256": "3eeb0b6976c1103f9196a64818af60a067442c10d0f816d1b6fe23bff6393820"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/alu_ingot.png",
+      "size": 15428,
+      "sha256": "30f576cc0166a1b48bf2be3a8a9fcf1ea4a81dc619251eea418dc2ed90b398ae"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/alu_profile.png",
+      "size": 19485,
+      "sha256": "fd8ae997961cc8fc22ee4087621270924cea8ddf52746246cb292a881a9c03e2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/ammonia.png",
+      "size": 20690,
+      "sha256": "a100987e23d711fc77d9f442f7ab6a7c48d8606cf5bc3791da5ccbf3e458ea8b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/ammunition.png",
+      "size": 23420,
+      "sha256": "483c3fc93404eab8fac1a54d5d6ab5248c3eaebdb290d01ad5462924b5ce89cc"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/apples.png",
+      "size": 27877,
+      "sha256": "3d759fad418b3f35e6bbc6d4b0f9967dfe7dab3e6edc075831b5b21a53023f41"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/arsenic.png",
+      "size": 23644,
+      "sha256": "7ea766d61d7c730cf68d0d841843a29436e8a64c827f75a24383352050ba1146"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/asph_miller.png",
+      "size": 21308,
+      "sha256": "521ce9c2ca6ea519a5b0d4ef0d7cd45c3df6d9bc765c775c0c17847120b49f36"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/atl_cod_flt.png",
+      "size": 20263,
+      "sha256": "abd51bd21f028cdcb738b3f989bffa434255e3ddb231692074b38aa1d4a9e340"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/auger_wag.png",
+      "size": 23887,
+      "sha256": "9a291bcd3517ed6ac2926d7655642eb1797f6a478ac2114aadbdaa7cb694c1a7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/backfl_prev.png",
+      "size": 26378,
+      "sha256": "978af05b617998ade4b87af234aaad7e18b70c75e968e817c5131a6d102bea66"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/barley.png",
+      "size": 24564,
+      "sha256": "5325d82e1ca61855e7cb2465ebb11184aa89cecaf462f5602ad13e6740f04f1f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/basil.png",
+      "size": 26118,
+      "sha256": "81399911685d34b6e2cea275a9e5219b879ecc1d6b4aa096d954aae9ae0d3587"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/beans.png",
+      "size": 19816,
+      "sha256": "aa07d3c67273022f89b4050923a3d758c3f66070522223dd016ce7f5af46a80a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/beef_meat.png",
+      "size": 21662,
+      "sha256": "17a1885610bffd0d9786c5da2d81e518c098a5c40fd5645ac9769273a2b48302"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/beverages.png",
+      "size": 25686,
+      "sha256": "570e64d942ffd140551d1296f0652809a7354e897f8e598584aad12ea6c2b9e2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/big_bag_seed.png",
+      "size": 21585,
+      "sha256": "724b7fb95cee09ab6f3f3b617076632da6da22eabdd70a8e68e0a16aac17e94c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bob_d30.png",
+      "size": 22537,
+      "sha256": "dcf754eba7a7d4ee238d39acaab7a643864af340f95e2fac76712a7d2d2ed189"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bob_e10e.png",
+      "size": 22670,
+      "sha256": "d5dfedf264a03dc6ec44277f9142c4ed87d0fdc953eb342277b75fa500d6e699"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bob_e60.png",
+      "size": 27596,
+      "sha256": "242abf65d002cde3b3d8570dec627e3cb4dd587db7edf571aa019a9944c8cbe6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bob_l95.png",
+      "size": 27612,
+      "sha256": "ba538c89b99b7c6339117c3ea41ff13cc35f62cf678fb63e573b93e1cc53a6a1"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bob_pa127v.png",
+      "size": 23319,
+      "sha256": "d1ad926b0398e597481607bb76b3bb52ad32e49bfbc7d63366872974e072fe77"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bob_s86.png",
+      "size": 26009,
+      "sha256": "4ef162359617f5f1aacc49c40afefc0d5ae0f5a6adedddce75e4abde36e8915e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bob_tl3070a.png",
+      "size": 27402,
+      "sha256": "e23f204ec53cd478f5109006cd0fe4f5083016a86534b5fd2f8ba26ce568e35b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/boiler_parts.png",
+      "size": 19446,
+      "sha256": "89890b6e4edf274ba806a05859b3b92291f33ae02d80720251ff586ae23db10a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/boric_acid.png",
+      "size": 21200,
+      "sha256": "314c9380b526b8a2ec3ebae72ec3e0dc60df453c108de05ca167fc0612417cf7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bottle_water.png",
+      "size": 21863,
+      "sha256": "975d0b7ee135e3230bf30694db1465dac6b4726640da55320e58f48d58083b9c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/brake_fluid.png",
+      "size": 25380,
+      "sha256": "1d0c7ecb9951041b1b22ed425a54cce08ae3166bc80458612c5d5bdbbd204e31"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/brake_pads.png",
+      "size": 20918,
+      "sha256": "c93da1160ff4408c0361b0432a3b4b39badba1b59214a05bb4a75c2c66e7f001"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/bricks.png",
+      "size": 21156,
+      "sha256": "e0a253731c3585268a2003be8835062340422abc8660f049498f939350b7c8cb"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cable_reel.png",
+      "size": 25753,
+      "sha256": "f2e6442229daac48e6d490aeb0494e61e1e851bd7f6775a88ef7e9a29caff582"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/canned_beans.png",
+      "size": 24512,
+      "sha256": "0c90250df62994081e59fb1426139ee21448938c4b348f32a2b4175fd5582039"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/canned_beef.png",
+      "size": 21140,
+      "sha256": "19893ea5f62461d2778677d731f2d0e4c2946ec29ddbd023227d7f6de4d4c1dc"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/canned_pork.png",
+      "size": 21401,
+      "sha256": "45c36499255022704c9fb5ca9b5e28a42d58a603b96e3273a9d1132c13bd54e9"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/canned_tuna.png",
+      "size": 23698,
+      "sha256": "9b87714a1b50c17be14547c6369a7a3e87e0d0f179c6a5a4f8cc07ada2f9c079"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/can_sardines.png",
+      "size": 21069,
+      "sha256": "d70125b0b2b1b41627da321da72ffaf03274fac9bb2ecdda0440b039eedd8df9"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/caravans.png",
+      "size": 26571,
+      "sha256": "82c419ca8ed116a8c3f9636f908588d6df20b3c56ad991126997f242dcd651f5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/carbn_pwdr_c.png",
+      "size": 23847,
+      "sha256": "cfcda9630df66b6aa113255c3e43dd6e78d0c31a5fff590ad7f3e76150f1f046"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/carb_water.png",
+      "size": 22102,
+      "sha256": "f250e729c2853941019a80bb1738b6da644c31c6d46ca1f77fd4081fc13f8689"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/carrots.png",
+      "size": 22040,
+      "sha256": "e05836e46ebf977a00ea231cc056914b82828487f8077d85498fe6fef43e070b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cars_fr.png",
+      "size": 31002,
+      "sha256": "bd0d14e55d5475cb287f4d5edf1ed8d60a17529f2bef201b586dbcd28088c3b4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/car_balt1.png",
+      "size": 29778,
+      "sha256": "193bf1aa78e0ff277f5c228a6cb8f0ca9b1de4ff94fbb42cba995bbc927c4472"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/car_balt2.png",
+      "size": 31121,
+      "sha256": "439853d64fcb54e01dddb805c204cb94ba0ded195e39b46917a0a2c144da1ddc"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/car_d.png",
+      "size": 30796,
+      "sha256": "ca49b6b454ea341973245d7951c88205274ee3c323764509d7f1d7167e4a6884"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/car_f.png",
+      "size": 29631,
+      "sha256": "d4cf8514f7cbf0db8e2300bcac874de7da5540ffee499eaa1bb999a8f60ee815"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/car_gr.png",
+      "size": 31609,
+      "sha256": "04d7d3d7e4419c7e2fe55c84ccb81aaf7c5ef22d496b9a386f223db4f3b61ae7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/car_ibe.png",
+      "size": 29994,
+      "sha256": "4091627257ad63105e4525fb79361ca383f908351964c2739185c9d5c637b98d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/car_it.png",
+      "size": 31161,
+      "sha256": "19d8372bfdb4715ed8ba4b968cac3182228356bc0335a685b814cb54644db29f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cauliflower.png",
+      "size": 25302,
+      "sha256": "3379293a60793e877c606135b6dbfda568de7450c70e0f72cb62dd4cd5d49273"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/caviar.png",
+      "size": 21397,
+      "sha256": "edbfe2e1e724c53705c14c2993fec2fd0aff4a42649d6fafca6dadb790775c7a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cement.png",
+      "size": 23980,
+      "sha256": "d611533f8e0501cce72b0046e4a272247309f31abffd8c7d3ccd5ae344bd4bf3"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cheese.png",
+      "size": 20890,
+      "sha256": "791ccfebe0396cd8a862c12fc5adec7ed279679868f865d4c1fdd77e56cf2a65"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/chemicals.png",
+      "size": 23832,
+      "sha256": "72afdb16f1882832a3b3adc34ea62bff34b53c43f7463ba053377a96de15c18d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/chem_sorbent.png",
+      "size": 23168,
+      "sha256": "1802617ab07a23b37950ed24063c6246d31dab7fcfe8d48c69fb5592b10597a0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/chewing_gums.png",
+      "size": 20650,
+      "sha256": "96fdd64f8c67ed7145cbb0ec1558ec924e770058c4f93a450025c9b65159b456"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/chicken_meat.png",
+      "size": 24742,
+      "sha256": "dd96c5473d42283f203867f9e8d756d7dc6cd67cb88e666e0d5652c5366e912f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/chimney_syst.png",
+      "size": 23790,
+      "sha256": "bd3e802d4968c287f0c6de8aa73200ed1734d5581c05363f8359b23574689465"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/chlorine.png",
+      "size": 23172,
+      "sha256": "58260a80eaf86b6547dfc7a7403e8339a2ea53a7807c37724b3468a397fe30bc"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/chocolate.png",
+      "size": 19243,
+      "sha256": "0e0fa00430346fb2367b5bec8c58640a3c27cd28b73d8cfa69b24e8cd8ef0264"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/clothes.png",
+      "size": 24397,
+      "sha256": "073ac5e4e2b20897548eff97b6aab7a72998decabf1e169d1ce52f5267d7b7a5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/coal.png",
+      "size": 23744,
+      "sha256": "6bfe59d9eecca749fe0f61ba812974ece78761eac727198a4dd1ac685ced3b50"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/coconut_milk.png",
+      "size": 26437,
+      "sha256": "633a231d622a03400bd4143c029a4c4dff830213c89408ad898aa5b5ede6bbe4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/coconut_oil.png",
+      "size": 22273,
+      "sha256": "ea08de6ac02174c166be09873268c5621b5480aae20abc16ee6d92a6b0080656"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/comp_process.png",
+      "size": 20937,
+      "sha256": "a4d0688ec6c23362fa2c8355ff78fb6e6007abeb6f66c7c8a3effd6cd6cc30de"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/concen_juice.png",
+      "size": 24546,
+      "sha256": "d377665db842ee155cc7965bbcac463d233022aecfe1ecc0284282115c8a502f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/concr_beams.png",
+      "size": 21676,
+      "sha256": "da3de772491586684dbf79c3ed6e205fc8eada089f1fcd65f317a89fcd69e844"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/concr_beams2.png",
+      "size": 13240,
+      "sha256": "c28d06a0d6d9f03e17c8bcfee8eb98f75371bbf9ccbdffadbb3bc35883a57698"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/concr_cent.png",
+      "size": 17045,
+      "sha256": "499d4910810fd9727cec9bd483a2b9c77725c281798c3093dfe92d91374a4782"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/concr_stair.png",
+      "size": 19222,
+      "sha256": "002f504e28909fdbb047d3cfd639687a72b3b735e2bbcc61e96efcf329f0250a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/condensator.png",
+      "size": 28080,
+      "sha256": "1c531d09037badcf11968ab82bfe2b9fb9fe6e1349cd9ce53cd4804d907d99f4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cont_trees.png",
+      "size": 32519,
+      "sha256": "e289b609c658f2d436476ea3f7d087e6bfcfcbc68e3a16283426388901e65004"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/copp_rf_gutt.png",
+      "size": 23535,
+      "sha256": "e9bd4c2a5035e9c0e6a1d403f1ff4f56e48db21e82ec3ea91b1d682571705d42"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/corks.png",
+      "size": 23388,
+      "sha256": "e41d8417cfba9951c87833b60d42d05cff076b9bd39410feafa58c4e0463c892"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cott_cheese.png",
+      "size": 23154,
+      "sha256": "baace65088dadb922d35412aaeff690ebb3f8c77c1edf25221ac0827181cc651"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cott_harvest.png",
+      "size": 32119,
+      "sha256": "e61d6f53c553dd62fc2b940a2fdafb8171df15a7062144c1d4bc619a91eee230"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/crawler.png",
+      "size": 25346,
+      "sha256": "0c39aa38e96071b4a84ac5107319fb1bed039ac7b4853172cc8864261518cfc4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cut_flowers.png",
+      "size": 30962,
+      "sha256": "81327b7e47bab7065c16483bbd6301ee42d0c8c47ae3ec81fd958d1088568d07"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/cyanide.png",
+      "size": 20514,
+      "sha256": "7d7ce046d25648c4b2e043cbd7bec3c75bdb9d5d52b8e16a30c12f26ff84ab40"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/czl_es1000.png",
+      "size": 34555,
+      "sha256": "9cc94d4c0eb45772a48bb641e051ca7c42dcddbbc76754358963d10e16a1a71b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/czl_es300.png",
+      "size": 28958,
+      "sha256": "86fad5a47c56fc61f72cde3c5da8cf3434d5558f5309313cef28e9311c2d624f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/czl_muv75.png",
+      "size": 33460,
+      "sha256": "941c5ecf06edff5efcae6c307c8a0a13c2b38817c9c276ba811f9bb6ad86cbda"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/daf_tr.png",
+      "size": 27085,
+      "sha256": "49ec9d0879fd826489f39bbdd77aeefe9da4dc84af4d1fff70af8da2797ea45e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/desinfection.png",
+      "size": 22667,
+      "sha256": "8586755d017445361a923d6242c925bc791d361511927774706294ff25614a66"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/diesel.png",
+      "size": 14483,
+      "sha256": "fc60f4c6aa6bac53b69e116d2cdf8768d4006645ef55d5683dbde8551a267afe"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/diesel_gen.png",
+      "size": 26178,
+      "sha256": "9f6e4b82b93a39d291c60eb26d994dedb797f21f772f1cef6dce782c4c6423e6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/digger1000.png",
+      "size": 27230,
+      "sha256": "f57b8f442695047f51ed37bd3649653b816b0eedd391c7071b3584fdf0213c71"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/digger500.png",
+      "size": 20181,
+      "sha256": "d4a03f1bf3f889da36e7118b6f582f9dbb245349a8d7328e95f21970a49a62a4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/diggers.png",
+      "size": 28017,
+      "sha256": "8cc5e75a4d3b1f781b166008f0132ee848aa3df8369f375151ebfaa5c7c869ac"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/disc_harrows.png",
+      "size": 31635,
+      "sha256": "0824dc4df6a2876b671fdd59cf76a1d784f09b42a0957860d874b0361f084e15"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/dozer.png",
+      "size": 27229,
+      "sha256": "e58b7e96a627bbf7e1aa4f88f608cae4b5520b8c43929cc6aa8625084e519aa5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/dryers.png",
+      "size": 24544,
+      "sha256": "621256862e7336d98a1c88fb12b1f145a6d0620eb40a8c5630a7d06313ecd3af"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/drymilk.png",
+      "size": 23117,
+      "sha256": "88875c257fc42ddc46b231c150971af6fc75a92cda2cb5c52a2d274960f662f2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/dumper.png",
+      "size": 21730,
+      "sha256": "2988e8600a60527d652529b49ff71049ad6f8b341afbb83d05dd6672c5e2c7c6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/dumper_tire.png",
+      "size": 23358,
+      "sha256": "fa928324a62df3f963caef792e39af42dadce299537320af0070da97dfa65bbc"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/dynamite.png",
+      "size": 21991,
+      "sha256": "33987aef3d0db16261ab6fa21f8a8fdacaa2c32e37e41331d60c92345fc1e4c4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/electronics.png",
+      "size": 26625,
+      "sha256": "ce96d3357648cb3391833fbde0a7781dba2a2a2f4a85b56600ff1dc17fbd473a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/elect_wiring.png",
+      "size": 28507,
+      "sha256": "6111741e7167aa80c3240bf444d6f23aa3b6787b77d208d518fe156fb00ba2f8"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/emptytank.png",
+      "size": 20965,
+      "sha256": "0f07939ec2fc4abe47dc15d948ae196764ce51e2d5cd3fb8216cd5252efa7c32"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/empty_barr.png",
+      "size": 22375,
+      "sha256": "853566d52ed9b4d850e15911effc3ebddf036fb9edc69b6028aa7c095d691728"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/empty_cargo.png",
+      "size": 5307,
+      "sha256": "5156d4a80a93a5ebdd8542a6bd0d3e0f83431d4ce0403dbef6102a566361d17a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/empty_palet.png",
+      "size": 21323,
+      "sha256": "3064b30ec872f83f5e6fcd13a38f154a2f4d376182eecfdf1eaa84a2baf44afa"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/empty_spool.png",
+      "size": 27007,
+      "sha256": "c88127a6beacab7e43c3d8ec2dbdfa492412ed867ccd1d07cdc925377a8026a0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/emp_wine_bar.png",
+      "size": 26364,
+      "sha256": "8b9aa4fdf11957198f208ff46bad434a8aa18c00cfd1c7dfb13e2491dbdc2a34"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/emp_wine_bot.png",
+      "size": 27719,
+      "sha256": "cc819f27af9a8a68d38984e25766542fc9a9af4c856dc86f02bd3a3c5d005618"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/ethane.png",
+      "size": 19120,
+      "sha256": "4d26d1cc3d9d2316dcea3aa0b4a2a454dbaf787a33a65c93cb4fd85b26329542"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_bug.png",
+      "size": 28244,
+      "sha256": "6db43c06d750427f4210c9c2a1e06b19c8dde2936ce343342f4aaa7b1bc0811c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_dtr_ak.png",
+      "size": 26218,
+      "sha256": "4c7b0c9a27d50c8635b8348dc6a56d13a0c176a3f711a728abcb33436febca3c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_mag_jh.png",
+      "size": 25935,
+      "sha256": "4bed533c63a40da5ea53ee52004f28b7692e27ba457f8c67e97d47112b692faa"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_mag_sh.png",
+      "size": 25958,
+      "sha256": "7397354c4238739ad9167d33c4ebfb7f65675fe58f7edd3cfa11916dd65a1ecd"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_reb_er.png",
+      "size": 26152,
+      "sha256": "9db099975b37c33a8c5504a565bd6ccc5a6e9f8576f8a81a2e130f6512a310d5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_sca_ek.png",
+      "size": 26134,
+      "sha256": "e5c85deaa3dd484ff003d0a02b335657e1589804c434655749bdc89486ef3121"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_t24p_nk.png",
+      "size": 26314,
+      "sha256": "4b0406f9dba25d7f5a84c0185967df734711a2b746137059fb6bd03a8778e7ca"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_tra_rr.png",
+      "size": 26238,
+      "sha256": "6554b084c6fa82c30fdd2218097225919d8cbc2c750f51047900105279ffcb56"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_tra_sl.png",
+      "size": 26086,
+      "sha256": "2b58001d28fda7ebc05b12782ed318aaccd696f567c1549f31dd47880614e444"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/etrc_tslb_aa.png",
+      "size": 26201,
+      "sha256": "a25cc1ccdd8a89143928abcac2c2e26b82b9ea723d86ca8a659b705d84724de9"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/excavator.png",
+      "size": 34117,
+      "sha256": "45b84fda36d068058707481646b73c357837e5684e96faf8ba74e93c48fe5f48"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/excav_soil.png",
+      "size": 21182,
+      "sha256": "029f99905ffdbab71da668a1ba5a6f33b3f1a347ca543087c44640bc8b9cf450"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/exc_craw.png",
+      "size": 30575,
+      "sha256": "87d9810dac12249acd3dcf26c88659d1b1990ff250fecc86fc10ec72bf2ecc12"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/exhausts_c.png",
+      "size": 21017,
+      "sha256": "0173a4c1fe1329ff9be4f0d336f23c3f090f26b351988a8ade91d981c3cfd769"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/explosives.png",
+      "size": 23392,
+      "sha256": "ed8b3ad0a0446fb72c759fc472461892a8077f68ff1005edb5d4fa655ab57929"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/ex_bucket.png",
+      "size": 12061,
+      "sha256": "242e6d85d7b697cd165cc33beea5b99c1497515c99cafbb1d9eeb327cf5291c9"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fallback.png",
+      "size": 18799,
+      "sha256": "e39f4fae4d482423c2bf71207c59654718f7ce283b617e7e3b684df6af5f68a4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fertilizer.png",
+      "size": 24568,
+      "sha256": "cc67e1343bfec046ae2a412532c6a4dfa054fd9333d738fd6f9903f6cb6c540e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fert_spread.png",
+      "size": 30139,
+      "sha256": "e093fc97e4de9f926f0db9faacd9a6fd728d54fcfa297f95b6c555d2bbcd09a0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fireworks.png",
+      "size": 21865,
+      "sha256": "cf8c95bd520a173fb75caa5fc6862de4f4fa3c355cd3ce993a3379dd5478b88f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fish_chips.png",
+      "size": 19705,
+      "sha256": "454b3e63068a3ad67f9b91c71e5348725fe32a6978d67ebf28608e471b22b553"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/floorpanels.png",
+      "size": 28346,
+      "sha256": "f1eada9ce66cf260fbbb46cfa7fb43d7507939b55460d63b6e97884ab4e83c97"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/flour.png",
+      "size": 23900,
+      "sha256": "a468ee8ffcb0f7251a6d6e3887a956ec62c902eee75e8a932e398bf3ab4f14dc"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fluorine.png",
+      "size": 22665,
+      "sha256": "dae18d73060a66fd2a47562867c38e2c4acd5fdf59af5c4f2eeaad615cc74de5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/forage_harv.png",
+      "size": 25254,
+      "sha256": "6c005aadbed300b0834cb83cd94941208ee29872bebf5cb8b44b7ade59127f0a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/forklifts.png",
+      "size": 23158,
+      "sha256": "cf1630e1c18d9006fcb755caa3d33d738bc50b52a6d3f1ae1310208436934bf5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/forklifts_h.png",
+      "size": 19773,
+      "sha256": "316624ebcc7672cc85d53bd18d0ada931c06d8dcb911537c153de1fcb89a5e4a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/forwarder.png",
+      "size": 30461,
+      "sha256": "05efceed2307d38ed4e1ba1f4a23674f3caebf11777f9adea6e7936e2936c0c6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fresh_fish.png",
+      "size": 22852,
+      "sha256": "a2c55968c5cac11354e02a53ebd159546f42136a91aa936e7492fe0278e29342"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/frozen_hake.png",
+      "size": 20890,
+      "sha256": "c5931de11c1e25684f10157b83520c97c969f13c58d27829d2c431b395e16140"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/froz_octopi.png",
+      "size": 24387,
+      "sha256": "94d5c61713613b4b2d0f72cd226a460c3d3959d357ecfdb05c682dc8a69b6e9d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/frsh_herbs.png",
+      "size": 34032,
+      "sha256": "b0eaf2ebe11cbcbb2a78dcc262cac06ae6fd3818f9f961266d93a4261df79cbe"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fueltanker.png",
+      "size": 28193,
+      "sha256": "054d386bde2e27fedba2af6a4385dd9e13bce2fdf8f98ec1f926546fd78f152b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fuel_oil.png",
+      "size": 14697,
+      "sha256": "a574ac6ff03a5228294d85ea6539ea0e2f23f4fb95365315fba67f2263d3d47b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/fuel_tanks.png",
+      "size": 22913,
+      "sha256": "4c5fc5660bc6eee14bf9abfb8c612710751b9ad1e5bf4d5ee08e4a26f5b0e5bf"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/furniture.png",
+      "size": 23776,
+      "sha256": "b9cbaeed1271de538c96c79889b06be413ce6d4e04bb81e7bcfc486b9e2e7d74"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/garlic.png",
+      "size": 25381,
+      "sha256": "c4cd5ef34c13043d0d18fb6c744ea00c3d5446e9c139eb9d5569168fdd020903"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/gifts.png",
+      "size": 30582,
+      "sha256": "3ba1b3a83722825d75842db9c8e0c3167779b677eb0fe70e0a0875aa5c063bc2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/glass.png",
+      "size": 28322,
+      "sha256": "8152c60d9318119c5d6b32105f3cdc83e5873a6e7e30430f8a80d8580b2f1834"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/glass_packed.png",
+      "size": 21596,
+      "sha256": "f2decc136c27a62fcf1146bfb34e0dd4fccf107fd9dea4a7841aa896e4c7de2b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/gnocchi.png",
+      "size": 20089,
+      "sha256": "cce50cbb696be725d17f54583db4a8e605c2f300d17eb0e6cc8abd6a875f2ca5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/goat_cheese.png",
+      "size": 21518,
+      "sha256": "a2fedc9e56daf0693a30bfe7a2649a1751a389f4d52d7cb2dd34936e5881c8e7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/granite_cube.png",
+      "size": 21732,
+      "sha256": "41aaff957c6cf7b6abf4d999b8e7c00c4496a511218c613878b1512a9bb5f5cf"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/grapes.png",
+      "size": 24766,
+      "sha256": "1749e5128f5952aecb71e6a1a0669b951dd7b685f97388d5a0ffc54622aa9c7d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/graph_grease.png",
+      "size": 22098,
+      "sha256": "64dd133c2dff70f18a375ff68b226771fb7e82b7d019a7fad416f4562556c3e3"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/grass_rolls.png",
+      "size": 22440,
+      "sha256": "8fd244277c3697d5f0c7f0f22f1eb4044cba3a2bb1521c15b5d0185ab439fbe8"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/gravel.png",
+      "size": 24440,
+      "sha256": "d3d9e971d3815502964caba1b9ebf18884ff8f81a69a7b94f7beada9cab4c357"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/green_cabbage.png",
+      "size": 26768,
+      "sha256": "39ec55f46b183a552ac88177cdb0d2077c6ce787cfee5a5634990690cd5c9131"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/guard_rails.png",
+      "size": 25803,
+      "sha256": "6d2a82ed10d282c12c55dfc50f105e2da37b4be61c7a68c6ea7bc76a2b66fa28"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/gummy_bears.png",
+      "size": 23452,
+      "sha256": "3347bd49e0df07e633dc669b52fb81296a940b0b9bd75d9fb4e6d24549cdc65e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/halloween.png",
+      "size": 29249,
+      "sha256": "bea1a759d1cc97c5a72ddde754739d7a3b043d6f470257abdda8fdf7fc088d99"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/harvest_bins.png",
+      "size": 25776,
+      "sha256": "ccf38397a97f628b2d8724529c5bb03338cb89637d79d7f16c0b2a3167ae9b5a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/hchemicals.png",
+      "size": 18448,
+      "sha256": "58ee382cd5e7b4ccc0e1e090086d7bc6e04b7ddf6377e16f65c8e9c593651560"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/heat_exch.png",
+      "size": 26222,
+      "sha256": "69bc2bd987cb21b69927349dd709cedb3fe10134319df6eba8939e50f57a045b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/hipresstank.png",
+      "size": 25296,
+      "sha256": "982cc507db6ec57cf044a17977c5efeab0ef82ccc1b48cade9c8bc11c20cbe20"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/hi_volt_cabl.png",
+      "size": 24972,
+      "sha256": "c384c9ec81544e2a4be4ebd735d1cc67cb2fc934f7cc293d3271d7826ade9d14"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/honey.png",
+      "size": 25167,
+      "sha256": "440eab64d46818663db36da67045cb9c401d5e0dd706d6b8a6da759c102cb613"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/horse_tr.png",
+      "size": 22233,
+      "sha256": "819ee420418b9eebeedb30e40d0e6cde9afdc326d996faea4c3eade1f42c5761"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/hvac.png",
+      "size": 18566,
+      "sha256": "b151bbdfa9d4de486b7509584c445271e9b3a630cce5a12d9acbddc6b84e7aeb"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/hwaste.png",
+      "size": 22595,
+      "sha256": "9d19d6490c838f02f95b86af2c341e7c3d852ce1f8dd6ee0577cc40074329405"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/hydrochlor.png",
+      "size": 17910,
+      "sha256": "2530855a7697dbf042d4a851d8ef8e4c8cf7cb3ea17a240bd829943830d5fe70"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/hydrogen.png",
+      "size": 24833,
+      "sha256": "ae3ecae563c3aae236d82c5c23b662f70d923de6136feb557d5b160c35e2cdd3"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/ibc_cont.png",
+      "size": 25319,
+      "sha256": "24849a83dae7677b56958939ad21acd10fe5f6fc70997b622bf56aedcd9d3df6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/icecream.png",
+      "size": 27342,
+      "sha256": "25c7825c04943585d6bcd168b0dce03e23d58f47a894228e7f58106c9fbbf018"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/iced_coffee.png",
+      "size": 24769,
+      "sha256": "50bc6fee68c06da4bc985a46962c8994aac06ef7a7a53c512906d1079e1263c1"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/iron_pipes.png",
+      "size": 21481,
+      "sha256": "296c581b0131dea483c4c9ccbdaa020779b82200d5fe63a74fe58720dcbd5802"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/iveco_vans.png",
+      "size": 23124,
+      "sha256": "0fa93cd9994d882142c27c95777bfcad340af6d7d7039d450eda9e9c4add09d2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_bhl4cx.png",
+      "size": 21950,
+      "sha256": "4334e8f3a8875fae66c0b13bc09e99f03d81ca44dc093e94980f341d9992fb1c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_dmp6t2.png",
+      "size": 23123,
+      "sha256": "675ac57ca8e8cd8430065df344f828647ac06dd33e2aa9ce15181218941bd662"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_dmphtd5e.png",
+      "size": 21361,
+      "sha256": "98b68c87ab1a245d80793b2d93244184ef8592cdbf3452bb570cf8359f736d3f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_exc245xr.png",
+      "size": 25668,
+      "sha256": "8cc79e375132b6db1752d78d66e35c7910cd65e21525b9f37358889c32412354"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_exc_dum.png",
+      "size": 20762,
+      "sha256": "d0ee5da39d0b62a68c85fe9874f36fa883996cf8ab7148d608738763b443a22e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_ft4220.png",
+      "size": 23451,
+      "sha256": "f176bf81753f31378d10a01b395348de779ab8db9c877296d926447972f4582b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_g100rs.png",
+      "size": 19604,
+      "sha256": "c44865171cbad8c15c40dc3b6ee01638fd0d664aca15dc385150b59f4a35a38f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_mexc19ce.png",
+      "size": 21743,
+      "sha256": "2bd54eaa9f0ece884e737640e0c0e7883f896d10db55f3d25eecb60b369d9285"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_pw125qe.png",
+      "size": 17895,
+      "sha256": "5819eb17b8c578dee5dfa43c35c22f2ad10046c0ef54a231c3b95ca9e1fd9c5b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_th540180.png",
+      "size": 24721,
+      "sha256": "68e57118f4c6908b82431e860bef578b8f6ede9cf6dfe647b4a15ed8165ce7eb"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/jcb_wload457.png",
+      "size": 19016,
+      "sha256": "63bd4531e2de4bfc91154163c1fd8b9deda53f4fb97333ed2d189bf54ab9234f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/kerosene.png",
+      "size": 14580,
+      "sha256": "9db3fc68867367599dcef80677f03c5cfae00ba1cea535e09a5e81f712e5e7d0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/ketchup.png",
+      "size": 23323,
+      "sha256": "0f7f08dc15ce3c0fb6e233422855b6474533180d351ab0f63421beb11ef57f2a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/kr_bigm450.png",
+      "size": 26596,
+      "sha256": "15c55051f8116d5e586df6f984b6887e4e5b99fe701d91fdd52d04b10d93dce8"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/kr_bigp1290.png",
+      "size": 27827,
+      "sha256": "f781ed2811ba39e37aa4c73fbff4f3a31362b96be73be5d48d1a2f04f388d9e2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/kr_bigx1180.png",
+      "size": 29568,
+      "sha256": "a0e23f456cbfba0ec515bda5e3b36aaef1a6a74a133fc910b82c7313f9553196"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/kr_ecb880cv.png",
+      "size": 16628,
+      "sha256": "d6d612f90bb3fc4f305df739f946bfdb48bcb5f3620ac863a3e1e47ee8896a18"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/kr_gx520.png",
+      "size": 30815,
+      "sha256": "0f803264bd5b59e347df5a0bd937e9dcbffe9c679b6f8f3806440c987a2c364b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/kr_stc1370.png",
+      "size": 30819,
+      "sha256": "37dfa0a548a0067b30c4e6f03196fed933a6948a9d636f4d4ea6515c193b10a6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/kr_vpv190xc.png",
+      "size": 27245,
+      "sha256": "9cf640c9a1deee3bf12e642569129249c3d655a4fc0ec5fb5cd8d5d8dae65224"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/lamb_stom.png",
+      "size": 20991,
+      "sha256": "56a4cf59919f6d70fd1fa2a88f6fcc785d8ca41481abf7c98b00de4dc885d3db"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/largetubes.png",
+      "size": 22026,
+      "sha256": "5aa64ea63e7005ea5d21ac5093d55282804b258d85e17268fed9019b050794d9"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/large_cont.png",
+      "size": 25052,
+      "sha256": "92b3025a5b6059124f12ceac75e7c049e7bf668edaeeb45ac877c5a7086e1a7a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/lattice.png",
+      "size": 31647,
+      "sha256": "5f426e4f77fa86187e1220ef4330a4aa0fb4f93a00286f4abe6a15d8cac2371a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/lavender.png",
+      "size": 28529,
+      "sha256": "0af470701104fa85fd432fe284df7d98fa8ef23e0074b2cbc93ab7237d83678b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/limonades.png",
+      "size": 25835,
+      "sha256": "f8af66eb54b154bed2107be1fc8044077e780008e5befc65e324bd6fd6931c0d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/liver_paste.png",
+      "size": 30027,
+      "sha256": "c518c31c67cb1aacc82dce32f4989244b0b93ca7752e638e4772e994c2eb491d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/live_cattle.png",
+      "size": 24656,
+      "sha256": "2cd9fcc89f7a5df09a052b32bed405893711f56d78d46c5b6bd5e981cec4d2f5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/live_pigs.png",
+      "size": 26257,
+      "sha256": "ac0c66785f6cc3ea04a7ef9d02fc31d471fbc506d351e2e4d0b1d92df6eca27c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/load_un.png",
+      "size": 23846,
+      "sha256": "38fb8e70f0f38431932c89696e3fbac787fca1571f76118e5c2cbb5275659c96"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/locomotive.png",
+      "size": 29425,
+      "sha256": "6a62f44e53f69889519236347e6495998f58d4f0d3dcc9d9813c7de691e9d980"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/logs.png",
+      "size": 24377,
+      "sha256": "c2dc584d0ce3564832bb5fb9987e13e821366f36797bb50c944cbf36bc187fcf"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/log_harvest.png",
+      "size": 22872,
+      "sha256": "cbf535e6f4af9b5d6ac9a9def4e1ea597ea02dc1e4ad4527974f87d45c71a557"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/log_stacker.png",
+      "size": 24613,
+      "sha256": "661d602d3f03ea64ad9df2f8d4b9cc572b4293bd479d4bf5b476e3b52b85c691"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/lpg.png",
+      "size": 22680,
+      "sha256": "787b851c8de5523fdab580aafae9e10e699fb0c8e221073cfe42eabb30f61a55"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/lumber.png",
+      "size": 26405,
+      "sha256": "378a69260785014850037b61df41b405d31e102b885900ee01f825120e993888"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/lumber_p.png",
+      "size": 24169,
+      "sha256": "91b306d28c4e048982ed326852e27e19ccb781a6ab90edde1ff183ab9e92544a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/lux_yacht.png",
+      "size": 27048,
+      "sha256": "8ea913e0b38f223b8978fd8f97e21f144ee09c3d6fc5b80756c9a66d94647cfa"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/magnesium.png",
+      "size": 29367,
+      "sha256": "0ddf0f84d99f1d5dd099b0fcb912a37d9b43cb10b5c9bed7c1f0de54980301a1"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/maple_syrup.png",
+      "size": 23485,
+      "sha256": "c7a4251d050430e8d39eb354e128ccf56e56ebb11d9d322ab7cdffc778a78ad3"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/marb_blck.png",
+      "size": 21788,
+      "sha256": "abbaed345b9278cbc0a5b39bb6d05246409f8e08084010f8958e7884bdb5ed51"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/marb_blck2.png",
+      "size": 21786,
+      "sha256": "eea415b76c459e3ad6ddc10731b6431ec45709971cc77c554d6dea7e03e77c50"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/marb_slab.png",
+      "size": 17691,
+      "sha256": "86088fb68610bca817159ff41b5a532ec086c9157cb635280ba5103ab0ddacd8"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mason_jars.png",
+      "size": 24363,
+      "sha256": "df3dc6d840efd3c886b983ff4c9b774bf9c62f3d7eabab4899a2404e99651946"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mat_handler.png",
+      "size": 29679,
+      "sha256": "a10b0a1accd493cccc3dbbc6d0d5d12cd2f8ed5dbee69cc78dd1d958e257c653"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/med_equip.png",
+      "size": 24913,
+      "sha256": "d570df495815c746da5336b352c611f18a0d260ff38c5530a15b90d9762d3ee2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/med_vaccine.png",
+      "size": 25270,
+      "sha256": "8e7fd6849c4e4858870bc978eef20686898568472e7a49ef9f0453038d4c96b3"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mercuric.png",
+      "size": 30618,
+      "sha256": "f10d3132c5838c2f1447aeb0614e0779ade9570e8c61174037f61cb189a16fce"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/metal_beams.png",
+      "size": 17596,
+      "sha256": "f8f06c9cf74fe857c9ed54dff4aa9caf64f6e7eb8a110f290c45b768490ed4d4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/metal_cans.png",
+      "size": 24529,
+      "sha256": "06e7ca64fb4d9fe3fd36292466627a858715fe4f40f1f3f468245bbfb9c09de6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/metal_center.png",
+      "size": 17981,
+      "sha256": "9ae04596b86f28d59fbf9ac64f4097985fa1d4492cf4d4cd8d37513b4c66f9d4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/metal_pipes.png",
+      "size": 17009,
+      "sha256": "9379b43866ecb1311c9c3baa6e974a8497564f9b9964e73a5370cb2811d5545a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/milk.png",
+      "size": 21149,
+      "sha256": "3e639de95535c5c7f902c94099e7b80c9382968c204db1a743b8a07a69a44254"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mobile_compr.png",
+      "size": 25711,
+      "sha256": "8f0942f1369a813c4bd416f854727f4c1b9ab717c9a53889f3b322b3b3fe3bcd"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mobile_crane.png",
+      "size": 36732,
+      "sha256": "254a79bb7b3347048d41c1d03e0fdb10be1433460a33d8c4ff1ee4aef0e754c6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mob_crusher.png",
+      "size": 26786,
+      "sha256": "8d3a20b3c060b0f30bbc76f671520f05972d580f09dbc31dd1ac28b2eca863c4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mob_screener.png",
+      "size": 26266,
+      "sha256": "9e6fc0dfe6f183e766cd428be341bb70f8706d4b409763b8d78f26fb6e2ffdf1"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mob_stacker.png",
+      "size": 25344,
+      "sha256": "f8a369a4a64fad13d7370948412c0af4f836d342ebaa06014e6a58b5eec34901"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mob_tr_winch.png",
+      "size": 26558,
+      "sha256": "07ebd059c9cf01a2035ff7d6f2df1b89a85153b24f59cd7a1c3d95d051564298"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mondeos.png",
+      "size": 29182,
+      "sha256": "9a8dd5da6fd1af9ec6b54bb431eac0ed87f67cbcf603fa2d71ec89722e9cb30b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/motorcycles.png",
+      "size": 28161,
+      "sha256": "ca52bd428fccaf407616c9bb2eca68f707cabadab3cd47f3b56301d62cf595b1"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/motor_oil.png",
+      "size": 24275,
+      "sha256": "b9c7de5c6a7bd73a434bb53207bda9000a494a11678b786afad80657d345d5b4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/moto_tires.png",
+      "size": 26335,
+      "sha256": "4e27be7329a134301634cdae333d5108f4fa90c1cb23d1d7b137d4caf2bc54e0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mozzarela.png",
+      "size": 20495,
+      "sha256": "43db584c4b1ebe82379aa0e0ce72ada5f18d06a497bea988c57db043d109aeec"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mtl_coil.png",
+      "size": 24755,
+      "sha256": "b28767da8c4994f6b655a988e7663be7e5e41e8319e72c95e4904b692bde4f0e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mulcher.png",
+      "size": 27921,
+      "sha256": "b56f6ea4fbff1f35c1ef5f3ef3cac45e8c0b9df3b473b6459131a7b7e913b16b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mystery_box.png",
+      "size": 23373,
+      "sha256": "3b29bbac6b18ee0d32ade7b0e7c219cb98226c99f0ea5a9ae19691d79a3d04ad"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/mystery_cyl.png",
+      "size": 15805,
+      "sha256": "7b8c33b9a9d43c37491f27130771dd66c1881138ab5af3a3a9e02d34e5a28251"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/natur_rubber.png",
+      "size": 23930,
+      "sha256": "f269e64cf30651c10c32262948c9cb509536e5c83be2e5bb8f2179f9dcd9d0be"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/neon.png",
+      "size": 28682,
+      "sha256": "ae1642522c144d1103002dbc60749b00921dcb432bcb691bcfb01860c6b790ca"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/nitrocel.png",
+      "size": 25329,
+      "sha256": "3a85af0c6b1ee6d52c3dcd1e0b058b64b6362333c78ca4be0a513c79dee0690b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/nitrogen.png",
+      "size": 21431,
+      "sha256": "0efc87e10bb27d3969813e2d9fe0c7c759ea9d49cf15a60df971b897fbf26841"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/nonalco_beer.png",
+      "size": 24909,
+      "sha256": "78e3d38a6039cf4e1495266babd0f7de5c8299b14989eb7810388b4a1d1fbcd3"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/nuts.png",
+      "size": 25319,
+      "sha256": "1c76eb24508645fb865650ca91511e510ec4286a3355a67bcaa0a94bdb73d169"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/nylon_cord.png",
+      "size": 25511,
+      "sha256": "f8dc2bb983c5ecab646df93956d13478df3add1ad57eb3cd05840acbcfefc568"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/oil.png",
+      "size": 14643,
+      "sha256": "0d73cd6d004266510088230d31e272157683dae2c9a1fa9f8e25148bfc91e89f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/oil_filters.png",
+      "size": 25541,
+      "sha256": "032d338f6556e0f99ace99f1c84ebb260188b54bd46d3e16247cce7990c17b57"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/olives.png",
+      "size": 22341,
+      "sha256": "6b7e0ca837289ac861dd7402c734c5692d3d2e02b9b3b74fb9b5cd949d72b201"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/olive_oil.png",
+      "size": 22761,
+      "sha256": "5a38055fdf178979745a83efcc82f3904e0e5f6a7ee2fe5e05bd3874f6006ac0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/olive_tree.png",
+      "size": 28375,
+      "sha256": "c3ed7c3a1604b62205c94fbf717443035707de61c248bb5e067150e415a62f41"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/onion.png",
+      "size": 22775,
+      "sha256": "c340b05b4e38582aeb1a0e31d8590deded6c8646dd0732aa9af8b590dc57772d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/oranges.png",
+      "size": 23507,
+      "sha256": "cfad390ba3d805c6e9add5844493e02b1662652c1edd963a676818169f978277"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/ore.png",
+      "size": 23733,
+      "sha256": "c3daa5cf712c6c26f84a9b90861a99af3cb27ad1750f2c099a25f1bba81d8d1d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/outdr_flr_tl.png",
+      "size": 26258,
+      "sha256": "60c57885c2245b6d0a49beec44cf1bb7dc31a7873f228c50051ca4f346ea46f6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/overweight.png",
+      "size": 19415,
+      "sha256": "098f7f9fb8b208c631dfde333f1a088f7b09e6628fdd3da95369aaf46b52e469"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/packag_food.png",
+      "size": 22554,
+      "sha256": "7b950d5308839fd9f959977a1e642906a01fa2b917774b6d840535e6f33f82c2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/paper.png",
+      "size": 22244,
+      "sha256": "e3e1a43a908fc14888718c679b1670318cc304e152aebc02a086ca27409fc926"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pasta.png",
+      "size": 24031,
+      "sha256": "6cb1ccc23fa4c0bf5c1d1f47d44b38e4dffdc98fe7014dfd69409e22a6630750"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pears.png",
+      "size": 25167,
+      "sha256": "07ab2778c01ff59d11bf5d532382e62a039c34d4647fcf5b7816afa9053c6d9b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/peas.png",
+      "size": 21895,
+      "sha256": "445be371d1a622e5ccefc40ba75cd818710d69eeac67e9f69452261612814ba2"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/perfor_frks.png",
+      "size": 20367,
+      "sha256": "f3fb000db6426503db9c9d05ca2539d003cb5c9cac70c0c7ad5d3ba7103521ef"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pesticide.png",
+      "size": 27669,
+      "sha256": "3b42fe4eb74161b62420db3e892c2c24611fe82d1cdd691b35b024065266d519"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pesto.png",
+      "size": 27105,
+      "sha256": "f3015a22b550eedbc50bd1b382cf017c6644f7cf89cc4079a66061809bb90a95"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/petrol.png",
+      "size": 14876,
+      "sha256": "5b695bcf5e7a702fddaec1436988bdb7ea7f67367c47b8917ae289f7e6f9546a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pet_food.png",
+      "size": 19846,
+      "sha256": "17799c94fafa035d5780970a880bfa7422ed5244cd87e3efff2a1eb185ee4b1c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/phosphor.png",
+      "size": 22789,
+      "sha256": "6592baf3665dbb2687f490a5c257f79b5f7eab8fd47e7e59ac38127f53844661"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pickup_gr.png",
+      "size": 22808,
+      "sha256": "e9625fec63f97c3a036e2898d2ebf04498896be92e94ebd6b65f510806ebce20"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pilot_boat.png",
+      "size": 32999,
+      "sha256": "a4d8ea1bd8d5195919686cd53ae5222ab22b355efe655323cc360844a22e9798"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/planter.png",
+      "size": 19506,
+      "sha256": "5ac1d16d266694655deb132ed4fd559e8476321db7fb9d20076e59434cf7341e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/plant_substr.png",
+      "size": 27816,
+      "sha256": "7da1b9b24df82e7b2163e374a94dcecfbc574ca73f7a185711266e3dccdb56f4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/plastic_gra.png",
+      "size": 23230,
+      "sha256": "e931e4b0281193ec843c55c230bf09827c49beabf5d30925d694b2a3cbf34df3"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/plast_film.png",
+      "size": 23470,
+      "sha256": "474cc9486eac212830154fb467b2981a1ae41e1776d1fe475ee3a9cff9548aad"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/plast_pipes.png",
+      "size": 27532,
+      "sha256": "51dd1fd1b92dab1c61c89b431b251d2ce7769e1001ffdd3a4dc0aa9db4c0ccc6"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/plumb_suppl.png",
+      "size": 26566,
+      "sha256": "df26e593ae6daa5c1e97bc52c2312e2941ee30df2c532a24322695f2b87a9c6b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/plums.png",
+      "size": 24223,
+      "sha256": "51e2a16ace1070c4452d606074f8d483f7c30970e3e6c6c35057cc022e77498b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pnut_butter.png",
+      "size": 22607,
+      "sha256": "f5e74156eb22c4cf60b131b7bf8299f85e5022c7e6b9fd65778e27c2b2022a2f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/polyst_box.png",
+      "size": 19897,
+      "sha256": "553a18f0ca54f684d3230fa7cd42f8f186be736fb9744e17720f8878efb1e2b4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pork_meat.png",
+      "size": 21653,
+      "sha256": "980c26c3fd06c92359a3fa9196a38c6a54137d67377bc9cd2a25a2e40486d1cf"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/post_packag.png",
+      "size": 23022,
+      "sha256": "f8261d315899d58c8b6127be039adc578a42b8f73be472246dd3e7ada12e5148"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/potahydro.png",
+      "size": 16641,
+      "sha256": "b2e969cef13ba8f8234004940172f9d181e349761a02118b85ee28b06d538efe"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/potassium.png",
+      "size": 25764,
+      "sha256": "8be0cf7ef7fe0b3fc273691e44a0a8e264d48adbf3987f0041c58e853a96d949"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/potatoes.png",
+      "size": 23718,
+      "sha256": "6b2164e91a875b253fa7ad00c48034a9094c6d88908bb85c10e20795b616f28e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pot_flowers.png",
+      "size": 27801,
+      "sha256": "307cba33a1abb580e7988c410306d9b12af911f21cab0e9b00140eac201dc7ff"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/precast_strs.png",
+      "size": 21684,
+      "sha256": "20103de30324322822f99f8ffde7a8fadf1c11034b789267a8018782739593ba"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/press_sl_val.png",
+      "size": 26336,
+      "sha256": "02841bb232d007430cc3d65145efd673ecb09dfb00c84f07becd5cfef1e56e67"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/propane.png",
+      "size": 23784,
+      "sha256": "2ef49e2aa5ab9f5ae008a7a7791d42f2ac8dba04e56ce630994b2b1d77d05a9d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/prosciutto.png",
+      "size": 21661,
+      "sha256": "3082ed3cdee43c3273388c17b3741b83401bf41903dfb8611cbdc8deca309397"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/protec_cloth.png",
+      "size": 26049,
+      "sha256": "e21986d174e598b61eb28ad8635b93d5fd41ec4fdf6c5a21e3353fdd83f8c613"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pr_goods.png",
+      "size": 12345,
+      "sha256": "3106ca7e81cada3b1202dab1e97abbb71fa9dc873bf337b00c3c49ef1a046a14"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/pumps.png",
+      "size": 27411,
+      "sha256": "097b8173922f8805de88fc003eb9cc96952f236798fdd5aae52c1e6e905070fd"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/radiators.png",
+      "size": 23053,
+      "sha256": "e9554307c3e5372d423a6c7f9c6d1a0fdce4cacce6249bc93eeb455d6ed5393e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/refl_posts.png",
+      "size": 24231,
+      "sha256": "5c15280ba8b9c150b10211e7d1b33d2da7bebf23b58e6b8874a6d5e47ade232a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/re_bars.png",
+      "size": 17332,
+      "sha256": "e096bcfd342dad89d1818caee21fb959d99a1f304d8154a78b05ad3da71964ec"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/rice.png",
+      "size": 23600,
+      "sha256": "0fd1bcd05ae52374800977b04742aafe5ddfb4f5daab97e23002a4e242ec251c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/roofing_felt.png",
+      "size": 26748,
+      "sha256": "bab000d6145f2a9f435fdc7aea5c4d7618611de4f1016a68a1c62461493a2af7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/rooflights.png",
+      "size": 22218,
+      "sha256": "2ff4abab7be68d77873f6953fb1d437f63f6f9e31a7db1e422cc9911fea6af99"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/roof_tiles.png",
+      "size": 24691,
+      "sha256": "c415dbdfc70c9257ba676045c868e32af06a9fc033399cf5f494c07b5de3b5e1"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/rye.png",
+      "size": 24554,
+      "sha256": "845582fff51cdff22b58b6175a369ab9d087b44f831ac91412c528116855f40d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/salm_fillet.png",
+      "size": 19500,
+      "sha256": "32e71baebef2ad44f66413ea8de9fe9dc58a6997d7f7bb45096953af1193e58c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/salt_spices.png",
+      "size": 27013,
+      "sha256": "42b7325ff42f01ee0ffe9f64818bd751401d902af0033c33fc32ec1b94b8102b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sand.png",
+      "size": 22322,
+      "sha256": "2d07f83652e1167e5cb74090dff1e0f31dcff7525fa52152989176cebe55e968"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sandwch_pnls.png",
+      "size": 19893,
+      "sha256": "259c6f202a1838eabf01d9f4cb6c13258e5a44629b0af29df6a4f2e7e9f2b78a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sausages.png",
+      "size": 20136,
+      "sha256": "501433d645e5a0de89699db942506308609b6ae3e4a35333e1d42ec805b88e2e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sawpanels.png",
+      "size": 22308,
+      "sha256": "7c7d41f69f0ffbb9de9a3d74f2df8c909ccc6aab6cfedd5fdb649c4ad8ad1f97"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/scaffoldings.png",
+      "size": 31531,
+      "sha256": "5761d3c88a07456d7febfd1c723f3d74ca7999b0d73b1c48419a361f1908eebd"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/scania_tr.png",
+      "size": 26907,
+      "sha256": "5b65e0f6ca4736cb0b18b23a2a77443dd6951add11b8368b1d4e27fd3ec1d867"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/scooters.png",
+      "size": 25669,
+      "sha256": "2084e316343f2f208c3173cb2ced70a5162eda6b68016a1b92b6b94e72bd6747"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/scrap_metals.png",
+      "size": 25388,
+      "sha256": "afe4831ff61c8f4d3c708afd6ab6945a60c7adfea19d2ba2a1526a2955df76e5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/seal_bearing.png",
+      "size": 27579,
+      "sha256": "973a01ef352a9e21dc9b908f19dcde3d8bcc53fdfa791360062d4f00c6d407c5"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sheep_wool.png",
+      "size": 21987,
+      "sha256": "2a105b54c66597837f78ba207f8185bfebc9021d39721a6a9e24ce9580f04a4c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/shock_absorb.png",
+      "size": 23770,
+      "sha256": "31fa8e0e41718997fc5489314d24f357441edbecf1c4c236457d062a78e3f9ba"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/silica.png",
+      "size": 22044,
+      "sha256": "f12847ae75df9760aff8756bb0b41aff03f4a72e7c519f1a7e48e110c5bdff73"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/silo.png",
+      "size": 22250,
+      "sha256": "feae78a52333084de5962caf7550cf5bbeddcdea0021b29bc4f639ad6286e063"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/skidder.png",
+      "size": 26620,
+      "sha256": "aef3d7b97bdd8c7b03a87c3c69b2dc0b9e154802b8422579bba3ffd764e20e5b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/smokd_eel.png",
+      "size": 22816,
+      "sha256": "004255584847b4a359e0188c2680b1129e2201cf0890622524dced49e5b8ba7b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/smokd_sprats.png",
+      "size": 25712,
+      "sha256": "ebb3f79e8ccc1ffbaaf37c83b6bf872c9b5f4293f25fdfe903fa4ed3bc3e7d71"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sodchlor.png",
+      "size": 26185,
+      "sha256": "8646248468c5bb311354faf2eaa2d5f6c57daa1a7fda2348fb341d67e5ff614a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sodhydro.png",
+      "size": 22384,
+      "sha256": "fae5e96d5b1eca0527b47309e9472aeeb18df2dd4ff069a3934871d0630af038"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sodium.png",
+      "size": 21752,
+      "sha256": "d2cd58d21fe4b3ade4d92ca2237ae3016e7c18ad96195ab2aa8ead918fe00fec"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/soy_milk.png",
+      "size": 23262,
+      "sha256": "ab0d7d2b230c5b833cd87d315d139c42d0530b9399fbf308c2c8bd867059b154"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/spher_valves.png",
+      "size": 29241,
+      "sha256": "ad25a4e22122a7bade90c91e90eee79d26b3c684837a8fa4b7e8d0c2ba35b900"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sprayer.png",
+      "size": 23448,
+      "sha256": "37d3bc44528d4957a0908f7cfa0dd1e42b9e1e7391f582c01486f5da1f77eb2c"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/square_baler.png",
+      "size": 21984,
+      "sha256": "fe3709bfd8e5cb39336afa0a46ddcf6eb79fffeae99f875aa4514d61a8d47325"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sq_tub.png",
+      "size": 17791,
+      "sha256": "5cf025280bbcc59ec0b4542c2b0455b75c24ec67584f0e392840d03f6865a2d4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/steel_cord.png",
+      "size": 24909,
+      "sha256": "52ab38ddf0b9c1d329a51b586b58c049f89610033c1bcedba8a16955b03561e4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/stones.png",
+      "size": 24405,
+      "sha256": "82606b13d52ee0adfd1fb238eae64cc427a2c33394c9b7895e653154731ec332"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/stone_dust.png",
+      "size": 22290,
+      "sha256": "26d010c9d540800a31be304bd79e7d594d16c16693386dd2bf0f72a906c52025"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/stone_wool.png",
+      "size": 20674,
+      "sha256": "28982efed11f4ecb74315511a4dfe6b1f4b90f148640561489f329a85b103eeb"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/straw_bales.png",
+      "size": 29041,
+      "sha256": "e29e782d9926d5d86eafc6c18d3f5d081a9735acd21788d0393a75c4946c19c0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sugar.png",
+      "size": 24033,
+      "sha256": "50579cf6deb9ad25cf2a8de00748c7d42f3dfe57dfc3c69a6c98b27a77f67dc4"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/sulfuric.png",
+      "size": 23696,
+      "sha256": "57d2f846320f553a71c48e27e447e4c60390f4a3b686f74eb50e69889cfc4411"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/t248_stwheel.png",
+      "size": 28040,
+      "sha256": "bedb4377b096353b74d3074489e4651356d537ea676e289d6a9de131979cf31e"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/tableware.png",
+      "size": 23716,
+      "sha256": "5ad194b861e27e11fbe86bc566264f57f302128b3cca04762d56bb57b1167b96"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/ter_forklift.png",
+      "size": 19273,
+      "sha256": "2fe4d7f45e910707808d9e08a0f8d3dba03fe8d146b3d2fb80ccc870e00f91ca"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/tomatoes.png",
+      "size": 23431,
+      "sha256": "286749dbcf68a5ada97b9f6aa9bbc01f321498e8b0e9248a6ed85da31ecf2029"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/toys.png",
+      "size": 26832,
+      "sha256": "fafc22657f7d37bee3e85d6c99e10820af12f4789eba8ae20e38c83c73ee6988"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/tractors.png",
+      "size": 30938,
+      "sha256": "adb51f21a999baba7083def136335f7e1da6e0ae13c9415d205c022d27f42938"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/tractor_au.png",
+      "size": 20655,
+      "sha256": "906faa895554a5d43bc8640db1f1f69408508fca4c7194e302624a93aef02126"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/tractor_c.png",
+      "size": 22702,
+      "sha256": "f55463b8ad62ba824ca48fc50547b39bf571e51b8e6f5755ed2a4cb71764cdcb"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/train_part.png",
+      "size": 20325,
+      "sha256": "03e7e2d4b159ca9872a72ac2f9128f76790106f802c9e62b643e73268feee12b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/train_part2.png",
+      "size": 25255,
+      "sha256": "e7479c8c539a9e9ad3aa67b0f3a677555c5e73f42a4455bdbe10289fbeaf6e89"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/transformat.png",
+      "size": 20350,
+      "sha256": "d0ed888a6f525e625d4f1613082e90184284eb29cc95fc3080814544ace836de"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/transmis.png",
+      "size": 26198,
+      "sha256": "5f483728f039cdccfc9c1747d6ac9264a909ff2d694f50180eb3a4833728226d"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/truck_batt.png",
+      "size": 21914,
+      "sha256": "92e63db32d8ae76a8e373415249ed5e462fa0de82c6ec692a58eda2f67cc0235"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/truck_rims.png",
+      "size": 30006,
+      "sha256": "7a627c76d3427059b65ae94b9993d60dc151a5a9529162e58805084c17454013"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/truck_tyres.png",
+      "size": 25392,
+      "sha256": "af4a8bb70dcca48b1137201f5af573a4b347da7d8bd578acf8bab9a30f9f4a62"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/tyres.png",
+      "size": 25927,
+      "sha256": "bf8b7e83d8513b486e716782928d9f1cb874abe48f08ad60797c3faafe80044a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/tyres_gy.png",
+      "size": 30045,
+      "sha256": "1cf3a2057e849bfb79b9b79fd173e01d5e26c6498136b046b7f4affa96b49940"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/used_battery.png",
+      "size": 24097,
+      "sha256": "f3cbd09e3abb5bdaba5b33ca5b1a75df602e4a4ff4f67ab4beed055576db1dc0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/used_packag.png",
+      "size": 24336,
+      "sha256": "7aa5bb2951f09c3829e4a384cde959bd3ae53be08b075eb1cc35277d0805563b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/used_plast.png",
+      "size": 27972,
+      "sha256": "7dbcf8de16739b85ae057f650830f04a9b357997add59eb34af5a588107bb954"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/valentine.png",
+      "size": 29737,
+      "sha256": "81803296b4964150abec3e741aecbfd967d77e032c98830c862b1630854e5420"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/vans_fd.png",
+      "size": 27090,
+      "sha256": "e9a887a0c806a49f1df927cb219824d6f6e4eb4dcb0459023d2f05e2988b1213"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/vans_id.png",
+      "size": 28080,
+      "sha256": "97f128c6d65d91ecec9af0df67c1a27e59915ee42d84d395f1dce6697c33abe0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/vans_vt.png",
+      "size": 22576,
+      "sha256": "031a1ef674a8ced0cd638d25f850153fcfd97e6799ae4ff732dbad8b1e13a44b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/vent_tube.png",
+      "size": 20206,
+      "sha256": "a6fdb26a8199d349dc4ff21f586143052c061cda55d42407f71dc9d2077aa89a"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/vinegar.png",
+      "size": 22763,
+      "sha256": "9b4981708dc2575f739076818229e87146605afcf5e71366e2a252cc121b6c20"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/volvo_a25g.png",
+      "size": 28223,
+      "sha256": "c1521fc7a1bd8271f8f041aeb146e17bfb84f77a05661b892721215717fa5c03"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/volvo_bucket.png",
+      "size": 19643,
+      "sha256": "fa10b784196afc89e72d68109d86855a8e124b81b8928ed2c13ef8ff4a406c68"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/volvo_cars.png",
+      "size": 34128,
+      "sha256": "9a12063980856af91211b10dbcccd462c7bbcd4bda8a077e8fc1efd6b0d63aaf"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/volvo_ec220e.png",
+      "size": 26419,
+      "sha256": "d7b8a3ba6c82cfff4624d0465daf8533908a70d59beb012f839a06e3e4119568"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/volvo_l250h.png",
+      "size": 28780,
+      "sha256": "b55f93f44143ff4a625e46814c2e7203cad8fa943ccde50e4e61e86294c051c7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/volvo_rims.png",
+      "size": 20672,
+      "sha256": "cfbf65439e03b86c0a7a56d166cccf0e5de4982e3313d7c686b2e8559eddf070"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/volvo_sd160b.png",
+      "size": 22864,
+      "sha256": "30d302eb6a5830e1379e054797e8df5ea2d5a1941d31065fce41dda3c42f83ca"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/volvo_tr.png",
+      "size": 30694,
+      "sha256": "31ea7fceb44581893d9e7e440f3b1a72ca6d04ff7575fe5ba9f94d7f57eacd41"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/vol_ew240emh.png",
+      "size": 28045,
+      "sha256": "23c7575ef205d8c2c56b5a744052df72726c03396a12f6439de3e3f4f3fea73b"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/wallpanels.png",
+      "size": 26568,
+      "sha256": "be9c77e56e68c4c63a6dc7bfe593facfb300bb3a5304769b76bab27ea1cf3e59"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/watermelons.png",
+      "size": 26253,
+      "sha256": "32f43df946637f7483d3e709ab4ec4f513e1d504c64bf7622420d3b1d9367b41"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/watertank.png",
+      "size": 20574,
+      "sha256": "88c18a20e387d889b483d7c78e0ad2110f5932b00209d20e25c8c12cabec1fbd"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/wheat.png",
+      "size": 24614,
+      "sha256": "b7a9db27e2f49801d228049238e8b677f1cfff92d2f546dad53b9c3299ce24c7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/windblade.png",
+      "size": 17394,
+      "sha256": "b26e2ca11f461fd1a48b731877ffb2c8b971b2c302f7aa9ac065131f274b3763"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/windml_eng.png",
+      "size": 26245,
+      "sha256": "5382047b35ff4ffb78cf12f8cb5751cf059a55f3d648f06fd27fd8507bf1800f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/windml_tube.png",
+      "size": 27926,
+      "sha256": "f8bc2be8dbc72ae49c3ad73439176514526cc42692e6dc5c3747845797316db0"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/wooden_beams.png",
+      "size": 26228,
+      "sha256": "215c4aeab743e31c3340f969e8d71ed68a33110099326c6200234d7a24edd625"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/wood_bark.png",
+      "size": 22957,
+      "sha256": "bae613244dbfff4ef5f15d7b76da13000451c8c71b154d2f549b18f7df1952d7"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/wood_chipper.png",
+      "size": 29688,
+      "sha256": "90e212c8ff43dd7343454e233786e600efb22d96691e39a0b99397169e55fef9"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/wrk_cloth.png",
+      "size": 25203,
+      "sha256": "2a0de5d8cd8b31ea21e9ae07c8ab637e40d6babe94c50b4e32a1eeb363b562a3"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/wshavings.png",
+      "size": 26138,
+      "sha256": "2a9301017db7f427877386c6195799b7253eff05cad0784aba95527ef0a2002f"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/x_cacao.png",
+      "size": 25276,
+      "sha256": "069f2d78b0f1616aa464873fd5890ff11e2e34a591d75d42792365559da29233"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/x_confect.png",
+      "size": 28478,
+      "sha256": "0bac213cde20ef3441b6df5f42030d31328e5f978c434a9352386b6bb0227ac9"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/x_craftsupp.png",
+      "size": 30052,
+      "sha256": "467c91dec7b8ff8522561391835a22a427422faa3ee37c34019514cc96186952"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/x_giftparc.png",
+      "size": 30456,
+      "sha256": "25c1cf5784fb530a0ffb3a1529bc95750ad1355f0e34180b6fa5e78a8a694fba"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/x_outdoor.png",
+      "size": 30446,
+      "sha256": "94f78230fc991aec344f0ff4e1ebb92c6f6bedf52dcee3eb469d37ab73953e65"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/yogurt.png",
+      "size": 24530,
+      "sha256": "ed74ebd0a35a88e778ea26b49f7432d187262ddffde42b5ef68d70ef92407250"
+    },
+    {
+      "path": "RoadLifeDash/Assets/cargo/generated/young_seed.png",
+      "size": 28452,
+      "sha256": "2c508afa40a5abe3dc703f142d7ccdf98324a187d078fc7599d066ed0df40b55"
+    },
+    {
+      "path": "runtimes/runtimes/win-x64/native/WebView2Loader.dll",
+      "size": 165440,
+      "sha256": "9468470d6a4d11179ec179183d130465a380e0dedfdbe1fc2ab404c86c45a85e"
+    },
+    {
+      "path": "runtimes/win-x64/native/WebView2Loader.dll",
+      "size": 165440,
+      "sha256": "9468470d6a4d11179ec179183d130465a380e0dedfdbe1fc2ab404c86c45a85e"
+    },
+    {
+      "path": "TruckSimGPS/ar/AutoUpdater.NET.resources.dll",
+      "size": 10240,
+      "sha256": "7a2c8c7bfe386b8c81ec60e25fb7dfb82da0dd8a32f7b2c71f1519b01b394b2d"
+    },
+    {
+      "path": "TruckSimGPS/cs/AutoUpdater.NET.resources.dll",
+      "size": 9216,
+      "sha256": "aca0147613d8c7de8cf644a8b7397ce50c5ddac8e170d477a02429599d905508"
+    },
+    {
+      "path": "TruckSimGPS/da/AutoUpdater.NET.resources.dll",
+      "size": 8192,
+      "sha256": "66fd8cb25c51acb2001d5a899c165565b760b6b8304bb3e33452db34ede62124"
+    },
+    {
+      "path": "TruckSimGPS/de/AutoUpdater.NET.resources.dll",
+      "size": 8192,
+      "sha256": "1ade3a880b66a17c9675b6c72dc9337d1b590a77342a4f0389b504de11eced54"
+    },
+    {
+      "path": "TruckSimGPS/dependencies/AutoUpdater.NET.dll",
+      "size": 271872,
+      "sha256": "11ab2d5cb1e57491be88d7489747a33cb7241c7e4cdaec7392cfcb4b9aa8e42f"
+    },
+    {
+      "path": "TruckSimGPS/dependencies/log4net.dll",
+      "size": 301056,
+      "sha256": "ce6ee4fdc783a5bf905f240178ac96eaeb7ede22ffe06a06ba179cd1a0442bd3"
+    },
+    {
+      "path": "TruckSimGPS/dependencies/Newtonsoft.Json.dll",
+      "size": 502272,
+      "sha256": "0edfac6be11732ddd99db66821ee47408c2dc1e9bed68e5ef9a8e130c565b79b"
+    },
+    {
+      "path": "TruckSimGPS/docs/AutoUpdater.NET.xml",
+      "size": 35769,
+      "sha256": "283ba8f707ba28392e7bbbaa8a82a3c3046934b07c29f2602f6a0791b00550dd"
+    },
+    {
+      "path": "TruckSimGPS/docs/log4net.xml",
+      "size": 1517265,
+      "sha256": "4621a0df0a7e69173c20f9ccdc7f1a29cb502b376c61af539a9d6b82511b7ed2"
+    },
+    {
+      "path": "TruckSimGPS/docs/Newtonsoft.Json.xml",
+      "size": 478726,
+      "sha256": "50090e2d5f180d453777d213f8b3981aa4f81deed242e159ac18de1b20554a39"
+    },
+    {
+      "path": "TruckSimGPS/es/AutoUpdater.NET.resources.dll",
+      "size": 8704,
+      "sha256": "c4f45638d3f236132029a813e412530056b524676c0836ddd90606caeba94eed"
+    },
+    {
+      "path": "TruckSimGPS/fr/AutoUpdater.NET.resources.dll",
+      "size": 8704,
+      "sha256": "8859be140d014d882159d0391f7910e68f59d500b81b2b1af3881b14eefb5d0b"
+    },
+    {
+      "path": "TruckSimGPS/it/AutoUpdater.NET.resources.dll",
+      "size": 9216,
+      "sha256": "29c4e9eb0e71d303a44e58439462410f9c8b3e305f1570d80fd01250656fc3da"
+    },
+    {
+      "path": "TruckSimGPS/ja-JP/AutoUpdater.NET.resources.dll",
+      "size": 8704,
+      "sha256": "501e2f48479d4af15a8c5f71cb68750b1158bc4a5e6e4f22eee00291afe86a18"
+    },
+    {
+      "path": "TruckSimGPS/ko/AutoUpdater.NET.resources.dll",
+      "size": 8704,
+      "sha256": "43e70db7eda0120e8a4098a4abee42a19fb2c4ccf50114e843ed7787c4186cf9"
+    },
+    {
+      "path": "TruckSimGPS/lv/AutoUpdater.NET.resources.dll",
+      "size": 8704,
+      "sha256": "f5ae3e122fd49be1bbe9fb7a6fc37d78e80fca7536d80beb7e0e819a6f7045d6"
+    },
+    {
+      "path": "TruckSimGPS/nl/AutoUpdater.NET.resources.dll",
+      "size": 8192,
+      "sha256": "f75cbd52b1d944f09e3906b004631438301844d6868c0fa4c4fcfad553e43d85"
+    },
+    {
+      "path": "TruckSimGPS/pl/AutoUpdater.NET.resources.dll",
+      "size": 8192,
+      "sha256": "abd234c86b0eb8f4d700e651854fe3571a2f4feea8586a0babe652f5c2a6701f"
+    },
+    {
+      "path": "TruckSimGPS/pt/AutoUpdater.NET.resources.dll",
+      "size": 8192,
+      "sha256": "5947da3b91d131485a82072c749baa144c5e46d0da3b07f99a89dc30243365fe"
+    },
+    {
+      "path": "TruckSimGPS/pt-BR/AutoUpdater.NET.resources.dll",
+      "size": 8192,
+      "sha256": "185e751ec12a725a477451e828f17693221d78f76aba21cbde16c5fffd1c6aad"
+    },
+    {
+      "path": "TruckSimGPS/ru/AutoUpdater.NET.resources.dll",
+      "size": 9216,
+      "sha256": "926471b910706aad3917c07e6a27103651914c392dbfe4941066fc35e50cd81e"
+    },
+    {
+      "path": "TruckSimGPS/sk/AutoUpdater.NET.resources.dll",
+      "size": 9216,
+      "sha256": "38e1e3ef7e1d917f5455bbcf639e637ee220e1c32151dfae7f117f3227fb8462"
+    },
+    {
+      "path": "TruckSimGPS/sv/AutoUpdater.NET.resources.dll",
+      "size": 8704,
+      "sha256": "29322a21be5599ef79829d56e68b431d7de0174fc47232884630cb684fd7ca62"
+    },
+    {
+      "path": "TruckSimGPS/th/AutoUpdater.NET.resources.dll",
+      "size": 9728,
+      "sha256": "140f569951ab66bec5baf805937b9d22d489d477f46839e47bcd27f4d5b173d2"
+    },
+    {
+      "path": "TruckSimGPS/tr/AutoUpdater.NET.resources.dll",
+      "size": 8192,
+      "sha256": "a6881cee1cb3dc8cb35a03ab06c2d7e7ba76d7d1d9bbbc500d34ebeab5d018c4"
+    },
+    {
+      "path": "TruckSimGPS/zh/AutoUpdater.NET.resources.dll",
+      "size": 8192,
+      "sha256": "eed4a432f183dddcc85e2a0a3b2087bafff206f87ec14147eacbe7ff662acdfa"
+    },
+    {
+      "path": "TruckSimGPS/zh-TW/AutoUpdater.NET.resources.dll",
+      "size": 7680,
+      "sha256": "49a1c3c482a9098201b6e3df152f4318cff6c24da50207d237978d8dd5d79491"
+    },
+    {
+      "path": "TruckSimGPS/TruckSimGPSPlugins/win_x64/plugins/trucksim-gps-telemetry.dll",
+      "size": 167424,
+      "sha256": "4f1a1dd5b879773161c23d657249775d60c9aa362ced171d74c74a16f1ab0f0a"
+    },
+    {
+      "path": "TruckSimGPS/TruckSimGPSPlugins/win_x86/plugins/trucksim-gps-telemetry.dll",
+      "size": 142336,
+      "sha256": "01e5d1cd6af7c239a7b9e80e9911de447fc8e80f66ee8f415d859a89f4a403bf"
+    },
+    {
+      "path": "voz/eventos/EVENTOS_SUPORTADOS.txt",
+      "size": 166,
+      "sha256": "f3b8422e2e62202a474d590c64f1b206d7628721361a6b37508b41b1ba69cafc"
+    },
+    {
+      "path": "voz/limites/limite_020.mp3",
+      "size": 9800,
+      "sha256": "e27f6094d68e824ed0f089df1a968c3c3f3cb3fe617d69b0c829ba8f6f43ee6b"
+    },
+    {
+      "path": "voz/limites/limite_030.mp3",
+      "size": 11456,
+      "sha256": "9df078de104000a8880870526108bc00135877644618457e728b36157ead0e47"
+    },
+    {
+      "path": "voz/limites/limite_040.mp3",
+      "size": 10448,
+      "sha256": "8fcbc578dd08dded78e84c9ee58e43c389c6870708212472a4cd8613cc84e17c"
+    },
+    {
+      "path": "voz/limites/limite_050.mp3",
+      "size": 12032,
+      "sha256": "1b247d0e89845eb2db4aa24338f32e46e5f1ff2af0cbaa36f6f62e15ce2e40e6"
+    },
+    {
+      "path": "voz/limites/limite_060.mp3",
+      "size": 11096,
+      "sha256": "a69e0fed8ab43937cb59790a328bfb842e878677b9c692ff9f63437f71f49183"
+    },
+    {
+      "path": "voz/limites/limite_070.mp3",
+      "size": 10880,
+      "sha256": "7b8d9e3ea65a26380335232e0e3eb693ea74aa90e3d6e9f04cf7643c2145106f"
+    },
+    {
+      "path": "voz/limites/limite_080.mp3",
+      "size": 10664,
+      "sha256": "9a27ebd11df07eff522d1f8c042684fd458d02ae149353c4599647751c7972eb"
+    },
+    {
+      "path": "voz/limites/limite_090.mp3",
+      "size": 10592,
+      "sha256": "988094430526c97ae8608ba74f92d43b166925699f3c41790067b69eb037985e"
+    },
+    {
+      "path": "voz/limites/limite_100.mp3",
+      "size": 10808,
+      "sha256": "a9200e4b45a91076d3867c72800b0fc2f84a52370a1fb48e8ea7375bda0a0c85"
+    },
+    {
+      "path": "voz/limites/limite_110.mp3",
+      "size": 10808,
+      "sha256": "c9fd58045c4b279c8f52dc27338568b1ca36c556f069d9975e1275fb2d293b87"
+    },
+    {
+      "path": "voz/limites/limite_120.mp3",
+      "size": 12176,
+      "sha256": "7fca5e302c294781ba934ccdf28a5a96b0e828fe1f6d14fa99d973df4d484a00"
+    },
+    {
+      "path": "voz/limites/limite_130.mp3",
+      "size": 10160,
+      "sha256": "0e11e2e179a4555f464c955b13b0495b829e9099e597dbe00a8b129ddfa8d4c3"
+    }
+  ]
+}

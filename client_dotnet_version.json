@@ -3,8 +3,11 @@
   "channel": "stable",
   "version": "1.0.68.30",
   "display_version": "1.0.68.30",
-  "notas": "Garagem por marca: todos os modelos da marca adquirida. Carteira Gold oficial, saldo com centavos e aviso vermelho de bloqueio. Validação assinada v3, dashboard Ouro ativo e backup do aplicativo/painel. Adquira e selecione uma marca no site antes de iniciar uma nova entrega.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.30.exe",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.30.exe",
-  "sha256": "7880b6ab29fca4353fe5db83abe44fb87bf745d1cabd048cbd71c2ea65665000"
+  "notas": "Instalação completa: aplicativo, dashboard e TruckSim GPS. Aceita novas instalações e bases antigas como 1.0.68.12, sem exigir 1.0.68.24. Mesmo executável e dashboard da versão validada 1.0.68.30. Backup ao reinstalar. Preserva perfil, configurações e diário. Não reancora automaticamente um diário Gold já bloqueado.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.30.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.30.exe",
+  "sha256": "2e855331f53605d3c548e417b6917a6eb306c6b5fc96b6e6913ff4698c22ca95",
+  "package_type": "full",
+  "update_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.30.exe",
+  "update_minimum_version": "1.0.68.24"
 }
