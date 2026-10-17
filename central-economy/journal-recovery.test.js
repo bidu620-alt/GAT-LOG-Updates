@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {assessJournalRecovery} from './journal-recovery.js';
+const t=Date.now();
+const base={user:'xuxa01',deviceId:'device',seq:101,packetId:'p101',chain:'a'.repeat(64),collectedAt:new Date(t-3000).toISOString(),payloadVerified:true,macVerified:true};
+const next={...base,seq:102,packetId:'p102',prev:base.chain,chain:'b'.repeat(64),collectedAt:new Date(t-1000).toISOString()};
+test('two authenticated consecutive samples produce candidate only',()=>assert.equal(assessJournalRecovery(base,next,100).eligible,true));
+test('reject hash failure',()=>assert.equal(assessJournalRecovery({...base,payloadVerified:false},next,100).eligible,false));
+test('reject MAC failure',()=>assert.equal(assessJournalRecovery(base,{...next,macVerified:false},100).eligible,false));
+test('reject broken link',()=>assert.equal(assessJournalRecovery(base,{...next,prev:'c'.repeat(64)},100).eligible,false));
+test('reject sequence gap',()=>assert.equal(assessJournalRecovery(base,{...next,seq:103},100).eligible,false));
+test('reject replay',()=>assert.equal(assessJournalRecovery(base,next,102).eligible,false));
+test('reject other device',()=>assert.equal(assessJournalRecovery(base,{...next,deviceId:'other'},100).eligible,false));
+test('reject stale sample',()=>assert.equal(assessJournalRecovery(base,{...next,collectedAt:new Date(t-100000).toISOString()},100).eligible,false));
