@@ -1,4 +1,4 @@
-// GAT-LOG • compatibilidade do ATS legado em ZIP.
+// BiduLog • compatibilidade do ATS legado em ZIP.
 // Quando o ATS usa tiles diretos no Cloudflare R2, este patch não interfere.
 (function(){
   const cfg=(window.GAT_MAP_CONFIG||{}).ats||{};
@@ -12,3 +12,4 @@
     if(typeof currentMap!=='undefined'&&currentMap==='ats')activeVisualKey='gat-ats-zip';
   };
 })();
+

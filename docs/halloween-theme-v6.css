@@ -1,4 +1,4 @@
-/* GAT-LOG • Tema Halloween 2026
+/* BiduLog • Tema Halloween 2026
    Ativado por event-nav.js entre 01/10/2026 00:00 e 01/11/2026 00:00 (Brasília).
    Camada visual apenas: não altera estrutura, ranking, telemetria ou lógica do evento. */
 body.gat-halloween{
@@ -67,7 +67,7 @@ body.gat-halloween textarea{
 body.gat-halloween .home-hero{
   background:
     linear-gradient(90deg,rgba(6,4,8,.97) 0%,rgba(6,4,8,.82) 34%,rgba(6,4,8,.22) 68%,rgba(6,4,8,.50) 100%),
-    url("eventos/hallowin/assets/hero-halloween.png") 67% center/cover no-repeat!important;
+    url("assets/event/hero-halloween-bidulog.png") 67% center/cover no-repeat!important;
 }
 body.gat-halloween .home-hero:before{
   background:
@@ -231,7 +231,7 @@ body.gat-halloween ::selection{background:#8c3ed0;color:#fff}
   body.gat-halloween .home-hero{
     background:
       linear-gradient(180deg,rgba(6,4,8,.08),rgba(6,4,8,.38) 43%,rgba(6,4,8,.97) 78%),
-      url("eventos/hallowin/assets/hero-halloween.png") 64% top/cover no-repeat!important;
+      url("assets/event/hero-halloween-bidulog.png") 64% top/cover no-repeat!important;
   }
 }
 
@@ -366,3 +366,4 @@ body.gat-halloween .journey-pumpkin{
 }
 
 @media(max-width:650px){body.gat-halloween .journey-pumpkin{display:none!important}}
+

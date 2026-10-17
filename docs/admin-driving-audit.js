@@ -33,7 +33,7 @@
   }
 
   function rankReasonText(v){
-    const m={damage_data_incomplete:'Dados de dano incompletos',telemetry_not_verified_from_start:'Telemetria não confirmada desde o início',telemetry_gap:'Interrupção da telemetria',telemetry_resume_pending:'Retomada ainda não validada',telemetry_disconnected:'Telemetria desconectada',trip_progress_unverified:'Progresso não confirmado',client_update_required:'GAT Telemetria desatualizado',mission_not_active:'Início da viagem não validado',distance_below_minimum:'Distância fora do requisito'};
+    const m={damage_data_incomplete:'Dados de dano incompletos',telemetry_not_verified_from_start:'Telemetria não confirmada desde o início',telemetry_gap:'Interrupção da telemetria',telemetry_resume_pending:'Retomada ainda não validada',telemetry_disconnected:'Telemetria desconectada',trip_progress_unverified:'Progresso não confirmado',client_update_required:'BiduLog Telemetria desatualizado',mission_not_active:'Início da viagem não validado',distance_below_minimum:'Distância fora do requisito'};
     return m[String(v||'')]||String(v||'Falha na validação automática');
   }
 
@@ -64,9 +64,9 @@
 
   renderDetailHistory=function(history,user){
     const rows=document.getElementById('detailHistoryRows'),table=rows?.closest('table'),list=[...(Array.isArray(history)?history:[])].reverse();if(!rows)return;
-    if(table){table.classList.add('audit-mode');const head=table.querySelector('thead tr');if(head)head.innerHTML='<th>DATA</th><th>ROTA / CARGA</th><th>KM / PESO</th><th>XP BASE</th><th>VELOCIDADE</th><th>DANOS</th><th>XP FINAL</th><th>PONTOS GAT</th><th>MISSÃO</th><th>AÇÕES</th>';}
+    if(table){table.classList.add('audit-mode');const head=table.querySelector('thead tr');if(head)head.innerHTML='<th>DATA</th><th>ROTA / CARGA</th><th>KM / PESO</th><th>XP BASE</th><th>VELOCIDADE</th><th>DANOS</th><th>XP FINAL</th><th>PONTOS BiduLog</th><th>MISSÃO</th><th>AÇÕES</th>';}
     const count=document.getElementById('detailHistoryCount');if(count)count.textContent=list.length+' MOSTRADAS';rows.textContent='';
-    if(!list.length){rows.innerHTML='<tr><td colspan="10"><div class="detail-empty">Nenhuma entrega GAT registrada.</div></td></tr>';renderSummary([]);return;}
+    if(!list.length){rows.innerHTML='<tr><td colspan="10"><div class="detail-empty">Nenhuma entrega BiduLog registrada.</div></td></tr>';renderSummary([]);return;}
     list.forEach(d=>{
       const x=parse(d),g=gatInfo(d),id=String(d?.id||d?.receipt_id||''),route=(d?.source||'—')+' → '+(d?.destination||'—'),canEdit=(typeof viewerRole==='undefined'||viewerRole!=='moderator'),canReview=(typeof viewerRole==='undefined'||['owner','admin','moderator'].includes(String(viewerRole))),manual=x.final!==x.expected;
       let gatHtml='<span class="gat-admin-gat-score '+(g.current>0?'ok':'')+'">'+fmt(g.current)+'/100</span>';
@@ -89,16 +89,16 @@
   };
 
   async function reviewGatPoints(user,id,decision,suggested){
-    const approve=decision==='approve',text=approve?'CONFIRMAR '+suggested+'/100 PONTOS GAT?':'MANTER ESTA ENTREGA COM 0/100 PONTOS GAT?';
+    const approve=decision==='approve',text=approve?'CONFIRMAR '+suggested+'/100 PONTOS BiduLog?':'MANTER ESTA ENTREGA COM 0/100 PONTOS BiduLog?';
     if(!confirm(text+'\n\nMotorista: @'+user+'\n\nA pontuação sugerida é calculada pela Central usando as penalidades que ficaram salvas na viagem. A revisão ficará registrada com seu usuário, data, pontuação anterior e decisão.'))return;
-    if(typeof setDetailStatus==='function')setDetailStatus(approve?'Validando Pontos GAT...':'Registrando revisão...');
+    if(typeof setDetailStatus==='function')setDetailStatus(approve?'Validando Pontos BiduLog...':'Registrando revisão...');
     try{
       const res=await adminPost('/api/site/admin/action',{action:'review_gat_points',target:user,delivery_id:id,review_decision:decision});
       if(!res.r.ok||!res.data?.ok){const code=res.data?.error||'HTTP '+res.r.status,msg=code==='gat_review_already_done'?'Esta entrega já foi revisada.':code==='gat_review_no_saved_breakdown'?'A Central não possui dados suficientes para sugerir uma pontuação segura nesta entrega.':'Revisão recusada: '+code+'.';if(typeof setDetailStatus==='function')setDetailStatus(msg,'err');return;}
       const approved=Math.max(0,num(res.data.approved_points));
-      if(typeof setDetailStatus==='function')setDetailStatus(approve?'Pontos GAT validados: '+approved+'/100.':'Revisão registrada: pontuação mantida em 0/100.','ok');
+      if(typeof setDetailStatus==='function')setDetailStatus(approve?'Pontos BiduLog validados: '+approved+'/100.':'Revisão registrada: pontuação mantida em 0/100.','ok');
       if(typeof loadDrivers==='function')await loadDrivers();if(typeof loadDriverDetail==='function')await loadDriverDetail(false);
-    }catch(_){if(typeof setDetailStatus==='function')setDetailStatus('Falha de comunicação ao revisar Pontos GAT.','err')}
+    }catch(_){if(typeof setDetailStatus==='function')setDetailStatus('Falha de comunicação ao revisar Pontos BiduLog.','err')}
   }
 
   async function adjustXp(user,id,current){
@@ -116,3 +116,4 @@
 
   injectStyle();ensureSummary();
 })();
+

@@ -6,7 +6,7 @@ function preview(){try{return sessionStorage.getItem(PREVIEW_KEY)==='1'}catch(_)
 function theme(on){
  document.body?.classList.toggle('gat-halloween',on);
  let l=document.getElementById('gatHalloweenTheme');
- if(on&&!l){l=document.createElement('link');l.id='gatHalloweenTheme';l.rel='stylesheet';l.href='halloween-theme-live-v3.css?v=1';document.head.appendChild(l)}
+ if(on&&!l){l=document.createElement('link');l.id='gatHalloweenTheme';l.rel='stylesheet';l.href='halloween-theme-live-v3.css?v=1&brand=bidulog-1';document.head.appendChild(l)}
  if(!on&&l)l.remove();
 }
 function apply(){
@@ -19,3 +19,4 @@ setInterval(apply,60000);
 })();
 
 (()=>{const root=new URL('.',document.currentScript.src);function add(){if(document.querySelector('script[src*="economy-nav.js"]'))return;const script=document.createElement('script');script.src=new URL('economy-nav.js?v=official-5',root);document.body.appendChild(script)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add()})();
+

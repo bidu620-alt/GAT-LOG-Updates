@@ -1,4 +1,4 @@
-// GAT-LOG • mapa Base em tiles diretamente do ZIP exportado pelo ETS2.
+// BiduLog • mapa Base em tiles diretamente do ZIP exportado pelo ETS2.
 // O ZIP contém TileMapInfo.json e a pirâmide Tiles/{z}/{x}/{y}.png.
 (function(){
   if(typeof L==='undefined'||typeof liveMap==='undefined'||typeof JSZip==='undefined')return;
@@ -52,15 +52,15 @@
               zMin:Number(info.y1), zMax:Number(info.y2)
             };
           }
-        }catch(err){console.warn('GAT TileMapInfo:',err)}
+        }catch(err){console.warn('BiduLog TileMapInfo:',err)}
       }
 
       zipReady=true;
       zipFailed=false;
-      if(baseSelected())note(currentMap==='promods'?'PROMODS • MAPA BASE GAT COMO REFERÊNCIA • TILES ORIGINAIS':'MAPA BASE • TILES ORIGINAIS DO ETS2 • POSIÇÃO GAT AO VIVO');
+      if(baseSelected())note(currentMap==='promods'?'PROMODS • MAPA BASE BiduLog COMO REFERÊNCIA • TILES ORIGINAIS':'MAPA BASE • TILES ORIGINAIS DO ETS2 • POSIÇÃO BiduLog AO VIVO');
       return zip;
     })().catch(err=>{
-      console.error('GAT mapa ZIP:',err);
+      console.error('BiduLog mapa ZIP:',err);
       zipFailed=true;
       zipReady=false;
       note('MAPA BASE • FALHA AO ABRIR ZIP • USANDO MAPA DE RESERVA');
@@ -151,7 +151,7 @@
     liveMap.setMaxBounds(zipBounds.pad(.035));
     document.getElementById('mapStage')?.classList.add('map-has-base-image','map-gat-export','map-gat-tiles');
     if(fit)liveMap.fitBounds(zipBounds,{padding:[18,18],maxZoom:2});
-    if(zipReady)note(currentMap==='promods'?'PROMODS • MAPA BASE GAT COMO REFERÊNCIA • TILES ORIGINAIS':'MAPA BASE • TILES ORIGINAIS DO ETS2 • POSIÇÃO GAT AO VIVO');
+    if(zipReady)note(currentMap==='promods'?'PROMODS • MAPA BASE BiduLog COMO REFERÊNCIA • TILES ORIGINAIS':'MAPA BASE • TILES ORIGINAIS DO ETS2 • POSIÇÃO BiduLog AO VIVO');
     else if(!zipFailed)note('MAPA BASE • CARREGANDO TILES ORIGINAIS DO ETS2...');
     loadZip().then(()=>{if(baseSelected()){zipLayer.redraw();liveMap.invalidateSize()}}).catch(()=>{
       try{if(typeof baseLayer!=='undefined'&&!liveMap.hasLayer(baseLayer))baseLayer.addTo(liveMap)}catch(_){}
@@ -182,3 +182,4 @@
     tileUrlCache.clear();
   });
 })();
+

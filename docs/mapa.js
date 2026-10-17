@@ -1,4 +1,4 @@
-const CENTRAL={label:'CENTRAL GAT',url:'https://api.gatlogets2.com.br'};
+const CENTRAL={label:'CENTRAL BiduLog',url:'https://api.gatlogets2.com.br'};
 const LIVE_PATH='/api/public/account-live',FRESH_MS=18000,REF_ZOOM=8;
 const MAP_CONFIG=window.GAT_MAP_CONFIG||{};
 const MAP_LABELS={base:'Mapa Base',ats:'American Truck Simulator',promods:'ProMods',rbr:'RBR',rotas_brasil:'Rotas Brasil',eaa:'EAA',other:'Outro mapa'};
@@ -35,7 +35,7 @@ function gameToLatLng(x,z){return liveMap.unproject([Number(x)/.78125+89600,Numb
 function imageBounds(cfg){const b=cfg&&cfg.gameBounds;if(!b||![b.xMin,b.zMin,b.xMax,b.zMax].every(v=>Number.isFinite(Number(v))))return null;return L.latLngBounds(gameToLatLng(Number(b.xMin),Number(b.zMin)),gameToLatLng(Number(b.xMax),Number(b.zMax)))}
 function headingDeg(v){const h=Number(v);if(!Number.isFinite(h))return 0;if(Math.abs(h)<=1.01)return h*360;if(Math.abs(h)<=Math.PI*2+.01)return h*180/Math.PI;return h%360}
 function markerIcon(d){const moving=fresh(d.t)&&d.t.on_job,deg=headingDeg(numberValue(d.t,'map_heading','truck.placement.heading'));return L.divIcon({className:'gat-truck-icon',iconSize:[48,48],iconAnchor:[24,24],html:'<div class="gat-truck-marker '+(moving?'':'idle')+'"><div class="gat-truck-arrow" style="transform:rotate('+deg.toFixed(1)+'deg)"><div class="gat-truck-body"></div></div><span class="gat-truck-label">'+esc(d.name)+'</span></div>'})}
-function popupHtml(d){const t=d.t||{},src=sourceOf(t),dst=destinationOf(t),route=t.on_job?((src||'Origem')+' → '+(dst||'Destino')):'Online • sem carga',speed=Math.round(Math.abs(numberValue(t,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed'))),acct=String(t.account_user||'').trim();return '<div class="gat-popup"><b>'+esc(d.name)+'</b><small>'+esc(mapLabel(d.map))+' • Central GAT</small><strong>'+esc(truckText(t))+'</strong><small>'+esc(route)+'</small><small>'+speed+' km/h'+(acct?' • @'+esc(acct):'')+'</small></div>'}
+function popupHtml(d){const t=d.t||{},src=sourceOf(t),dst=destinationOf(t),route=t.on_job?((src||'Origem')+' → '+(dst||'Destino')):'Online • sem carga',speed=Math.round(Math.abs(numberValue(t,'speed_kmh','truck.speedKmh','truck.speed_kmh','truck.speed'))),acct=String(t.account_user||'').trim();return '<div class="gat-popup"><b>'+esc(d.name)+'</b><small>'+esc(mapLabel(d.map))+' • Central BiduLog</small><strong>'+esc(truckText(t))+'</strong><small>'+esc(route)+'</small><small>'+speed+' km/h'+(acct?' • @'+esc(acct):'')+'</small></div>'}
 
 async function fetchCentral(){const c=new AbortController(),timer=setTimeout(()=>c.abort(),4500);try{const r=await fetch(CENTRAL.url+LIVE_PATH,{cache:'no-store',signal:c.signal});if(!r.ok)throw 0;return await r.json()}catch(_){return null}finally{clearTimeout(timer)}}
 function build(data){const tel=Array.isArray(data?.telemetry)?data.telemetry:[],seen=new Set(),out=[];tel.filter(fresh).forEach(t=>{const name=String(t.driver||t.account_user||'Motorista').trim(),k=norm(t.account_user||name);if(!k||seen.has(k))return;seen.add(k);out.push({server:CENTRAL.label,name,t,map:mapKey(t)})});return out}
@@ -43,7 +43,7 @@ function filteredList(){return mapDrivers.filter(d=>mapMatch(d)&&(currentFilter=
 
 function setMapTab(key){currentMap=key||'base';document.querySelectorAll('.map-world-tabs button').forEach(x=>x.classList.toggle('active',(x.dataset.map||'base')===currentMap))}
 function showNoPosition(d){const notice=document.getElementById('coordinateNotice');if(!notice)return;notice.style.display='block';const b=notice.querySelector('b'),span=notice.querySelector('span');if(b)b.textContent='SEM POSIÇÃO RECENTE';if(span)span.textContent=(d?.name||'Motorista')+' está online, mas ainda não enviou uma posição válida para o mapa.'}
-function restoreNoticeText(){const notice=document.getElementById('coordinateNotice');if(!notice)return;const b=notice.querySelector('b'),span=notice.querySelector('span');if(b)b.textContent='AGUARDANDO POSIÇÃO DO MOTORISTA';if(span)span.textContent='Com o GAT Telemetria conectado, o caminhão aparece automaticamente na aba correspondente ao mapa escolhido.'}
+function restoreNoticeText(){const notice=document.getElementById('coordinateNotice');if(!notice)return;const b=notice.querySelector('b'),span=notice.querySelector('span');if(b)b.textContent='AGUARDANDO POSIÇÃO DO MOTORISTA';if(span)span.textContent='Com o BiduLog Telemetria conectado, o caminhão aparece automaticamente na aba correspondente ao mapa escolhido.'}
 
 function focusDriver(d){
   selectedDriverKey=markerKey(d);updateDriverList();
@@ -76,7 +76,7 @@ function updateDriverList(){
 }
 
 function desiredVisual(){const cfg=MAP_CONFIG[currentMap]||{};if(currentMap==='base'||currentMap==='promods'||cfg.type==='tiles'||cfg.type==='reference')return {key:'base',cfg:baseCfg,label:mapLabel(currentMap)};if(cfg.type==='image'&&cfg.imageUrl&&imageBounds(cfg))return {key:'image:'+currentMap+':'+cfg.imageUrl,cfg,label:mapLabel(currentMap)};return {key:'blank:'+currentMap,cfg,label:mapLabel(currentMap)}}
-function updateMapNote(v){const note=document.getElementById('mapBaseNote');if(!note)return;if(currentMap==='base')note.textContent='MAPA BASE • POSIÇÃO GAT EM TEMPO REAL';else if(v.key==='base')note.textContent=v.label.toUpperCase()+' • MAPA BASE COMO REFERÊNCIA • POSIÇÃO GAT AO VIVO';else if(v.key.startsWith('image:'))note.textContent=v.label.toUpperCase()+' • BASE VISUAL GAT • POSIÇÃO AO VIVO';else note.textContent=v.label.toUpperCase()+' • AGUARDANDO BASE VISUAL • POSIÇÃO GAT JÁ PREPARADA'}
+function updateMapNote(v){const note=document.getElementById('mapBaseNote');if(!note)return;if(currentMap==='base')note.textContent='MAPA BASE • POSIÇÃO BiduLog EM TEMPO REAL';else if(v.key==='base')note.textContent=v.label.toUpperCase()+' • MAPA BASE COMO REFERÊNCIA • POSIÇÃO BiduLog AO VIVO';else if(v.key.startsWith('image:'))note.textContent=v.label.toUpperCase()+' • BASE VISUAL BiduLog • POSIÇÃO AO VIVO';else note.textContent=v.label.toUpperCase()+' • AGUARDANDO BASE VISUAL • POSIÇÃO BiduLog JÁ PREPARADA'}
 function applyLayerForMap(){
   const v=desiredVisual();updateMapNote(v);if(v.key===activeVisualKey)return;
   if(liveMap.hasLayer(baseLayer))liveMap.removeLayer(baseLayer);if(activeImageLayer){liveMap.removeLayer(activeImageLayer);activeImageLayer=null}
@@ -104,3 +104,4 @@ document.querySelectorAll('.map-world-tabs button').forEach(b=>b.addEventListene
 document.querySelectorAll('.map-look-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.map-look-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');const stage=document.getElementById('mapStage'),look=b.dataset.look==='realistic'?'realistic':'dark';stage.classList.toggle('map-look-realistic',look==='realistic');stage.classList.toggle('map-look-dark',look==='dark')}));
 window.addEventListener('resize',()=>liveMap.invalidateSize());
 setMapTab('base');setTimeout(()=>liveMap.invalidateSize(),250);refresh();setInterval(refresh,3000);
+

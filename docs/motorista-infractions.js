@@ -27,7 +27,7 @@
     let panel=document.querySelector('[data-panel="infractions"]');
     if(!panel){
       panel=document.createElement('section');panel.className='driver-tab-panel';panel.dataset.panel='infractions';
-      panel.innerHTML=`<article class="driver-card"><div class="card-title"><div><span class="eyebrow">QUALIDADE DA CONDUÇÃO</span><h2>Infrações e penalidades</h2></div><span class="pill blue">REGRAS GAT</span></div><div id="gatInfractionStats" class="gat-infraction-grid"></div><div id="gatInfractionList" class="gat-infraction-list"></div><p class="gat-infraction-note">O dano do caminhão é somente o dano novo ocorrido durante a viagem: usa o maior aumento entre motor, câmbio, cabine, chassi e rodas. As porcentagens das peças não são somadas. O desconto do veículo usa o maior dano novo entre caminhão e reboque. As porcentagens não são somadas.</p></article>`;
+      panel.innerHTML=`<article class="driver-card"><div class="card-title"><div><span class="eyebrow">QUALIDADE DA CONDUÇÃO</span><h2>Infrações e penalidades</h2></div><span class="pill blue">REGRAS BiduLog</span></div><div id="gatInfractionStats" class="gat-infraction-grid"></div><div id="gatInfractionList" class="gat-infraction-list"></div><p class="gat-infraction-note">O dano do caminhão é somente o dano novo ocorrido durante a viagem: usa o maior aumento entre motor, câmbio, cabine, chassi e rodas. As porcentagens das peças não são somadas. O desconto do veículo usa o maior dano novo entre caminhão e reboque. As porcentagens não são somadas.</p></article>`;
       const workPanel=document.querySelector('[data-panel="work"]');if(workPanel)workPanel.insertAdjacentElement('beforebegin',panel);else document.getElementById('driverContent')?.appendChild(panel);
     }
     return panel;
@@ -73,7 +73,7 @@
       const x=dataOf(d),audit=document.createElement('div');audit.className='gat-history-audit';
       const hasAudit=has(d,'gat_points')||has(d,'cargo_damage_pct')||has(d,'truck_damage_delta_pct')||has(d,'trailer_damage_delta_pct');
       if(!hasAudit){audit.innerHTML='<span>Entrega antiga • danos detalhados indisponíveis</span>';row.appendChild(audit);return;}
-      const pieces=[`<span class="${x.gatPoints>=100?'good':'blue'}">Pontos GAT ${fmt(x.gatPoints)}/100</span>`,
+      const pieces=[`<span class="${x.gatPoints>=100?'good':'blue'}">Pontos BiduLog ${fmt(x.gatPoints)}/100</span>`,
         `<span class="${x.cargoDamage>0?'bad':''}">Carga ${pct(x.cargoDamage)}</span>`,
         `<span class="${x.truckDamage>0?'bad':''}">Caminhão +${pct(x.truckDamage)}</span>`,
         `<span>Reboque +${pct(x.trailerDamage)}</span>`];
@@ -95,7 +95,7 @@
     const avgCargo=parsed.length?parsed.reduce((s,x)=>s+x.cargoDamage,0)/parsed.length:0;
     const avgTruck=parsed.length?parsed.reduce((s,x)=>s+x.truckDamage,0)/parsed.length:0;
     const avgTrailer=parsed.length?parsed.reduce((s,x)=>s+x.trailerDamage,0)/parsed.length:0;
-    stats.innerHTML=`<article class="bad"><small>MULTAS DE VELOCIDADE</small><b>${fmt(totalFines)}</b></article><article class="bad"><small>PONTOS GAT PERDIDOS</small><b>-${fmt(lostPoints)}</b></article><article class="bad"><small>XP PERDIDO</small><b>-${fmt(lostXp)}</b></article><article class="good"><small>VIAGENS SEM PENALIDADE</small><b>${fmt(clean)}</b></article><article><small>DANO MÉDIO DA CARGA</small><b>${pct(avgCargo)}</b></article><article><small>DANO NOVO MÉDIO DO CAMINHÃO</small><b>${pct(avgTruck)}</b></article><article><small>DANO NOVO MÉDIO DO REBOQUE</small><b>${pct(avgTrailer)}</b></article><article class="blue"><small>ENTREGAS ANALISADAS</small><b>${fmt(parsed.length)}</b></article>`;
+    stats.innerHTML=`<article class="bad"><small>MULTAS DE VELOCIDADE</small><b>${fmt(totalFines)}</b></article><article class="bad"><small>PONTOS BiduLog PERDIDOS</small><b>-${fmt(lostPoints)}</b></article><article class="bad"><small>XP PERDIDO</small><b>-${fmt(lostXp)}</b></article><article class="good"><small>VIAGENS SEM PENALIDADE</small><b>${fmt(clean)}</b></article><article><small>DANO MÉDIO DA CARGA</small><b>${pct(avgCargo)}</b></article><article><small>DANO NOVO MÉDIO DO CAMINHÃO</small><b>${pct(avgTruck)}</b></article><article><small>DANO NOVO MÉDIO DO REBOQUE</small><b>${pct(avgTrailer)}</b></article><article class="blue"><small>ENTREGAS ANALISADAS</small><b>${fmt(parsed.length)}</b></article>`;
     const bad=[...parsed].reverse().filter(x=>x.penaltyPoints>0||x.fines>0||x.cargoDamage>0||x.truckDamage>0||x.trailerDamage>0).slice(0,15);
     root.textContent='';
     if(!bad.length){root.innerHTML='<div class="gat-infraction-empty">Nenhuma infração ou dano registrado nas entregas disponíveis.</div>';}
@@ -111,3 +111,4 @@
   try{if(typeof renderProfile==='function'){const base=renderProfile;renderProfile=function(){const r=base.apply(this,arguments);setTimeout(render,0);return r}}}catch(_){}
   render();let last='';setInterval(()=>{let sig='';try{sig=JSON.stringify((profile?.deliveries||[]).map(x=>[x.id,x.gat_points,x.gat_penalty_points,x.xp_awarded,x.penalty_xp,x.speed_fines,x.cargo_damage_pct,x.truck_damage_delta_pct,x.trailer_damage_delta_pct,x.truck_engine_damage_delta_pct,x.truck_transmission_damage_delta_pct,x.truck_cabin_damage_delta_pct,x.truck_chassis_damage_delta_pct,x.truck_wheels_damage_delta_pct]))}catch(_){}if(sig!==last){last=sig;render()}},1500);
 })();
+

@@ -1,4 +1,4 @@
-// GAT-LOG • caminhões frontais por motorista.
+// BiduLog • caminhões frontais por motorista.
 // xuxa01 usa sempre o caminhão rosa. Os demais variam entre azul, verde, laranja e roxo.
 (function(){
   if(typeof L==='undefined')return;

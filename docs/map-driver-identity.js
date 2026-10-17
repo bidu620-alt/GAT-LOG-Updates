@@ -1,5 +1,5 @@
-// GAT-LOG • identidade visual do motorista no mapa.
-// Prioriza o usuário da conta GAT; o nome interno do perfil do ETS2 fica apenas como fallback.
+// BiduLog • identidade visual do motorista no mapa.
+// Prioriza o usuário da conta BiduLog; o nome interno do perfil do ETS2 fica apenas como fallback.
 (function(){
   if(typeof build!=='function')return;
 
@@ -17,3 +17,4 @@
     return out;
   };
 })();
+

@@ -1,4 +1,4 @@
-// GAT-LOG • camadas de tiles PNG diretos para mapas exportados.
+// BiduLog • camadas de tiles PNG diretos para mapas exportados.
 (function(){
   if(typeof L==='undefined'||typeof liveMap==='undefined')return;
 
@@ -109,7 +109,7 @@
     liveMap.setMaxBounds(bounds.pad(.035));
     document.getElementById('mapStage')?.classList.add('map-has-base-image','map-gat-export','map-gat-tiles');
     const label=(configs[currentMap]?.label||configs[key]?.label||key).toUpperCase();
-    note(label+' • TILES GAT • POSIÇÃO AO VIVO');
+    note(label+' • TILES BiduLog • POSIÇÃO AO VIVO');
     if(fit)liveMap.fitBounds(bounds,{padding:[18,18],maxZoom:2});
   }
 
@@ -145,7 +145,7 @@
   }
 })();
 
-// GAT-LOG • American Truck Simulator carregado de um único ZIP exportado.
+// BiduLog • American Truck Simulator carregado de um único ZIP exportado.
 (function(){
   if(typeof L==='undefined'||typeof liveMap==='undefined')return;
   const cfg=(window.GAT_MAP_CONFIG||{}).ats||{};
@@ -212,7 +212,7 @@
 
   async function loadZip(){
     if(zipPromise)return zipPromise;
-    note('AMERICAN TRUCK SIMULATOR • BAIXANDO MAPA GAT...');
+    note('AMERICAN TRUCK SIMULATOR • BAIXANDO MAPA BiduLog...');
     zipPromise=(async()=>{
       const JSZipLib=await ensureJSZip();
       const response=await fetch(cfg.zipUrl,{cache:'no-cache'});
@@ -223,13 +223,13 @@
         try{
           const info=JSON.parse(await infoFile.async('text'));
           if([info.x1,info.x2,info.y1,info.y2].every(v=>Number.isFinite(Number(v))))gameBounds={xMin:Number(info.x1),xMax:Number(info.x2),zMin:Number(info.y1),zMax:Number(info.y2)};
-        }catch(err){console.warn('GAT ATS TileMapInfo:',err)}
+        }catch(err){console.warn('BiduLog ATS TileMapInfo:',err)}
       }
       zipReady=true;zipFailed=false;
-      if(selected())note('AMERICAN TRUCK SIMULATOR • MAPA GAT • POSIÇÃO AO VIVO');
+      if(selected())note('AMERICAN TRUCK SIMULATOR • MAPA BiduLog • POSIÇÃO AO VIVO');
       return zip;
     })().catch(err=>{
-      console.error('GAT mapa ATS:',err);zipFailed=true;zipReady=false;zipPromise=null;
+      console.error('BiduLog mapa ATS:',err);zipFailed=true;zipReady=false;zipPromise=null;
       if(selected())note('AMERICAN TRUCK SIMULATOR • ARQUIVO DO MAPA AINDA NÃO PUBLICADO');
       throw err;
     });
@@ -271,7 +271,7 @@
     liveMap.setMaxZoom(DISPLAY_MAX);liveMap.setMaxBounds(atsBounds.pad(.035));
     document.getElementById('mapStage')?.classList.add('map-has-base-image','map-gat-export','map-gat-tiles');
     if(fit)liveMap.fitBounds(atsBounds,{padding:[18,18],maxZoom:2});
-    if(zipReady)note('AMERICAN TRUCK SIMULATOR • MAPA GAT • POSIÇÃO AO VIVO');else if(!zipFailed)note('AMERICAN TRUCK SIMULATOR • CARREGANDO MAPA GAT...');
+    if(zipReady)note('AMERICAN TRUCK SIMULATOR • MAPA BiduLog • POSIÇÃO AO VIVO');else if(!zipFailed)note('AMERICAN TRUCK SIMULATOR • CARREGANDO MAPA BiduLog...');
     loadZip().then(()=>{if(selected()){atsLayer.redraw();liveMap.invalidateSize()}}).catch(()=>{});
   }
 
@@ -285,3 +285,4 @@
 
   window.addEventListener('beforeunload',()=>{for(const url of tileUrlCache.values())URL.revokeObjectURL(url);tileUrlCache.clear()});
 })();
+

@@ -1,10 +1,10 @@
-// GAT-LOG: configuração visual dos mapas.
-// Mapas exportados pelo GAT Map Exportador usam pirâmides PNG diretas ou ZIP único.
+// BiduLog: configuração visual dos mapas.
+// Mapas exportados pelo BiduLog Map Exportador usam pirâmides PNG diretas ou ZIP único.
 window.GAT_MAP_CONFIG = {
   base: {
     label: 'Mapa Base',
     type: 'gat-direct-tiles',
-    source: 'GAT Map Exportador ETS2',
+    source: 'BiduLog Map Exportador ETS2',
     tileUrl: 'maps/base/tiles/{z}/{x}/{y}.png?v=1',
     tileSize: 256,
     minZoom: 0,
@@ -20,7 +20,7 @@ window.GAT_MAP_CONFIG = {
   ats: {
     label: 'American Truck Simulator',
     type: 'gat-direct-tiles',
-    source: 'GAT Map Exportador ATS + Cloudflare R2',
+    source: 'BiduLog Map Exportador ATS + Cloudflare R2',
     tileUrl: 'https://maps.gatlogets2.com.br/ats/Tiles/{z}/{x}/{y}.png?v=1',
     tileSize: 256,
     minZoom: 0,
@@ -36,7 +36,7 @@ window.GAT_MAP_CONFIG = {
   promods: {
     label: 'ProMods',
     type: 'gat-direct-tiles',
-    source: 'GAT Map Exportador ProMods + Cloudflare R2',
+    source: 'BiduLog Map Exportador ProMods + Cloudflare R2',
     tileUrl: 'https://maps.gatlogets2.com.br/promods/Tiles/{z}/{x}/{y}.png?v=1',
     tileSize: 256,
     minZoom: 0,
@@ -52,7 +52,7 @@ window.GAT_MAP_CONFIG = {
   rbr: {
     label: 'RBR',
     type: 'gat-direct-tiles',
-    source: 'GAT Map Exportador ETS2 + Cloudflare R2',
+    source: 'BiduLog Map Exportador ETS2 + Cloudflare R2',
     tileUrl: 'https://maps.gatlogets2.com.br/rbr/Tiles/{z}/{x}/{y}.png?v=2',
     tileSize: 256,
     minZoom: 0,
@@ -89,3 +89,4 @@ window.GAT_MAP_CONFIG = {
     note: 'Aguardando base visual personalizada.'
   }
 };
+

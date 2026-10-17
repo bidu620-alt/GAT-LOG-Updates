@@ -1,6 +1,6 @@
 (()=>{
   const PORTAL_SERVERS=[
-    {label:'GAT CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'},
+    {label:'BiduLog CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'},
   ];
   const PORTAL_LIVE='/api/public/live';
   const PORTAL_FRESH=20000;
@@ -57,7 +57,7 @@
       head.append(avatar,names,mk('span','pill '+(onJob?'cyan':isFresh?'blue':'amber'),onJob?'EM ROTA':isFresh?'ONLINE':'SEM TELEMETRIA'));
       card.append(head);
 
-      const account=mk('span','driver-account '+(isFresh&&t.account_user?'':'none'),isFresh&&t.account_user?'Conta GAT @'+t.account_user:'Conta GAT não vinculada');
+      const account=mk('span','driver-account '+(isFresh&&t.account_user?'':'none'),isFresh&&t.account_user?'Conta BiduLog @'+t.account_user:'Conta BiduLog não vinculada');
       card.append(account);
 
       const info=mk('div','driver-profile-info');
@@ -82,7 +82,7 @@
     set('companyAccounts',accounts.size);
     const status=document.getElementById('companyStatus');
     if(status){
-      if(!results.some(x=>x.data))status.textContent='Os GAT Servers não responderam agora. Os números serão atualizados automaticamente quando voltarem.';
+      if(!results.some(x=>x.data))status.textContent='Os BiduLog Servers não responderam agora. Os números serão atualizados automaticamente quando voltarem.';
       else status.textContent=drivers.length+' motorista'+(drivers.length===1?'':'s')+' online • '+activeTrips+' viagem'+(activeTrips===1?'':'s')+' em andamento • '+onlineServers+' de '+PORTAL_SERVERS.length+' servidores online.';
     }
   }
@@ -115,7 +115,7 @@
       return;
     }
 
-    const svg=svgNode('svg',{viewBox:'0 0 100 60',preserveAspectRatio:'none','aria-label':'Mapa esquemático das rotas GAT'});
+    const svg=svgNode('svg',{viewBox:'0 0 100 60',preserveAspectRatio:'none','aria-label':'Mapa esquemático das rotas BiduLog'});
     trips.forEach((d,i)=>{
       const t=d.t;
       let a=hashPoint(t.source,i+'a');
@@ -146,3 +146,4 @@
   refreshPortal();
   setInterval(refreshPortal,6500);
 })();
+

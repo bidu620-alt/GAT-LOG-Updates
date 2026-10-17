@@ -1,4 +1,4 @@
-// GAT-LOG • mantém a lista lateral de motoristas estável entre atualizações.
+// BiduLog • mantém a lista lateral de motoristas estável entre atualizações.
 (()=>{
   if(typeof filteredList!=='function')return;
   filteredList=function(){
@@ -8,3 +8,4 @@
       .sort((a,b)=>String(a?.name||'').localeCompare(String(b?.name||''),'pt-BR',{sensitivity:'base',numeric:true}));
   };
 })();
+

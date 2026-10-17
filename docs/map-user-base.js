@@ -1,4 +1,4 @@
-// GAT-LOG • Mapa Base próprio
+// BiduLog • Mapa Base próprio
 // Reconstrói a imagem WebP exportada do ETS2 a partir de pequenos arquivos de texto
 // hospedados no próprio GitHub Pages e mantém a telemetria X/Z por cima dela.
 (function(){
@@ -62,7 +62,7 @@
       });
       return gatBaseLayer;
     })().catch(err=>{
-      console.error('GAT mapa base:',err);
+      console.error('BiduLog mapa base:',err);
       loadFailed=true;
       return null;
     });
@@ -77,8 +77,8 @@
     liveMap.setMaxBounds(gatBounds.pad(.06));
     document.getElementById('mapStage')?.classList.add('map-has-base-image','map-gat-export');
     if(fit)liveMap.fitBounds(gatBounds,{padding:[18,18],maxZoom:3});
-    if(currentMap==='promods')note('PROMODS • MAPA BASE GAT COMO REFERÊNCIA • POSIÇÃO AO VIVO');
-    else note('MAPA BASE • EXPORTADO DO SEU ETS2 • POSIÇÃO GAT AO VIVO');
+    if(currentMap==='promods')note('PROMODS • MAPA BASE BiduLog COMO REFERÊNCIA • POSIÇÃO AO VIVO');
+    else note('MAPA BASE • EXPORTADO DO SEU ETS2 • POSIÇÃO BiduLog AO VIVO');
     return true;
   }
 
@@ -134,3 +134,4 @@
     if(gatBaseUrl)URL.revokeObjectURL(gatBaseUrl);
   });
 })();
+

@@ -27,7 +27,7 @@
   background:
     linear-gradient(90deg,rgba(3,3,6,.92) 0%,rgba(4,4,7,.72) 29%,rgba(4,4,7,.18) 52%,rgba(3,3,5,.04) 100%),
     linear-gradient(0deg,rgba(3,3,5,.25),rgba(3,3,5,.02) 45%,rgba(3,3,5,.10)),
-    url("assets/event/hero-halloween-gatlog.webp") center center/cover no-repeat;
+    url("assets/event/hero-halloween-bidulog.png") center center/cover no-repeat;
   transform:scale(1.008);
 }
 .event-hero:after{height:105px;background:linear-gradient(0deg,#050507 0%,rgba(5,5,7,.78) 38%,transparent)}
@@ -159,7 +159,7 @@
   .hero-photo-layer{
     background:
       linear-gradient(180deg,rgba(4,4,7,.18) 0%,rgba(4,4,7,.30) 38%,rgba(4,4,7,.96) 75%),
-      url("assets/event/hero-halloween-gatlog.webp") 63% top/cover no-repeat;
+      url("assets/event/hero-halloween-bidulog.png") 63% top/cover no-repeat;
   }
   .event-hero-copy{width:100%;padding:315px 22px 26px}
   .event-hero h1{font-size:64px}
@@ -167,3 +167,4 @@
   .event-rules,.event-cargos,.event-hall{margin-left:12px;margin-right:12px}
   .event-rules h2,.event-section-head h2{font-size:31px}
 }
+

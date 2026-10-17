@@ -1,5 +1,5 @@
 (()=>{
-  const CURRENT_COLLECTION_TEXT='Cada tipo de carga concluído entra uma vez na coleção. Repetir uma carga continua valendo normalmente no histórico, km, XP e Pontos GAT, mas não aumenta a coleção novamente.';
+  const CURRENT_COLLECTION_TEXT='Cada tipo de carga concluído entra uma vez na coleção. Repetir uma carga continua valendo normalmente no histórico, km, XP e Pontos BiduLog, mas não aumenta a coleção novamente.';
 
   const resetCargoSearchIfNeeded=()=>{
     const input=document.getElementById('fullCargoSearch');
@@ -63,3 +63,4 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
 })();
+

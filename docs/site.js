@@ -1,6 +1,6 @@
 const RAW='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/';
 const GAT_SERVERS=[
-  {label:'GAT CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'},
+  {label:'BiduLog CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'},
 ];
 const ACCOUNT_AUTHORITY='https://api.gatlogets2.com.br';
 const LIVE_PATH='/api/public/live';
@@ -37,7 +37,7 @@ function setLoginStatus(text,type=''){const e=document.getElementById('loginStat
 function updateAccountButton(){
   const b=document.getElementById('accountButton');
   b.textContent=accountSession?.user?'@'+accountSession.user:'ENTRAR / CADASTRAR';
-  document.getElementById('heroAccountButton').textContent=accountSession?.user?'Conta GAT: @'+accountSession.user:'Criar Conta GAT';
+  document.getElementById('heroAccountButton').textContent=accountSession?.user?'Conta BiduLog: @'+accountSession.user:'Criar Conta BiduLog';
 }
 function showAccountModal(tab='login'){
   const m=document.getElementById('accountModal');m.classList.add('open');m.setAttribute('aria-hidden','false');
@@ -50,8 +50,8 @@ function showAccountTab(tab){
   document.getElementById('registerForm').classList.toggle('hidden',login);
   document.getElementById('tabLogin').classList.toggle('active',login);
   document.getElementById('tabRegister').classList.toggle('active',!login);
-  document.getElementById('accountTitle').textContent=login?'Entrar na Conta GAT':'Criar Conta GAT';
-  document.getElementById('accountIntro').textContent=login?'Use a mesma conta no site e no GAT Telemetria.':'Crie seu usuário uma vez. Depois use este mesmo login no GAT Telemetria.';
+  document.getElementById('accountTitle').textContent=login?'Entrar na Conta BiduLog':'Criar Conta BiduLog';
+  document.getElementById('accountIntro').textContent=login?'Use a mesma conta no site e no BiduLog Telemetria.':'Crie seu usuário uma vez. Depois use este mesmo login no BiduLog Telemetria.';
   setLoginStatus(accountSession?.user?'Conta atual: @'+accountSession.user:'Cadastre uma conta ou entre com uma conta existente.',accountSession?.user?'ok':'');
 }
 
@@ -70,7 +70,7 @@ async function submitLogin(event){
   const password=document.getElementById('loginPassword').value;
   const button=document.getElementById('loginButton');
   if(!user||!password){setLoginStatus('Preencha usuário e senha.','error');return;}
-  button.disabled=true;button.textContent='ENTRANDO...';setLoginStatus('Validando Conta GAT...');
+  button.disabled=true;button.textContent='ENTRANDO...';setLoginStatus('Validando Conta BiduLog...');
   try{
     const r=await accountRequest(ACCOUNT_LOGIN,{user,password});
     if(r.ok&&r.data?.ok&&r.data?.token){
@@ -82,7 +82,7 @@ async function submitLogin(event){
     }
     if(r.status===401)setLoginStatus('Usuário ou senha incorretos.','error');
     else if(r.status===404)setLoginStatus('O servidor de contas ainda precisa da versão 1.0.12.','error');
-    else setLoginStatus('Não foi possível entrar na Conta GAT agora.','error');
+    else setLoginStatus('Não foi possível entrar na Conta BiduLog agora.','error');
   }finally{button.disabled=false;button.textContent='ENTRAR';}
 }
 
@@ -95,7 +95,7 @@ async function submitRegister(event){
   if(user.length<3){setLoginStatus('O usuário precisa ter pelo menos 3 caracteres.','error');return;}
   if(password.length<6){setLoginStatus('A senha precisa ter pelo menos 6 caracteres.','error');return;}
   if(password!==confirm){setLoginStatus('As duas senhas não conferem.','error');return;}
-  button.disabled=true;button.textContent='CADASTRANDO...';setLoginStatus('Criando Conta GAT...');
+  button.disabled=true;button.textContent='CADASTRANDO...';setLoginStatus('Criando Conta BiduLog...');
   try{
     const r=await accountRequest(ACCOUNT_REGISTER,{user,password});
     if(r.ok&&r.data?.ok&&r.data?.token){
@@ -126,7 +126,7 @@ async function restoreAccount(){
 
 document.getElementById('accountButton').addEventListener('click',()=>{
   if(accountSession?.user){
-    if(confirm('Conta GAT conectada: @'+accountSession.user+'\n\nDeseja sair desta conta no site?'))clearAccountSession();
+    if(confirm('Conta BiduLog conectada: @'+accountSession.user+'\n\nDeseja sair desta conta no site?'))clearAccountSession();
     return;
   }
   showAccountModal('login');
@@ -166,11 +166,11 @@ function renderServerCards(results){
   results.forEach(({server,data,error})=>{
     const card=el('article','server-live-card '+(data?.online?'online':'offline'));
     const top=el('div','server-live-top');
-    const names=el('div');names.append(el('small','mini','GAT SERVER'),el('h3','',data?.server_name||server.label));
+    const names=el('div');names.append(el('small','mini','BiduLog SERVER'),el('h3','',data?.server_name||server.label));
     top.append(names,el('span','pill '+(data?.online?'cyan':'red'),data?.online?'ONLINE':'OFFLINE'));card.append(top);
     const meta=el('div','server-live-meta');
     if(data){meta.append(metric('Jogadores',(data.player_count??data.players?.length??0)+' / '+(data.max_players??'—')),metric('ID da sala',escText(data.session_id)),metric('Telemetrias',String((data.telemetry||[]).filter(isFresh).length)));}
-    else{const msg=el('div','server-error');msg.textContent=error?.includes('401')?'Atualize o GAT Server para 1.0.12':error?.includes('404')?'Aguardando GAT Server 1.0.12':'Servidor/API indisponível';card.append(msg);}
+    else{const msg=el('div','server-error');msg.textContent=error?.includes('401')?'Atualize o BiduLog Server para 1.0.12':error?.includes('404')?'Aguardando BiduLog Server 1.0.12':'Servidor/API indisponível';card.append(msg);}
     card.append(meta);root.append(card);
   });
 }
@@ -204,7 +204,7 @@ function renderDrivers(drivers){
     if(fresh){
       const route=el('div','driver-route');route.append(el('strong','',escText(t.source,'Origem')),el('span','','→'),el('strong','',escText(t.destination,'Destino')));card.append(route);
       const grid=el('div','driver-metrics');grid.append(metric('Carga',escText(t.cargo,'Sem carga')),metric('Peso',formatWeight(t.cargo_mass_kg)),metric('Restante',formatKm(t.remaining_km)),metric('Velocidade',formatSpeed(t.speed_kmh)));card.append(grid);
-      const foot=el('div','driver-foot');foot.textContent=(t.account_user?'Conta GAT @'+t.account_user+' • ':'')+'Atualizado há '+Math.max(0,Math.round(ageMs(t.updated_at)/1000))+' s';card.append(foot);
+      const foot=el('div','driver-foot');foot.textContent=(t.account_user?'Conta BiduLog @'+t.account_user+' • ':'')+'Atualizado há '+Math.max(0,Math.round(ageMs(t.updated_at)/1000))+' s';card.append(foot);
     }else{const wait=el('div','driver-wait');wait.textContent='Jogador está na sessão, mas o site ainda não recebeu telemetria recente deste motorista.';card.append(wait);}
     root.append(card);
   });
@@ -237,3 +237,4 @@ updateAccountButton();
 refreshLive();
 setInterval(refreshLive,REFRESH_MS);
 setInterval(renderHero,7000);
+

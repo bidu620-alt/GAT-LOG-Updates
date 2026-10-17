@@ -78,7 +78,7 @@
     const sec=document.createElement('section');
     sec.id='gatDriverDirectory';
     sec.className='gat-driver-directory';
-    sec.innerHTML=`<div class="gat-driver-directory-nav"><button id="gatMyWorkTab" class="gat-my-work-tab" type="button">MEU TRABALHO</button><span class="gat-all-drivers-tab">TODOS OS MOTORISTAS</span></div><div class="gat-driver-directory-body"><div class="gat-directory-head"><div><small>COMUNIDADE GAT-LOG</small><h2>Motoristas</h2></div><span id="gatDriverCount" class="gat-directory-count">CARREGANDO...</span></div><input id="gatDriverSearch" class="gat-driver-search" type="search" placeholder="Buscar motorista..." autocomplete="off"><div id="gatDriverList" class="gat-driver-list"><div class="gat-directory-status">Carregando motoristas da Central GAT...</div></div></div>`;
+    sec.innerHTML=`<div class="gat-driver-directory-nav"><button id="gatMyWorkTab" class="gat-my-work-tab" type="button">MEU TRABALHO</button><span class="gat-all-drivers-tab">TODOS OS MOTORISTAS</span></div><div class="gat-driver-directory-body"><div class="gat-directory-head"><div><small>COMUNIDADE BiduLog</small><h2>Motoristas</h2></div><span id="gatDriverCount" class="gat-directory-count">CARREGANDO...</span></div><input id="gatDriverSearch" class="gat-driver-search" type="search" placeholder="Buscar motorista..." autocomplete="off"><div id="gatDriverList" class="gat-driver-list"><div class="gat-directory-status">Carregando motoristas da Central BiduLog...</div></div></div>`;
     if(back)back.insertAdjacentElement('afterend',sec);else main.prepend(sec);
     document.getElementById('gatMyWorkTab')?.addEventListener('click',goMyWork);
     document.getElementById('gatDriverSearch')?.addEventListener('input',e=>filterDirectory(e.target.value));
@@ -127,7 +127,7 @@
       const own=clean(sessionNow()?.user);if(own&&!byUser.has(own))byUser.set(own,{user:own,total_deliveries:0,monthly_km:0});
       directoryItems=[...byUser.values()].sort((a,b)=>pretty(a.user).localeCompare(pretty(b.user),'pt-BR',{sensitivity:'base',numeric:true}));
       count.textContent=directoryItems.length+' MOTORISTA'+(directoryItems.length===1?'':'S');
-      if(!directoryItems.length){list.innerHTML='<div class="gat-directory-status">Nenhum motorista registrado na Central GAT ainda.</div>';return;}
+      if(!directoryItems.length){list.innerHTML='<div class="gat-directory-status">Nenhum motorista registrado na Central BiduLog ainda.</div>';return;}
       list.textContent='';
       for(const item of directoryItems){
         const user=clean(item.user),name=pretty(user),on=live.get(user)?.online===true,deliveries=n(item.total_deliveries);
@@ -149,11 +149,11 @@
 
   function rankReasonText(reason){
     const map={
-      client_update_required:'GAT Telemetria desatualizado',telemetry_disconnected:'Telemetria desconectada',damage_data_incomplete:'Dados de dano incompletos',
+      client_update_required:'BiduLog Telemetria desatualizado',telemetry_disconnected:'Telemetria desconectada',damage_data_incomplete:'Dados de dano incompletos',
       telemetry_gap:'Interrupção da telemetria',telemetry_not_verified_from_start:'Telemetria não confirmada desde o início',trip_progress_unverified:'Progresso da viagem não confirmado',
       mission_not_active:'Início da viagem não validado',distance_below_minimum:'Distância fora do requisito de pontuação'
     };
-    return map[String(reason||'')]||'Viagem sem elegibilidade para Pontos GAT';
+    return map[String(reason||'')]||'Viagem sem elegibilidade para Pontos BiduLog';
   }
 
   function enhancedRenderDeliveries(history){
@@ -162,7 +162,7 @@
     const list=Array.isArray(history)?history:[];
     if(count)count.textContent=list.length+' REGISTRADAS';
     rows.textContent='';
-    if(!list.length){rows.innerHTML='<div class="delivery-empty">Nenhuma carga GAT concluída ainda.</div>';return;}
+    if(!list.length){rows.innerHTML='<div class="delivery-empty">Nenhuma carga BiduLog concluída ainda.</div>';return;}
     [...list].reverse().forEach(x=>{
       const distance=Math.max(0,n(x?.distance_km));
       const calculatedBase=Math.floor(distance/100)*20;
@@ -189,7 +189,7 @@
       const detail=document.createElement('div');detail.className='gat-xp-breakdown';
       let chips=`<span class="gat-xp-chip final"><span>XP DA VIAGEM</span><b>${fmt(finalXp)}</b></span>`;
       if(rankEligible){
-        chips+=`<span class="gat-xp-chip ${gatPoints>0?'clean':'penalty'}"><span>PONTOS GAT</span><b>${fmt(gatPoints)}</b></span>`;
+        chips+=`<span class="gat-xp-chip ${gatPoints>0?'clean':'penalty'}"><span>PONTOS BiduLog</span><b>${fmt(gatPoints)}</b></span>`;
         if(speedingPenalty>0||speedingRatio>0)chips+=`<span class="gat-xp-chip penalty"><span>EXCESSO DE VELOCIDADE • ${fmtPct(speedingRatio)}</span><b>-${fmt(speedingPenalty)} PONTOS</b></span>`;
         if(trafficPenalty>0||fines>0)chips+=`<span class="gat-xp-chip penalty"><span>INFRAÇÃO DE TRÂNSITO${fines?' • '+fines+' ocorrência'+(fines===1?'':'s'):''}</span><b>-${fmt(trafficPenalty)} PONTOS</b></span>`;
         if(cargoPenalty>0||cargoDamage>0)chips+=`<span class="gat-xp-chip ${cargoPenalty>0?'penalty':''}"><span>CARGA • ${fmtPct(cargoDamage)}</span><b>${cargoPenalty>0?'-'+fmt(cargoPenalty)+' PONTOS':'OK'}</b></span>`;
@@ -198,7 +198,7 @@
           if(truckPenalty>0)chips+=`<span class="gat-xp-chip penalty" title="O desconto usa o maior dano novo entre caminhão e reboque; as porcentagens não são somadas."><span>VEÍCULO • ${vehicleSource}</span><b>-${fmt(truckPenalty)} PONTOS</b></span>`;
         }
       }else{
-        chips+=`<span class="gat-xp-chip penalty"><span>PONTOS GAT</span><b>0 • ${esc(rankReasonText(x?.ranking_reason))}</b></span>`;
+        chips+=`<span class="gat-xp-chip penalty"><span>PONTOS BiduLog</span><b>0 • ${esc(rankReasonText(x?.ranking_reason))}</b></span>`;
       }
       detail.innerHTML=chips;row.appendChild(detail);rows.appendChild(row);
     });
@@ -222,3 +222,4 @@
   window.addEventListener('gat-account-change',()=>{loadDirectory();});
   setInterval(loadDirectory,30000);
 })();
+

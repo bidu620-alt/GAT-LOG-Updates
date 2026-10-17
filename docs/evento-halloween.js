@@ -16,8 +16,8 @@ function eventRows(p){const rows=Array.isArray(p?.deliveries)?p.deliveries:(Arra
 function completion(rows){const out=new Map();for(const row of rows){for(const cargo of EVENT?.cargos||[]){if(!out.has(cargo.official)&&(REGISTRY?.cargoMatches?REGISTRY.cargoMatches(row,cargo):norm(row?.cargo||row?.cargo_name||row?.name)===norm(cargo.official)))out.set(cargo.official,row)}}return out}
 async function loadIcons(){try{const r=await fetch(ICON_DATA,{cache:'force-cache'});const j=await r.json();if(r.ok)icons=j}catch(_){}}
 function thumb(icon){
- if(!icons?.icons?.[icon]||!Array.isArray(icons?.sheets))return '<div class="event-cargo-fallback">GAT</div>';
- const p=icons.icons[icon],sh=icons.sheets[p.s],tile=icons.tile||[160,128];if(!sh)return '<div class="event-cargo-fallback">GAT</div>';
+ if(!icons?.icons?.[icon]||!Array.isArray(icons?.sheets))return '<div class="event-cargo-fallback">BiduLog</div>';
+ const p=icons.icons[icon],sh=icons.sheets[p.s],tile=icons.tile||[160,128];if(!sh)return '<div class="event-cargo-fallback">BiduLog</div>';
  return '<span class="event-cargo-thumb" style="background-image:url(\'assets/cargo/'+sh.file+'?v=1\');background-size:'+sh.width+'px '+sh.height+'px;background-position:'+(-p.x*tile[0])+'px '+(-p.y*tile[1])+'px"></span>';
 }
 function buildCards(active){
@@ -28,8 +28,8 @@ function buildCards(active){
 }
 function updateProgress(){const n=done.size,pct=Math.round(n/30*100);document.getElementById('eventProgress').textContent=n+'/30';document.getElementById('eventProgressTitle').textContent='('+n+'/30)';document.getElementById('eventProgressBar').style.width=pct+'%'}
 async function loadMine(){
- const s=session();if(!s){document.getElementById('eventAccountText').textContent='Entre na sua Conta GAT para registrar o progresso automaticamente.';return}
- try{const r=await fetch(API+'/api/site/profile',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.token},body:JSON.stringify({token:s.token})});const j=await r.json();if(!r.ok||!j?.profile)throw 0;profile=j.profile;const official=REGISTRY?.progress?.(profile,'halloween_2026');done=official?.manual&&official?.completed?new Map((EVENT?.cargos||[]).map(c=>[c.official,{manual:true}])):completion(eventRows(profile));updateProgress();buildCards(Date.now()>=START&&Date.now()<END);document.getElementById('eventAccountText').textContent='@'+s.user+' • progresso atualizado pela Central GAT.'}catch(_){document.getElementById('eventAccountText').textContent='Não foi possível carregar sua Conta GAT agora.'}
+ const s=session();if(!s){document.getElementById('eventAccountText').textContent='Entre na sua Conta BiduLog para registrar o progresso automaticamente.';return}
+ try{const r=await fetch(API+'/api/site/profile',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.token},body:JSON.stringify({token:s.token})});const j=await r.json();if(!r.ok||!j?.profile)throw 0;profile=j.profile;const official=REGISTRY?.progress?.(profile,'halloween_2026');done=official?.manual&&official?.completed?new Map((EVENT?.cargos||[]).map(c=>[c.official,{manual:true}])):completion(eventRows(profile));updateProgress();buildCards(Date.now()>=START&&Date.now()<END);document.getElementById('eventAccountText').textContent='@'+s.user+' • progresso atualizado pela Central BiduLog.'}catch(_){document.getElementById('eventAccountText').textContent='Não foi possível carregar sua Conta BiduLog agora.'}
 }
 async function loadHall(){
  if(Date.now()<START)return;const box=document.getElementById('eventHall');

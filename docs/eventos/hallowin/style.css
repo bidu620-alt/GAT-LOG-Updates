@@ -58,7 +58,7 @@ body.event-page{
   background:
     linear-gradient(90deg,rgba(4,4,7,.92) 0%,rgba(4,4,7,.72) 29%,rgba(4,4,7,.28) 50%,rgba(4,4,7,.06) 72%),
     linear-gradient(0deg,rgba(4,4,7,.60) 0%,transparent 23%),
-    url("assets/hero-halloween.png") center center/cover no-repeat;
+    url("../../assets/event/hero-halloween-bidulog.png") center center/cover no-repeat;
   transform:scale(1.004);
 }
 .event-hero:after{
@@ -259,7 +259,7 @@ body.event-page{
   .hero-photo-layer{
     background:
       linear-gradient(180deg,rgba(4,4,7,.10) 0%,rgba(4,4,7,.24) 40%,rgba(4,4,7,.96) 76%),
-      url("assets/hero-halloween.png") 64% top/cover no-repeat
+      url("../../assets/event/hero-halloween-bidulog.png") 64% top/cover no-repeat
   }
   .event-hero-copy{width:100%;padding:330px 22px 26px}
   .event-hero h1{font-size:64px}.event-hero-copy>p{font-size:15px}

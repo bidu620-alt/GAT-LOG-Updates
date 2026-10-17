@@ -47,9 +47,9 @@ async function loadIcons(){
  }catch(_){}
 }
 function thumb(icon){
- if(!icons?.icons?.[icon]||!Array.isArray(icons?.sheets))return '<div class="event-cargo-fallback">GAT</div>';
+ if(!icons?.icons?.[icon]||!Array.isArray(icons?.sheets))return '<div class="event-cargo-fallback">BiduLog</div>';
  const p=icons.icons[icon],sh=icons.sheets[p.s],tile=icons.tile||[160,128];
- if(!sh)return '<div class="event-cargo-fallback">GAT</div>';
+ if(!sh)return '<div class="event-cargo-fallback">BiduLog</div>';
  return '<span class="event-cargo-thumb" style="background-image:url(\'../../assets/cargo/'+sh.file+'?v=2\');background-size:'+sh.width+'px '+sh.height+'px;background-position:'+(-p.x*tile[0])+'px '+(-p.y*tile[1])+'px"></span>';
 }
 function buildCards(active){
@@ -89,14 +89,14 @@ async function fetchPublicProfile(user){
 }
 async function loadMine(){
  const s=session(),accountLink=document.querySelector('.event-account-link');
- if(accountLink)accountLink.textContent=s?.user?'@'+s.user:'CONTA GAT';
+ if(accountLink)accountLink.textContent=s?.user?'@'+s.user:'CONTA BiduLog';
  if(!s?.user){
-  document.getElementById('eventAccountText').textContent='Entre na sua Conta GAT para registrar o progresso automaticamente.';
+  document.getElementById('eventAccountText').textContent='Entre na sua Conta BiduLog para registrar o progresso automaticamente.';
   done=new Map();updateProgress();buildCards(Date.now()>=START&&Date.now()<END);return
  }
  try{
   profile=await fetchPrivateProfile(s);
-  let source='Central GAT';
+  let source='Central BiduLog';
   if(!profile){profile=await fetchPublicProfile(s.user);source='perfil público'}
   if(!profile)throw 0;
   done=completion(profile);
@@ -104,7 +104,7 @@ async function loadMine(){
   const rows=eventRows(profile);
   document.getElementById('eventAccountText').textContent='@'+s.user+' • '+done.size+'/30 reconhecidas • '+rows.length+' entregas no período • '+source+'.'
  }catch(_){
-  document.getElementById('eventAccountText').textContent='Não foi possível carregar o progresso da Conta GAT agora.'
+  document.getElementById('eventAccountText').textContent='Não foi possível carregar o progresso da Conta BiduLog agora.'
  }
 }
 async function loadHall(){

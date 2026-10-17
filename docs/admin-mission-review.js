@@ -1,4 +1,4 @@
-// GAT-LOG • revisão manual de trabalho pelo Admin.
+// BiduLog • revisão manual de trabalho pelo Admin.
 // Mostra o trabalho esperado e permite confirmar manualmente a carga atual quando a missão ainda está ATRIBUÍDA.
 (function(){
   if(typeof actionButtons!=='function'||typeof renderDrivers!=='function'||typeof runAction!=='function')return;
@@ -9,7 +9,7 @@
 
   function missionExpected(d){
     const m=d?.current_mission||{};
-    return String(m.title||m.category||m.custom_cargo||'Trabalho GAT').trim();
+    return String(m.title||m.category||m.custom_cargo||'Trabalho BiduLog').trim();
   }
 
   function canReview(d){
@@ -59,3 +59,4 @@
     return baseRunAction(action,user,extra);
   };
 })();
+
