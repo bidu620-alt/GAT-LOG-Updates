@@ -1,7 +1,7 @@
 (()=>{'use strict';
  const root=new URL('.',document.currentScript.src),api='https://api.gatlogets2.com.br';let busy=false;
  const session=()=>{try{return JSON.parse(localStorage.getItem('gat_driver_account_v1')||sessionStorage.getItem('gat_driver_account_v1')||'null')}catch{return null}};
- let css=document.getElementById('eco-css');if(!css){css=document.createElement('link');css.id='eco-css';css.rel='stylesheet';css.href=new URL('economy.css?v=official-5',root);document.head.append(css)}
+ let css=document.getElementById('eco-css');if(!css){css=document.createElement('link');css.id='eco-css';css.rel='stylesheet';css.href=new URL('economy.css?v=official-6',root);document.head.append(css)}
  const nav=document.querySelector('.topbar nav');if(nav){for(const [text,hash] of [['Loja','loja'],['Empresas','empresa']]){if(!nav.querySelector('[data-eco-link="'+hash+'"]')){const a=document.createElement('a');a.textContent=text;a.href=new URL('economia.html#'+hash,root);a.dataset.ecoLink=hash;nav.append(a)}}}
  const top=document.querySelector('.topbar');if(!top)return;
  let wallet=document.querySelector('.eco-wallet-nav');if(!wallet){wallet=document.createElement('a');wallet.className='eco-wallet-nav';wallet.href=new URL('economia.html#carteira',root);wallet.setAttribute('aria-label','Abrir carteira de Gold e Bcoin');const login=top.querySelector('#accountButton');if(login)login.before(wallet);else top.append(wallet)}
