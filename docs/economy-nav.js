@@ -2,7 +2,8 @@
  const root=new URL('.',document.currentScript.src),api='https://api.gatlogets2.com.br';let busy=false;
  const session=()=>{try{return JSON.parse(localStorage.getItem('gat_driver_account_v1')||sessionStorage.getItem('gat_driver_account_v1')||'null')}catch{return null}};
  let css=document.getElementById('eco-css');if(!css){css=document.createElement('link');css.id='eco-css';css.rel='stylesheet';css.href=new URL('economy.css?v=gold-colors-20261018',root);document.head.append(css)}
- const nav=document.querySelector('.topbar nav');if(nav){for(const [text,hash] of [['Loja','loja'],['Empresas','empresa']]){if(!nav.querySelector('[data-eco-link="'+hash+'"]')){const a=document.createElement('a');a.textContent=text;a.href=new URL('economia.html#'+hash,root);a.dataset.ecoLink=hash;nav.append(a)}}}
+ const nav=document.querySelector('.topbar nav');if(nav){for(const [text,hash] of [['Loja','loja'],['Empresas','empresa']]){if(!nav.querySelector('[data-eco-link="'+hash+'"]')){const a=document.createElement('a');a.textContent=text;a.href=new URL(hash==='empresa'?'empresas.html':'economia.html#'+hash,root);a.dataset.ecoLink=hash;nav.append(a)}}}
+ document.querySelectorAll('.topbar a').forEach(a=>{if(a.textContent.trim()==='Empresas')a.href=new URL('empresas.html',root)});
  const top=document.querySelector('.topbar');if(!top)return;
  let wallet=document.querySelector('.eco-wallet-nav');if(!wallet){wallet=document.createElement('a');wallet.className='eco-wallet-nav';wallet.href=new URL('economia.html#carteira',root);wallet.setAttribute('aria-label','Abrir carteira de Gold e Bcoin');const login=top.querySelector('#accountButton');if(login)login.before(wallet);else top.append(wallet)}
  function currency(label,value,className){const e=document.createElement('span');e.className=className;e.textContent=label+' '+Number(value).toLocaleString('pt-BR',{maximumFractionDigits:2});return e}

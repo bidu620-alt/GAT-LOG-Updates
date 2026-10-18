@@ -1,5 +1,6 @@
 import {telemetryCanonical} from './journal-canonical.js';
 import {economyTrack,economyFinish,economyAction,ensureEconomy} from './economy-official.js';
+import {ensureCompanies,companyPublic,companyAction} from './company-community.js';
 import {createHash,createHmac,pbkdf2Sync} from 'node:crypto';
 import {rankingPeriod} from './ranking-period.js';
 const sha256=x=>createHash('sha256').update(x).digest();
@@ -1137,9 +1138,20 @@ async function route(req,env){const u=new URL(req.url),p=u.pathname,m=req.method
  if(p==='/api/public/version')return json(req,{ok:true,agent_version:VERSION,platform:'cloudflare-workers-d1',mission_min_km:MIN_KM,test_mode:false});
  if(p==='/api/public/radio'&&m==='GET')return json(req,{ok:true,radio:await gatRadioState(env)});
  if(p==='/api/client/server-info')return json(req,{ok:true,online:true,server_name:'GAT CENTRAL CLOUD',session_id:'CLOUD',players:(await live(env)).length,max_players:999});if(p==='/api/client/players')return json(req,{ok:true,players:(await live(env)).map(x=>x.driver)});
+ if(p.startsWith('/api/companies/')){
+   try{
+     if(m==='GET'){
+       const result=companyPublic(env.DB,u);
+       if(result.media)return new Response(Buffer.from(result.media.content,'base64'),{headers:{...headers(req),'Content-Type':result.media.mime,'Cache-Control':'public,max-age=3600','Content-Security-Policy':"default-src 'none'"}});
+       return json(req,result);
+     }
+     const b=await body(req),s=await requireSession(req,env,b);
+     return json(req,companyAction(env.DB,s,p.slice('/api/companies/'.length),b));
+   }catch(e){if(Number.isInteger(e.status))return json(req,{ok:false,error:e.message},e.status);throw e}
+ }
  if(p.startsWith('/api/economy/')&&m==='POST'){
    const b=await body(req),session=await requireSession(req,env,b);
-   try{return json(req,economyAction(env.DB,session,p.slice('/api/economy/'.length),b))}
+   try{ensureCompanies(env.DB);return json(req,economyAction(env.DB,session,p.slice('/api/economy/'.length),b))}
    catch(e){if(Number.isInteger(e.status))return json(req,{ok:false,error:e.message},e.status);throw e}
  }
  if(p==='/api/account/register'&&m==='POST'){const b=await body(req),user=clean(b.user),password=String(b.password||'');if(!/^[a-z0-9._-]{3,32}$/.test(user))throw new HttpError(400,'invalid_user');if(password.length<8||password.length>128)throw new HttpError(400,'weak_password');if(await env.DB.prepare('SELECT 1 FROM accounts WHERE user=?').bind(user).first())throw new HttpError(409,'user_exists');const salt=randomHex(16),t=now();await env.DB.prepare('INSERT INTO accounts(user,password_salt,password_hash,role,created_at,updated_at) VALUES(?,?,?,?,?,?)').bind(user,salt,await passHash(password,salt),'driver',t,t).run();await ensureProfile(env,user);return json(req,{ok:true,user,role:'driver',token:await makeSession(env,user)},201)}
