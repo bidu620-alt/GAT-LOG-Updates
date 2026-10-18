@@ -92,7 +92,8 @@ async function readProfile(env,user){
  const currentMonth=month(),ma=await env.DB.prepare("SELECT COUNT(*) total,COALESCE(SUM(COALESCE(CAST(json_extract(raw_json,'$.audit.gat_points') AS INTEGER),MAX(0,100-penalty_xp))),0) points FROM deliveries WHERE user=? AND strftime('%Y-%m',delivered_at,'-3 hours')=?").bind(user,currentMonth).first();
  let mission=null;try{mission=p.current_mission_json?JSON.parse(p.current_mission_json):null}catch{}
  const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.raw_json||'{}')}catch{}return{...x,...raw.audit}}).reverse(),points=Number(ma?.points||0),monthlyCompleted=Number(ma?.total||0);
- return{user,event_deliveries:await farmEventHistory(env,user),monthly_completed:monthlyCompleted,monthly_deliveries:monthlyCompleted,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}
+ const goldWallet=await env.DB.prepare('SELECT gold_units FROM eco_wallets WHERE user=?').bind(user).first();
+ return{user,gold_balance:Number(goldWallet?.gold_units||0)/100,event_deliveries:await farmEventHistory(env,user),monthly_completed:monthlyCompleted,monthly_deliveries:monthlyCompleted,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}
 }
 
 function updateMissionSpeedingTracker(m,raw,t){
