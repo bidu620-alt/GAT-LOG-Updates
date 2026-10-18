@@ -1,8 +1,8 @@
 {
-  "version": "1.0.68.24",
-  "name": "BIDUTRUCK Telemetria 1.0.68.24",
-  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.24.exe",
-  "sha256": "da695fe8a7f9b24724c3039fadb4baf1bb3b583e5481232943e372057ca7256d",
+  "version": "1.0.68.32",
+  "name": "BIDUTRUCK Telemetria 1.0.68.32",
+  "url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.32.exe",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.32.exe",
+  "sha256": "88eb0e7f9ba861b0778a1b0cbb5f51206f64e407453b609147e283a296642d1c",
   "args": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
 }

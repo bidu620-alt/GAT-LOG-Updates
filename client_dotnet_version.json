@@ -1,13 +1,11 @@
 {
   "app": "BIDUTRUCK Telemetria",
   "channel": "stable",
-  "version": "1.0.68.30",
-  "display_version": "1.0.68.30",
-  "notas": "Instalação completa: aplicativo, dashboard e TruckSim GPS. Aceita novas instalações e bases antigas como 1.0.68.12, sem exigir 1.0.68.24. Mesmo executável e dashboard da versão validada 1.0.68.30. Backup ao reinstalar. Preserva perfil, configurações e diário. Não reancora automaticamente um diário Gold já bloqueado.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.30.exe",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.30.exe",
-  "sha256": "2e855331f53605d3c548e417b6917a6eb306c6b5fc96b6e6913ff4698c22ca95",
-  "package_type": "full",
-  "update_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_UPDATE_1.0.68.30.exe",
-  "update_minimum_version": "1.0.68.24"
+  "version": "1.0.68.32",
+  "display_version": "1.0.68.32",
+  "notas": "Percurso da viagem calculado pelo hodometro, sem limitar ao GPS ou planejado. Indicador verde confirma a marca na garagem; Gold validado pela Central na entrega. Instalacao completa com backup e preservacao dos dados. Nao recupera sequencias de diario ja rejeitadas.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.32.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.32.exe",
+  "sha256": "88eb0e7f9ba861b0778a1b0cbb5f51206f64e407453b609147e283a296642d1c",
+  "package_type": "full"
 }
