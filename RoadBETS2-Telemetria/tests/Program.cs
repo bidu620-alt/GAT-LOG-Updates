@@ -28,3 +28,30 @@ Check(Get(90, 31), 90);
 Check(Get(0, 32), 90);
 Check(Get(0, 62), 60); // missing durations accumulate across brief valid bursts
 Console.WriteLine($"{checks} checks passed.");
+
+var distance = new DashboardDistanceState();
+var trip = new DashboardOdometerTrip("trip-one", 50000, false);
+distance.Observe(trip, 50000, true); Check(distance.DistanceKm, 0);
+distance.Observe(trip, 50150.5, true); Check(distance.DistanceKm, 150.5);
+// GPS and planned distance are deliberately not inputs: rerouting cannot reset the counter.
+distance.Observe(trip, 51200, true); Check(distance.DistanceKm, 1200);
+distance.Observe(trip, 51400, true); Check(distance.DistanceKm, 1400);
+distance.Observe(trip, 0, false); Check(distance.DistanceKm, 1400);
+distance.Observe(trip, double.NaN, true); Check(distance.DistanceKm, 1400);
+distance.Observe(trip, double.PositiveInfinity, true); Check(distance.DistanceKm, 1400);
+distance.Observe(trip, 49990, true); Check(distance.DistanceKm, 1400);
+distance.Observe(trip, 51399.9, true); Check(distance.DistanceKm, 1400);
+distance.Observe(new DashboardOdometerTrip("trip-one", 50000, true), 900000, true); Check(distance.DistanceKm, 1400);
+// Delivery updates the last sample; after the trip clears, idle driving does not add kilometers.
+distance.Observe(trip, 51410, true); Check(distance.DistanceKm, 1410);
+distance.Observe(null, 51420, true); Check(distance.DistanceKm, 1410);
+distance.Observe(new DashboardOdometerTrip("trip-two", 51420, false), 51420, true); Check(distance.DistanceKm, 0);
+distance.Observe(new DashboardOdometerTrip("trip-two", 51420, false), 51445, true); Check(distance.DistanceKm, 25);
+// Restored journal supplies the original baseline after restarting the app.
+distance = new DashboardDistanceState();
+distance.Observe(new DashboardOdometerTrip("restored-trip", 20000, false), 20600, true); Check(distance.DistanceKm, 600);
+distance = new DashboardDistanceState();
+distance.Observe(new DashboardOdometerTrip("missing-first-odometer", -1, false), 0, true); Check(distance.DistanceKm, 0);
+distance.Observe(new DashboardOdometerTrip("missing-first-odometer", -1, false), 7000, true); Check(distance.DistanceKm, 0);
+distance.Observe(new DashboardOdometerTrip("missing-first-odometer", 7000, false), 7030, true); Check(distance.DistanceKm, 30);
+Console.WriteLine($"{checks} total checks passed, including odometer display continuity and new-trip reset.");

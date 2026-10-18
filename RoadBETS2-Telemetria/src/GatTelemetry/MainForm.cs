@@ -360,7 +360,7 @@ internal sealed partial class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.30";
+	private const string CurrentVersion = "1.0.68.32";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -371,6 +371,7 @@ internal sealed partial class MainForm : Form
 	private readonly TelemetryEngine _telemetry = new TelemetryEngine();
 
 	private readonly TripJournal _tripJournal = new TripJournal();
+	private readonly DashboardDistanceState _dashboardDistance = new DashboardDistanceState();
 
 	private readonly System.Windows.Forms.Timer _timer = new System.Windows.Forms.Timer
 	{
@@ -1648,7 +1649,12 @@ internal sealed partial class MainForm : Form
 			ObserveEconomyTruck(jObject);
 			if (jObject != null)
 			{
+				DashboardOdometerTrip before = _tripJournal.ReadDashboardOdometerTrip();
 				_tripJournal.Observe(jObject);
+				DashboardOdometerTrip current = _tripJournal.ReadDashboardOdometerTrip();
+				_dashboardDistance.Observe(current ?? before,
+					RoadLifeOverlayNumber(jObject, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"),
+					RoadLifeOverlayBoolean(jObject, "game.connected", "gameConnected", "connected"));
 			}
 		}
 	}
@@ -6856,7 +6862,7 @@ internal sealed partial class MainForm : Form
 		double num = RoadLifeOverlayNumber(tele, "mass_kg", "cargoMass", "cargo_mass", "job.cargoMass", "Job.CargoMass");
 		double num2 = RoadLifeOverlayNumber(tele, "remaining_km", "remainingKm", "navigation.estimatedDistance", "Navigation.EstimatedDistance");
 		double num3 = RoadLifeOverlayNumber(tele, "planned_distance_km", "plannedDistanceKm", "job.plannedDistanceKm", "Job.PlannedDistanceKm");
-		double v = ((!double.IsNaN(num3) && !double.IsNaN(num2)) ? Math.Max(0.0, num3 - num2) : 0.0);
+		double v = _dashboardDistance.DistanceKm;
 		double num4 = RoadLifeOverlayNumber(tele, "truck.fuel", "Truck.Fuel", "fuel", "fuelAmount", "fuelLiters");
 		double num5 = RoadLifeOverlayNumber(tele, "truck.fuelCapacity", "Truck.FuelCapacity", "fuelCapacity", "fuel_capacity");
 		double num6 = ((!double.IsNaN(num4) && !double.IsNaN(num5) && num5 > 0.0) ? (num4 / num5 * 100.0) : RoadLifeOverlayNumber(tele, "truck.fuelPercent", "fuelPercent", "fuel_percent"));

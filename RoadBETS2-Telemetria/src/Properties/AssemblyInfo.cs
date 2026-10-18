@@ -7,9 +7,9 @@ using System.Security.Permissions;
 
 [assembly: AssemblyCompany("BiduTruck Telemetria")]
 [assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyFileVersion("1.0.68.30")]
-[assembly: AssemblyInformationalVersion("1.0.68.30+gat-damage-v3")]
+[assembly: AssemblyFileVersion("1.0.68.32")]
+[assembly: AssemblyInformationalVersion("1.0.68.32+garage-brand-status")]
 [assembly: AssemblyProduct("BiduTruck Telemetria")]
 [assembly: AssemblyTitle("BiduTruck Telemetria")]
-[assembly: AssemblyVersion("1.0.68.30")]
+[assembly: AssemblyVersion("1.0.68.32")]
 

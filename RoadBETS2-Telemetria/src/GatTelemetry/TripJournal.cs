@@ -71,6 +71,15 @@ internal sealed class TripJournal
 		_state = Load();
 	}
 
+	public DashboardOdometerTrip ReadDashboardOdometerTrip()
+	{
+		lock (_sync)
+		{
+			TripReceipt trip = _state.ActiveTrip;
+			return trip == null ? null : new DashboardOdometerTrip(trip.TripId, trip.StartOdometerKm, trip.VehicleChanged);
+		}
+	}
+
 	public void Observe(JObject telemetry)
 	{
 		if (telemetry == null)

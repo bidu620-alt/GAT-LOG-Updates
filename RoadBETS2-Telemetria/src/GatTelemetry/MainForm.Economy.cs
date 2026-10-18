@@ -149,7 +149,7 @@ internal sealed partial class MainForm
         if(window == null)return;
         Action update = () => {
             if(window.FindName("GoldText") is System.Windows.Controls.TextBlock text){
-                text.Text = eligible ? ((string)_economyState?["mode"] == "official" ? "OURO ATIVO" : "OURO ATIVO • TESTE") : "OURO BLOQUEADO";
+                text.Text = eligible ? ((string)_economyState?["mode"] == "official" ? "MARCA HABILITADA" : "MARCA HABILITADA • TESTE") : "MARCA NÃO HABILITADA";
                 text.ToolTip = status;
                 text.Foreground = eligible ? System.Windows.Media.Brushes.LightGreen : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 100, 100));
             }
@@ -163,14 +163,18 @@ internal sealed partial class MainForm
         if (_garageState == null || IsDisposed) return;
         bool fresh = (DateTime.UtcNow - _truckEvidenceAt).TotalSeconds < 4 && _truckEvidence.Identified;
         bool serverFresh = AccountReady && _economyUser == _accountUser && _economyState != null && (DateTime.UtcNow - _economyAt).TotalSeconds < 15;
-        bool match = serverFresh && (string)_economyState.SelectToken("validation.signature") == _truckEvidence.Signature;
-        string status = "Caminhão não identificado — geração de Gold bloqueada.";
+        string status = "Caminhão não identificado — aguardando o ETS2.";
         bool eligible = false;
         if (fresh) {
-            if (!serverFresh) status = "Gold bloqueado — " + _economyError;
-            else if (!match) status = "Gold bloqueado — aguardando a Central confirmar o caminhão atual.";
-            else { eligible = (bool?)_economyState.SelectToken("validation.eligible") == true;
-                status = (string)_economyState.SelectToken("validation.message") ?? "Gold bloqueado — validação indisponível."; }
+            if (!serverFresh) status = "Aguardando confirmação da garagem — " + _economyError;
+            else {
+                string brand = TruckModelEvidence.BrandKey(_truckEvidence.Make);
+                eligible = (_economyState["garage"] as JArray ?? new JArray()).OfType<JObject>()
+                    .Any(truck => string.Equals((string)truck["brand_key"] ?? (string)truck["model_key"], brand, StringComparison.Ordinal));
+                status = eligible
+                    ? "Marca habilitada na garagem. A Central valida a viagem e calcula o Gold na entrega."
+                    : "Esta marca não está habilitada na sua garagem.";
+            }
         }
         UpdateGoldDashboard(status, eligible);
         var color = eligible ? Color.LightGreen : Color.FromArgb(255, 100, 100);
