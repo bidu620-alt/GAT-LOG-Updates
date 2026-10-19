@@ -1,3 +1,4 @@
+import {EMOJI_PACK,isBiduOwner} from './emoji-access.js';
 import {readFileSync} from 'node:fs';
 import {randomUUID,createHash} from 'node:crypto';
 
@@ -11,7 +12,8 @@ const sql=db=>db.sql;
 const cfg=(db,key)=>sql(db).prepare('SELECT value FROM eco_config WHERE key=?').get(key)?.value;
 const parse=v=>{try{return JSON.parse(v||'null')}catch{return null}};
 const isAdmin=s=>['owner','admin'].includes(s.role);
-export function ensureEconomy(db){if(!initialized.has(db)){sql(db).exec(readFileSync(new URL('./economy-schema.sql',import.meta.url),'utf8'));initialized.add(db)}}
+export function ensureEconomy(db){if(!initialized.has(db)){sql(db).exec(readFileSync(new URL('./economy-schema.sql',import.meta.url),'utf8'));initialized.add(db)}grantBiduCatalog(db)}
+function grantBiduCatalog(db){if(!isBiduOwner(db,'biduzao'))return;tx(db,()=>{let count=0;for(const p of catalog(db)){if(p.kind==='brand')count+=sql(db).prepare('INSERT OR IGNORE INTO eco_brands VALUES(?,?,?,?)').run('biduzao',p.brand_key,now(),'owner-catalog-access').changes;else if(p.kind!=='bcoin')count+=sql(db).prepare('INSERT OR IGNORE INTO eco_entitlements VALUES(?,?,?,?,?,?)').run('biduzao',p.id,p.title,p.kind,now(),'owner-catalog-access').changes}if(count)audit(db,'biduzao','owner_catalog_access','biduzao',{items:count});})}
 function eligibleAccount(db,s){ensureEconomy(db);if(!s?.user)fail(401,'invalid_session');if(cfg(db,'public_enabled')!=='1'&&!isAdmin(s))fail(403,'economy_not_released')}
 function admin(s){if(!isAdmin(s))fail(403,'forbidden')}
 export function units(v){const s=String(v??'').trim().replace(',','.');if(!/^\d{1,8}(?:\.\d{1,2})?$/.test(s))fail(400,'invalid_amount');const [a,b='']=s.split('.');const n=Number(a)*100+Number((b+'00').slice(0,2));if(!Number.isSafeInteger(n)||n<1||n>1000000000)fail(400,'invalid_amount');return n}
@@ -32,7 +34,7 @@ function op(db,s,b,action,fn){
  return tx(db,()=>{const prior=sql(db).prepare('SELECT * FROM eco_ops WHERE user=? AND op_id=?').get(s.user,id);if(prior){if(prior.request_hash!==hash)fail(409,'operation_id_reused');return parse(prior.result_json)}const result=fn();sql(db).prepare('INSERT INTO eco_ops VALUES(?,?,?,?)').run(s.user,id,hash,JSON.stringify(result));return result});
 }
 function existsUser(db,value){const user=clean(value);if(!/^[a-z0-9._-]{3,32}$/.test(user))fail(400,'invalid_recipient');const a=sql(db).prepare('SELECT user,disabled FROM accounts WHERE user=?').get(user);if(!a||a.disabled)fail(404,'recipient_not_found');return user}
-function catalog(db){return [
+function catalog(db){return [EMOJI_PACK,
  ...Object.entries(BRANDS).map(([key,title])=>({id:'brand:'+key,kind:'brand',brand_key:key,title:'Chave '+title,description:'Libera todos os modelos '+title+' para ganhar Gold em entregas válidas. Não altera o caminhão dentro do ETS2.',cash_centavos:1000,gold_units:2000000,bcoin_units:0})),
  ...sql(db).prepare('SELECT * FROM eco_products WHERE active=1 ORDER BY title').all().map(p=>({...p,cash_centavos:0}))
  ]}
@@ -116,7 +118,7 @@ export function economyAction(db,s,path,b){
   if(b.terms_accepted!==true)fail(400,'terms_required');const p=product(db,String(b.product_id||''));if(alreadyOwned(db,s.user,p))fail(409,'product_already_owned');
   const currency=String(b.currency||'');let price=currency==='gold'?p.gold_units:currency==='bcoin'?p.bcoin_units:currency==='pix'?p.cash_centavos:0;if(!price)fail(400,'payment_method_unavailable');
   if(currency==='pix'&&cfg(db,'pix_enabled')!=='1')fail(409,'pix_supplier_setup_required');
-  if(currency==='pix'&&p.kind==='brand'){const existing=sql(db).prepare("SELECT id,amount_centavos FROM eco_orders WHERE user=? AND product_id=? AND status IN ('pending_payment','awaiting_review') ORDER BY created_at DESC LIMIT 1").get(s.user,p.id);if(existing)return{ok:true,order_id:existing.id,pending_payment:true,pix_url:cfg(db,'pix_url'),amount_centavos:existing.amount_centavos};}
+  if(currency==='pix'){const existing=sql(db).prepare("SELECT id,amount_centavos FROM eco_orders WHERE user=? AND product_id=? AND status IN ('pending_payment','awaiting_review') ORDER BY created_at DESC LIMIT 1").get(s.user,p.id);if(existing)return{ok:true,order_id:existing.id,pending_payment:true,pix_url:cfg(db,'pix_url'),amount_centavos:existing.amount_centavos};}
   const id=randomUUID(),order={id,user:s.user,product_id:p.id,title:p.title,status:currency==='pix'?'pending_payment':'processing',amount_centavos:currency==='pix'?price:0,currency,price_units:currency==='pix'?0:price};
   if(currency!=='pix')ledger(db,s.user,currency,-price,'purchase',id,{product:p.id});
   sql(db).prepare('INSERT INTO eco_orders(id,user,product_id,title,status,amount_centavos,currency,price_units,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)').run(id,s.user,p.id,p.title,order.status,order.amount_centavos,currency,order.price_units,now(),now());
@@ -148,9 +150,12 @@ function companyAction(db,s,path,b){
  fail(404,'not_found');
 }
 function adminAction(db,s,path,b){
- if(path==='overview')return{ok:true,orders:sql(db).prepare("SELECT * FROM eco_orders WHERE currency='pix' ORDER BY created_at DESC LIMIT 200").all().map(x=>({...x,payment_claim:parse(x.payment_claim_json),payment_claim_json:undefined})),support:sql(db).prepare('SELECT * FROM eco_support ORDER BY created_at DESC LIMIT 100').all(),supplier:parse(cfg(db,'supplier_json'))||{},pix_enabled:cfg(db,'pix_enabled')==='1',products:sql(db).prepare('SELECT * FROM eco_products ORDER BY title').all()};
+ if(path==='overview')return{ok:true,can_confirm_without_id:isBiduOwner(db,s.user),orders:sql(db).prepare("SELECT * FROM eco_orders WHERE currency='pix' AND status!='cancelled' ORDER BY created_at DESC LIMIT 200").all().map(x=>({...x,payment_claim:parse(x.payment_claim_json),payment_claim_json:undefined})),support:sql(db).prepare('SELECT * FROM eco_support ORDER BY created_at DESC LIMIT 100').all(),supplier:parse(cfg(db,'supplier_json'))||{},pix_enabled:cfg(db,'pix_enabled')==='1',products:sql(db).prepare('SELECT * FROM eco_products ORDER BY title').all()};
+ if(path==='cancel-order')return op(db,s,b,path,()=>{const order=sql(db).prepare('SELECT * FROM eco_orders WHERE id=?').get(String(b.order_id||''));if(!order||order.currency!=='pix'||!['pending_payment','awaiting_review'].includes(order.status)||order.payment_id||sql(db).prepare('SELECT 1 FROM eco_pix_receipts WHERE order_id=?').get(order.id))fail(409,'order_not_pending');if(b.unpaid_confirmed!==true)fail(400,'unpaid_confirmation_required');const note=String(b.note||'').trim();if(note.length<5||note.length>500)fail(400,'manual_note_required');sql(db).prepare("UPDATE eco_orders SET status='cancelled',updated_at=? WHERE id=?").run(now(),order.id);audit(db,s.user,'unpaid_order_cancelled',order.user,{order_id:order.id,note});return{ok:true}});
  if(path==='confirm-payment')return op(db,s,b,path,()=>{
   const order=sql(db).prepare('SELECT * FROM eco_orders WHERE id=?').get(String(b.order_id||''));if(!order)fail(404,'order_not_found');if(order.status==='fulfilled')return{ok:true,already_confirmed:true};if(!['pending_payment','awaiting_review'].includes(order.status))fail(409,'order_not_pending');
+  if(order.currency!=='pix')fail(409,'order_not_pending');
+  if(b.manual_without_id===true){if(!isBiduOwner(db,s.user))fail(403,'forbidden');if(b.bank_statement_checked!==true)fail(400,'bank_confirmation_required');const amount=units(b.received_reais),note=String(b.manual_note||'').trim();if(note.length<8||note.length>500)fail(400,'manual_note_required');if(amount!==order.amount_centavos)fail(409,'payment_amount_mismatch');const p=product(db,order.product_id,true);sql(db).prepare('UPDATE eco_orders SET confirmed_by=?,updated_at=? WHERE id=?').run(s.user,now(),order.id);fulfil(db,order,p);audit(db,s.user,'pix_confirmed_manual',order.user,{order_id:order.id,amount_centavos:amount,note,bank_transaction_id:null});return{ok:true,manual_confirmation:true}}
   if(b.bank_statement_checked!==true)fail(400,'bank_confirmation_required');const payment=String(b.payment_id||'').trim();if(!/^[a-zA-Z0-9._:-]{8,80}$/.test(payment))fail(400,'bank_payment_id_required');const amount=units(b.received_reais);if(amount!==order.amount_centavos)fail(409,'payment_amount_mismatch');if(sql(db).prepare('SELECT 1 FROM eco_pix_receipts WHERE payment_id=?').get(payment))fail(409,'payment_already_used');
   const p=product(db,order.product_id,true);sql(db).prepare('INSERT INTO eco_pix_receipts VALUES(?,?,?,?,?)').run(payment,order.id,amount,s.user,now());sql(db).prepare('UPDATE eco_orders SET payment_id=?,confirmed_by=?,updated_at=? WHERE id=?').run(payment,s.user,now(),order.id);fulfil(db,order,p);audit(db,s.user,'pix_confirmed',order.user,{order_id:order.id,payment_id:payment,amount_centavos:amount});return{ok:true}
  });

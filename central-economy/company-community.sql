@@ -29,3 +29,5 @@ CREATE INDEX IF NOT EXISTS eco_company_requests_pending ON eco_company_requests(
 CREATE TABLE IF NOT EXISTS company_convoys(id TEXT PRIMARY KEY,company_id TEXT NOT NULL REFERENCES eco_companies(id),user TEXT NOT NULL,title TEXT NOT NULL,description TEXT NOT NULL,image_id TEXT NOT NULL REFERENCES company_media(id),created_at TEXT NOT NULL,deleted_at TEXT);
 CREATE INDEX IF NOT EXISTS company_convoys_company ON company_convoys(company_id,created_at DESC);
 CREATE TABLE IF NOT EXISTS company_convoy_attendance(convoy_id TEXT NOT NULL REFERENCES company_convoys(id),user TEXT NOT NULL REFERENCES accounts(user),created_at TEXT NOT NULL,PRIMARY KEY(convoy_id,user));
+
+CREATE TABLE IF NOT EXISTS company_reactions(post_id TEXT NOT NULL REFERENCES company_posts(id),user TEXT NOT NULL REFERENCES accounts(user),emoji TEXT NOT NULL,created_at TEXT NOT NULL,PRIMARY KEY(post_id,user,emoji));
