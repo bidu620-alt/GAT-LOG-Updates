@@ -1,4 +1,4 @@
-const ADMIN_API='https://api.gatlogets2.com.br';
+const ADMIN_API='https://api.bidulog.com.br';
 const SESSION_KEY='gat_driver_account_v1';
 let adminSession=null,viewerRole='driver',drivers=[],busy=false,selectedUser='',detailTimer=null;
 const $=id=>document.getElementById(id);

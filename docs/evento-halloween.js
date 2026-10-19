@@ -1,5 +1,5 @@
 (()=>{
-const API='https://api.gatlogets2.com.br';
+const API='https://api.bidulog.com.br';
 const SESSION_KEY='gat_driver_account_v1';
 const REGISTRY=window.GATEventRegistry||null;
 const EVENT=REGISTRY?.eventById?.('halloween_2026')||null;

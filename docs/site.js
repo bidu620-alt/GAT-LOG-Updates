@@ -1,8 +1,8 @@
 const RAW='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/';
 const GAT_SERVERS=[
-  {label:'BiduLog CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'},
+  {label:'BiduLog CENTRAL CLOUD',url:'https://api.bidulog.com.br'},
 ];
-const ACCOUNT_AUTHORITY='https://api.gatlogets2.com.br';
+const ACCOUNT_AUTHORITY='https://api.bidulog.com.br';
 const LIVE_PATH='/api/public/live';
 const ACCOUNT_LOGIN='/api/account/login';
 const ACCOUNT_REGISTER='/api/account/register';

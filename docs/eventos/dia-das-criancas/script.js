@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const EVENT_ID='children_2026',API='https://api.gatlogets2.com.br',ICON_DATA='../../assets/cargo/cargo-icon-defs.json?v=4',SESSION_KEY='gat_driver_account_v1';
+const EVENT_ID='children_2026',API='https://api.bidulog.com.br',ICON_DATA='../../assets/cargo/cargo-icon-defs.json?v=4',SESSION_KEY='gat_driver_account_v1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let icons=null;
 function session(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||sessionStorage.getItem(SESSION_KEY)||'null')}catch{return null}}

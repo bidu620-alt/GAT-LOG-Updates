@@ -1,4 +1,4 @@
-const RADIO_API='https://api.gatlogets2.com.br';
+const RADIO_API='https://api.bidulog.com.br';
 const RADIO_SESSION_KEY='gat_driver_account_v1';
 const $r=id=>document.getElementById(id);
 let radioCurrent={enabled:false,playlist_url:'',playlist_id:'',label:'Rádio BiduLog',revision:0,updated_by:'',updated_at:''};

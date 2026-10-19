@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const API='https://api.gatlogets2.com.br',app=document.getElementById('companiesApp');if(!app)return;
+const API='https://api.bidulog.com.br',app=document.getElementById('companiesApp');if(!app)return;
 const q=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>(Number(v)||0).toLocaleString('pt-BR',{maximumFractionDigits:0});
 const when=v=>new Date(v).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'});

@@ -1,4 +1,4 @@
-const DRIVER_API='https://api.gatlogets2.com.br';
+const DRIVER_API='https://api.bidulog.com.br';
 const CENTRAL_LIVE_PATH='/api/public/account-live',LIVE_FRESH_MS=45000;
 function q(id){return document.getElementById(id)}
 function getSession(){try{let raw=localStorage.getItem('gat_driver_account_v1');if(!raw){raw=sessionStorage.getItem('gat_driver_account_v1');if(raw){localStorage.setItem('gat_driver_account_v1',raw);sessionStorage.removeItem('gat_driver_account_v1')}}return JSON.parse(raw||'null')}catch(_){return null}}

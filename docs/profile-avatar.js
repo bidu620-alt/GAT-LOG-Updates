@@ -1,5 +1,5 @@
 (()=>{
-const API='https://api.gatlogets2.com.br';
+const API='https://api.bidulog.com.br';
 const MAX_FILE=2*1024*1024;
 const MAX_DATA=220000;
 const TYPES=new Set(['image/jpeg','image/png','image/webp']);

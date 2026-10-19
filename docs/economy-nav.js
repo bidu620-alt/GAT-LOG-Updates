@@ -1,5 +1,5 @@
 (()=>{'use strict';
- const root=new URL('.',document.currentScript.src),api='https://api.gatlogets2.com.br';let busy=false;
+ const root=new URL('.',document.currentScript.src),api='https://api.bidulog.com.br';let busy=false;
  const session=()=>{try{return JSON.parse(localStorage.getItem('gat_driver_account_v1')||sessionStorage.getItem('gat_driver_account_v1')||'null')}catch{return null}};
  let css=document.getElementById('eco-css');if(!css){css=document.createElement('link');css.id='eco-css';css.rel='stylesheet';css.href=new URL('economy.css?v=gold-colors-20261018',root);document.head.append(css)}
  const nav=document.querySelector('.topbar nav');if(nav){for(const [text,hash] of [['Loja','loja'],['Empresas','empresa']]){if(!nav.querySelector('[data-eco-link="'+hash+'"]')){const a=document.createElement('a');a.textContent=text;a.href=new URL(hash==='empresa'?'empresas.html':'economia.html#'+hash,root);a.dataset.ecoLink=hash;nav.append(a)}}}

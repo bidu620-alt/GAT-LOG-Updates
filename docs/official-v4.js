@@ -1,4 +1,4 @@
-const ACCOUNT_AUTHORITY='https://api.gatlogets2.com.br';
+const ACCOUNT_AUTHORITY='https://api.bidulog.com.br';
 const ACCOUNT_LOGIN='/api/account/login';
 const ACCOUNT_REGISTER='/api/account/register';
 const ACCOUNT_SESSION='/api/account/session';

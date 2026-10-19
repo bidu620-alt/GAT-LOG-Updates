@@ -1,4 +1,4 @@
-(()=>{'use strict';const root=document.getElementById('economyAdminRoot');if(!root)return;const API='https://api.gatlogets2.com.br';let data=null,busy=false;
+(()=>{'use strict';const root=document.getElementById('economyAdminRoot');if(!root)return;const API='https://api.bidulog.com.br';let data=null,busy=false;
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const money=n=>(Number(n)/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
  const when=x=>new Date(x).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});

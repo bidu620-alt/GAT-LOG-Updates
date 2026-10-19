@@ -14,7 +14,7 @@
     if(!/^[A-F0-9]{8}$/.test(code)){status.textContent='Digite o código de 8 caracteres mostrado no BiduLog Telemetria.';return}
     const button=form.querySelector('button');button.disabled=true;status.textContent='Vinculando com segurança...';
     try{
-      const r=await fetch('https://api.gatlogets2.com.br/api/site/client/link',{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({token:session.token,pairing_code:code})});
+      const r=await fetch('https://api.bidulog.com.br/api/site/client/link',{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({token:session.token,pairing_code:code})});
       const data=await r.json().catch(()=>({}));
       if(r.ok&&data.ok){status.textContent='Computador vinculado a @'+data.user+'. Volte ao BiduLog Telemetria; a conexão será concluída automaticamente.';input.value='';return}
       status.textContent=data.error==='pairing_not_found'?'Código inválido ou expirado. Gere um novo no BiduLog Telemetria.':data.error==='device_already_linked'?'Este computador já está vinculado a outra conta.':'Não foi possível vincular ('+(data.error||r.status)+').';

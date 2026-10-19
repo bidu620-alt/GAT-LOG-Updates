@@ -1,5 +1,5 @@
 (()=>{
-  const API='https://api.gatlogets2.com.br';
+  const API='https://api.bidulog.com.br';
   const STYLE_ID='gatRegisteredCargoLiteStyle';
   let learnedCache=null;
   let learnedPromise=null;

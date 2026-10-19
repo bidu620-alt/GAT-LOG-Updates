@@ -1,5 +1,5 @@
 (()=>{
-  const API='https://api.gatlogets2.com.br';
+  const API='https://api.bidulog.com.br';
   const clean=v=>String(v||'').replace(/^@/,'').trim().toLowerCase();
   const fmtInt=v=>Math.max(0,Math.trunc(Number(v)||0)).toLocaleString('pt-BR');
   const fmtKm=v=>Math.round(Math.max(0,Number(v)||0)).toLocaleString('pt-BR')+' km';

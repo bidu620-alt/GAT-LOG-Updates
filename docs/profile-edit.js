@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const API=typeof DRIVER_API==='string'?DRIVER_API:'https://api.gatlogets2.com.br';
+const API=typeof DRIVER_API==='string'?DRIVER_API:'https://api.bidulog.com.br';
 let pendingAvatar=null,removeAvatar=false,busy=false;
 
 function injectStyles(){

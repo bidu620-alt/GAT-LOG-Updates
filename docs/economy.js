@@ -1,6 +1,6 @@
 (()=>{'use strict';
  const mount=document.querySelector('[data-economy-root]');if(!mount)return;const isProfile=mount.dataset.privateProfile==='1';
- const API='https://api.gatlogets2.com.br',ROOT=new URL('.',document.currentScript.src);
+ const API='https://api.bidulog.com.br',ROOT=new URL('.',document.currentScript.src);
  if(!isProfile&&location.hash==='#empresa'){location.replace(new URL('empresas.html',ROOT));return}
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const number=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:2});

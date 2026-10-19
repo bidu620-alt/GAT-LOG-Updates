@@ -1,6 +1,6 @@
 (()=>{
   const PORTAL_SERVERS=[
-    {label:'BiduLog CENTRAL CLOUD',url:'https://api.gatlogets2.com.br'},
+    {label:'BiduLog CENTRAL CLOUD',url:'https://api.bidulog.com.br'},
   ];
   const PORTAL_LIVE='/api/public/live';
   const PORTAL_FRESH=20000;

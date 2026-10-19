@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const API='https://api.gatlogets2.com.br';
+const API='https://api.bidulog.com.br';
 const q=id=>document.getElementById(id),n=v=>Number(v)||0;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>n(v).toLocaleString('pt-BR');
