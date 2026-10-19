@@ -25,3 +25,7 @@ CREATE TRIGGER IF NOT EXISTS company_member_move AFTER UPDATE OF company_id,join
 END;
 CREATE TABLE IF NOT EXISTS eco_company_requests(id TEXT PRIMARY KEY,company_id TEXT NOT NULL REFERENCES eco_companies(id),user TEXT NOT NULL REFERENCES accounts(user),status TEXT NOT NULL,created_at TEXT NOT NULL,decided_at TEXT,decided_by TEXT,UNIQUE(company_id,user));
 CREATE INDEX IF NOT EXISTS eco_company_requests_pending ON eco_company_requests(company_id,status,created_at);
+
+CREATE TABLE IF NOT EXISTS company_convoys(id TEXT PRIMARY KEY,company_id TEXT NOT NULL REFERENCES eco_companies(id),user TEXT NOT NULL,title TEXT NOT NULL,description TEXT NOT NULL,image_id TEXT NOT NULL REFERENCES company_media(id),created_at TEXT NOT NULL,deleted_at TEXT);
+CREATE INDEX IF NOT EXISTS company_convoys_company ON company_convoys(company_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS company_convoy_attendance(convoy_id TEXT NOT NULL REFERENCES company_convoys(id),user TEXT NOT NULL REFERENCES accounts(user),created_at TEXT NOT NULL,PRIMARY KEY(convoy_id,user));

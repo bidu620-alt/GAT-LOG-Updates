@@ -8,3 +8,5 @@
 .companies-page .topbar nav{gap:17px;align-items:center}
 .company-app .co-tabs,.company-app .co-ranking-types{flex:none}
 @media(max-width:760px){.companies-page .topbar .brand{display:flex!important}.companies-page .topbar nav{display:flex!important;order:4;flex:1 0 100%;flex-wrap:wrap;gap:14px;padding-top:5px}.companies-page .topbar{position:relative;gap:12px}.companies-page .topbar .eco-wallet-nav{margin-left:auto}.companies-page .topbar .account-btn{margin-left:0}.companies-page .topbar nav a{font-size:12px}}
+
+.co-convoy-banner{display:block;width:100%;height:auto;max-height:520px;object-fit:contain;border-radius:12px;background:var(--co-background)}.co-convoy-list{display:grid;gap:16px}.co-convoy-description{white-space:pre-wrap;overflow-wrap:anywhere}.co-convoy-people{display:flex;gap:8px;flex-wrap:wrap}.co-convoy-people a{overflow-wrap:anywhere}.co-convoy-form{margin-bottom:20px}
