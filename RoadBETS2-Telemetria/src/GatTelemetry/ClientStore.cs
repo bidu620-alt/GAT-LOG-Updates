@@ -373,7 +373,7 @@ internal static class ClientStore
 		{
 			endpoint = "https://" + endpoint;
 		}
-		return endpoint;
+		return CentralEndpointMigration.Resolve(endpoint);
 	}
 
 	private static bool JsonEquivalent(string a, string b)

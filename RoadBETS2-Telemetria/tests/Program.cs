@@ -55,3 +55,7 @@ distance.Observe(new DashboardOdometerTrip("missing-first-odometer", -1, false),
 distance.Observe(new DashboardOdometerTrip("missing-first-odometer", -1, false), 7000, true); Check(distance.DistanceKm, 0);
 distance.Observe(new DashboardOdometerTrip("missing-first-odometer", 7000, false), 7030, true); Check(distance.DistanceKm, 30);
 Console.WriteLine($"{checks} total checks passed, including odometer display continuity and new-trip reset.");
+
+foreach (var old in new[]{"https://api.gatlogets2.com.br","http://api.gatlogets2.com.br","https://API.GATLOGETS2.COM.BR"}) { if(CentralEndpointMigration.Resolve(old)!=CentralEndpointMigration.OfficialApi)throw new Exception("Saved official endpoint not migrated"); }
+foreach (var other in new[]{"https://api.bidulog.com.br","https://driver.example.com","http://127.0.0.1:5056","https://api.gatlogets2.com.br.example.com"}) { if(CentralEndpointMigration.Resolve(other)!=other)throw new Exception("Unrelated endpoint changed"); }
+Console.WriteLine("7 endpoint migration cases passed; saved credentials keep matching and custom servers stay unchanged.");

@@ -16,7 +16,7 @@ namespace GatTelemetry;
 
 internal sealed class RadioForm : Form
 {
-	private const string RadioEndpoint = "https://api.gatlogets2.com.br/api/public/radio";
+	private const string RadioEndpoint = "https://api.bidulog.com.br/api/public/radio";
 
 	private const string VirtualHost = "radio.gatlogets2.local";
 
@@ -25,9 +25,9 @@ internal sealed class RadioForm : Form
 		Timeout = TimeSpan.FromSeconds(7.0)
 	};
 
-	private const string ChannelAdminEndpoint049 = "https://api.gatlogets2.com.br/api/site/admin/radio";
+	private const string ChannelAdminEndpoint049 = "https://api.bidulog.com.br/api/site/admin/radio";
 
-	private const string AccountSessionEndpoint049 = "https://api.gatlogets2.com.br/api/account/session";
+	private const string AccountSessionEndpoint049 = "https://api.bidulog.com.br/api/account/session";
 
 	private string _accountUser049 = string.Empty;
 
@@ -599,7 +599,7 @@ internal sealed class RadioForm : Form
 		{
 			JObject jObject = new JObject { ["token"] = _accountToken049 };
 			using StringContent content = new StringContent(jObject.ToString(Formatting.None), Encoding.UTF8, "application/json");
-			using HttpResponseMessage response = await _http.PostAsync("https://api.gatlogets2.com.br/api/account/session", content);
+			using HttpResponseMessage response = await _http.PostAsync("https://api.bidulog.com.br/api/account/session", content);
 			JObject jObject2 = JObject.Parse(await response.Content.ReadAsStringAsync());
 			if (response.IsSuccessStatusCode && jObject2.Value<bool?>("ok") == true)
 			{
@@ -658,7 +658,7 @@ internal sealed class RadioForm : Form
 			};
 			using (StringContent content = new StringContent(jObject.ToString(Formatting.None), Encoding.UTF8, "application/json"))
 			{
-				using HttpResponseMessage response = await _http.PostAsync("https://api.gatlogets2.com.br/api/site/admin/radio", content);
+				using HttpResponseMessage response = await _http.PostAsync("https://api.bidulog.com.br/api/site/admin/radio", content);
 				string json = await response.Content.ReadAsStringAsync();
 				JObject jObject2 = null;
 				try
@@ -1052,7 +1052,7 @@ internal sealed class RadioForm : Form
 		await SyncSharedMediaMode041();
 		try
 		{
-			JObject jObject = JObject.Parse(await _http.GetStringAsync("https://api.gatlogets2.com.br/api/public/radio?t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
+			JObject jObject = JObject.Parse(await _http.GetStringAsync("https://api.bidulog.com.br/api/public/radio?t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
 			if (!(jObject["radio"] is JObject jObject2) || jObject.Value<bool?>("ok") != true)
 			{
 				throw new InvalidDataException("Resposta inválida da Central BiduTruck.");

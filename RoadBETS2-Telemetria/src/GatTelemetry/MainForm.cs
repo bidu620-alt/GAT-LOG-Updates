@@ -360,11 +360,11 @@ internal sealed partial class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.32";
+	private const string CurrentVersion = "1.0.68.33";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
-	private const string AccountAuthority = "https://api.gatlogets2.com.br";
+	private const string AccountAuthority = "https://api.bidulog.com.br";
 
 	private readonly ApiClient _api = new ApiClient();
 
@@ -1341,7 +1341,7 @@ internal sealed partial class MainForm : Form
 			return;
 		}
 		txtAccountUser.Text = saved.User ?? string.Empty;
-		ApiResponse apiResponse = await _api.AccountSessionAsync("https://api.gatlogets2.com.br", saved.Token);
+		ApiResponse apiResponse = await _api.AccountSessionAsync("https://api.bidulog.com.br", saved.Token);
 		if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
 		{
 			string text = ApiClient.Str(apiResponse.Json["user"]);
@@ -1377,7 +1377,7 @@ internal sealed partial class MainForm : Form
 		btnAccountLogin.Text = "ENTRANDO...";
 		try
 		{
-			ApiResponse apiResponse = await _api.AccountLoginAsync("https://api.gatlogets2.com.br", text, text2);
+			ApiResponse apiResponse = await _api.AccountLoginAsync("https://api.bidulog.com.br", text, text2);
 			if (apiResponse.StatusCode != 200 || apiResponse.Json == null || !ApiClient.Bool(apiResponse.Json["ok"]))
 			{
 				lblAccount.Text = "Conta: login inválido";
@@ -1486,14 +1486,14 @@ internal sealed partial class MainForm : Form
 		try
 		{
 			string driver = _accountUser;
-			string plainToken = ClientStore.GetPlainToken(ClientStore.FindCredential("https://api.gatlogets2.com.br", driver));
-			ApiResponse apiResponse = await _api.LoginAsync("https://api.gatlogets2.com.br", driver, _deviceId, plainToken, _accountUser, _accountToken);
+			string plainToken = ClientStore.GetPlainToken(ClientStore.FindCredential("https://api.bidulog.com.br", driver));
+			ApiResponse apiResponse = await _api.LoginAsync("https://api.bidulog.com.br", driver, _deviceId, plainToken, _accountUser, _accountToken);
 			if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
 			{
 				string text = ApiClient.Str(apiResponse.Json["token"]);
 				if (!string.IsNullOrWhiteSpace(text))
 				{
-					ClientStore.SaveCredential("https://api.gatlogets2.com.br", driver, text);
+					ClientStore.SaveCredential("https://api.bidulog.com.br", driver, text);
 				}
 				lblAccount.Text = "Conta: @" + _accountUser + " • PC vinculado";
 				lblAccount.ForeColor = System.Drawing.Color.FromArgb(130, 224, 69);
@@ -1672,7 +1672,7 @@ internal sealed partial class MainForm : Form
 			return;
 		}
 		string driver = (string.IsNullOrWhiteSpace(_driver) ? _accountUser : _driver);
-		ApiResponse apiResponse = await _api.SendTripReceiptAsync("https://api.gatlogets2.com.br", _accountToken, driver, receipt);
+		ApiResponse apiResponse = await _api.SendTripReceiptAsync("https://api.bidulog.com.br", _accountToken, driver, receipt);
 		if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
 		{
 			_tripJournal.MarkSent(receipt.TripId);
@@ -2085,7 +2085,7 @@ internal sealed partial class MainForm : Form
 		for (int i = 0; i < limit; i++)
 		{
 			JObject telemetry = packets[i];
-			ApiResponse apiResponse = await _api.SendTelemetryAsync("https://api.gatlogets2.com.br", driver, _deviceId, clientToken, telemetry);
+			ApiResponse apiResponse = await _api.SendTelemetryAsync("https://api.bidulog.com.br", driver, _deviceId, clientToken, telemetry);
 			if (apiResponse.StatusCode != 200 || apiResponse.Json == null || !ApiClient.Bool(apiResponse.Json["ok"]))
 			{
 				break;
@@ -2141,11 +2141,11 @@ internal sealed partial class MainForm : Form
 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
 		RoadLifeOverlayPush(tele);
 		string centralDriver = _accountUser;
-		CredentialEntry credential = ClientStore.FindCredential("https://api.gatlogets2.com.br", centralDriver);
+		CredentialEntry credential = ClientStore.FindCredential("https://api.bidulog.com.br", centralDriver);
 		string centralClientToken = ClientStore.GetPlainToken(credential);
 		if (string.IsNullOrWhiteSpace(centralClientToken))
 		{
-			ApiResponse apiResponse = await _api.LoginAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, string.Empty, _accountUser, _accountToken);
+			ApiResponse apiResponse = await _api.LoginAsync("https://api.bidulog.com.br", centralDriver, _deviceId, string.Empty, _accountUser, _accountToken);
 			if (apiResponse.StatusCode == 428 && apiResponse.Json != null)
 			{
 				string text = ApiClient.Str(apiResponse.Json["pairing_code"]);
@@ -2160,7 +2160,7 @@ internal sealed partial class MainForm : Form
 				centralClientToken = ApiClient.Str(apiResponse.Json["token"]);
 				if (!string.IsNullOrWhiteSpace(centralClientToken))
 				{
-					ClientStore.SaveCredential("https://api.gatlogets2.com.br", centralDriver, centralClientToken);
+					ClientStore.SaveCredential("https://api.bidulog.com.br", centralDriver, centralClientToken);
 					lblAccount.Text = "Conta: @" + _accountUser + " • PC vinculado";
 					lblAccount.ForeColor = System.Drawing.Color.FromArgb(130, 224, 69);
 					SetPcRegistrationState(linked: true, string.Empty);
@@ -2180,7 +2180,7 @@ internal sealed partial class MainForm : Form
 			lblTelemetry.Text = "Central BiduTruck: viagem salva • aguardando servidor";
 			return;
 		}
-		ApiResponse apiResponse2 = await _api.SendTelemetryAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, centralClientToken, tele);
+		ApiResponse apiResponse2 = await _api.SendTelemetryAsync("https://api.bidulog.com.br", centralDriver, _deviceId, centralClientToken, tele);
 		if (apiResponse2.StatusCode == 200 && apiResponse2.Json != null && ApiClient.Bool(apiResponse2.Json["ok"]))
 		{
 			if (apiResponse2.Json["mission_event"] is JObject jObject)
@@ -2225,7 +2225,7 @@ internal sealed partial class MainForm : Form
 		}
 		else if (apiResponse2.StatusCode == 401)
 		{
-			ApiResponse apiResponse3 = await _api.LoginAsync("https://api.gatlogets2.com.br", centralDriver, _deviceId, centralClientToken, _accountUser, _accountToken);
+			ApiResponse apiResponse3 = await _api.LoginAsync("https://api.bidulog.com.br", centralDriver, _deviceId, centralClientToken, _accountUser, _accountToken);
 			if (apiResponse3.StatusCode == 428 && apiResponse3.Json != null)
 			{
 				string text2 = ApiClient.Str(apiResponse3.Json["pairing_code"]);
@@ -5908,7 +5908,7 @@ internal sealed partial class MainForm : Form
 			List<JObject> liveRows = new List<JObject>();
 			try
 			{
-				string requestUri = "https://api.gatlogets2.com.br/api/public/account-live?t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+				string requestUri = "https://api.bidulog.com.br/api/public/account-live?t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 				JObject jObject = JObject.Parse(await _hubHttp041.GetStringAsync(requestUri));
 				JArray jArray = jObject["telemetry"] as JArray;
 				if (jObject.Value<bool?>("ok") == true && jArray != null)

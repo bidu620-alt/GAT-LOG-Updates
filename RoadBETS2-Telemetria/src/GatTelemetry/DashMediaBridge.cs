@@ -15,7 +15,7 @@ internal static class DashMediaBridge
 {
 	private const int Port = 31378;
 
-	private const string RadioEndpoint = "https://api.gatlogets2.com.br/api/public/radio";
+	private const string RadioEndpoint = "https://api.bidulog.com.br/api/public/radio";
 
 	private static readonly object Sync = new object();
 
@@ -166,7 +166,7 @@ internal static class DashMediaBridge
 			}
 			try
 			{
-				JObject jObject = JObject.Parse(Http.GetStringAsync("https://api.gatlogets2.com.br/api/public/radio?t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).GetAwaiter().GetResult());
+				JObject jObject = JObject.Parse(Http.GetStringAsync("https://api.bidulog.com.br/api/public/radio?t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).GetAwaiter().GetResult());
 				JObject jObject2 = jObject["radio"] as JObject;
 				if (jObject.Value<bool?>("ok") == true && jObject2 != null)
 				{
