@@ -1,11 +1,11 @@
 {
   "app": "BIDUTRUCK Telemetria",
   "channel": "stable",
-  "version": "1.0.68.32",
-  "display_version": "1.0.68.32",
-  "notas": "Percurso da viagem calculado pelo hodometro, sem limitar ao GPS ou planejado. Indicador verde confirma a marca na garagem; Gold validado pela Central na entrega. Instalacao completa com backup e preservacao dos dados. Nao recupera sequencias de diario ja rejeitadas.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.32.exe",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.32.exe",
-  "sha256": "88eb0e7f9ba861b0778a1b0cbb5f51206f64e407453b609147e283a296642d1c",
+  "version": "1.0.68.33",
+  "display_version": "1.0.68.33",
+  "notas": "Migracao para api.bidulog.com.br em login, telemetria, entregas, garagem e radio. Preserva contas, credenciais, configuracoes e diario; converte o endereco oficial salvo sem alterar servidores particulares. Mantem percurso por hodometro e indicador da marca na garagem. Instalacao completa com backup.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.33.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.33.exe",
+  "sha256": "63b3ed702300d3bad197acf2caa62cdc031a219b00107a583afc330507871a5a",
   "package_type": "full"
 }
