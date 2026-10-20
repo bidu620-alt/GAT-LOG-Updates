@@ -1,4 +1,4 @@
-/* Gold por entrega: somente créditos comprovados pela carteira autenticada.
+/* Gold por entrega: créditos comprovados; auditoria de terceiros restrita a owner/admin.
    Não interfere em XP, Pontos BiduLog, danos ou no cálculo da Central. */
 (() => {
   'use strict';
@@ -37,7 +37,7 @@
   }
 
   let currentProfile = null;
-  let audit = { key: '', ready: false, loading: false, failed: false, rewards: new Map() };
+  let audit = { key: '', profileUser: '', adminAccess: false, ready: false, loading: false, failed: false, rewards: new Map() };
   let requestNumber = 0;
   let lastQueryAt = 0;
   function parseRecords(data) {
@@ -59,10 +59,15 @@
         const amount = number(item.gold_units);
         if (!id || !Number.isSafeInteger(amount) || amount < 0) continue;
         const credited = records.get(id);
+        // Em auditoria admin só confirmar o Gold se existir crédito correspondente no extrato.
+        const hasProof = Object.prototype.hasOwnProperty.call(item, 'credited_ledger_units');
+        const proven = hasProof
+          ? amount > 0 && number(item.credited_ledger_units) === amount
+          : !!credited || amount > 0;
         records.set(id, {
           gold_units: credited ? credited.gold_units : amount,
           reason: String(item.reason || ''),
-          confirmed: !!credited || amount > 0,
+          confirmed: proven,
           hasRewardRecord: true
         });
       }
@@ -82,6 +87,9 @@
     if (reward.gold_units > 0 && reward.confirmed) {
       return { value: '+' + goldFormat(reward.gold_units) + ' Gold', note: 'Creditado na carteira', kind: 'credited' };
     }
+    if (reward.gold_units > 0) {
+      return { value: '—', note: 'Recompensa registrada, mas crédito na carteira não confirmado', kind: 'unknown' };
+    }
     const reason = reasonLabel[reward.reason] || (reward.reason === 'validated'
       ? 'Entrega validada, sem valor para creditar' : 'Entrega sem Gold');
     return { value: '0 Gold', note: 'Não gerou • ' + reason, kind: 'rejected' };
@@ -90,7 +98,7 @@
   function draw() {
     const profile = currentProfile;
     if (!profile) return;
-    const own = signedInOwner(profile);
+    const own = !!signedInOwner(profile) || (audit.adminAccess && audit.profileUser === clean(profile.user));
     const deliveries = Array.isArray(profile.deliveries) ? [...profile.deliveries].reverse() : [];
     const rows = document.querySelectorAll('#deliveryRows .gat-delivery-row');
     if (rows.length !== deliveries.length) return;
@@ -109,7 +117,7 @@
       chip.title = result.note;
       chip.textContent = '';
       const label = document.createElement('span');
-      label.textContent = 'GOLD • ' + result.note;
+      label.textContent = (signedInOwner(profile) ? 'GOLD • ' : 'AUDITORIA GOLD • ') + result.note;
       const value = document.createElement('b');
       value.textContent = result.value;
       chip.append(label, value);
@@ -118,17 +126,19 @@
 
   async function refresh(force = false) {
     const p = currentProfile;
-    const s = signedInOwner(p);
-    if (!s) {
+    const s = session();
+    const target = clean(p && p.user);
+    const owner = !!signedInOwner(p);
+    if (!p || !s?.token || !target) {
       requestNumber++;
-      audit = { key: '', ready: false, loading: false, failed: false, rewards: new Map() };
+      audit = { key: '', profileUser: '', adminAccess: false, ready: false, loading: false, failed: false, rewards: new Map() };
       draw();
       return;
     }
-    const key = clean(s.user) + '|' + s.token;
+    const key = clean(s.user) + '|' + s.token + '|' + target;
     if (key !== audit.key) {
       requestNumber++;
-      audit = { key, ready: false, loading: false, failed: false, rewards: new Map() };
+      audit = { key, profileUser: target, adminAccess: false, ready: false, loading: false, failed: false, rewards: new Map() };
       lastQueryAt = 0;
     }
     draw();
@@ -140,15 +150,20 @@
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     try {
-      const response = await fetch(API + '/api/economy/state', {
+      const path = owner ? '/api/economy/state' : '/api/economy/admin/delivery-rewards';
+      const payload = owner ? { token: s.token } : { token: s.token, user: target };
+      const response = await fetch(API + path, {
         method: 'POST', cache: 'no-store', signal: controller.signal,
         headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify({ token: s.token })
+        body: JSON.stringify(payload)
       });
       const data = await response.json();
       if (!response.ok || !data || !data.ok || data.mode !== 'official') throw new Error('economy_unavailable');
-      if (requestId !== requestNumber || !signedInOwner(currentProfile) || audit.key !== key) return;
+      if (!owner && (!data.is_admin || clean(data.user) !== target)) throw new Error('audit_forbidden');
+      if (requestId !== requestNumber || audit.key !== key || clean(currentProfile?.user) !== target ||
+          session()?.token !== s.token) return;
       audit.rewards = parseRecords(data);
+      audit.adminAccess = !owner;
       audit.ready = true;
       audit.failed = false;
     } catch (_) {
@@ -178,7 +193,7 @@
   });
   window.addEventListener('gat-account-change', () => {
     requestNumber++;
-    audit = { key: '', ready: false, loading: false, failed: false, rewards: new Map() };
+    audit = { key: '', profileUser: '', adminAccess: false, ready: false, loading: false, failed: false, rewards: new Map() };
     lastQueryAt = 0;
     refresh(true);
   });
