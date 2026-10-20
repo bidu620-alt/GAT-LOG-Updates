@@ -9,7 +9,7 @@ namespace GatTelemetry;
 // Never fills identity from a previous sample or from a driver's selected truck.
 internal sealed class TruckModelEvidence
 {
-    public string Make = "", Model = "", RawId = "", Signature = "";
+    public string Make = "", Model = "", RawId = "", Signature = "", EconomyKey = "";
     public bool Connected, Paused, Identified;
     public static string Text(JObject raw, params string[] paths)
     {
@@ -36,8 +36,9 @@ internal sealed class TruckModelEvidence
         e.Make = Text(raw, "truck.make", "truck.manufacturer", "truck.brand", "truck.makeName");
         e.Model = Text(raw, "truck.model", "truck.modelName", "truck.model_name");
         e.RawId = Text(raw, "truck.id", "truck.unitId", "truck.unit_id", "truck.vehicleId");
-        e.Identified = e.Connected && Normalize(e.Make).Length > 0;
-        e.Signature = e.Identified ? "brand|" + BrandKey(e.Make) : "";
+        e.EconomyKey = VehicleEconomyKey.Resolve(e.Make,e.Model,e.RawId,Text(raw,"truck.vehicle_type","truck.vehicleType","truck.type","vehicle_type","vehicle.type"));
+        e.Identified = e.Connected && e.EconomyKey.Length > 0;
+        e.Signature = e.Identified ? "brand|" + e.EconomyKey : "";
         return e;
     }
     public static void Stamp(JObject raw)

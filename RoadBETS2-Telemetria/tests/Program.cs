@@ -59,3 +59,7 @@ Console.WriteLine($"{checks} total checks passed, including odometer display con
 foreach (var old in new[]{"https://api.gatlogets2.com.br","http://api.gatlogets2.com.br","https://API.GATLOGETS2.COM.BR"}) { if(CentralEndpointMigration.Resolve(old)!=CentralEndpointMigration.OfficialApi)throw new Exception("Saved official endpoint not migrated"); }
 foreach (var other in new[]{"https://api.bidulog.com.br","https://driver.example.com","http://127.0.0.1:5056","https://api.gatlogets2.com.br.example.com"}) { if(CentralEndpointMigration.Resolve(other)!=other)throw new Exception("Unrelated endpoint changed"); }
 Console.WriteLine("7 endpoint migration cases passed; saved credentials keep matching and custom servers stay unchanged.");
+
+var vehicleCases=new[]{new[]{"Scania","R","scania","","scania"},new[]{"Mercedes-Benz","Actros","mercedes.actros","","mercedes"},new[]{"Volvo","FH6","volvo","","volvo"},new[]{"Marcopolo","G8 1800 DD","marcopolo.g8","","onibus"},new[]{"Scania","Marcopolo G7","scania.k360","","onibus"},new[]{"Mercedes-Benz","Paradiso 1200","mb.o500","","onibus"},new[]{"Busscar","Vissta Buss","busscar","","onibus"},new[]{"Volvo","B12R","volvo.b12r","","onibus"},new[]{"Scania","K 360","scania","","onibus"},new[]{"Custom","Modelo desconhecido","x","coach","onibus"}};
+foreach(var v in vehicleCases)if(VehicleEconomyKey.Resolve(v[0],v[1],v[2],v[3])!=v[4])throw new Exception("Vehicle classification: "+v[0]+" "+v[1]);
+Console.WriteLine("10 vehicle classification cases passed: truck brands, Marcopolo G7/G8, bus chassis and explicit vehicle type.");

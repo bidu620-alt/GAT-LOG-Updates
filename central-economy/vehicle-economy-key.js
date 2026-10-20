@@ -1,0 +1,5 @@
+const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+export function vehicleEconomyKey(raw){const t=raw?.truck||{},make=norm(t.make||t.manufacturer||t.brand),type=norm(t.vehicle_type||t.vehicleType||t.type||raw?.vehicle_type||raw?.vehicle?.type),identity=norm([make,t.model,t.modelName,t.model_name,t.id,t.unitId,t.unit_id,t.vehicleId].filter(Boolean).join(' '));
+ const bus=/^(bus|coach|onibus|autocarro)$/.test(type)||/\b(bus|coach|onibus|autocarro|marcopolo|busscar|comil|neobus|caio|irizar|paradiso|viaggio|torino|urbanuss)\b/.test(identity)||/\b(vissta\s*buss|apache\s*vip|g[78])\b/.test(identity)||/\bo\s?(371|400|500)[a-z0-9]*\b/.test(identity)||/\bk\s?(230|250|270|310|320|340|360|380|400|410|420|440|450|460|480|500)[a-z0-9]*\b/.test(identity)||/\bb\s?(7|9|10|11|12|13|250|270|290|340|360|380|420|450)(r|m|s|rh)[a-z0-9]*\b/.test(identity);
+ return bus?'onibus':({'mercedes benz':'mercedes','renault trucks':'renault'}[make]||make);
+}

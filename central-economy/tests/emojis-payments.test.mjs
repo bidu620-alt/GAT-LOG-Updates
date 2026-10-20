@@ -9,7 +9,7 @@ db.sql.exec(`CREATE TABLE accounts(user TEXT PRIMARY KEY,role TEXT,disabled INTE
 for(const [u,role] of [['biduzao','owner'],['owner','driver'],['alice','driver'],['bob','driver'],['charlie','driver'],['admin','admin']]){db.sql.prepare('INSERT INTO accounts VALUES(?,?,0)').run(u,role);db.sql.prepare('INSERT INTO profiles(user) VALUES(?)').run(u)}
 const session=user=>db.sql.prepare('SELECT user,role FROM accounts WHERE user=?').get(user),act=(user,path,b={})=>economyAction(db,session(user),path,{...b,op_id:b.op_id||randomUUID()}),co=(user,path,b={})=>companyAction(db,session(user),path,{...b,op_id:randomUUID()});
 ensureEconomy(db);ensureCompanies(db);
-const ownerState=state(db,session('biduzao'));assert.equal(ownerState.garage.length,7);assert.equal(hasEmojiPack(db,'biduzao'),true);assert.equal(ownerState.gold_balance,0);assert.equal(ownerState.bcoin_balance,0);assert.equal(ownerState.ledger.length,0);
+const ownerState=state(db,session('biduzao'));assert.equal(ownerState.garage.length,8);assert.equal(hasEmojiPack(db,'biduzao'),true);assert.equal(ownerState.gold_balance,0);assert.equal(ownerState.bcoin_balance,0);assert.equal(ownerState.ledger.length,0);
 ensureEconomy(db);assert.equal(db.sql.prepare("SELECT COUNT(*) n FROM audit WHERE action='owner_catalog_access'").get().n,1);
 act('biduzao','admin/product',{id:'test_seal',kind:'seal',title:'Selo de teste',description:'Um selo para testar a liberação.',gold_price:100});assert.ok(state(db,session('biduzao')).entitlements.some(e=>e.product_id==='test_seal'));
 const p=state(db,session('alice')).catalog.find(p=>p.id===EMOJI_PACK.id);assert.equal(p.cash_centavos,300);assert.equal(p.gold_units,600000);

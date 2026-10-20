@@ -1,8 +1,9 @@
+import {vehicleEconomyKey} from './vehicle-economy-key.js';
 import {EMOJI_PACK,isBiduOwner} from './emoji-access.js';
 import {readFileSync} from 'node:fs';
 import {randomUUID,createHash} from 'node:crypto';
 
-export const BRANDS={daf:'DAF',iveco:'Iveco',man:'MAN',mercedes:'Mercedes-Benz',renault:'Renault',scania:'Scania',volvo:'Volvo'};
+export const BRANDS={daf:'DAF',iveco:'Iveco',man:'MAN',mercedes:'Mercedes-Benz',renault:'Renault',scania:'Scania',volvo:'Volvo',onibus:'Ônibus'};
 const initialized=new WeakSet();
 const now=()=>new Date().toISOString();
 const clean=v=>String(v||'').trim().toLowerCase().replace(/^@/,'');
@@ -35,7 +36,7 @@ function op(db,s,b,action,fn){
 }
 function existsUser(db,value){const user=clean(value);if(!/^[a-z0-9._-]{3,32}$/.test(user))fail(400,'invalid_recipient');const a=sql(db).prepare('SELECT user,disabled FROM accounts WHERE user=?').get(user);if(!a||a.disabled)fail(404,'recipient_not_found');return user}
 function catalog(db){return [EMOJI_PACK,
- ...Object.entries(BRANDS).map(([key,title])=>({id:'brand:'+key,kind:'brand',brand_key:key,title:'Chave '+title,description:'Libera todos os modelos '+title+' para ganhar Gold em entregas válidas. Não altera o caminhão dentro do ETS2.',cash_centavos:1000,gold_units:2000000,bcoin_units:0})),
+ ...Object.entries(BRANDS).map(([key,title])=>({id:'brand:'+key,kind:'brand',brand_key:key,title:'Chave '+title,description:key==='onibus'?'Habilita ônibus identificados pela telemetria, incluindo Marcopolo G7/G8. Não instala mods nem altera o veículo no jogo.':'Libera todos os modelos '+title+' para ganhar Gold em entregas válidas. Não altera o caminhão dentro do ETS2.',cash_centavos:1000,gold_units:2000000,bcoin_units:0})),
  ...sql(db).prepare('SELECT * FROM eco_products WHERE active=1 ORDER BY title').all().map(p=>({...p,cash_centavos:0}))
  ]}
 function product(db,id,legacy=false){if(legacy&&/^bcoin:(10|20|50)$/.test(id)){const n=Number(id.split(':')[1]);return{id,kind:'bcoin',title:n+' Bcoin',bcoin_credit:n*100};}const p=catalog(db).find(x=>x.id===id);if(!p)fail(404,'product_not_found');return p}
@@ -49,7 +50,7 @@ function fulfil(db,order,p){
  sql(db).prepare("UPDATE eco_orders SET status='fulfilled',fulfilled_at=?,updated_at=? WHERE id=?").run(now(),now(),order.id);
 }
 function mission(db,user){return parse(sql(db).prepare('SELECT current_mission_json FROM profiles WHERE user=?').get(user)?.current_mission_json)}
-export function evidence(raw){const make=String(raw?.truck?.make||raw?.truck?.manufacturer||raw?.truck?.brand||'').trim();const n=norm(make),key=({'mercedes benz':'mercedes','renault trucks':'renault'}[n]||n);return{brand:key,make,model:String(raw?.truck?.model||''),signature:raw?.game?.connected===true&&key?'brand|'+key:'',connected:raw?.game?.connected===true,paused:raw?.game?.paused===true}}
+export function evidence(raw){const make=String(raw?.truck?.make||raw?.truck?.manufacturer||raw?.truck?.brand||'').trim();const key=vehicleEconomyKey(raw);return{brand:key,make,model:String(raw?.truck?.model||''),signature:raw?.game?.connected===true&&key?'brand|'+key:'',connected:raw?.game?.connected===true,paused:raw?.game?.paused===true}}
 function currentValidation(db,user){
  const live=sql(db).prepare('SELECT updated_at,telemetry_json FROM telemetry_live WHERE account_user=? ORDER BY updated_at DESC LIMIT 1').get(user);
  const raw=parse(live?.telemetry_json)||{},ev=evidence(raw),t=Date.parse(raw.gat_collected_at||live?.updated_at||'');

@@ -168,7 +168,7 @@ internal sealed partial class MainForm
         if (fresh) {
             if (!serverFresh) status = "Aguardando confirmação da garagem — " + _economyError;
             else {
-                string brand = TruckModelEvidence.BrandKey(_truckEvidence.Make);
+                string brand = _truckEvidence.EconomyKey;
                 eligible = (_economyState["garage"] as JArray ?? new JArray()).OfType<JObject>()
                     .Any(truck => string.Equals((string)truck["brand_key"] ?? (string)truck["model_key"], brand, StringComparison.Ordinal));
                 status = eligible
