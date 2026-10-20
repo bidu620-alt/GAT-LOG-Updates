@@ -153,6 +153,15 @@ function companyAction(db,s,path,b){
  fail(404,'not_found');
 }
 function adminAction(db,s,path,b){
+ if(path==='delivery-rewards'){
+  // Consulta administrativa: a sessão e o cargo owner/admin são validados no servidor.
+  // Retorna somente a auditoria por entrega, sem expor saldo ou extrato de terceiros.
+  const target=clean(b.user);
+  if(!/^[a-z0-9._-]{3,32}$/.test(target))fail(400,'invalid_user');
+  if(!sql(db).prepare('SELECT 1 FROM accounts WHERE user=?').get(target))fail(404,'user_not_found');
+  const rows=sql(db).prepare("SELECT r.delivery_id,r.gat_points,r.gold_units,r.reason,r.created_at,COALESCE((SELECT SUM(l.delta_units) FROM eco_ledger l WHERE l.user=r.user AND l.kind='delivery_reward' AND l.currency='gold' AND l.reference='delivery:' || r.delivery_id),0) AS credited_ledger_units FROM eco_rewards r WHERE r.user=? ORDER BY r.delivery_id DESC LIMIT 500").all(target);
+  return {ok:true,mode:'official',is_admin:true,user:target,delivery_rewards:rows};
+ }
  if(path==='overview')return{ok:true,can_confirm_without_id:isBiduOwner(db,s.user),orders:sql(db).prepare("SELECT * FROM eco_orders WHERE currency='pix' AND status!='cancelled' ORDER BY created_at DESC LIMIT 200").all().map(x=>({...x,payment_claim:parse(x.payment_claim_json),payment_claim_json:undefined})),support:sql(db).prepare('SELECT * FROM eco_support ORDER BY created_at DESC LIMIT 100').all(),supplier:parse(cfg(db,'supplier_json'))||{},pix_enabled:cfg(db,'pix_enabled')==='1',products:sql(db).prepare('SELECT * FROM eco_products ORDER BY title').all()};
  if(path==='cancel-order')return op(db,s,b,path,()=>{const order=sql(db).prepare('SELECT * FROM eco_orders WHERE id=?').get(String(b.order_id||''));if(!order||order.currency!=='pix'||!['pending_payment','awaiting_review'].includes(order.status)||order.payment_id||sql(db).prepare('SELECT 1 FROM eco_pix_receipts WHERE order_id=?').get(order.id))fail(409,'order_not_pending');if(b.unpaid_confirmed!==true)fail(400,'unpaid_confirmation_required');const note=String(b.note||'').trim();if(note.length<5||note.length>500)fail(400,'manual_note_required');sql(db).prepare("UPDATE eco_orders SET status='cancelled',updated_at=? WHERE id=?").run(now(),order.id);audit(db,s.user,'unpaid_order_cancelled',order.user,{order_id:order.id,note});return{ok:true}});
  if(path==='confirm-payment')return op(db,s,b,path,()=>{
