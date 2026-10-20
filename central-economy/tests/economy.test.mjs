@@ -61,5 +61,11 @@ const balance=state(db,alice).gold_balance;economyFinish(db,'alice',end,{type:'d
 db.sql.prepare('UPDATE profiles SET current_mission_json=? WHERE user=?').run(JSON.stringify({...mission,id:'bad-delivery'}),'alice');economyTrack(db,'alice',{...packet('FH6'),gat_journal_verified:false},start);economyTrack(db,'alice',packet('FH6'),end);
 db.sql.prepare('INSERT INTO deliveries VALUES(?,?,?,?)').run(2,'alice',end,JSON.stringify({mission:{...mission,id:'bad-delivery'},audit:{gat_points:1000,rank_eligible:true}}));economyFinish(db,'alice',end,{type:'delivery_completed'});assert.equal(state(db,alice).gold_balance,balance+266);
 assert.equal(db.sql.prepare('SELECT gold_units FROM eco_rewards WHERE delivery_id=2').get().gold_units,0);
+const goldRewards=state(db,alice).delivery_rewards;
+assert.equal(goldRewards.find(x=>x.delivery_id===1)?.gold_units,26600);
+assert.equal(goldRewards.find(x=>x.delivery_id===1)?.reason,'validated');
+assert.equal(goldRewards.find(x=>x.delivery_id===2)?.gold_units,0);
+assert.notEqual(goldRewards.find(x=>x.delivery_id===2)?.reason,'validated');
+assert.equal(state(db,bob).delivery_rewards.length,0);
 console.log('PASS: wallet cents, fee, rollback, idempotency, ownership, manual Pix gate, payment uniqueness, Bcoin, no cashout/conversion, company roles/capacity, brand rewards and journal rejection.');
 db.close();

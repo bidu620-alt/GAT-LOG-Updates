@@ -21,6 +21,7 @@ jobs:
           node --check docs/ranking-message-cleanup.js
           node --check docs/xp-levels.js
           node --check docs/motorista-enhancements.js
+          node --check docs/delivery-gold-audit.js
           node --check docs/motorista-nav-fix.js
           node --check docs/motorista-infractions.js
           node --check docs/driver-gamification.js
