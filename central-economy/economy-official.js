@@ -66,6 +66,8 @@ export function state(db,s){eligibleAccount(db,s);const w=wallet(db,s.user),sel=
  gold_starts_at:cfg(db,'gold_starts_at'),selection_locked:['active','suspended'].includes(mission(db,s.user)?.state),
  garage:sql(db).prepare('SELECT * FROM eco_brands WHERE user=? ORDER BY brand_key').all(s.user).map(x=>({...x,model_key:x.brand_key,label:BRANDS[x.brand_key]+' • todos os modelos',selected:x.brand_key===sel})),validation:currentValidation(db,s.user),
  last_reward_message:last?`Entrega #${last.delivery_id}: ${last.gold_units/100} Gold (${last.gat_points} Pontos GAT). ${last.reason==='validated'?'Creditado na carteira.':'Motivo: '+last.reason}`:'Nenhuma entrega gerou Gold nesta carteira ainda.',
+ // Histórico autenticado do Gold: inclui creditos e recusas sem recalcular pontos.
+ delivery_rewards:sql(db).prepare('SELECT delivery_id,gat_points,gold_units,reason,created_at FROM eco_rewards WHERE user=? ORDER BY delivery_id DESC LIMIT 150').all(s.user),
  ledger:sql(db).prepare('SELECT * FROM eco_ledger WHERE user=? ORDER BY created_at DESC,id DESC LIMIT 100').all(s.user).map(x=>({...x,details:parse(x.details_json),details_json:undefined})),
  orders:sql(db).prepare('SELECT * FROM eco_orders WHERE user=? ORDER BY created_at DESC LIMIT 50').all(s.user).map(x=>({...x,payment_claim_json:undefined})),
  entitlements:sql(db).prepare('SELECT * FROM eco_entitlements WHERE user=?').all(s.user),company:companyState(db,s.user),
