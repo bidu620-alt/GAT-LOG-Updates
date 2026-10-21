@@ -7,6 +7,12 @@ internal sealed class TripReceipt
 	[JsonProperty("trip_id")]
 	public string TripId { get; set; }
 
+	[JsonProperty("profile_id")]
+	public string ProfileId { get; set; }
+
+	[JsonProperty("cargo_id")]
+	public string CargoId { get; set; }
+
 	[JsonProperty("cargo")]
 	public string Cargo { get; set; }
 
