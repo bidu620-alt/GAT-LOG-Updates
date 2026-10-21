@@ -8,6 +8,10 @@ internal sealed class TripJournalState
 	[JsonProperty("active_trip")]
 	public TripReceipt ActiveTrip { get; set; }
 
+	// Previous in-progress jobs remain available when switching ETS2 profiles.
+	[JsonProperty("suspended_trips")]
+	public List<TripReceipt> SuspendedTrips { get; set; } = new List<TripReceipt>();
+
 	[JsonProperty("outbox")]
 	public List<TripReceipt> Outbox { get; set; } = new List<TripReceipt>();
 
