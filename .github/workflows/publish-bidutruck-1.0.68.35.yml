@@ -1,0 +1,153 @@
+name: Publish BIDUTRUCK Telemetria 1.0.68.35
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-bidutruck-1.0.68.35.yml']
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: publish-bidutruck-stable
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Test and build
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet run --project RoadBETS2-Telemetria/tests/RoadLimitTests.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
+          dotnet build RoadBETS2-Telemetria/src/GAT_TELEMETRIA.csproj -c Release -p:UseSharedCompilation=false
+          if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
+          if ((Get-Item RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe).VersionInfo.FileVersion -ne '1.0.68.35') { throw 'Wrong version' }
+      - name: Prepare verified complete package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $base = Join-Path $env:RUNNER_TEMP 'base34.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.34.exe' -OutFile $base
+          if ((Get-FileHash $base).Hash.ToLowerInvariant() -ne 'e01ef3d9bb17d8efa12155d7ffe7164605cbfefd8bbe388cac6be19b22b55136') { throw 'Base installer hash mismatch' }
+          $payload = Join-Path $PWD 'RoadBETS2-Telemetria/Installer/payload'
+          $p = Start-Process $base -ArgumentList @('/CURRENTUSER','/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/ISOLATEDTEST=1',('/DIR="'+$payload+'"')) -WindowStyle Hidden -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Base extraction failed' }
+          # Remove only Inno's generated uninstaller from the isolated package folder.
+          Get-ChildItem -LiteralPath $payload -Filter 'unins*' -File | Remove-Item
+          Copy-Item RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe "$payload/GAT_TELEMETRIA_APP.exe" -Force
+          Copy-Item RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe.config "$payload/GAT_TELEMETRIA_APP.exe.config" -Force
+          if (-not (Test-Path "$payload/RoadLifeDash")) { throw 'Missing dashboard assets' }
+          if ((@(Get-ChildItem $payload -Recurse -File)).Count -lt 20) { throw 'Incomplete original base assets' }
+          foreach ($file in Get-ChildItem -LiteralPath $payload -File -Recurse | Where-Object { $_.Extension -in @('.js','.html','.ps1','.json','.xaml','.config') }) {
+            $text = [IO.File]::ReadAllText($file.FullName)
+            $updated = $text.Replace('https://api.gatlogets2.com.br','https://api.bidulog.com.br').Replace('https://gatlogets2.com.br','https://bidulog.com.br')
+            if ($updated -ne $text) {
+              $bytes = [IO.File]::ReadAllBytes($file.FullName)
+              $hasBom = $bytes.Length -ge 3 -and $bytes[0] -eq 239 -and $bytes[1] -eq 187 -and $bytes[2] -eq 191
+              [IO.File]::WriteAllText($file.FullName, $updated, [Text.UTF8Encoding]::new($hasBom))
+            }
+          }
+          if (-not (Test-Path "$payload/TruckSimGPS/TruckSimGPS_Server.exe")) { throw 'Missing TruckSim GPS' }
+          $paths = @(Get-ChildItem -LiteralPath $payload -File -Recurse | ForEach-Object { $_.FullName.Substring($payload.Length+1) })
+          [IO.File]::WriteAllLines((Join-Path $PWD 'RoadBETS2-Telemetria/Installer/managed-files.txt'), $paths, [Text.UTF8Encoding]::new($false))
+      - uses: microsoft/setup-msbuild@v2
+      - name: Add TruckSim GPS 1.4.4 GAT with five damage measurements
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $src = 'trucksim-gps-gat/build/trucksim-gps-server'
+          git clone --depth 1 --branch 1.4.4 https://github.com/TruckSim-GPS/trucksim-gps-server.git $src
+          if ($LASTEXITCODE -ne 0) { throw 'TruckSim GPS 1.4.4 source clone failed' }
+          & './trucksim-gps-gat/apply-patch.ps1' -Root "$PWD/$src"
+          if ($LASTEXITCODE -ne 0) { throw 'Wear fields patch failed' }
+          nuget restore "$src/source/Funbit.Ets.Telemetry.sln" -NonInteractive
+          if ($LASTEXITCODE -ne 0) { throw 'TruckSim NuGet restore failed' }
+          msbuild "$src/source/Funbit.Ets.Telemetry.sln" /m /t:Rebuild /p:Configuration=Release /p:Platform="Mixed Platforms"
+          if ($LASTEXITCODE -ne 0) { throw 'TruckSim 1.4.4 build failed' }
+          $server = "$src/source/Funbit.Ets.Telemetry.Server/bin/Release"
+          $dest = 'RoadBETS2-Telemetria/Installer/payload/TruckSimGPS_144_GAT_TEST'
+          New-Item -ItemType Directory -Force $dest | Out-Null
+          Copy-Item "$server/*" $dest -Recurse -Force
+          if (-not (Test-Path "$dest/TruckSimGPS_Server.exe")) { throw 'Missing TruckSim 1.4.4 GAT sidecar' }
+          $payload = (Resolve-Path 'RoadBETS2-Telemetria/Installer/payload').Path
+          $paths = @(Get-ChildItem -LiteralPath $payload -File -Recurse | ForEach-Object { $_.FullName.Substring($payload.Length + 1) })
+          [IO.File]::WriteAllLines((Join-Path $PWD 'RoadBETS2-Telemetria/Installer/managed-files.txt'), $paths, [Text.UTF8Encoding]::new($false))
+
+      - name: Install verified compiler
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $setup = Join-Path $env:RUNNER_TEMP 'inno.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+          if ((Get-FileHash $setup).Hash.ToLowerInvariant() -ne '9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732') { throw 'Compiler hash mismatch' }
+          $dir = Join-Path $env:RUNNER_TEMP 'InnoSetup'
+          $p = Start-Process $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/NOICONS',('/DIR="'+$dir+'"')) -WindowStyle Hidden -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Compiler installation failed' }
+          "INNO_ISCC=$dir/ISCC.exe" | Out-File $env:GITHUB_ENV -Append
+      - name: Build and verify complete installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & $env:INNO_ISCC /Q RoadBETS2-Telemetria/Installer/Full35.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          $setup = (Resolve-Path RoadBETS2-Telemetria/Installer/Output/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.35.exe).Path
+          $payload = (Resolve-Path RoadBETS2-Telemetria/Installer/payload).Path
+          foreach ($mode in @('fresh','existing')) {
+            $fixture = Join-Path $env:RUNNER_TEMP "fixture-$mode"
+            New-Item -ItemType Directory -Force $fixture | Out-Null
+            'preserve-local-data' | Set-Content "$fixture/local-data.txt"
+            if ($mode -eq 'existing') { 'old-application' | Set-Content "$fixture/GAT_TELEMETRIA_APP.exe" }
+            $p = Start-Process $setup -ArgumentList @('/CURRENTUSER','/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/ISOLATEDTEST=1',('/DIR="'+$fixture+'"')) -WindowStyle Hidden -Wait -PassThru
+            if ($p.ExitCode -ne 0) { throw "Install failed: $mode" }
+            foreach ($file in Get-ChildItem $payload -File -Recurse) {
+              $relative = $file.FullName.Substring($payload.Length+1)
+              if ((Get-FileHash "$fixture/$relative").Hash -ne (Get-FileHash $file.FullName).Hash) { throw "Mismatch: $relative" }
+            }
+            if ((Get-Content "$fixture/local-data.txt" -Raw).Trim() -ne 'preserve-local-data') { throw 'Local data changed' }
+            if ($mode -eq 'existing') {
+              $backups = @(Get-ChildItem $fixture -Directory -Filter 'backup-completa-1.0.68.35-*')
+              if ($backups.Count -ne 1 -or (Get-Content "$($backups[0].FullName)/GAT_TELEMETRIA_APP.exe" -Raw).Trim() -ne 'old-application') { throw 'Backup failed' }
+            }
+          }
+          New-Item -ItemType Directory -Force releases | Out-Null
+          Copy-Item $setup releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.35.exe
+      - name: Publish download and update manifests
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = 'releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.35.exe'
+          $sha = (Get-FileHash $installer).Hash.ToLowerInvariant()
+          $url = 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/' + $installer
+          $notes = 'Reconhece onibus Marcopolo G7/G8 e outros modelos identificados para a Chave Onibus. Indicador da garagem usa a classe correta do veiculo. Preserva regras de Gold, hodometro, contas e diario. Instalacao completa com backup.'
+          $manifest = [ordered]@{app='BIDUTRUCK Telemetria';channel='stable';version='1.0.68.35';display_version='1.0.68.35';notas=$notes;setup_url=$url;download_url=$url;sha256=$sha;package_type='full'}
+          $utf8 = [Text.UTF8Encoding]::new($false)
+          [IO.File]::WriteAllText((Join-Path $PWD 'client_dotnet_version.json'), ($manifest | ConvertTo-Json)+"`n", $utf8)
+          $latest = [ordered]@{version='1.0.68.35';name='BIDUTRUCK Telemetria 1.0.68.35';url=$url;setup_url=$url;sha256=$sha;args='/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-'}
+          foreach ($file in @('latest.json','latest-template.json')) { [IO.File]::WriteAllText((Join-Path $PWD $file), ($latest | ConvertTo-Json)+"`n", $utf8) }
+          $index = Get-Content docs/index.html -Raw
+          if (-not $index.Contains('BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.34.exe')) { throw 'Download link changed; review before publication' }
+          $index = $index.Replace('BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.34.exe','BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.35.exe').Replace('BIDUTRUCK TELEMETRIA 1.0.68.34','BIDUTRUCK TELEMETRIA 1.0.68.35')
+          [IO.File]::WriteAllText((Join-Path $PWD 'docs/index.html'), $index, $utf8)
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $installer client_dotnet_version.json latest.json latest-template.json docs/index.html
+          git commit -m 'Publish BiduTruck 1.0.68.35 complete installer and driver update'
+          if ($LASTEXITCODE -ne 0) { throw 'Commit failed' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE -ne 0) { throw 'Push failed' }
+          gh workflow run deploy-gat-site-pages.yml --ref main
+          if ($LASTEXITCODE -ne 0) { throw 'Pages deployment dispatch failed' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.35
+          path: releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.35.exe
