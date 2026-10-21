@@ -1,0 +1,57 @@
+name: BiduTruck 1.0.68.35 memory test (no publish)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'RoadBETS2-Telemetria/**'
+      - '.github/workflows/build-bidutruck-memory-test.yml'
+permissions:
+  contents: read
+jobs:
+  windows-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Legacy regression suite
+        shell: pwsh
+        run: dotnet run --project RoadBETS2-Telemetria/tests/RoadLimitTests.csproj -c Release
+      - name: Build WinForms .NET Framework 4.8
+        shell: pwsh
+        run: dotnet build RoadBETS2-Telemetria/src/GAT_TELEMETRIA.csproj -c Release -p:UseSharedCompilation=false
+      - name: Stage application only (never overwrite TruckSim GPS)
+        shell: pwsh
+        run: |
+          $payload = 'RoadBETS2-Telemetria/Installer/payload'
+          New-Item -ItemType Directory -Force $payload | Out-Null
+          Copy-Item 'RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe' "$payload/GAT_TELEMETRIA_APP.exe" -Force
+          Copy-Item 'RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe.config' "$payload/GAT_TELEMETRIA_APP.exe.config" -Force
+          Get-FileHash "$payload/GAT_TELEMETRIA_APP.exe" -Algorithm SHA256 | Format-List
+      - name: Install pinned Inno Setup compiler
+        shell: pwsh
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'inno-setup.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+          $actual = (Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne '9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732') { throw 'Inno checksum mismatch' }
+          $dest = Join-Path $env:RUNNER_TEMP 'InnoSetup'
+          $args = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/NOICONS',('/DIR="' + $dest + '"'))
+          $p = Start-Process $setup -ArgumentList $args -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Inno installer failed' }
+          "INNO_ISCC=$dest/ISCC.exe" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Build isolated test updater EXE
+        shell: pwsh
+        run: |
+          & $env:INNO_ISCC /Q 'RoadBETS2-Telemetria/Installer/MemoryTest35.iss'
+          if ($LASTEXITCODE -ne 0) { throw 'Inno compilation failed' }
+          $exe = 'RoadBETS2-Telemetria/Installer/Output/BIDUTRUCK_TELEMETRIA_MEMORIA_1.0.68.35_TESTE.exe'
+          if (-not (Test-Path $exe)) { throw 'Test setup not generated' }
+          Get-FileHash $exe -Algorithm SHA256 | Format-List
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIDUTRUCK_TELEMETRIA_MEMORIA_1.0.68.35_TESTE
+          if-no-files-found: error
+          path: RoadBETS2-Telemetria/Installer/Output/BIDUTRUCK_TELEMETRIA_MEMORIA_1.0.68.35_TESTE.exe
+          retention-days: 14
