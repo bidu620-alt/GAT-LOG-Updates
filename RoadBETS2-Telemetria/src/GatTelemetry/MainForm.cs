@@ -841,8 +841,10 @@ internal sealed partial class MainForm : Form
 			{
 				return true;
 			}
-			string text = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TruckSimGPS");
-			string text2 = System.IO.Path.Combine(text, "TruckSimGPS_Server.exe");
+			string text = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TruckSimGPS_144_GAT_TEST");
+            if (!File.Exists(System.IO.Path.Combine(text, "TruckSimGPS_Server.exe")))
+                text = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TruckSimGPS");
+            string text2 = System.IO.Path.Combine(text, "TruckSimGPS_Server.exe");
 			if (!File.Exists(text2))
 			{
 				return false;
