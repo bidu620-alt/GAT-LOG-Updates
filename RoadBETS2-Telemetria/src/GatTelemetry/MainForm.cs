@@ -3217,10 +3217,10 @@ internal sealed partial class MainForm : Form
 			})
 			{
 				RemoteVersion remoteVersion = JsonConvert.DeserializeObject<RemoteVersion>(await http.GetStringAsync("https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json"));
-				if (remoteVersion != null && IsNewer(remoteVersion.Version, "1.0.68.30") && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
+				if (remoteVersion != null && IsNewer(remoteVersion.Version, CurrentVersion) && !string.IsNullOrWhiteSpace(remoteVersion.EffectiveUrl))
 				{
 					_availableUpdate = remoteVersion;
-					btnUpdate.Text = "ATUALIZAR CLIENTE 1.0.32";
+					btnUpdate.Text = "ATUALIZAR CLIENTE " + remoteVersion.Version;
 					btnUpdate.BackColor = System.Drawing.Color.FromArgb(32, 132, 91);
 					return;
 				}
