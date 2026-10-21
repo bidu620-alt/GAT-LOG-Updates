@@ -12,6 +12,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            RoadBETS2-Telemetria
+            .github/workflows
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
