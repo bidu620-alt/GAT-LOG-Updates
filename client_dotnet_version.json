@@ -1,11 +1,11 @@
 {
   "app": "BIDUTRUCK Telemetria",
   "channel": "stable",
-  "version": "1.0.68.34",
-  "display_version": "1.0.68.34",
-  "notas": "Reconhece onibus Marcopolo G7/G8 e outros modelos identificados para a Chave Onibus. Indicador da garagem usa a classe correta do veiculo. Preserva regras de Gold, hodometro, contas e diario. Instalacao completa com backup.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.34.exe",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.34.exe",
-  "sha256": "e01ef3d9bb17d8efa12155d7ffe7164605cbfefd8bbe388cac6be19b22b55136",
+  "version": "1.0.68.36",
+  "display_version": "1.0.68.36",
+  "notas": "Recupera viagens entre reinicios, preserva identificador da carga e perfil, usa TruckSim GPS 1.4.4 com danos e corrige o botao Atualizar. Preserva conta, garagem, Gold, diario e backup.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.36.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.36.exe",
+  "sha256": "ed1735ec6025ec74a2effc47592586bb593dcfc44e0532b2fbd8dfcebbfd6249",
   "package_type": "full"
 }
