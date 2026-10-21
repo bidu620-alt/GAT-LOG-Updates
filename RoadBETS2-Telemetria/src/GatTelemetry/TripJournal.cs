@@ -101,13 +101,10 @@ internal sealed class TripJournal
 			}
 			else
 			{
-				flag3 = flag != _state.LastJobDelivered;
-				flag4 = flag2 != _state.LastJobCancelled;
-				if (flag3 | flag4)
-				{
-					_state.LastJobDelivered = flag;
-					_state.LastJobCancelled = flag2;
-				}
+				flag3 = flag && !_state.LastJobDelivered;
+				flag4 = flag2 && !_state.LastJobCancelled;
+				_state.LastJobDelivered = flag;
+				_state.LastJobCancelled = flag2;
 			}
 			bool flag5 = BoolAny(telemetry, "on_job", "gameplay.onJob");
 			string text = TextAny(telemetry, "cargo_name", "job.cargoName", "job.cargo");
@@ -146,13 +143,22 @@ internal sealed class TripJournal
 			string text5 = TextAny(telemetry, "truck.model", "truck.modelName", "truck.model_name");
 			string text6 = TextAny(telemetry, "truck.licensePlate", "truck.license_plate", "truck.licensePlateNumber", "truck.registrationPlate", "truck.plate");
 			string text7 = BuildTruckIdentity(text3, text6, text4, text5);
+			string profileId = TextAny(telemetry, "gat_profile_id");
+			string cargoId = TextAny(telemetry, "cargo_id", "job.cargoId");
 			if (flag5 && !string.IsNullOrWhiteSpace(text))
 			{
-				if (_state.ActiveTrip == null || !SameTrip(_state.ActiveTrip, text, source, destination))
-				{
-					_state.ActiveTrip = new TripReceipt
+				if (_state.ActiveTrip != null && !SameTrip(_state.ActiveTrip, text, source, destination, profileId, cargoId, text7))
+                {
+                    SuspendActiveTrip();
+                }
+                if (_state.ActiveTrip == null)
+                {
+                    TripReceipt restored = TakeSuspendedTrip(text, source, destination, profileId, cargoId, text7, num6);
+                    _state.ActiveTrip = restored ?? new TripReceipt
 					{
 						TripId = Guid.NewGuid().ToString("N"),
+						ProfileId = profileId,
+						CargoId = cargoId,
 						Cargo = text,
 						Source = source,
 						Destination = destination,
@@ -197,7 +203,9 @@ internal sealed class TripJournal
 				else
 				{
 					TripReceipt activeTrip = _state.ActiveTrip;
-					if (num > 0.0)
+                    if (string.IsNullOrWhiteSpace(activeTrip.ProfileId) && !string.IsNullOrWhiteSpace(profileId)) activeTrip.ProfileId = profileId;
+                    if (string.IsNullOrWhiteSpace(activeTrip.CargoId) && !string.IsNullOrWhiteSpace(cargoId)) activeTrip.CargoId = cargoId;
+                    if (num > 0.0)
 					{
 						activeTrip.WeightKg = num;
 					}
@@ -293,9 +301,13 @@ internal sealed class TripJournal
 				tripJournalState = new TripJournalState();
 			}
 			if (tripJournalState.Outbox == null)
-			{
-				tripJournalState.Outbox = new List<TripReceipt>();
-			}
+            {
+                tripJournalState.Outbox = new List<TripReceipt>();
+            }
+            if (tripJournalState.SuspendedTrips == null)
+            {
+                tripJournalState.SuspendedTrips = new List<TripReceipt>();
+            }
 			return tripJournalState;
 		}
 		catch (Exception ex)
@@ -317,10 +329,11 @@ internal sealed class TripJournal
 			string text = _file + ".tmp";
 			File.WriteAllText(text, JsonConvert.SerializeObject(_state, Formatting.Indented), Encoding.UTF8);
 			if (File.Exists(_file))
-			{
-				File.Delete(_file);
-			}
-			File.Move(text, _file);
+            {
+                // Atomic replace ensures a power outage cannot erase the only saved journey.
+                File.Replace(text, _file, _file + ".bak", true);
+            }
+            else File.Move(text, _file);
 			_lastDiskWrite = DateTime.UtcNow;
 		}
 		catch (Exception ex)
@@ -338,14 +351,60 @@ internal sealed class TripJournal
 		return JsonConvert.DeserializeObject<TripReceipt>(JsonConvert.SerializeObject(t));
 	}
 
-	private static bool SameTrip(TripReceipt t, string cargo, string source, string destination)
-	{
-		if (t != null && string.Equals((t.Cargo ?? string.Empty).Trim(), (cargo ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals((t.Source ?? string.Empty).Trim(), (source ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
-		{
-			return string.Equals((t.Destination ?? string.Empty).Trim(), (destination ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
-		}
-		return false;
-	}
+	private static bool SameTrip(TripReceipt t, string cargo, string source, string destination, string profileId, string cargoId, string truckIdentity)
+    {
+        if (t == null ||
+            !string.Equals((t.Cargo ?? "").Trim(), (cargo ?? "").Trim(), StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals((t.Source ?? "").Trim(), (source ?? "").Trim(), StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals((t.Destination ?? "").Trim(), (destination ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        if (!string.IsNullOrWhiteSpace(profileId) && !string.IsNullOrWhiteSpace(t.ProfileId) &&
+            !string.Equals(profileId, t.ProfileId, StringComparison.OrdinalIgnoreCase))
+            return false;
+        if (!string.IsNullOrWhiteSpace(cargoId) && !string.IsNullOrWhiteSpace(t.CargoId) &&
+            !string.Equals(cargoId, t.CargoId, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        // Only rely on truck fingerprint if at least one profile identity is unavailable.
+        if (string.IsNullOrWhiteSpace(profileId) || string.IsNullOrWhiteSpace(t.ProfileId))
+            return !string.IsNullOrWhiteSpace(truckIdentity) && !string.IsNullOrWhiteSpace(t.TruckIdentity) &&
+                string.Equals(truckIdentity, t.TruckIdentity, StringComparison.OrdinalIgnoreCase);
+
+        return true;
+    }
+
+    private void SuspendActiveTrip()
+    {
+        TripReceipt active = _state.ActiveTrip;
+        if (active == null) return;
+        if (_state.SuspendedTrips == null) _state.SuspendedTrips = new List<TripReceipt>();
+        if (!_state.SuspendedTrips.Any(t => t.TripId == active.TripId))
+            _state.SuspendedTrips.Add(active);
+        _state.ActiveTrip = null;
+        ResetOverspeed();
+        Save(force: true);
+    }
+
+    private TripReceipt TakeSuspendedTrip(string cargo, string source, string destination,
+        string profileId, string cargoId, string truckIdentity, double odometerKm)
+    {
+        if (_state.SuspendedTrips == null) return null;
+        for (int i = _state.SuspendedTrips.Count - 1; i >= 0; i--)
+        {
+            TripReceipt candidate = _state.SuspendedTrips[i];
+            if (!SameTrip(candidate, cargo, source, destination, profileId, cargoId, truckIdentity))
+                continue;
+            if (odometerKm > 0 && candidate.EndOdometerKm > 0 &&
+                odometerKm < candidate.EndOdometerKm - 0.2)
+                continue; // Rolled-back save: never credit old distance to a different job.
+            _state.SuspendedTrips.RemoveAt(i);
+            ResetOverspeed();
+            ClientStore.Log("viagem retomada: " + candidate.TripId);
+            return candidate;
+        }
+        return null;
+    }
 
 	private static void ApplyModIntegrity(TripReceipt trip)
 	{
@@ -454,7 +513,13 @@ internal sealed class TripJournal
 		}
 		double num2 = odometerKm - trip.EndOdometerKm;
 		double num3 = 220.0 * num / 3600.0 + 0.25;
-		if (num2 < -0.2 || num2 > num3)
+        // Gaps while the app was offline contain no evidence for speeds/fines or Gold.
+        if (num > 30.0 && num2 > 0.25)
+        {
+            trip.OdometerDiscontinuity = true;
+            trip.OdometerVerified = false;
+        }
+        if (num2 < -0.2 || num2 > num3 || (num > 30.0 && num2 > 0.25))
 		{
 			trip.OdometerDiscontinuity = true;
 			trip.OdometerVerified = false;
