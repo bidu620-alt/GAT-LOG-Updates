@@ -18,6 +18,10 @@ internal sealed class TelemetryEngine : IDisposable
 	};
 
 	private DateTime _lastStartAttempt = DateTime.MinValue;
+	private readonly System.Threading.SemaphoreSlim _profileGate = new System.Threading.SemaphoreSlim(1, 1);
+	private DateTime _profileCheckedAt = DateTime.MinValue;
+	private string _activeProfileId = "";
+	private string _activeProfileType = "";
  private static readonly object RoadLimitSync = new object();
  private static readonly RoadLimitState RoadLimit = new RoadLimitState();
  private static readonly Stopwatch RoadClock = Stopwatch.StartNew();
@@ -28,6 +32,7 @@ internal sealed class TelemetryEngine : IDisposable
 		{
 			JObject jObject = JObject.Parse(await _http.GetStringAsync("http://127.0.0.1:31377/api/ets2/telemetry").ConfigureAwait(continueOnCapturedContext: false));
 			Normalize(jObject);
+			await StampActiveProfileAsync(jObject).ConfigureAwait(false);
 			return jObject;
 		}
 		catch
@@ -36,6 +41,40 @@ internal sealed class TelemetryEngine : IDisposable
 			return null;
 		}
 	}
+
+    // TruckSim GPS 1.4.4 exposes the active ETS2 profile in a separate endpoint.
+    // Never keep the old identity if the watcher fails or game stops.
+    private async Task StampActiveProfileAsync(JObject telemetry)
+    {
+        if (telemetry == null) return;
+        await _profileGate.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            if ((DateTime.UtcNow - _profileCheckedAt).TotalSeconds >= 2)
+            {
+                _profileCheckedAt = DateTime.UtcNow;
+                _activeProfileId = "";
+                _activeProfileType = "";
+                try
+                {
+                    JObject status = JObject.Parse(await _http.GetStringAsync(
+                        "http://127.0.0.1:31377/api/game/state?game=ets2").ConfigureAwait(false));
+                    if (status["gameRunning"]?.Value<bool?>() == true)
+                    {
+                        _activeProfileId = (string)status.SelectToken("activeProfile.id", false) ?? "";
+                        _activeProfileType = (string)status.SelectToken("activeProfile.type", false) ?? "";
+                    }
+                }
+                catch (Exception ex) { ClientStore.Log("ETS2 profile API unavailable: " + ex.Message); }
+            }
+            if (!string.IsNullOrWhiteSpace(_activeProfileId))
+            {
+                telemetry["gat_profile_id"] = _activeProfileId;
+                telemetry["gat_profile_type"] = _activeProfileType;
+            }
+        }
+        finally { _profileGate.Release(); }
+    }
 
 	private void TryStartTruckSimGps()
 	{
@@ -65,8 +104,9 @@ internal sealed class TelemetryEngine : IDisposable
 			string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 			string folderPath2 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 			string folderPath3 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-			string[] array2 = new string[4]
-			{
+			string[] array2 = new string[5]
+            {
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TruckSimGPS_144_GAT_TEST", "TruckSimGPS_Server.exe"),
 				Path.Combine(folderPath, "Programs", "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
 				Path.Combine(folderPath, "Programs", "TruckSim GPS", "TruckSimGPS_Server.exe"),
 				Path.Combine(folderPath2, "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
