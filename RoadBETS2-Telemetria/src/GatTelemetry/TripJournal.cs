@@ -145,7 +145,12 @@ internal sealed class TripJournal
 			string text7 = BuildTruckIdentity(text3, text6, text4, text5);
 			string profileId = TextAny(telemetry, "gat_profile_id");
 			string cargoId = TextAny(telemetry, "cargo_id", "job.cargoId");
-			if (flag5 && !string.IsNullOrWhiteSpace(text))
+            // Profile switches with no load must not close another profile's job.
+            if (_state.ActiveTrip != null && !string.IsNullOrWhiteSpace(profileId) &&
+                !string.IsNullOrWhiteSpace(_state.ActiveTrip.ProfileId) &&
+                !string.Equals(profileId, _state.ActiveTrip.ProfileId, StringComparison.OrdinalIgnoreCase))
+                SuspendActiveTrip();
+            if (flag5 && !string.IsNullOrWhiteSpace(text))
 			{
 				if (_state.ActiveTrip != null && !SameTrip(_state.ActiveTrip, text, source, destination, profileId, cargoId, text7))
                 {
@@ -313,7 +318,20 @@ internal sealed class TripJournal
 		catch (Exception ex)
 		{
 			ClientStore.Log("trip journal load: " + ex.Message);
-			return new TripJournalState();
+            try
+            {
+                var backup = JsonConvert.DeserializeObject<TripJournalState>(
+                    File.ReadAllText(_file + ".bak", Encoding.UTF8));
+                if (backup != null)
+                {
+                    if (backup.Outbox == null) backup.Outbox = new List<TripReceipt>();
+                    if (backup.SuspendedTrips == null) backup.SuspendedTrips = new List<TripReceipt>();
+                    ClientStore.Log("trip journal restored from backup");
+                    return backup;
+                }
+            }
+            catch (Exception backupError) { ClientStore.Log("trip journal backup unavailable: " + backupError.Message); }
+            return new TripJournalState();
 		}
 	}
 
