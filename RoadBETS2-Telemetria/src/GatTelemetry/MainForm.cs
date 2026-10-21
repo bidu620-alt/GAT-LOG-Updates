@@ -360,7 +360,7 @@ internal sealed partial class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.35";
+	private const string CurrentVersion = "1.0.68.36";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -2357,10 +2357,12 @@ internal sealed partial class MainForm : Form
 		double num3 = NumberAny(tele, "remaining_km");
 		if (BoolAny(tele, "gameplay.onJob", "onJob", "job.onJob", "job.active") && (!string.IsNullOrWhiteSpace(value) || !string.IsNullOrWhiteSpace(text)) && num > 0.0)
 		{
+			// Continuity: use the canonical ID saved by TripJournal, not a new GUID after reopening.
+            string journalTripId = _tripJournal.ReadActiveTripIdForCargo(tele);
 			string text4 = ((_latchedJob == null) ? string.Empty : TextAny(_latchedJob, "cargo_id"));
 			string text5 = ((_latchedJob == null) ? string.Empty : TextAny(_latchedJob, "source_city"));
 			string text6 = ((_latchedJob == null) ? string.Empty : TextAny(_latchedJob, "destination_city"));
-			if (_latchedJob == null || (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text4) && !string.Equals(text, text4, StringComparison.OrdinalIgnoreCase)) || (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text5) && !string.Equals(text2, text5, StringComparison.OrdinalIgnoreCase)) || (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text6) && !string.Equals(text3, text6, StringComparison.OrdinalIgnoreCase)))
+			if (_latchedJob == null || (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text4) && !string.Equals(text, text4, StringComparison.OrdinalIgnoreCase)) || (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text5) && !string.Equals(text2, text5, StringComparison.OrdinalIgnoreCase)) || (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text6) && !string.Equals(text3, text6, StringComparison.OrdinalIgnoreCase)) || (!string.IsNullOrWhiteSpace(journalTripId) && !string.Equals(_latchedJobKey, journalTripId, StringComparison.OrdinalIgnoreCase)))
 			{
 				_latchedJob = new JObject();
 				CopyValue(tele, _latchedJob, "cargo_name", "cargo_name", "job.cargoName", "job.cargo");
@@ -2371,8 +2373,8 @@ internal sealed partial class MainForm : Form
 				CopyValue(tele, _latchedJob, "destination_city", "destination_city", "job.destinationCity", "Job.DestinationCity");
 				CopyValue(tele, _latchedJob, "destination_city_id", "destination_city_id", "job.destinationCityId", "Job.DestinationCityId");
 				_latchedJob["planned_distance_km"] = ((num2 > 0.0) ? num2 : num3);
-				_latchedJobKey = Guid.NewGuid().ToString("N");
-				ClientStore.Log("JOB OBSERVED START | trip=" + _latchedJobKey + " | " + JobSummary(_latchedJob));
+				_latchedJobKey = string.IsNullOrWhiteSpace(journalTripId) ? Guid.NewGuid().ToString("N") : journalTripId;
+                ClientStore.Log((string.IsNullOrWhiteSpace(journalTripId) ? "JOB OBSERVED START | trip=" : "JOB OBSERVED RESUME | trip=") + _latchedJobKey + " | " + JobSummary(_latchedJob));
 			}
 			tele["gat_schema"] = "job-v2";
 			tele["gat_job_state"] = "active";
