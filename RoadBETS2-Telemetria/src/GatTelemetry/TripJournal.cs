@@ -80,6 +80,31 @@ internal sealed class TripJournal
 		}
 	}
 
+    // Only the journal owns the canonical trip ID. MainForm must never create
+    // a second ID for an active cargo after a client or game restart.
+    public string ReadActiveTripIdForCargo(JObject telemetry)
+    {
+        if (telemetry == null || !BoolAny(telemetry, "on_job", "gameplay.onJob"))
+            return string.Empty;
+        string cargo = TextAny(telemetry, "cargo_name", "job.cargoName", "job.cargo");
+        string source = TextAny(telemetry, "source_city", "job.sourceCity");
+        string destination = TextAny(telemetry, "destination_city", "job.destinationCity");
+        string profileId = TextAny(telemetry, "gat_profile_id");
+        string cargoId = TextAny(telemetry, "cargo_id", "job.cargoId");
+        string truckId = TextAny(telemetry, "truck.id", "truck.unitId", "truck.unit_id", "truck.vehicleId", "truck.vehicle_id");
+        string plate = TextAny(telemetry, "truck.licensePlate", "truck.license_plate", "truck.licensePlateNumber", "truck.registrationPlate", "truck.plate");
+        string make = TextAny(telemetry, "truck.make", "truck.manufacturer", "truck.brand", "truck.makeName");
+        string model = TextAny(telemetry, "truck.model", "truck.modelName", "truck.model_name");
+        string identity = BuildTruckIdentity(truckId, plate, make, model);
+        lock (_sync)
+        {
+            TripReceipt active = _state.ActiveTrip;
+            if (SameTrip(active, cargo, source, destination, profileId, cargoId, identity))
+                return active.TripId ?? string.Empty;
+            return string.Empty; // No match: don't accidentally inherit another driver's trip.
+        }
+    }
+
 	public void Observe(JObject telemetry)
 	{
 		if (telemetry == null)
