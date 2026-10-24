@@ -591,14 +591,14 @@
   function progress(profile,eventId){
     const event=eventById(eventId);if(!event)return {count:0,goal:0,completed:false,completedAt:null,matched:new Map()};
     const start=event.start?Date.parse(event.start):-Infinity,end=event.end?Date.parse(event.end):Infinity;
-    const rows=Array.isArray(profile?.deliveries)?profile.deliveries:(Array.isArray(profile?.cargo_history)?profile.cargo_history:[]);
+    const rows=Array.isArray(profile?.event_history)?profile.event_history:(Array.isArray(profile?.deliveries)?profile.deliveries:(Array.isArray(profile?.cargo_history)?profile.cargo_history:[]));
     const matched=new Map();
     const steps=[];
     const ordered=[...rows].filter(row=>{const t=rowTime(row);return Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
     if(event.repetitions){
       const cargoCounts=new Map((event.cargos||[]).map(c=>[c.official,0]));
       const seen=new Set();let completedAt=null;
-      const history=Array.isArray(profile?.event_deliveries)?profile.event_deliveries:ordered;
+      const history=Array.isArray(profile?.event_history)?profile.event_history:(Array.isArray(profile?.event_deliveries)?profile.event_deliveries:ordered);
       const valid=[...history].filter(row=>{const t=rowTime(row);return Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
       for(const row of valid){
         if(!completedDelivery(row))continue;
@@ -618,7 +618,7 @@
       }
       const count=[...cargoCounts.values()].reduce((a,b)=>a+b,0),goal=event.goal;
       const completed=(event.cargos||[]).every(c=>!c.pending_catalog&&(cargoCounts.get(c.official)||0)>=Number(c.required_deliveries||event.repetitions));
-      return {count,goal,completed,completedAt:completed?completedAt:null,matched,cargoCounts,manual:false,reason:'',historyLimited:!Array.isArray(profile?.event_deliveries)};
+      return {count,goal,completed,completedAt:completed?completedAt:null,matched,cargoCounts,manual:false,reason:'',historyLimited:!Array.isArray(profile?.event_history)&&!Array.isArray(profile?.event_deliveries)};
     }
     if(event.sequence){
       let expected=0;
