@@ -1,0 +1,54 @@
+name: TruckSim GPS 1.4.4 GAT damage test (no publish)
+on:
+  pull_request:
+    paths:
+      - 'trucksim-gps-gat/**'
+      - '.github/workflows/build-trucksim-gps-144-test.yml'
+permissions:
+  contents: read
+jobs:
+  build-trucksim-144:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            trucksim-gps-gat
+            .github/workflows
+      - uses: microsoft/setup-msbuild@v2
+      - name: Get official 1.4.4 sources (pinned tag)
+        shell: pwsh
+        run: git clone --depth 1 --branch 1.4.4 https://github.com/TruckSim-GPS/trucksim-gps-server.git trucksim-gps-gat/build/trucksim-gps-server
+      - name: Add engine, transmission, cabin, chassis and wheels to V1 JSON
+        shell: pwsh
+        run: |
+          & ./trucksim-gps-gat/apply-patch.ps1 -Root "$PWD/trucksim-gps-gat/build/trucksim-gps-server"
+          $v1 = Get-Content 'trucksim-gps-gat/build/trucksim-gps-server/source/Funbit.Ets.Telemetry.Server/Data/TelemetryV1.cs' -Raw
+          foreach ($name in @('WearEngine','WearTransmission','WearCabin','WearChassis','WearWheels')) {
+            if (-not $v1.Contains("public float $name")) { throw "Missing $name" }
+          }
+      - name: Build official server with GAT wear fields
+        shell: pwsh
+        run: |
+          $root = 'trucksim-gps-gat/build/trucksim-gps-server'
+          nuget restore "$root/source/Funbit.Ets.Telemetry.sln" -NonInteractive
+          if ($LASTEXITCODE -ne 0) { throw 'NuGet restore failed' }
+          msbuild "$root/source/Funbit.Ets.Telemetry.sln" /m /t:Rebuild /p:Configuration=Release /p:Platform="Mixed Platforms"
+          if ($LASTEXITCODE -ne 0) { throw 'TruckSim build failed' }
+      - name: Package portable version and corresponding source
+        shell: pwsh
+        run: |
+          $root = 'trucksim-gps-gat/build/trucksim-gps-server'
+          $bin = "$root/source/Funbit.Ets.Telemetry.Server/bin/Release"
+          if (-not (Test-Path "$bin/TruckSimGPS_Server.exe")) { throw 'Server executable missing' }
+          New-Item -ItemType Directory -Force trucksim-gps-gat/output | Out-Null
+          Compress-Archive -Path "$bin/*" -DestinationPath 'trucksim-gps-gat/output/TruckSimGPS_GAT_DANOS_1.4.4_PORTATIL_TESTE.zip'
+          # Keep matching source, including patch, to accompany this test build.
+          Remove-Item "$root/.git" -Recurse -Force
+          Compress-Archive -Path "$root/*" -DestinationPath 'trucksim-gps-gat/output/TruckSimGPS_GAT_DANOS_1.4.4_FONTE.zip'
+          Get-FileHash 'trucksim-gps-gat/output/TruckSimGPS_GAT_DANOS_1.4.4_PORTATIL_TESTE.zip'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TruckSimGPS_GAT_DANOS_1.4.4_TESTE
+          path: trucksim-gps-gat/output/*.zip
+          retention-days: 14
