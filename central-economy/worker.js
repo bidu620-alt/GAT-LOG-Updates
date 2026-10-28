@@ -1,6 +1,7 @@
+import {ensureCompanies,companyPublic,companyAction} from './company-community.js';
 import {telemetryCanonical} from './journal-canonical.js';
 import {economyTrack,economyFinish,economyAction,ensureEconomy} from './economy-official.js';
-import {ensureCompanies,companyPublic,companyAction} from './company-community.js';
+import {monthlyPassConfig} from './monthly-pass.js';
 import {createHash,createHmac,pbkdf2Sync} from 'node:crypto';
 import {rankingPeriod} from './ranking-period.js';
 const sha256=x=>createHash('sha256').update(x).digest();
@@ -11,10 +12,15 @@ import {budgetState} from './budget-guard.js';
 import {rankingReadiness, rankingMessage, advanceRankGuard, restoreDeliveredTrailer} from './ranking-telemetry.js';
 import {calculateGatScore, updateMissionFineTracker, GAT_SCORING_V2_START_LOCAL, GAT_TIMEZONE} from './scoring-rules.js';
 
-export function recognizedTripDistance(plannedKm, measuredKm, fallbackKm) {
+export function recognizedTripDistance(plannedKm, measuredKm, fallbackKm, receiptKm = 0) {
  const positive = value => Number.isFinite(Number(value)) && Number(value) > 0 ? Number(value) : 0;
  const planned = positive(plannedKm), measured = positive(measuredKm), fallback = positive(fallbackKm);
- const actual = measured || fallback;
+ const receipt = positive(receiptKm);
+ const actual = measured || receipt || fallback;
+ if (receipt > 0) return {planned_distance_km:planned,actual_distance_km:actual,
+   receipt_distance_km:receipt,distance_cap_km:null,distance_km:receipt,
+   distance_capped:false,distance_source:'game_delivery_receipt',
+   distance_rule:'validated_delivery_receipt'};
  const cap = planned > 0 ? planned * 1.25 : 0;
  return {planned_distance_km:planned,actual_distance_km:actual,distance_cap_km:cap,
    distance_km:cap > 0 ? Math.min(actual,cap) : actual,
@@ -36,7 +42,7 @@ const SPEED_LIMIT_TOLERANCE_KMH=1;
 const MAX_BODY=262144;
 const ADMIN=new Set(['owner','admin','moderator']);
 const POWER=new Set(['owner','admin']);
-const ORIGINS=new Set(['https://gatlogets2.com.br','https://www.gatlogets2.com.br','https://bidu620-alt.github.io']);
+const ORIGINS=new Set(['https://bidulog.com.br','https://www.bidulog.com.br','https://gatlogets2.com.br','https://www.gatlogets2.com.br','https://bidu620-alt.github.io']);
 const enc=new TextEncoder();
 const now=()=>new Date().toISOString();
 const clean=v=>String(v||'').replace(/^@/,'').trim().toLowerCase();
@@ -86,6 +92,18 @@ async function live(env){return cachedRead('live',5,()=>readLive(env))}
 async function readLive(env){const r=await env.DB.prepare('SELECT driver,account_user,updated_at,telemetry_json FROM telemetry_live WHERE updated_at>=? ORDER BY updated_at DESC').bind(new Date(Date.now()-45000).toISOString()).all();return(r.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.telemetry_json||'{}')}catch{}return flat(x.driver,x.account_user,x.updated_at,raw)})}
 async function profile(env,user){return cachedRead('profile:'+user,15,()=>readProfile(env,user))}
 async function farmEventHistory(env,user){const rows=await env.DB.prepare("WITH identified AS (SELECT id,cargo,distance_km,delivered_at,COALESCE(NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_identity.cargo_id_raw'),''),NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_identity.cargo_id'),''),NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.mission.cargo_id'),''),NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_id'),'')) AS cargo_id FROM deliveries WHERE user=? AND distance_km>=1000 AND julianday(delivered_at) IS NOT NULL), grouped AS (SELECT *,CASE WHEN cargo_id IN ('live_cattle') THEN 'Live Cattle' WHEN cargo_id IN ('live_pigs') THEN 'Live Pigs' WHEN cargo_id IN ('sheep_wool') THEN 'Sheep Wool' WHEN cargo_id IN ('cheese') THEN 'Cheese' WHEN cargo_id IN ('milk','milk_t') THEN 'Milk' WHEN cargo_id IN ('nonalco_beer') THEN 'Non-alcoholic Beer' WHEN cargo_id IN ('beef_meat') THEN 'Beef' WHEN cargo_id IN ('pork_meat') THEN 'Pork' WHEN cargo_id IN ('chicken_meat') THEN 'Chicken Meat' WHEN cargo_id IN ('pet_food','pet_food_c') THEN 'Pet Food' WHEN cargo_id IN ('straw_bales') THEN 'Straw Bales' WHEN cargo_id IN ('fertilizer') THEN 'Fertilizer' WHEN cargo_id IN ('big_bag_seed') THEN 'Big-Bags of Seeds' WHEN cargo_id IN ('drymilk') THEN 'Dry Milk' WHEN cargo_id IN ('young_seed') THEN 'Young Seedlings' ELSE NULL END AS category FROM identified), numbered AS (SELECT *,ROW_NUMBER() OVER(PARTITION BY category ORDER BY delivered_at,id) AS event_number FROM grouped WHERE category IS NOT NULL) SELECT id,cargo,cargo_id,distance_km,delivered_at FROM numbered WHERE event_number<=10 ORDER BY delivered_at,id").bind(user).all();return rows.results||[];}
+
+// Compact completed-delivery history for all event rules; never paginate by recent trips.
+export async function gatEventHistory(env,user){
+ const rows=await env.DB.prepare(`SELECT id,cargo,source,destination,distance_km,delivered_at,
+ COALESCE(NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_identity.cargo_id_raw'),''),
+ NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_identity.cargo_id'),''),
+ NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.mission.cargo_id'),''),
+ NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_id'),'')) cargo_id
+ FROM deliveries WHERE user=? AND julianday(delivered_at) IS NOT NULL ORDER BY delivered_at,id`).bind(user).all();
+ return rows.results||[];
+}
+
 async function readProfile(env,user){
  const p=await env.DB.prepare('SELECT * FROM profiles WHERE user=?').bind(user).first();if(!p)return null;
  const d=await env.DB.prepare('SELECT id,sequence_no AS sequence,source,destination,cargo,weight_kg,distance_km,xp,xp AS xp_awarded,perfect,perfect AS perfect_trip,penalty_xp,speed_fines,delivered_at,delivered_at AS completed_at,raw_json FROM deliveries WHERE user=? ORDER BY id DESC LIMIT 100').bind(user).all();
@@ -94,7 +112,7 @@ async function readProfile(env,user){
  let mission=null;try{mission=p.current_mission_json?JSON.parse(p.current_mission_json):null}catch{}
  const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.raw_json||'{}')}catch{}return{...x,...raw.audit}}).reverse(),points=Number(ma?.points||0),monthlyCompleted=Number(ma?.total||0);
  const goldWallet=await env.DB.prepare('SELECT gold_units FROM eco_wallets WHERE user=?').bind(user).first();
- return{user,gold_balance:Number(goldWallet?.gold_units||0)/100,event_deliveries:await farmEventHistory(env,user),monthly_completed:monthlyCompleted,monthly_deliveries:monthlyCompleted,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}
+ return{user,achievements:await gatProfileAchievements(env,user),event_history:await gatEventHistory(env,user),gold_balance:Number(goldWallet?.gold_units||0)/100,event_deliveries:await farmEventHistory(env,user),monthly_completed:monthlyCompleted,monthly_deliveries:monthlyCompleted,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}
 }
 
 function updateMissionSpeedingTracker(m,raw,t){
@@ -419,13 +437,13 @@ async function inspectClientPacket(env,user,device,token,raw,t){
  const continuous=!state||(seq===Number(state.last_seq)+1&&prev===String(state.last_chain||''));
  return{packet_id:packetId,duplicate:false,journal_present:true,journal_verified:continuous,journal_reason:continuous?null:'journal_chain_gap',seq,chain,prev,trip_id:tripId,collected_at:collected};
 }
-async function persistClientPacket(env,user,device,raw,t,packetState,missionEvent,openJourneyState,phase){
+async function persistClientPacket(env,user,device,raw,t,packetState,missionEvent,openJourneyState,phase,receivedAt=t){
  const packetId=String(packetState?.packet_id||journalPacketId(raw));if(!packetId)return;
  const tripId=String(openJourneyState?.canonical||packetState?.trip_id||journalTripId(raw)||'').trim();
  if(packetState?.journal_verified){
    await env.DB.prepare("INSERT INTO telemetry_journal_state(user,device_id,last_seq,last_chain,last_packet_id,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(user,device_id) DO UPDATE SET last_seq=excluded.last_seq,last_chain=excluded.last_chain,last_packet_id=excluded.last_packet_id,updated_at=excluded.updated_at").bind(user,device,Number(packetState.seq)||0,String(packetState.chain||''),packetId,t).run();
  }
- await env.DB.prepare('INSERT INTO telemetry_packet_receipts(user,packet_id,device_id,trip_id,collected_at,received_at,journal_seq,journal_chain,journal_verified,journal_reason,mission_event_json) VALUES(?,?,?,?,?,?,?,?,?,?,?)').bind(user,packetId,device,tripId,String(packetState?.collected_at||raw?.gat_collected_at||''),t,packetState?.seq??null,packetState?.chain||null,packetState?.journal_verified?1:0,packetState?.journal_reason||null,missionEvent?JSON.stringify(missionEvent):null).run();
+ await env.DB.prepare('INSERT INTO telemetry_packet_receipts(user,packet_id,device_id,trip_id,collected_at,received_at,journal_seq,journal_chain,journal_verified,journal_reason,mission_event_json) VALUES(?,?,?,?,?,?,?,?,?,?,?)').bind(user,packetId,device,tripId,String(packetState?.collected_at||raw?.gat_collected_at||''),receivedAt,packetState?.seq??null,packetState?.chain||null,packetState?.journal_verified?1:0,packetState?.journal_reason||null,missionEvent?JSON.stringify(missionEvent):null).run();
  if(!tripId)return;
  const terminal=phase==='delivered'||phase==='cancelled',last=await env.DB.prepare('SELECT received_at FROM trip_checkpoints WHERE user=? AND trip_id=? ORDER BY id DESC LIMIT 1').bind(user,tripId).first(),age=last?Date.parse(t)-Date.parse(last.received_at):Infinity;
  if(!terminal&&Number.isFinite(age)&&age<120000)return;
@@ -687,7 +705,7 @@ async function processMissionCore(env,user,raw,t,previousAt,preflightTruckDamage
  const startOdometer=Number(m.start_odometer_km)||0;
  const actualOdometerDistance=!truckIdentityMismatch&&startOdometer>0&&odoNow>=startOdometer?odoNow-startOdometer:0;
  const fallbackDistance=Number(details.distanceKm)||Number(details.distance_km)||plannedDistance||teleKm||0;
- const distanceAudit=recognizedTripDistance(plannedDistance,actualOdometerDistance,fallbackDistance);
+ const distanceAudit=recognizedTripDistance(plannedDistance,actualOdometerDistance,fallbackDistance,Number(details.distanceKm)||Number(details.distance_km)||0);
  const distance=distanceAudit.distance_km,rankGuardReason=m.rank_guard?.reason||(!m.rank_guard?'telemetry_not_verified_from_start':null),rankReason=null,rankEligible=true;
  const source=String(m.source||f.source_city||'Origem nao informada').trim()||'Origem nao informada',destination=String(m.destination||f.destination_city||'Destino nao informado').trim()||'Destino nao informado';
  const routeKey=`${norm(source)}>${norm(destination)}`,mk=month(t),workId=String(m.catalog_id||'')
@@ -762,7 +780,7 @@ const GAT_ACHIEVEMENTS=[
  {id:'maratonista',title:'Maratonista',difficulty:'Muito difícil',xp:2000}
 ];
 
-async function gatAchievementStats(env,user){
+export async function gatAchievementStats(env,user){
  const s=await env.DB.prepare(`
   SELECT
    COUNT(*) deliveries,
@@ -992,6 +1010,21 @@ async function gatAchievementRewards(env,user){
  return out;
 }
 
+
+// Career achievements are independent of the paginated recent-delivery history.
+// Reading a profile never awards XP or modifies saved unlock records.
+export async function gatProfileAchievements(env,user){
+ const [stats,rewards]=await Promise.all([gatAchievementStats(env,user),gatAchievementRewards(env,user)]);
+ const saved=new Map(rewards.map(a=>[a.id,a]));
+ const result=GAT_ACHIEVEMENTS.map(a=>{
+  const reward=saved.get(a.id);
+  return {...a,...(reward||{}),unlocked:!!reward||gatAchievementUnlocked(a.id,stats)};
+ });
+ const known=new Set(result.map(a=>a.id));
+ for(const reward of rewards)if(!known.has(reward.id))result.push({...reward,unlocked:true});
+ return result;
+}
+
 async function clientCredential(env,driver,device,token){if(!token)return{error:'token_required'};const hash=await sha(token),r=await env.DB.prepare('SELECT ct.token_hash,ct.driver,ct.account_user,ct.device_id,ct.revoked_at,ct.last_seen_at,a.disabled FROM client_tokens ct LEFT JOIN accounts a ON a.user=ct.account_user WHERE ct.token_hash=?').bind(hash).first();if(!r||r.revoked_at||!r.account_user||r.disabled)return{error:'link_required'};if(clean(r.driver)!==clean(driver))return{error:'driver_mismatch'};if(r.device_id&&device&&r.device_id!==device)return{error:'device_mismatch'};if(!r.last_seen_at||Date.now()-Date.parse(r.last_seen_at)>=60000)await env.DB.prepare('UPDATE client_tokens SET last_seen_at=? WHERE token_hash=?').bind(now(),hash).run();return{row:r}}
 async function pairing(env,driver,device){const old=await env.DB.prepare('SELECT code_plain,expires_at FROM client_pairings WHERE driver=? AND device_id=? AND claimed_user IS NULL').bind(driver,device).first();if(old&&Date.parse(old.expires_at)>Date.now())return old;const code=randomHex(4).toUpperCase(),expires=new Date(Date.now()+15*60000).toISOString();await env.DB.prepare('INSERT INTO client_pairings(code_hash,code_plain,driver,device_id,created_at,expires_at,claimed_user) VALUES(?,?,?,?,?,?,NULL) ON CONFLICT(driver,device_id) DO UPDATE SET code_hash=excluded.code_hash,code_plain=excluded.code_plain,created_at=excluded.created_at,expires_at=excluded.expires_at,claimed_user=NULL').bind(await sha(code),code,driver,device,now(),expires).run();return{code_plain:code,expires_at:expires}}
 async function finishPair(env,driver,device){const p=await env.DB.prepare('SELECT code_hash,claimed_user,expires_at FROM client_pairings WHERE driver=? AND device_id=?').bind(driver,device).first();if(!p?.claimed_user||Date.parse(p.expires_at)<=Date.now())return null;const token=randomHex(32);await env.DB.batch([env.DB.prepare('UPDATE client_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL').bind(now(),device),env.DB.prepare('INSERT INTO client_tokens(token_hash,driver,account_user,device_id,created_at,last_seen_at,revoked_at) VALUES(?,?,?,?,?,?,NULL)').bind(await sha(token),driver,p.claimed_user,device,now(),now()),env.DB.prepare('DELETE FROM client_pairings WHERE code_hash=?').bind(p.code_hash)]);return{token,account_user:p.claimed_user}}
@@ -1134,7 +1167,8 @@ async function gatRadioState(env){
 }
 
 async function route(req,env){const u=new URL(req.url),p=u.pathname,m=req.method;if(m==='OPTIONS')return new Response(null,{status:204,headers:headers(req)});if(!['GET','POST'].includes(m))throw new HttpError(405,'method_not_allowed');
- if(p==='/health')return json(req,{ok:true,economy_mode:'official',economy_version:'1.0.0',service:'GAT Central Local',agent_version:VERSION,time:now(),mission_min_km:MIN_KM,test_mode:false});
+ if(p==='/api/passe/config'&&m==='GET')return json(req,{ok:true,pass:monthlyPassConfig()});
+ if(p==='/health')return json(req,{ok:true,economy_mode:'official',economy_version:'1.0.1-timing',service:'GAT Central Local',agent_version:VERSION,time:now(),mission_min_km:MIN_KM,test_mode:false});
  if(p==='/api/public/version')return json(req,{ok:true,agent_version:VERSION,platform:'cloudflare-workers-d1',mission_min_km:MIN_KM,test_mode:false});
  if(p==='/api/public/radio'&&m==='GET')return json(req,{ok:true,radio:await gatRadioState(env)});
  if(p==='/api/client/server-info')return json(req,{ok:true,online:true,server_name:'GAT CENTRAL CLOUD',session_id:'CLOUD',players:(await live(env)).length,max_players:999});if(p==='/api/client/players')return json(req,{ok:true,players:(await live(env)).map(x=>x.driver)});
@@ -1207,7 +1241,7 @@ async function route(req,env){const u=new URL(req.url),p=u.pathname,m=req.method
    }
      await finishOpenJourney(env,account,raw,t,openJourneyState,missionEvent);
      const checkpointPhase=delivered?'delivered':cancelled?'cancelled':loaded?'progress':'idle';
-     await persistClientPacket(env,account,device,raw,t,packetState,missionEvent,openJourneyState,checkpointPhase);
+     await persistClientPacket(env,account,device,raw,t,packetState,missionEvent,openJourneyState,checkpointPhase,receivedAt);
    }
    if(missionEvent&&missionEvent.type&&!['mission_in_progress','mission_waiting'].includes(String(missionEvent.type))){invalidateRead('profile:'+account);invalidateRead('get:/api/public/work/catalog:'+account);if(String(missionEvent.type).startsWith('delivery_completed')){invalidateRead('get:/api/public/ranking:current');invalidateRead('get:/api/public/safety-ranking:')}}
    await env.DB.prepare('INSERT INTO telemetry_live(driver,account_user,device_id,updated_at,telemetry_json) VALUES(?,?,?,?,?) ON CONFLICT(driver) DO UPDATE SET account_user=excluded.account_user,device_id=excluded.device_id,updated_at=excluded.updated_at,telemetry_json=excluded.telemetry_json').bind(driver,account,device,receivedAt,JSON.stringify(raw)).run();
