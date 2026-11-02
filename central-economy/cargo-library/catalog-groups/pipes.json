@@ -1,0 +1,61 @@
+{
+  "id": "pipes",
+  "title": "Tubos",
+  "entries": [
+    {
+      "name": "Backflow Preventers",
+      "dlc": "Vive la France!",
+      "weight": "13–23",
+      "name_pt": "Válvulas de contrafluxo",
+      "cargo_ids": [
+        "backfl_prev"
+      ],
+      "aliases": [
+        "Backflow Preventers",
+        "Válvulas de retenção"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Gas Pipeline Parts",
+      "dlc": "High Power Cargo Pack",
+      "weight": "21",
+      "name_pt": "Peças para gasoduto",
+      "cargo_ids": [
+        "tube"
+      ],
+      "aliases": [
+        "Gas Pipeline Parts",
+        "Peças de gasoduto"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Large Tubes",
+      "dlc": "Launch",
+      "weight": "21",
+      "name_pt": "Tubos grandes",
+      "cargo_ids": [
+        "largetubes"
+      ],
+      "aliases": [
+        "Large Tubes"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Plastic Pipes",
+      "dlc": "Launch",
+      "weight": "5",
+      "name_pt": "Tubos de plástico",
+      "cargo_ids": [
+        "plast_pipes"
+      ],
+      "aliases": [
+        "Plastic Pipes",
+        "Tubos plásticos"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

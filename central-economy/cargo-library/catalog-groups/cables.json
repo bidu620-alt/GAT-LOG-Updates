@@ -1,0 +1,33 @@
+{
+  "id": "cables",
+  "title": "Cabos e bobinas",
+  "entries": [
+    {
+      "name": "High Voltage Cables",
+      "dlc": "Vive la France!",
+      "weight": "12–21",
+      "name_pt": "Cabos de alta tensão",
+      "cargo_ids": [
+        "hi_volt_cabl"
+      ],
+      "aliases": [
+        "High Voltage Cables"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Industrial Cable Reel",
+      "dlc": "Heavy Cargo Pack",
+      "weight": "34",
+      "name_pt": "Rolo de cabo industrial",
+      "cargo_ids": [
+        "cable_reel"
+      ],
+      "aliases": [
+        "Bobina de cabo industrial",
+        "Industrial Cable Reel"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

@@ -1,0 +1,333 @@
+{
+  "id": "heavy_machine",
+  "title": "Máquinas pesadas",
+  "entries": [
+    {
+      "name": "Articulated Hauler Volvo A25G",
+      "dlc": "Volvo Construction Equipment",
+      "weight": "25",
+      "name_pt": "Caminhão articulado Volvo A25G",
+      "cargo_ids": [
+        "volvo_a25g"
+      ],
+      "aliases": [
+        "Articulated Hauler Volvo A25G"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Backhoe Loader",
+      "dlc": "Launch",
+      "weight": "8",
+      "name_pt": "Retroescavadeira",
+      "cargo_ids": [
+        "digger500"
+      ],
+      "aliases": [
+        "Backhoe Loader"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Backhoe Loader JCB 4CX",
+      "dlc": "JCB Equipment Pack",
+      "weight": "8",
+      "name_pt": "Retroescavadeira JCB 4CX",
+      "cargo_ids": [
+        "jcb_bhl4cx"
+      ],
+      "aliases": [
+        "Backhoe Loader JCB 4CX"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Crawler Carrier",
+      "dlc": "1.57",
+      "weight": "11",
+      "name_pt": "Caminhão sobre esteiras",
+      "cargo_ids": [
+        "crawler"
+      ],
+      "aliases": [
+        "Crawler Carrier",
+        "Transportador de esteiras"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Dozer Crawl - Z35K",
+      "dlc": "Heavy Cargo Pack",
+      "weight": "39",
+      "name_pt": "Esteira de trator",
+      "cargo_ids": [
+        "dozer"
+      ],
+      "aliases": [
+        "Dozer Crawl",
+        "Dozer Crawl - Z35K",
+        "Trator de esteiras"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Electric Mini Excavator JCB 19C-E",
+      "dlc": "JCB Equipment Pack",
+      "weight": "5",
+      "name_pt": "Miniescavadeira Elétrica JCB 19C-E",
+      "cargo_ids": [
+        "jcb_mexc19ce"
+      ],
+      "aliases": [
+        "Electric Mini Excavator JCB 19C-E",
+        "Mini escavadeira elétrica JCB 19C-E"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Excavator",
+      "dlc": "Launch",
+      "weight": "21",
+      "name_pt": "Escavadeira",
+      "cargo_ids": [
+        "excavator"
+      ],
+      "aliases": [
+        "Excavator"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Excavator Bobcat E60",
+      "dlc": "Bobcat Cargo Pack",
+      "weight": "???",
+      "name_pt": "Escavadeira Bobcat E60",
+      "cargo_ids": [
+        "bob_e60"
+      ],
+      "aliases": [
+        "Excavator Bobcat E60"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Excavator Bucket",
+      "dlc": "Special Transport",
+      "weight": "25",
+      "name_pt": "Balde para Escavadeira",
+      "cargo_ids": [
+        "ex_bucket"
+      ],
+      "aliases": [
+        "Caçamba de escavadeira",
+        "Excavator Bucket"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Excavator JCB 245XR",
+      "dlc": "JCB Equipment Pack",
+      "weight": "28",
+      "name_pt": "Escavadeira JCB 245XR",
+      "cargo_ids": [
+        "jcb_exc245xr"
+      ],
+      "aliases": [
+        "Excavator JCB 245XR"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Excavator Volvo EC220E",
+      "dlc": "Volvo Construction Equipment",
+      "weight": "20",
+      "name_pt": "Escavadeira Volvo EC220E",
+      "cargo_ids": [
+        "volvo_ec220e"
+      ],
+      "aliases": [
+        "Excavator Volvo EC220E"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Excavator Volvo EW240E MH",
+      "dlc": "Volvo Construction Equipment",
+      "weight": "26",
+      "name_pt": "Escavadeira Volvo EW240E MH",
+      "cargo_ids": [
+        "vol_ew240emh"
+      ],
+      "aliases": [
+        "Excavator Volvo EW240E MH"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Forestry Crawler Excavator",
+      "dlc": "Forest Machinery",
+      "weight": "17",
+      "name_pt": "Escavadeira florestal sobre esteiras",
+      "cargo_ids": [
+        "exc_craw"
+      ],
+      "aliases": [
+        "Escavadeira florestal de esteiras",
+        "Forestry Crawler Excavator"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Haul Truck Chassis",
+      "dlc": "Special Transport",
+      "weight": "55",
+      "name_pt": "Chassis de Caminhão de Mineração",
+      "cargo_ids": [
+        "dumper"
+      ],
+      "aliases": [
+        "Chassi de caminhão fora de estrada",
+        "Haul Truck Chassis"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Mini Excavator Bobcat E10e",
+      "dlc": "Bobcat Cargo Pack",
+      "weight": "???",
+      "name_pt": "Escavadeira compacta Bobcat E10e",
+      "cargo_ids": [
+        "bob_e10e"
+      ],
+      "aliases": [
+        "Mini Excavator Bobcat E10e",
+        "Mini escavadeira Bobcat E10e"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Mobile Crane - UTM SD-833",
+      "dlc": "Heavy Cargo Pack",
+      "weight": "36",
+      "name_pt": "Guindaste móvel",
+      "cargo_ids": [
+        "mobile_crane"
+      ],
+      "aliases": [
+        "Guindaste móvel - UTM SD-833",
+        "Mobile Crane",
+        "Mobile Crane - UTM SD-833"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Rock Bucket Volvo SPN P T SEG",
+      "dlc": "Volvo Construction Equipment",
+      "weight": "3",
+      "name_pt": "Caçamba Volvo SPN P T SEG",
+      "cargo_ids": [
+        "volvo_bucket"
+      ],
+      "aliases": [
+        "Caçamba para rocha Volvo SPN P T SEG",
+        "Rock Bucket Volvo SPN P T SEG"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Skid-Steer Loader Bobcat S86",
+      "dlc": "Bobcat Cargo Pack",
+      "weight": "???",
+      "name_pt": "Minicarregadeira Bobcat S86",
+      "cargo_ids": [
+        "bob_s86"
+      ],
+      "aliases": [
+        "Skid-Steer Loader Bobcat S86"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Underground Loader",
+      "dlc": "Special Transport (Nordic Horizons)",
+      "weight": "54",
+      "name_pt": "Carregadeira subterrânea",
+      "cargo_ids": [
+        "load_un"
+      ],
+      "aliases": [
+        "Underground Loader"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wheel Loader",
+      "dlc": "Launch",
+      "weight": "15",
+      "name_pt": "Pá-carregadeira",
+      "cargo_ids": [
+        "digger1000"
+      ],
+      "aliases": [
+        "Pá carregadeira",
+        "Wheel Loader"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wheel Loader Bobcat L95",
+      "dlc": "Bobcat Cargo Pack",
+      "weight": "???",
+      "name_pt": "Pá-carregadeira compacta sobre rodas Bobcat L95",
+      "cargo_ids": [
+        "bob_l95"
+      ],
+      "aliases": [
+        "Pá carregadeira Bobcat L95",
+        "Wheel Loader Bobcat L95"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wheel Loader JCB 457",
+      "dlc": "JCB Equipment Pack",
+      "weight": "20",
+      "name_pt": "Pá-carregadeira JCB 457",
+      "cargo_ids": [
+        "jcb_wload457"
+      ],
+      "aliases": [
+        "Pá carregadeira JCB 457",
+        "Wheel Loader JCB 457"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wheel Loader Volvo L250H",
+      "dlc": "Volvo Construction Equipment",
+      "weight": "35",
+      "name_pt": "Pá-carregadeira Volvo L250H",
+      "cargo_ids": [
+        "volvo_l250h"
+      ],
+      "aliases": [
+        "Pá carregadeira Volvo L250H",
+        "Wheel Loader Volvo L250H"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Articulated Hauler",
+      "name_pt": "Caminhão articulado",
+      "cargo_ids": [
+        "art_dumper"
+      ],
+      "aliases": [
+        "Articulated Hauler"
+      ],
+      "dlc": "Special Transport",
+      "weight": "43.9985",
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

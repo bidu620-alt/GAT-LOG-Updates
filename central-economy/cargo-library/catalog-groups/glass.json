@@ -1,0 +1,32 @@
+{
+  "id": "glass",
+  "title": "Vidro",
+  "entries": [
+    {
+      "name": "Glass Panels",
+      "dlc": "Launch",
+      "weight": "19–21",
+      "name_pt": "Painéis de vidro",
+      "cargo_ids": [
+        "glass"
+      ],
+      "aliases": [
+        "Glass Panels"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Packed Glass",
+      "dlc": "Launch",
+      "weight": "22",
+      "name_pt": "Vidro embalado",
+      "cargo_ids": [
+        "glass_packed"
+      ],
+      "aliases": [
+        "Packed Glass"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

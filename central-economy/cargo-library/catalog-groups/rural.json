@@ -1,0 +1,74 @@
+{
+  "id": "rural",
+  "title": "Animais e produtos rurais",
+  "entries": [
+    {
+      "name": "Live Cattle",
+      "dlc": "Scandinavia",
+      "weight": "23–25",
+      "name_pt": "Gado bovino vivo",
+      "cargo_ids": [
+        "live_cattle"
+      ],
+      "aliases": [
+        "Gado vivo",
+        "Live Cattle"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Live Pigs",
+      "dlc": "1.47",
+      "weight": "10–11",
+      "name_pt": "Porcos Vivos",
+      "cargo_ids": [
+        "live_pigs"
+      ],
+      "aliases": [
+        "Live Pigs",
+        "Porcos vivos"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Sheep Wool",
+      "dlc": "Scandinavia",
+      "weight": "7–13",
+      "name_pt": "Lã de ovelha",
+      "cargo_ids": [
+        "sheep_wool"
+      ],
+      "aliases": [
+        "Sheep Wool"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Stone Wool",
+      "dlc": "Scandinavia",
+      "weight": "3–5",
+      "name_pt": "Lã de pedra",
+      "cargo_ids": [
+        "stone_wool"
+      ],
+      "aliases": [
+        "Lã de rocha",
+        "Stone Wool"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Straw Bales",
+      "dlc": "Launch",
+      "weight": "3–7",
+      "name_pt": "Fardos de palha",
+      "cargo_ids": [
+        "straw_bales"
+      ],
+      "aliases": [
+        "Straw Bales"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

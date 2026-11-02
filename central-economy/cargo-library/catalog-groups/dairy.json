@@ -1,0 +1,128 @@
+{
+  "id": "dairy",
+  "title": "Leite e laticínios",
+  "entries": [
+    {
+      "name": "Cheese",
+      "dlc": "Launch",
+      "weight": "10–18",
+      "name_pt": "Queijo",
+      "cargo_ids": [
+        "cheese"
+      ],
+      "aliases": [
+        "Cheese"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Coconut Milk",
+      "dlc": "Vive la France!",
+      "weight": "13–23",
+      "name_pt": "Leite de coco",
+      "cargo_ids": [
+        "coconut_milk"
+      ],
+      "aliases": [
+        "Coconut Milk"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Cottage Cheese",
+      "dlc": "Scandinavia",
+      "weight": "10–18",
+      "name_pt": "Queijo tipo Cottage",
+      "cargo_ids": [
+        "cott_cheese"
+      ],
+      "aliases": [
+        "Cottage Cheese",
+        "Queijo cottage"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Dry Milk",
+      "dlc": "Launch",
+      "weight": "10–18",
+      "name_pt": "Leite em pó",
+      "cargo_ids": [
+        "drymilk"
+      ],
+      "aliases": [
+        "Dry Milk"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Goat Cheese",
+      "dlc": "Launch",
+      "weight": "9–15",
+      "name_pt": "Queijo de cabra",
+      "cargo_ids": [
+        "goat_cheese"
+      ],
+      "aliases": [
+        "Goat Cheese"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Milk",
+      "dlc": "Launch",
+      "weight": "11–28",
+      "name_pt": "Leite",
+      "cargo_ids": [
+        "milk",
+        "milk_t"
+      ],
+      "aliases": [
+        "Milk"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Peanut Butter",
+      "dlc": "Launch",
+      "weight": "11–19",
+      "name_pt": "Manteiga de amendoim",
+      "cargo_ids": [
+        "pnut_butter"
+      ],
+      "aliases": [
+        "Massa de amendoim",
+        "Pasta de amendoim",
+        "Peanut Butter"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Soy Milk",
+      "dlc": "Vive la France!",
+      "weight": "12–27",
+      "name_pt": "Leite de soja",
+      "cargo_ids": [
+        "soy_milk",
+        "soy_milk_t"
+      ],
+      "aliases": [
+        "Soy Milk"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Yoghurt",
+      "dlc": "Launch",
+      "weight": "9–17",
+      "name_pt": "Iogurte",
+      "cargo_ids": [
+        "yogurt"
+      ],
+      "aliases": [
+        "Yoghurt"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

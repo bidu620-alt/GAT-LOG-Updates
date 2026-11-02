@@ -1,0 +1,32 @@
+{
+  "id": "mining",
+  "title": "Minério e carvão",
+  "entries": [
+    {
+      "name": "Coal",
+      "dlc": "Launch",
+      "weight": "21–27",
+      "name_pt": "Carvão",
+      "cargo_ids": [
+        "coal"
+      ],
+      "aliases": [
+        "Coal"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Ore",
+      "dlc": "Launch",
+      "weight": "22–27",
+      "name_pt": "Minério",
+      "cargo_ids": [
+        "ore"
+      ],
+      "aliases": [
+        "Ore"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

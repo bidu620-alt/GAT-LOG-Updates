@@ -1,0 +1,126 @@
+{
+  "id": "fuel",
+  "title": "Combustível",
+  "entries": [
+    {
+      "name": "Diesel",
+      "dlc": "Launch",
+      "weight": "20–25",
+      "name_pt": "Diesel",
+      "cargo_ids": [
+        "diesel"
+      ],
+      "aliases": [],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Diesel Generators",
+      "dlc": "Vive la France!",
+      "weight": "12–21",
+      "name_pt": "Geradores à Diesel",
+      "cargo_ids": [
+        "diesel_gen"
+      ],
+      "aliases": [
+        "Diesel Generators",
+        "Geradores a diesel"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Fuel Oil",
+      "dlc": "Vive la France!",
+      "weight": "20–25",
+      "name_pt": "Óleo combustível",
+      "cargo_ids": [
+        "fuel_oil"
+      ],
+      "aliases": [
+        "Fuel Oil"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Fuel Tanker",
+      "dlc": "Launch",
+      "weight": "9–19",
+      "name_pt": "Caminhão-tanque",
+      "cargo_ids": [
+        "fueltanker"
+      ],
+      "aliases": [
+        "Caminhão-tanque de combustível",
+        "Fuel Tanker"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Fuel Tanks",
+      "dlc": "Scandinavia",
+      "weight": "5–10",
+      "name_pt": "Tanques de combustível",
+      "cargo_ids": [
+        "fuel_tanks"
+      ],
+      "aliases": [
+        "Fuel Tanks"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Kerosene",
+      "dlc": "Launch",
+      "weight": "18–23",
+      "name_pt": "Querosene",
+      "cargo_ids": [
+        "kerosene"
+      ],
+      "aliases": [
+        "Kerosene"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "LPG",
+      "dlc": "Launch",
+      "weight": "10–22",
+      "name_pt": "GLP",
+      "cargo_ids": [
+        "lpg",
+        "lpg_t"
+      ],
+      "aliases": [
+        "Gas de Cozinha",
+        "Gás de cozinha",
+        "LPG"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Petrol",
+      "dlc": "Launch",
+      "weight": "17–21",
+      "name_pt": "Gasolina",
+      "cargo_ids": [
+        "petrol"
+      ],
+      "aliases": [
+        "Petrol"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Propane",
+      "dlc": "1.47",
+      "weight": "13–19",
+      "name_pt": "Propano",
+      "cargo_ids": [
+        "propane"
+      ],
+      "aliases": [
+        "Propane"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

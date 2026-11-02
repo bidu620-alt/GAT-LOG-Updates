@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "id": "cegonheiro",
+  "title": "Cegonheiro",
+  "cargo_ids": [
+    "car_balt1",
+    "car_balt2",
+    "car_d",
+    "car_f",
+    "car_gr",
+    "car_ibe",
+    "car_it",
+    "caravans",
+    "cars_fr",
+    "daf_tr",
+    "mondeos",
+    "motorcycles",
+    "pickup_gr",
+    "scania_tr",
+    "scooters",
+    "vans_fd",
+    "vans_id",
+    "vans_vt",
+    "volvo_cars",
+    "volvo_tr"
+  ],
+  "entries": [
+    {
+      "cargo_id": "car_balt1",
+      "name": "Cars",
+      "name_pt": "Carros",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "car_balt2",
+      "name": "Cars",
+      "name_pt": "Carros",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "car_d",
+      "name": "Cars",
+      "name_pt": "Carros",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "car_f",
+      "name": "Cars",
+      "name_pt": "Carros",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "car_gr",
+      "name": "SUVs",
+      "name_pt": "SUVs",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "car_ibe",
+      "name": "Cars",
+      "name_pt": "Carros",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "car_it",
+      "name": "Cars",
+      "name_pt": "Carros",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "caravans",
+      "name": "Campervans",
+      "name_pt": "Autocaravanas",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "cars_fr",
+      "name": "Cars",
+      "name_pt": "Carros",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "daf_tr",
+      "name": "Trucks DAF",
+      "name_pt": "Caminhões DAF",
+      "source_group": "custom",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "mondeos",
+      "name": "Cars",
+      "name_pt": "Carros",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "motorcycles",
+      "name": "Motorcycles",
+      "name_pt": "Motocicletas",
+      "source_group": "motorcycles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "pickup_gr",
+      "name": "Pickups",
+      "name_pt": "Picapes",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "scania_tr",
+      "name": "Trucks Scania",
+      "name_pt": "Caminhões Scania",
+      "source_group": "custom",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "scooters",
+      "name": "Scooters",
+      "name_pt": "Scooters",
+      "source_group": "motorcycles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "vans_fd",
+      "name": "Vans",
+      "name_pt": "Vans",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "vans_id",
+      "name": "Vans",
+      "name_pt": "Vans",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "vans_vt",
+      "name": "Vans",
+      "name_pt": "Vans",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "volvo_cars",
+      "name": "Luxury SUVs",
+      "name_pt": "SUVs de luxo",
+      "source_group": "vehicles",
+      "selection_reason": "vehicle_transport"
+    },
+    {
+      "cargo_id": "volvo_tr",
+      "name": "Trucks Volvo",
+      "name_pt": "Caminhões Volvo",
+      "source_group": "custom",
+      "selection_reason": "vehicle_transport"
+    }
+  ]
+}

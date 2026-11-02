@@ -1,0 +1,46 @@
+{
+  "id": "boats",
+  "title": "Barcos e iates",
+  "entries": [
+    {
+      "name": "Luxury Yacht",
+      "dlc": "Launch",
+      "weight": "9",
+      "name_pt": "Iate de luxo",
+      "cargo_ids": [
+        "lux_yacht"
+      ],
+      "aliases": [
+        "Luxury Yacht"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Service Boat",
+      "dlc": "Special Transport",
+      "weight": "25",
+      "name_pt": "Barco rebocador",
+      "cargo_ids": [
+        "pilot_boat"
+      ],
+      "aliases": [
+        "Barco de serviço",
+        "Service Boat"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Yacht",
+      "dlc": "High Power Cargo Pack",
+      "weight": "6",
+      "name_pt": "Iate",
+      "cargo_ids": [
+        "yacht"
+      ],
+      "aliases": [
+        "Yacht"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

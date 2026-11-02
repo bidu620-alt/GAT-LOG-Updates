@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "version": "2026-11-02.1",
+  "source": {
+    "repository": "bidu620-alt/GAT-LOG-Updates",
+    "path": "docs/ets2-official-cargos.json",
+    "git_blob_sha": "f8ccef472dc1f2a8647f1871441216879887f03f",
+    "sha256": "299dbc472b4cdd3c0dfc58a55c49b829462eabd61c2e762c6b88e33288582e5d",
+    "generated_at": "2026-11-02T17:20:08Z"
+  },
+  "counts": {
+    "catalog_entries": 380,
+    "catalog_cargo_ids": 413,
+    "catalog_groups": 30,
+    "selected_cargo_ids": 341,
+    "unselected_cargo_ids": 72
+  },
+  "catalog_groups": [
+    {
+      "id": "tractor",
+      "title": "Trator e máquinas agrícolas",
+      "file": "catalog-groups/tractor.json"
+    },
+    {
+      "id": "fuel",
+      "title": "Combustível",
+      "file": "catalog-groups/fuel.json"
+    },
+    {
+      "id": "food",
+      "title": "Alimentos",
+      "file": "catalog-groups/food.json"
+    },
+    {
+      "id": "drinks",
+      "title": "Bebidas",
+      "file": "catalog-groups/drinks.json"
+    },
+    {
+      "id": "timber",
+      "title": "Madeira e toras",
+      "file": "catalog-groups/timber.json"
+    },
+    {
+      "id": "container",
+      "title": "Contêiner",
+      "file": "catalog-groups/container.json"
+    },
+    {
+      "id": "heavy_machine",
+      "title": "Máquinas pesadas",
+      "file": "catalog-groups/heavy_machine.json"
+    },
+    {
+      "id": "vehicles",
+      "title": "Veículos",
+      "file": "catalog-groups/vehicles.json"
+    },
+    {
+      "id": "motorcycles",
+      "title": "Motocicletas",
+      "file": "catalog-groups/motorcycles.json"
+    },
+    {
+      "id": "chemicals",
+      "title": "Produtos químicos",
+      "file": "catalog-groups/chemicals.json"
+    },
+    {
+      "id": "construction",
+      "title": "Material de construção",
+      "file": "catalog-groups/construction.json"
+    },
+    {
+      "id": "steel",
+      "title": "Aço e metais",
+      "file": "catalog-groups/steel.json"
+    },
+    {
+      "id": "paper",
+      "title": "Papel e celulose",
+      "file": "catalog-groups/paper.json"
+    },
+    {
+      "id": "electronics",
+      "title": "Eletrônicos",
+      "file": "catalog-groups/electronics.json"
+    },
+    {
+      "id": "furniture",
+      "title": "Móveis",
+      "file": "catalog-groups/furniture.json"
+    },
+    {
+      "id": "glass",
+      "title": "Vidro",
+      "file": "catalog-groups/glass.json"
+    },
+    {
+      "id": "pipes",
+      "title": "Tubos",
+      "file": "catalog-groups/pipes.json"
+    },
+    {
+      "id": "cables",
+      "title": "Cabos e bobinas",
+      "file": "catalog-groups/cables.json"
+    },
+    {
+      "id": "industrial",
+      "title": "Equipamento industrial",
+      "file": "catalog-groups/industrial.json"
+    },
+    {
+      "id": "mining",
+      "title": "Minério e carvão",
+      "file": "catalog-groups/mining.json"
+    },
+    {
+      "id": "grain",
+      "title": "Grãos e cereais",
+      "file": "catalog-groups/grain.json"
+    },
+    {
+      "id": "rural",
+      "title": "Animais e produtos rurais",
+      "file": "catalog-groups/rural.json"
+    },
+    {
+      "id": "dairy",
+      "title": "Leite e laticínios",
+      "file": "catalog-groups/dairy.json"
+    },
+    {
+      "id": "medical",
+      "title": "Medicamentos e material médico",
+      "file": "catalog-groups/medical.json"
+    },
+    {
+      "id": "scrap",
+      "title": "Sucata e recicláveis",
+      "file": "catalog-groups/scrap.json"
+    },
+    {
+      "id": "road_machine",
+      "title": "Máquinas rodoviárias",
+      "file": "catalog-groups/road_machine.json"
+    },
+    {
+      "id": "boats",
+      "title": "Barcos e iates",
+      "file": "catalog-groups/boats.json"
+    },
+    {
+      "id": "aircraft",
+      "title": "Aeronaves e helicópteros",
+      "file": "catalog-groups/aircraft.json"
+    },
+    {
+      "id": "refrigerated",
+      "title": "Carga refrigerada",
+      "file": "catalog-groups/refrigerated.json"
+    },
+    {
+      "id": "custom",
+      "title": "Outras cargas oficiais / personalizada",
+      "file": "catalog-groups/custom.json"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cegonheiro",
+      "title": "Cegonheiro",
+      "cargo_id_count": 20,
+      "file": "categories/cegonheiro.json"
+    },
+    {
+      "id": "madeireiro",
+      "title": "Madeireiro",
+      "cargo_id_count": 7,
+      "file": "categories/madeireiro.json"
+    },
+    {
+      "id": "frigorifico",
+      "title": "Frigorífico",
+      "cargo_id_count": 39,
+      "file": "categories/frigorifico.json"
+    },
+    {
+      "id": "carga_seca",
+      "title": "Carga Seca / Geral",
+      "cargo_id_count": 154,
+      "file": "categories/carga_seca.json"
+    },
+    {
+      "id": "maquinario",
+      "title": "Maquinário & Construção",
+      "cargo_id_count": 85,
+      "file": "categories/maquinario.json"
+    },
+    {
+      "id": "agronegocio",
+      "title": "Agronegócio",
+      "cargo_id_count": 20,
+      "file": "categories/agronegocio.json"
+    },
+    {
+      "id": "granel",
+      "title": "Granel & Mineração",
+      "cargo_id_count": 12,
+      "file": "categories/granel.json"
+    },
+    {
+      "id": "conteineres",
+      "title": "Contêineres",
+      "cargo_id_count": 4,
+      "file": "categories/conteineres.json"
+    }
+  ]
+}

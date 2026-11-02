@@ -1,0 +1,21 @@
+{
+  "id": "aircraft",
+  "title": "Aeronaves e helicópteros",
+  "entries": [
+    {
+      "name": "Helicopter - 1808TX",
+      "dlc": "High Power Cargo Pack",
+      "weight": "3",
+      "name_pt": "Helicóptero",
+      "cargo_ids": [
+        "helicopter"
+      ],
+      "aliases": [
+        "Helicopter",
+        "Helicopter - 1808TX",
+        "Helicóptero - 1808TX"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

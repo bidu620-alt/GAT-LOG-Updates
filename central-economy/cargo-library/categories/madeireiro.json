@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "madeireiro",
+  "title": "Madeireiro",
+  "cargo_ids": [
+    "logs",
+    "lumber",
+    "lumber_p",
+    "sawpanels",
+    "wood_bark",
+    "wooden_beams",
+    "wshavings"
+  ],
+  "entries": [
+    {
+      "cargo_id": "logs",
+      "name": "Logs",
+      "name_pt": "Troncos",
+      "source_group": "timber",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "lumber",
+      "name": "Lumber",
+      "name_pt": "Madeira serrada",
+      "source_group": "timber",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "lumber_p",
+      "name": "Packed Lumber",
+      "name_pt": "Madeira embalada",
+      "source_group": "timber",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "sawpanels",
+      "name": "Sawdust Panels",
+      "name_pt": "Painéis de serragem",
+      "source_group": "timber",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "wood_bark",
+      "name": "Wood Bark",
+      "name_pt": "Casca de madeira",
+      "source_group": "timber",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "wooden_beams",
+      "name": "Wooden Beams",
+      "name_pt": "Vigas de madeira",
+      "source_group": "timber",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "wshavings",
+      "name": "Wood Shavings",
+      "name_pt": "Serragem",
+      "source_group": "timber",
+      "selection_reason": "catalog_group"
+    }
+  ]
+}

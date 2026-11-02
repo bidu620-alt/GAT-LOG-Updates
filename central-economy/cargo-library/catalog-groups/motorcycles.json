@@ -1,0 +1,44 @@
+{
+  "id": "motorcycles",
+  "title": "Motocicletas",
+  "entries": [
+    {
+      "name": "Motorcycle Tyres",
+      "dlc": "Italia",
+      "weight": "10–22",
+      "name_pt": "Pneus de moto",
+      "cargo_ids": [
+        "moto_tires"
+      ],
+      "aliases": [
+        "Motorcycle Tyres",
+        "Pneus de motocicleta"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Motorcycles",
+      "dlc": "Italia",
+      "weight": "8–15",
+      "name_pt": "Motocicletas",
+      "cargo_ids": [
+        "motorcycles"
+      ],
+      "aliases": [
+        "Motorcycles"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Scooters",
+      "dlc": "Italia",
+      "weight": "5–9",
+      "name_pt": "Scooters",
+      "cargo_ids": [
+        "scooters"
+      ],
+      "aliases": [],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

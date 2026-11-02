@@ -1,0 +1,225 @@
+{
+  "id": "chemicals",
+  "title": "Produtos químicos",
+  "entries": [
+    {
+      "name": "Acetylene",
+      "dlc": "Launch",
+      "weight": "9–19",
+      "name_pt": "Acetileno",
+      "cargo_ids": [
+        "acetylene"
+      ],
+      "aliases": [
+        "Acetylene"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Acid",
+      "dlc": "Launch",
+      "weight": "16–19",
+      "name_pt": "Ácido",
+      "cargo_ids": [
+        "acid"
+      ],
+      "aliases": [
+        "Acid"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Anhydrous Ammonia",
+      "dlc": "1.47",
+      "weight": "19–27",
+      "name_pt": "Amônia anidra",
+      "cargo_ids": [
+        "ammonia"
+      ],
+      "aliases": [
+        "Anhydrous Ammonia"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Arsenic",
+      "dlc": "Launch",
+      "weight": "9–18",
+      "name_pt": "Arsênico",
+      "cargo_ids": [
+        "arsenic"
+      ],
+      "aliases": [
+        "Arsenic",
+        "Arsênio"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Boric Acid",
+      "dlc": "Vive la France!",
+      "weight": "9–16",
+      "name_pt": "Ácido bórico",
+      "cargo_ids": [
+        "boric_acid"
+      ],
+      "aliases": [
+        "Boric Acid"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Brake Fluid",
+      "dlc": "Scandinavia",
+      "weight": "2–5",
+      "name_pt": "Fluído de freio",
+      "cargo_ids": [
+        "brake_fluid"
+      ],
+      "aliases": [
+        "Brake Fluid",
+        "Fluido de freio"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Chemical Granules",
+      "dlc": "1.59",
+      "weight": "???",
+      "name_pt": "Químico granulado",
+      "cargo_ids": [
+        "chem_granule"
+      ],
+      "aliases": [
+        "Chemical Granules",
+        "Grânulos químicos"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Chemical Sorbent",
+      "dlc": "Launch",
+      "weight": "4–11",
+      "name_pt": "Solvente químico",
+      "cargo_ids": [
+        "chem_sorb_c",
+        "chem_sorbent"
+      ],
+      "aliases": [
+        "Chemical Sorbent",
+        "Sorbente químico"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Chemicals",
+      "dlc": "Launch",
+      "weight": "15–18",
+      "name_pt": "Químicos",
+      "cargo_ids": [
+        "chemicals"
+      ],
+      "aliases": [
+        "Chemicals",
+        "Produtos químicos"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Chlorine",
+      "dlc": "Launch",
+      "weight": "8–28",
+      "name_pt": "Cloro",
+      "cargo_ids": [
+        "chlorine",
+        "chlorine_t"
+      ],
+      "aliases": [
+        "Chlorine"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Fertilizer",
+      "dlc": "Launch",
+      "weight": "11–19",
+      "name_pt": "Fertilizante",
+      "cargo_ids": [
+        "fertilizer"
+      ],
+      "aliases": [
+        "Adubo",
+        "Fertilizer"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Fertilizer Spreader",
+      "dlc": "Farm Machinery",
+      "weight": "14",
+      "name_pt": "Adubadora",
+      "cargo_ids": [
+        "fert_spread"
+      ],
+      "aliases": [
+        "Distribuidor de fertilizante",
+        "Fertilizer Spreader"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Hot Chemicals",
+      "dlc": "Launch",
+      "weight": "16–19",
+      "name_pt": "Produtos químicos quentes",
+      "cargo_ids": [
+        "hchemicals"
+      ],
+      "aliases": [
+        "Hot Chemicals",
+        "Produtos químicos aquecidos"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Hydrochloric Acid",
+      "dlc": "Launch",
+      "weight": "17–21",
+      "name_pt": "Ácido clorídrico",
+      "cargo_ids": [
+        "hydrochlor"
+      ],
+      "aliases": [
+        "Hydrochloric Acid"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Pesticides",
+      "dlc": "Launch",
+      "weight": "10–21",
+      "name_pt": "Pesticidas",
+      "cargo_ids": [
+        "pesticide"
+      ],
+      "aliases": [
+        "Pesticides"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Sulphuric Acid",
+      "dlc": "Launch",
+      "weight": "10–25",
+      "name_pt": "Ácido sulfúrico",
+      "cargo_ids": [
+        "sulfuric",
+        "sulfuric_t"
+      ],
+      "aliases": [
+        "Sulphuric Acid"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "container",
+  "title": "Contêiner",
+  "entries": [
+    {
+      "name": "Containerized Trees",
+      "dlc": "Launch",
+      "weight": "2–4",
+      "name_pt": "Árvores contentorizadas",
+      "cargo_ids": [
+        "cont_trees"
+      ],
+      "aliases": [
+        "Containerized Trees",
+        "Árvores em contêineres"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "IBC Containers",
+      "dlc": "Scandinavia",
+      "weight": "6–11",
+      "name_pt": "Contêineres IBC",
+      "cargo_ids": [
+        "ibc_cont"
+      ],
+      "aliases": [
+        "IBC Containers"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Large Containers",
+      "dlc": "1.57",
+      "weight": "???",
+      "name_pt": "Contêiner grande",
+      "cargo_ids": [
+        "large_cont"
+      ],
+      "aliases": [
+        "Contêineres grandes",
+        "Large Containers"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "id": "conteineres",
+  "title": "Contêineres",
+  "cargo_ids": [
+    "beverages_c",
+    "cont_trees",
+    "ibc_cont",
+    "large_cont"
+  ],
+  "entries": [
+    {
+      "cargo_id": "beverages_c",
+      "name": "Beverages",
+      "name_pt": "Bebidas",
+      "source_group": "drinks",
+      "selection_reason": "confirmed_container_variant"
+    },
+    {
+      "cargo_id": "cont_trees",
+      "name": "Containerized Trees",
+      "name_pt": "Árvores contentorizadas",
+      "source_group": "container",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "ibc_cont",
+      "name": "IBC Containers",
+      "name_pt": "Contêineres IBC",
+      "source_group": "container",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "large_cont",
+      "name": "Large Containers",
+      "name_pt": "Contêiner grande",
+      "source_group": "container",
+      "selection_reason": "catalog_group"
+    }
+  ]
+}

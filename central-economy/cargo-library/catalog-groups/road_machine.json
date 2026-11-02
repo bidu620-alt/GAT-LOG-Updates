@@ -1,0 +1,21 @@
+{
+  "id": "road_machine",
+  "title": "Máquinas rodoviárias",
+  "entries": [
+    {
+      "name": "Asphalt Miller - AM 0880",
+      "dlc": "Heavy Cargo Pack",
+      "weight": "44",
+      "name_pt": "Moedor de asfalto",
+      "cargo_ids": [
+        "asph_miller"
+      ],
+      "aliases": [
+        "Asphalt Miller",
+        "Asphalt Miller - AM 0880",
+        "Fresadora de asfalto - AM 0880"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "id": "agronegocio",
+  "title": "Agronegócio",
+  "cargo_ids": [
+    "barley",
+    "big_bag_seed",
+    "cut_flowers",
+    "fertilizer",
+    "flour",
+    "grass_rolls",
+    "lavender",
+    "live_cattle",
+    "live_pigs",
+    "olive_tree",
+    "pesticide",
+    "plant_substr",
+    "pot_flowers",
+    "rice",
+    "rice_c",
+    "rye",
+    "sheep_wool",
+    "straw_bales",
+    "wheat",
+    "young_seed"
+  ],
+  "entries": [
+    {
+      "cargo_id": "barley",
+      "name": "Barley",
+      "name_pt": "Cevada",
+      "source_group": "grain",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "big_bag_seed",
+      "name": "Big-Bags of Seeds",
+      "name_pt": "Sacos grandes de sementes",
+      "source_group": "grain",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "cut_flowers",
+      "name": "Cut Flowers",
+      "name_pt": "Flores podadas",
+      "source_group": "custom",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "fertilizer",
+      "name": "Fertilizer",
+      "name_pt": "Fertilizante",
+      "source_group": "chemicals",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "flour",
+      "name": "Flour",
+      "name_pt": "Farinha",
+      "source_group": "grain",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "grass_rolls",
+      "name": "Grass Rolls",
+      "name_pt": "Rolos de grama",
+      "source_group": "custom",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "lavender",
+      "name": "Lavender",
+      "name_pt": "Lavanda",
+      "source_group": "custom",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "live_cattle",
+      "name": "Live Cattle",
+      "name_pt": "Gado bovino vivo",
+      "source_group": "rural",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "live_pigs",
+      "name": "Live Pigs",
+      "name_pt": "Porcos Vivos",
+      "source_group": "rural",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "olive_tree",
+      "name": "Olive Trees",
+      "name_pt": "Oliveiras",
+      "source_group": "food",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "pesticide",
+      "name": "Pesticides",
+      "name_pt": "Pesticidas",
+      "source_group": "chemicals",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "plant_substr",
+      "name": "Plant Substrate",
+      "name_pt": "Substrato vegetal",
+      "source_group": "custom",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "pot_flowers",
+      "name": "Potted Flowers",
+      "name_pt": "Flores em vasos",
+      "source_group": "custom",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "rice",
+      "name": "Rice",
+      "name_pt": "Arroz",
+      "source_group": "grain",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "rice_c",
+      "name": "Rice",
+      "name_pt": "Arroz",
+      "source_group": "grain",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "rye",
+      "name": "Rye",
+      "name_pt": "Centeio",
+      "source_group": "grain",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "sheep_wool",
+      "name": "Sheep Wool",
+      "name_pt": "Lã de ovelha",
+      "source_group": "rural",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "straw_bales",
+      "name": "Straw Bales",
+      "name_pt": "Fardos de palha",
+      "source_group": "rural",
+      "selection_reason": "agricultural_products_selection"
+    },
+    {
+      "cargo_id": "wheat",
+      "name": "Wheat",
+      "name_pt": "Trigo",
+      "source_group": "grain",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "young_seed",
+      "name": "Young Seedlings",
+      "name_pt": "Mudas de plantas",
+      "source_group": "grain",
+      "selection_reason": "agricultural_products_selection"
+    }
+  ]
+}

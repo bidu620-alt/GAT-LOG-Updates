@@ -1,0 +1,457 @@
+{
+  "id": "food",
+  "title": "Alimentos",
+  "entries": [
+    {
+      "name": "Almond",
+      "dlc": "Launch",
+      "weight": "10–17",
+      "name_pt": "Amêndoa",
+      "cargo_ids": [
+        "almond"
+      ],
+      "aliases": [
+        "Almond"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Apples",
+      "dlc": "Launch",
+      "weight": "9–20",
+      "name_pt": "Maçãs",
+      "cargo_ids": [
+        "apples",
+        "apples_c"
+      ],
+      "aliases": [
+        "Apples"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Basil",
+      "dlc": "Vive la France!",
+      "weight": "14–24",
+      "name_pt": "Manjericão",
+      "cargo_ids": [
+        "basil"
+      ],
+      "aliases": [
+        "Basil"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Beans",
+      "dlc": "Launch",
+      "weight": "7–12",
+      "name_pt": "Feijão",
+      "cargo_ids": [
+        "beans"
+      ],
+      "aliases": [
+        "Beans"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Beef",
+      "dlc": "Launch",
+      "weight": "12–20",
+      "name_pt": "Carne",
+      "cargo_ids": [
+        "beef_meat"
+      ],
+      "aliases": [
+        "Beef",
+        "Carne bovina"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Canned Beans",
+      "dlc": "Launch",
+      "weight": "9–16",
+      "name_pt": "Feijão enlatado",
+      "cargo_ids": [
+        "canned_beans"
+      ],
+      "aliases": [
+        "Canned Beans"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Canned Beef",
+      "dlc": "Scandinavia",
+      "weight": "12–21",
+      "name_pt": "Carne enlatada",
+      "cargo_ids": [
+        "canned_beef"
+      ],
+      "aliases": [
+        "Canned Beef",
+        "Carne bovina enlatada"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Canned Pork",
+      "dlc": "Scandinavia",
+      "weight": "12–21",
+      "name_pt": "Carne de porco enlatada",
+      "cargo_ids": [
+        "canned_pork"
+      ],
+      "aliases": [
+        "Canned Pork",
+        "Carne suína enlatada"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Canned Sardines",
+      "dlc": "Italia",
+      "weight": "10–18",
+      "name_pt": "Sardinhas enlatadas",
+      "cargo_ids": [
+        "can_sardines"
+      ],
+      "aliases": [
+        "Canned Sardines"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Canned Tuna",
+      "dlc": "Scandinavia",
+      "weight": "10–18",
+      "name_pt": "Atum enlatado",
+      "cargo_ids": [
+        "canned_tuna"
+      ],
+      "aliases": [
+        "Canned Tuna"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Cauliflower",
+      "dlc": "Launch",
+      "weight": "5–9",
+      "name_pt": "Couve-flor",
+      "cargo_ids": [
+        "cauliflower"
+      ],
+      "aliases": [
+        "Cauliflower"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Caviar",
+      "dlc": "Scandinavia",
+      "weight": "8–14",
+      "name_pt": "Caviar",
+      "cargo_ids": [
+        "caviar"
+      ],
+      "aliases": [],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Chewing Gums",
+      "dlc": "Launch",
+      "weight": "13–23",
+      "name_pt": "Chicletes",
+      "cargo_ids": [
+        "chewing_gums"
+      ],
+      "aliases": [
+        "Chewing Gums"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Chicken Meat",
+      "dlc": "Scandinavia",
+      "weight": "9–17",
+      "name_pt": "Carne de frango",
+      "cargo_ids": [
+        "chicken_meat"
+      ],
+      "aliases": [
+        "Chicken Meat"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Chocolate",
+      "dlc": "Launch",
+      "weight": "13–23",
+      "name_pt": "Chocolate",
+      "cargo_ids": [
+        "chocolate"
+      ],
+      "aliases": [],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Fish Fingers",
+      "dlc": "Scandinavia",
+      "weight": "9–17",
+      "name_pt": "Peixe empanado",
+      "cargo_ids": [
+        "fish_chips"
+      ],
+      "aliases": [
+        "Fish Fingers",
+        "Palitos de peixe"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Food Oil",
+      "dlc": "1.55",
+      "weight": "22–27",
+      "name_pt": "Óleo alimentício",
+      "cargo_ids": [
+        "food_oil_t"
+      ],
+      "aliases": [
+        "Food Oil"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Grapes",
+      "dlc": "Launch",
+      "weight": "8–14",
+      "name_pt": "Uvas",
+      "cargo_ids": [
+        "grapes"
+      ],
+      "aliases": [
+        "Grapes"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Locomotive CZ LOKO EffiShunter 1000",
+      "dlc": "Special Transport (1.56)",
+      "weight": "80",
+      "name_pt": "Locomotiva CZ LOKO EffiShunter 1000",
+      "cargo_ids": [
+        "czl_es1000"
+      ],
+      "aliases": [
+        "Locomotive CZ LOKO EffiShunter 1000"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Locomotive CZ LOKO EffiShunter 300",
+      "dlc": "1.56",
+      "weight": "36",
+      "name_pt": "Locomotiva CZ LOKO EffiShunter 300",
+      "cargo_ids": [
+        "czl_es300"
+      ],
+      "aliases": [
+        "Locomotive CZ LOKO EffiShunter 300"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Olive Oil",
+      "dlc": "Italia",
+      "weight": "10–27",
+      "name_pt": "Azeite de oliva",
+      "cargo_ids": [
+        "olive_oil",
+        "olive_oil_t"
+      ],
+      "aliases": [
+        "Olive Oil"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Olive Trees",
+      "dlc": "Iberia",
+      "weight": "2",
+      "name_pt": "Oliveiras",
+      "cargo_ids": [
+        "olive_tree"
+      ],
+      "aliases": [
+        "Olive Trees"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Olives",
+      "dlc": "Vive la France!",
+      "weight": "10–18",
+      "name_pt": "Azeitonas",
+      "cargo_ids": [
+        "olives"
+      ],
+      "aliases": [
+        "Olives"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Onions",
+      "dlc": "Scandinavia",
+      "weight": "10–17",
+      "name_pt": "Cebolas",
+      "cargo_ids": [
+        "onion"
+      ],
+      "aliases": [
+        "Onions"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Oranges",
+      "dlc": "Launch",
+      "weight": "11–20",
+      "name_pt": "Laranjas",
+      "cargo_ids": [
+        "oranges"
+      ],
+      "aliases": [
+        "Oranges"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Packaged Food",
+      "dlc": "Launch",
+      "weight": "9–17",
+      "name_pt": "Comida enlatada",
+      "cargo_ids": [
+        "packag_food"
+      ],
+      "aliases": [
+        "Alimentos embalados",
+        "Packaged Food"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Pasta",
+      "dlc": "Italia",
+      "weight": "11–20",
+      "name_pt": "Macarrão",
+      "cargo_ids": [
+        "pasta"
+      ],
+      "aliases": [
+        "Massa",
+        "Pasta"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Pears",
+      "dlc": "Scandinavia",
+      "weight": "8–15",
+      "name_pt": "Peras",
+      "cargo_ids": [
+        "pears"
+      ],
+      "aliases": [
+        "Pears"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Pet Food",
+      "dlc": "Scandinavia",
+      "weight": "9–20",
+      "name_pt": "Ração",
+      "cargo_ids": [
+        "pet_food",
+        "pet_food_c"
+      ],
+      "aliases": [
+        "Pet Food",
+        "Ração para animais"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Pork",
+      "dlc": "Scandinavia",
+      "weight": "10–18",
+      "name_pt": "Carne de porco",
+      "cargo_ids": [
+        "pork_meat"
+      ],
+      "aliases": [
+        "Carne suína",
+        "Pork"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Potatoes",
+      "dlc": "Launch",
+      "weight": "12–22",
+      "name_pt": "Batatas",
+      "cargo_ids": [
+        "potatoes"
+      ],
+      "aliases": [
+        "BATATA",
+        "Potatoes"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Salmon Fillet",
+      "dlc": "Scandinavia",
+      "weight": "8–14",
+      "name_pt": "Filé de salmão",
+      "cargo_ids": [
+        "salm_fillet"
+      ],
+      "aliases": [
+        "Salmon Fillet"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Sugar",
+      "dlc": "Launch",
+      "weight": "12–22",
+      "name_pt": "Açúcar",
+      "cargo_ids": [
+        "sugar",
+        "sugar_b"
+      ],
+      "aliases": [
+        "Sugar"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Tomatoes",
+      "dlc": "Launch",
+      "weight": "10–18",
+      "name_pt": "Tomates",
+      "cargo_ids": [
+        "tomatoes"
+      ],
+      "aliases": [
+        "Tomatoes"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

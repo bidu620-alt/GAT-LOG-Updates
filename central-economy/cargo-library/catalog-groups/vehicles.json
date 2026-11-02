@@ -1,0 +1,181 @@
+{
+  "id": "vehicles",
+  "title": "Veículos",
+  "entries": [
+    {
+      "name": "Campervans",
+      "dlc": "West Balkans",
+      "weight": "6",
+      "name_pt": "Autocaravanas",
+      "cargo_ids": [
+        "caravans"
+      ],
+      "aliases": [
+        "Campervans",
+        "Motorhomes"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Carbon Black Powder",
+      "dlc": "Italia",
+      "weight": "3–7",
+      "name_pt": "Carvão em pó",
+      "cargo_ids": [
+        "carbn_pwdr_c"
+      ],
+      "aliases": [
+        "Carbon Black Powder",
+        "Pó de negro de fumo"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Carbonated Water",
+      "dlc": "Launch",
+      "weight": "13–23",
+      "name_pt": "Água com gás",
+      "cargo_ids": [
+        "carb_water"
+      ],
+      "aliases": [
+        "Carbonated Water",
+        "Água gaseificada"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Carrots",
+      "dlc": "Launch",
+      "weight": "7–16",
+      "name_pt": "Cenouras",
+      "cargo_ids": [
+        "carrots",
+        "carrots_c"
+      ],
+      "aliases": [
+        "Carrots"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Cars",
+      "dlc": "Beyond the Baltic Sea",
+      "weight": "4",
+      "name_pt": "Carros",
+      "cargo_ids": [
+        "car_balt1",
+        "car_balt2"
+      ],
+      "aliases": [
+        "Cars"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Cars",
+      "dlc": "Launch",
+      "weight": "6–10",
+      "name_pt": "Carros",
+      "cargo_ids": [
+        "car_d",
+        "car_f",
+        "car_ibe",
+        "car_it",
+        "cars_fr",
+        "mondeos"
+      ],
+      "aliases": [
+        "Cars"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Luxury SUVs",
+      "dlc": "Scandinavia",
+      "weight": "11",
+      "name_pt": "SUVs de luxo",
+      "cargo_ids": [
+        "volvo_cars"
+      ],
+      "aliases": [
+        "Luxury SUVs"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Pickups",
+      "dlc": "Greece",
+      "weight": "6",
+      "name_pt": "Picapes",
+      "cargo_ids": [
+        "pickup_gr"
+      ],
+      "aliases": [
+        "Pickups"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "SUVs",
+      "dlc": "Greece",
+      "weight": "12",
+      "name_pt": "SUVs",
+      "cargo_ids": [
+        "car_gr"
+      ],
+      "aliases": [],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Train Undercarriage",
+      "dlc": "Beyond the Baltic Sea",
+      "weight": "18",
+      "name_pt": "Material rodante de trem",
+      "cargo_ids": [
+        "train_part2"
+      ],
+      "aliases": [
+        "Chassi ferroviário",
+        "Train Undercarriage"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Used Car Batteries",
+      "dlc": "Launch",
+      "weight": "9–17",
+      "name_pt": "Baterias automotivas usadas",
+      "cargo_ids": [
+        "used_battery"
+      ],
+      "aliases": [
+        "Used Car Batteries"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Vans",
+      "dlc": "Greece",
+      "weight": "8",
+      "name_pt": "Vans",
+      "cargo_ids": [
+        "vans_fd",
+        "vans_id",
+        "vans_vt"
+      ],
+      "aliases": [],
+      "name_source": "ets2_locale_pt_br",
+      "catalog_variants": [
+        {
+          "dlc": "Greece",
+          "weight": "8"
+        },
+        {
+          "dlc": "Italia",
+          "weight": "6"
+        }
+      ]
+    }
+  ]
+}

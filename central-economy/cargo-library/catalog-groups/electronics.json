@@ -1,0 +1,47 @@
+{
+  "id": "electronics",
+  "title": "Eletrônicos",
+  "entries": [
+    {
+      "name": "Computer Processors",
+      "dlc": "Vive la France!",
+      "weight": "2–3",
+      "name_pt": "Processadores de computador",
+      "cargo_ids": [
+        "comp_process"
+      ],
+      "aliases": [
+        "Computer Processors"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Electronics",
+      "dlc": "Launch",
+      "weight": "4–8",
+      "name_pt": "Produtos eletrônicos",
+      "cargo_ids": [
+        "electronics"
+      ],
+      "aliases": [
+        "Electronics",
+        "Eletrônicos"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "High-Tech Device",
+      "dlc": "Special Transport",
+      "weight": "45",
+      "name_pt": "Dispositivo high-tech",
+      "cargo_ids": [
+        "mystery_cyl"
+      ],
+      "aliases": [
+        "Dispositivo de alta tecnologia",
+        "High-Tech Device"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

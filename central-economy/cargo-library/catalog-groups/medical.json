@@ -1,0 +1,47 @@
+{
+  "id": "medical",
+  "title": "Medicamentos e material médico",
+  "entries": [
+    {
+      "name": "Hospital Waste",
+      "dlc": "Launch",
+      "weight": "11–23",
+      "name_pt": "Lixo hospitalar",
+      "cargo_ids": [
+        "hwaste"
+      ],
+      "aliases": [
+        "Hospital Waste"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Medical Equipment",
+      "dlc": "Launch",
+      "weight": "3–5",
+      "name_pt": "Equipamento médico",
+      "cargo_ids": [
+        "med_equip"
+      ],
+      "aliases": [
+        "Equipamentos médicos",
+        "Medical Equipment"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Medical Vaccines",
+      "dlc": "Launch",
+      "weight": "3–5",
+      "name_pt": "Vacinas",
+      "cargo_ids": [
+        "med_vaccine"
+      ],
+      "aliases": [
+        "Medical Vaccines",
+        "Vacinas médicas"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

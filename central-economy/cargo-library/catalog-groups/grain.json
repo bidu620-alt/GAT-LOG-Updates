@@ -1,0 +1,114 @@
+{
+  "id": "grain",
+  "title": "Grãos e cereais",
+  "entries": [
+    {
+      "name": "Barley",
+      "dlc": "Scandinavia",
+      "weight": "14–24",
+      "name_pt": "Cevada",
+      "cargo_ids": [
+        "barley"
+      ],
+      "aliases": [
+        "Barley"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Big-Bags of Seeds",
+      "dlc": "Launch",
+      "weight": "10–18",
+      "name_pt": "Sacos grandes de sementes",
+      "cargo_ids": [
+        "big_bag_seed"
+      ],
+      "aliases": [
+        "Big-Bags of Seeds",
+        "Big-bags de sementes"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Dryers",
+      "dlc": "Launch",
+      "weight": "7–13",
+      "name_pt": "Secadoras",
+      "cargo_ids": [
+        "dryers"
+      ],
+      "aliases": [
+        "Dryers",
+        "Secadores"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Flour",
+      "dlc": "Launch",
+      "weight": "11–20",
+      "name_pt": "Farinha",
+      "cargo_ids": [
+        "flour"
+      ],
+      "aliases": [
+        "Flour"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Rice",
+      "dlc": "Launch",
+      "weight": "8–22",
+      "name_pt": "Arroz",
+      "cargo_ids": [
+        "rice",
+        "rice_c"
+      ],
+      "aliases": [
+        "Rice"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Rye",
+      "dlc": "Scandinavia",
+      "weight": "16–28",
+      "name_pt": "Centeio",
+      "cargo_ids": [
+        "rye"
+      ],
+      "aliases": [
+        "Rye"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wheat",
+      "dlc": "Scandinavia",
+      "weight": "17–26",
+      "name_pt": "Trigo",
+      "cargo_ids": [
+        "wheat"
+      ],
+      "aliases": [
+        "Wheat"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Young Seedlings",
+      "dlc": "Launch",
+      "weight": "2–3",
+      "name_pt": "Mudas de plantas",
+      "cargo_ids": [
+        "young_seed"
+      ],
+      "aliases": [
+        "Mudas jovens",
+        "Young Seedlings"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

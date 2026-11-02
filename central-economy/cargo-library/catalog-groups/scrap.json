@@ -1,0 +1,36 @@
+{
+  "id": "scrap",
+  "title": "Sucata e recicláveis",
+  "entries": [
+    {
+      "name": "Scrap Metals",
+      "dlc": "Launch",
+      "weight": "21–26",
+      "name_pt": "Sucata de metal",
+      "cargo_ids": [
+        "scrap_metals"
+      ],
+      "aliases": [
+        "Metais de sucata",
+        "Scrap Metals",
+        "Sucata de Metal",
+        "Sucata metálica"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Used Plastics",
+      "dlc": "Launch",
+      "weight": "3–9",
+      "name_pt": "Plásticos usados",
+      "cargo_ids": [
+        "used_plast",
+        "used_plast_c"
+      ],
+      "aliases": [
+        "Used Plastics"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

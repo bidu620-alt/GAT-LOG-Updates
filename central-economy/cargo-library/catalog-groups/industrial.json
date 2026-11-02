@@ -1,0 +1,331 @@
+{
+  "id": "industrial",
+  "title": "Equipamento industrial",
+  "entries": [
+    {
+      "name": "Aircraft Tyres",
+      "dlc": "Vive la France!",
+      "weight": "10–18",
+      "name_pt": "Pneus de avião",
+      "cargo_ids": [
+        "aircft_tires"
+      ],
+      "aliases": [
+        "Aircraft Tyres",
+        "Pneus de aeronave"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Boiler Part",
+      "dlc": "Special Transport",
+      "weight": "45",
+      "name_pt": "Peça de uma caldeira",
+      "cargo_ids": [
+        "boiler_parts"
+      ],
+      "aliases": [
+        "Boiler Part",
+        "Peça de caldeira"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Compact Generators JCB G100RS",
+      "dlc": "JCB Equipment Pack",
+      "weight": "11",
+      "name_pt": "Geradores compactos JCB G100RS",
+      "cargo_ids": [
+        "jcb_g100rs"
+      ],
+      "aliases": [
+        "Compact Generators JCB G100RS"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Compressor Bobcat PA12.7v",
+      "dlc": "Bobcat Cargo Pack",
+      "weight": "???",
+      "name_pt": "Compressor de ar Bobcat PA12.7v",
+      "cargo_ids": [
+        "bob_pa127v"
+      ],
+      "aliases": [
+        "Compressor Bobcat PA12.7v"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Forklift Bobcat D30",
+      "dlc": "Bobcat Cargo Pack",
+      "weight": "???",
+      "name_pt": "Empilhadeira Bobcat D30",
+      "cargo_ids": [
+        "bob_d30"
+      ],
+      "aliases": [
+        "Forklift Bobcat D30"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Forklifts",
+      "dlc": "Launch",
+      "weight": "16–21",
+      "name_pt": "Empilhadeiras",
+      "cargo_ids": [
+        "forklifts"
+      ],
+      "aliases": [
+        "Forklifts"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Giant Silo",
+      "dlc": "Special Transport",
+      "weight": "40",
+      "name_pt": "Silo gigante",
+      "cargo_ids": [
+        "silo"
+      ],
+      "aliases": [
+        "Giant Silo"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Heat Exchanger",
+      "dlc": "Special Transport",
+      "weight": "70",
+      "name_pt": "Trocador de Calor",
+      "cargo_ids": [
+        "heat_exch"
+      ],
+      "aliases": [
+        "Heat Exchanger",
+        "Trocador de calor"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Huge Tyres",
+      "dlc": "Special Transport",
+      "weight": "20",
+      "name_pt": "Pneus gigantes",
+      "cargo_ids": [
+        "dumper_tire"
+      ],
+      "aliases": [
+        "Huge Tyres"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Industrial Condenser",
+      "dlc": "Special Transport",
+      "weight": "60",
+      "name_pt": "Condensador industrial",
+      "cargo_ids": [
+        "condensator"
+      ],
+      "aliases": [
+        "Industrial Condenser"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Locomotive CZ LOKO MUV 75",
+      "dlc": "1.56",
+      "weight": "14",
+      "name_pt": "Locomotiva CZ LOKO MUV 75",
+      "cargo_ids": [
+        "czl_muv75"
+      ],
+      "aliases": [
+        "Locomotive CZ LOKO MUV 75"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Locomotive - Vossloh G6",
+      "dlc": "Heavy Cargo Pack",
+      "weight": "61",
+      "name_pt": "Locomotiva Vossloh G6",
+      "cargo_ids": [
+        "locomotive"
+      ],
+      "aliases": [
+        "Locomotiva - Vossloh G6",
+        "Locomotive - Vossloh G6",
+        "Locomotive Vossloh G6"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Mobile Air Compressor",
+      "dlc": "1.59",
+      "weight": "???",
+      "name_pt": "Compressor de ar móvel",
+      "cargo_ids": [
+        "mobile_compr"
+      ],
+      "aliases": [
+        "Mobile Air Compressor"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Pressure Tank",
+      "dlc": "Launch",
+      "weight": "7",
+      "name_pt": "Tanque pressurizado",
+      "cargo_ids": [
+        "hipresstank"
+      ],
+      "aliases": [
+        "Pressure Tank",
+        "Tanque de pressão"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Reservoir Tank",
+      "dlc": "Launch",
+      "weight": "6",
+      "name_pt": "Tanque reservatório",
+      "cargo_ids": [
+        "emptytank"
+      ],
+      "aliases": [
+        "Reservoir Tank"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Rough Terrain Forklift",
+      "dlc": "Greece",
+      "weight": "12",
+      "name_pt": "Empilhadeira para terrenos acidentados",
+      "cargo_ids": [
+        "ter_forklift"
+      ],
+      "aliases": [
+        "Empilhadeira todo-terreno",
+        "Rough Terrain Forklift"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Transformer - PK900",
+      "dlc": "Heavy Cargo Pack",
+      "weight": "47",
+      "name_pt": "Transformador",
+      "cargo_ids": [
+        "transformat"
+      ],
+      "aliases": [
+        "Transformador - PK900",
+        "Transformer",
+        "Transformer - PK900"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Truck Tyres",
+      "dlc": "Scandinavia",
+      "weight": "7–13",
+      "name_pt": "Pneus de caminhão\\n",
+      "cargo_ids": [
+        "truck_tyres"
+      ],
+      "aliases": [
+        "Pneus de caminhão",
+        "Truck Tyres"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Tyres",
+      "dlc": "Launch",
+      "weight": "9–16",
+      "name_pt": "Pneus",
+      "cargo_ids": [
+        "tyres"
+      ],
+      "aliases": [
+        "Tyres"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wind Turbine Blade",
+      "dlc": "Special Transport (1.57)",
+      "weight": "5",
+      "name_pt": "Pá de Turbina Aeólica",
+      "cargo_ids": [
+        "windblade"
+      ],
+      "aliases": [
+        "Pá de turbina eólica",
+        "Wind Turbine Blade"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wind Turbine Nacelle",
+      "dlc": "Scandinavia",
+      "weight": "21",
+      "name_pt": "Nacele de Turbina Aeólica",
+      "cargo_ids": [
+        "windml_eng"
+      ],
+      "aliases": [
+        "Nacele de turbina eólica",
+        "Wind Turbine Nacelle"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wind Turbine Tower",
+      "dlc": "Scandinavia",
+      "weight": "9–19",
+      "name_pt": "Torre de Turbina Aeólica",
+      "cargo_ids": [
+        "windml_tube"
+      ],
+      "aliases": [
+        "Torre de turbina eólica",
+        "Wind Turbine Tower"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Large Reservoir Tank",
+      "name_pt": "Tanque reservatório grande",
+      "cargo_ids": [
+        "tank"
+      ],
+      "aliases": [
+        "Large Reservoir Tank"
+      ],
+      "dlc": "Special Transport",
+      "weight": "35",
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Railcar",
+      "name_pt": "Vagão",
+      "cargo_ids": [
+        "wagon"
+      ],
+      "aliases": [
+        "Railcar"
+      ],
+      "dlc": "Special Transport",
+      "weight": "39",
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

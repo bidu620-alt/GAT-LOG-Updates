@@ -1,0 +1,236 @@
+{
+  "id": "tractor",
+  "title": "Trator e máquinas agrícolas",
+  "entries": [
+    {
+      "name": "Agricultural Telehandler Bobcat TL30.70",
+      "dlc": "Bobcat Cargo Pack",
+      "weight": "???",
+      "name_pt": "Manipulador telescópico agrícola Bobcat TL30.70",
+      "cargo_ids": [
+        "bob_tl3070a"
+      ],
+      "aliases": [
+        "Agricultural Telehandler Bobcat TL30.70"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Autonomous Tractor",
+      "dlc": "Farm Machinery",
+      "weight": "8",
+      "name_pt": "Trator autônomo",
+      "cargo_ids": [
+        "tractor_au"
+      ],
+      "aliases": [
+        "Autonomous Tractor"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Cotton Harvester",
+      "dlc": "Greece",
+      "weight": "30",
+      "name_pt": "Colheitadeira de algodão",
+      "cargo_ids": [
+        "cott_harvest"
+      ],
+      "aliases": [
+        "Cotton Harvester"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Crawler Tractor",
+      "dlc": "Farm Machinery",
+      "weight": "25",
+      "name_pt": "Trator de esteiras",
+      "cargo_ids": [
+        "tractor_c"
+      ],
+      "aliases": [
+        "Crawler Tractor",
+        "Esteira de trator"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Crawler Tractor",
+      "dlc": "High Power Cargo Pack",
+      "weight": "13",
+      "name_pt": "Trator de esteiras",
+      "cargo_ids": [
+        "tractor"
+      ],
+      "aliases": [
+        "Crawler Tractor",
+        "Esteira de trator"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Disc Harrows",
+      "dlc": "Farm Machinery",
+      "weight": "6",
+      "name_pt": "Arados de discos",
+      "cargo_ids": [
+        "disc_harrows"
+      ],
+      "aliases": [
+        "Disc Harrows",
+        "Grades de discos"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Disk Mower Krone EasyCut B 880 CV",
+      "dlc": "KRONE Agriculture Equipment",
+      "weight": "2",
+      "name_pt": "Cortadores de grama Krone EasyCut B 880 CV",
+      "cargo_ids": [
+        "kr_ecb880cv"
+      ],
+      "aliases": [
+        "Disk Mower Krone EasyCut B 880 CV",
+        "Segadeira de discos Krone EasyCut B 880 CV"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Forage Harvester",
+      "dlc": "Farm Machinery",
+      "weight": "13",
+      "name_pt": "Colheitadeira de forragem",
+      "cargo_ids": [
+        "forage_harv"
+      ],
+      "aliases": [
+        "Forage Harvester"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Forage Harvester Krone BiG X 1180",
+      "dlc": "KRONE Agriculture Equipment",
+      "weight": "17",
+      "name_pt": "Colheitadeira de forragem Krone BiG X 1180",
+      "cargo_ids": [
+        "kr_bigx1180"
+      ],
+      "aliases": [
+        "Forage Harvester Krone BiG X 1180"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Log Harvester",
+      "dlc": "Forest Machinery",
+      "weight": "22",
+      "name_pt": "Colheitadeira florestal",
+      "cargo_ids": [
+        "log_harvest"
+      ],
+      "aliases": [
+        "Log Harvester"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Mower Conditioner Krone BiG M 450",
+      "dlc": "KRONE Agriculture Equipment",
+      "weight": "15",
+      "name_pt": "Segadora condicionadora Krone BiG M 450",
+      "cargo_ids": [
+        "kr_bigm450"
+      ],
+      "aliases": [
+        "Mower Conditioner Krone BiG M 45",
+        "Mower Conditioner Krone BiG M 450"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Round Baler Krone VariPack V 190 XC",
+      "dlc": "KRONE Agriculture Equipment",
+      "weight": "4",
+      "name_pt": "Enfardadeira redonda Krone VariPack V 190 XC",
+      "cargo_ids": [
+        "kr_vpv190xc"
+      ],
+      "aliases": [
+        "Enfardadeira de fardos redondos Krone VariPack V 190 XC",
+        "Round Baler Krone VariPack V 190 XC"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Sprayer",
+      "dlc": "Farm Machinery",
+      "weight": "15",
+      "name_pt": "Pulverizador",
+      "cargo_ids": [
+        "sprayer"
+      ],
+      "aliases": [
+        "Sprayer"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Square Baler",
+      "dlc": "Farm Machinery",
+      "weight": "7",
+      "name_pt": "Enfardadeira quadrada",
+      "cargo_ids": [
+        "square_baler"
+      ],
+      "aliases": [
+        "Enfardadeira de fardos quadrados",
+        "Square Baler"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Square Baler Krone BiG Pack 1290 HDP VC",
+      "dlc": "KRONE Agriculture Equipment",
+      "weight": "10",
+      "name_pt": "Enfardadeira quadradas Krone BiG Pack 1290 HDC VC",
+      "cargo_ids": [
+        "kr_bigp1290"
+      ],
+      "aliases": [
+        "Enfardadeira de fardos quadrados Krone BiG Pack 1290 HDP VC",
+        "Square Baler Krone BiG Pack 1290 HDP VC"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Tractor JCB Fastrac 4220",
+      "dlc": "JCB Equipment Pack",
+      "weight": "9",
+      "name_pt": "Trator JCB Fastrac 4220",
+      "cargo_ids": [
+        "jcb_ft4220"
+      ],
+      "aliases": [
+        "Tractor JCB Fastrac 4220"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Tractors",
+      "dlc": "Launch",
+      "weight": "8",
+      "name_pt": "Tratores",
+      "cargo_ids": [
+        "tractors"
+      ],
+      "aliases": [
+        "TRATOR",
+        "Tractors"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

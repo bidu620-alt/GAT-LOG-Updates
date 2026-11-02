@@ -1,0 +1,101 @@
+{
+  "id": "drinks",
+  "title": "Bebidas",
+  "entries": [
+    {
+      "name": "Beverages",
+      "dlc": "Launch",
+      "weight": "10–28",
+      "name_pt": "Bebidas",
+      "cargo_ids": [
+        "beverages",
+        "beverages_c",
+        "beverages_t"
+      ],
+      "aliases": [
+        "Beverages"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Bottled Water",
+      "dlc": "Launch",
+      "weight": "13–23",
+      "name_pt": "Água engarrafada",
+      "cargo_ids": [
+        "bottle_water"
+      ],
+      "aliases": [
+        "Bottled Water"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Canned Iced Coffee",
+      "dlc": "Vive la France!",
+      "weight": "12–21",
+      "name_pt": "Café gelado enlatado",
+      "cargo_ids": [
+        "iced_coffee"
+      ],
+      "aliases": [
+        "Canned Iced Coffee"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Empty Wine Barrels",
+      "dlc": "Vive la France!",
+      "weight": "4–8",
+      "name_pt": "Barris de vinho vazios",
+      "cargo_ids": [
+        "emp_wine_bar"
+      ],
+      "aliases": [
+        "Empty Wine Barrels"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Empty Wine Bottles",
+      "dlc": "Vive la France!",
+      "weight": "8–13",
+      "name_pt": "Garrafas de vinho vazias",
+      "cargo_ids": [
+        "emp_wine_bot"
+      ],
+      "aliases": [
+        "Empty Wine Bottles"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Juice Concentrate",
+      "dlc": "Vive la France!",
+      "weight": "13–28",
+      "name_pt": "Suco concentrado",
+      "cargo_ids": [
+        "conc_juice_t",
+        "concen_juice"
+      ],
+      "aliases": [
+        "Concentrado de suco",
+        "Juice Concentrate"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Non-alcoholic Beer",
+      "dlc": "Launch",
+      "weight": "12–22",
+      "name_pt": "Cerveja sem álcool",
+      "cargo_ids": [
+        "nonalco_beer"
+      ],
+      "aliases": [
+        "Non-alcoholic Beer"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

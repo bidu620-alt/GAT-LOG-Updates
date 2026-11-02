@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "id": "granel",
+  "title": "Granel & Mineração",
+  "cargo_ids": [
+    "coal",
+    "excav_soil",
+    "granite_cube",
+    "gravel",
+    "marb_blck",
+    "marb_blck2",
+    "marb_slab",
+    "ore",
+    "sand",
+    "silica",
+    "stone_dust",
+    "stones"
+  ],
+  "entries": [
+    {
+      "cargo_id": "coal",
+      "name": "Coal",
+      "name_pt": "Carvão",
+      "source_group": "mining",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "excav_soil",
+      "name": "Excavated Soil",
+      "name_pt": "Solo escavado",
+      "source_group": "custom",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "granite_cube",
+      "name": "Granite Cubes",
+      "name_pt": "Cubos de granito",
+      "source_group": "construction",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "gravel",
+      "name": "Gravel",
+      "name_pt": "Cascalho",
+      "source_group": "construction",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "marb_blck",
+      "name": "Marble Blocks",
+      "name_pt": "Blocos de mármore",
+      "source_group": "construction",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "marb_blck2",
+      "name": "Marble Blocks",
+      "name_pt": "Blocos de mármore",
+      "source_group": "construction",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "marb_slab",
+      "name": "Marble Slab",
+      "name_pt": "Lâmina de mármore",
+      "source_group": "construction",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "ore",
+      "name": "Ore",
+      "name_pt": "Minério",
+      "source_group": "mining",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "sand",
+      "name": "Sand",
+      "name_pt": "Areia",
+      "source_group": "construction",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "silica",
+      "name": "Silica",
+      "name_pt": "Silica",
+      "source_group": "custom",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "stone_dust",
+      "name": "Stone Dust",
+      "name_pt": "Pó de pedra",
+      "source_group": "custom",
+      "selection_reason": "mineral_selection"
+    },
+    {
+      "cargo_id": "stones",
+      "name": "Stones",
+      "name_pt": "Rochas",
+      "source_group": "custom",
+      "selection_reason": "mineral_selection"
+    }
+  ]
+}

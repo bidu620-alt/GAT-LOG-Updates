@@ -1,0 +1,1241 @@
+{
+  "schema_version": 1,
+  "id": "carga_seca",
+  "title": "Carga Seca / Geral",
+  "cargo_ids": [
+    "air_mails",
+    "aircft_tires",
+    "almond",
+    "alu_ingot",
+    "alu_profile",
+    "apples_c",
+    "backfl_prev",
+    "battery",
+    "beans",
+    "beverages",
+    "bottle_water",
+    "brake_pads",
+    "bricks",
+    "cable_reel",
+    "can_sardines",
+    "canned_beans",
+    "canned_beef",
+    "canned_pork",
+    "canned_tuna",
+    "carb_water",
+    "carbn_pwdr_c",
+    "carrots_c",
+    "cement",
+    "chewing_gums",
+    "chimney_syst",
+    "chocolate",
+    "clothes",
+    "clothes_c",
+    "coconut_milk",
+    "comp_process",
+    "concr_beams",
+    "concr_beams2",
+    "concr_cent",
+    "concr_stair",
+    "copp_rf_gutt",
+    "corks",
+    "drymilk",
+    "dumper_tire",
+    "elect_wiring",
+    "electronics",
+    "emp_wine_bar",
+    "emp_wine_bot",
+    "empty_barr",
+    "empty_palet",
+    "empty_spool",
+    "emptytank",
+    "exhausts_c",
+    "floorpanels",
+    "furniture",
+    "glass",
+    "glass_packed",
+    "gnocchi",
+    "graph_grease",
+    "guard_rails",
+    "gummy_bears",
+    "harvest_bins",
+    "hi_volt_cabl",
+    "hipresstank",
+    "hmetal",
+    "honey",
+    "hwaste",
+    "iced_coffee",
+    "iron_pipes",
+    "ketchup",
+    "largetubes",
+    "lattice",
+    "lead",
+    "limonades",
+    "maple_syrup",
+    "mason_jars",
+    "med_equip",
+    "metal_beams",
+    "metal_cans",
+    "metal_center",
+    "metal_pipes",
+    "moto_tires",
+    "mtl_coil",
+    "mystery_cyl",
+    "natur_rubber",
+    "nonalco_beer",
+    "nuts",
+    "nylon_cord",
+    "oil_filt_c",
+    "oil_filters",
+    "olives",
+    "outdr_flr_tl",
+    "packag_food",
+    "paper",
+    "pasta",
+    "peas",
+    "perfor_frks",
+    "pesto",
+    "pet_food",
+    "pet_food_c",
+    "plast_film",
+    "plast_film_c",
+    "plast_pipes",
+    "plastic_gra",
+    "plumb_suppl",
+    "pnut_butter",
+    "polyst_box",
+    "post_packag",
+    "precast_strs",
+    "press_sl_val",
+    "protec_cloth",
+    "radiators",
+    "re_bars",
+    "refl_posts",
+    "roof_tiles",
+    "roofing_felt",
+    "rooflights",
+    "salt_spice_c",
+    "salt_spices",
+    "sandwch_pnls",
+    "scaffoldings",
+    "scrap_metals",
+    "seal_bearing",
+    "shock_absorb",
+    "soy_milk",
+    "spher_valves",
+    "sq_tub",
+    "steel_cord",
+    "stone_wool",
+    "sugar",
+    "sugar_b",
+    "tableware",
+    "tank",
+    "toys",
+    "tracks",
+    "train_part",
+    "train_part2",
+    "transmis",
+    "truck_batt",
+    "truck_batt_c",
+    "truck_rims",
+    "truck_rims_c",
+    "truck_tyres",
+    "tube",
+    "tyres",
+    "used_battery",
+    "used_packag",
+    "used_plast",
+    "used_plast_c",
+    "vent_tube",
+    "vinegar",
+    "vinegar_c",
+    "volvo_rims",
+    "wagon",
+    "wallpanels",
+    "watertank",
+    "windblade",
+    "windml_eng",
+    "windml_tube",
+    "wrk_cloth"
+  ],
+  "entries": [
+    {
+      "cargo_id": "air_mails",
+      "name": "Airmail",
+      "name_pt": "Correio aéreo",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "aircft_tires",
+      "name": "Aircraft Tyres",
+      "name_pt": "Pneus de avião",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "almond",
+      "name": "Almond",
+      "name_pt": "Amêndoa",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "alu_ingot",
+      "name": "Aluminium Ingots",
+      "name_pt": "Lingotes de alumínio",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "alu_profile",
+      "name": "Aluminium Profiles",
+      "name_pt": "Perfis de alumínio",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "apples_c",
+      "name": "Apples",
+      "name_pt": "Maçãs",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "backfl_prev",
+      "name": "Backflow Preventers",
+      "name_pt": "Válvulas de contrafluxo",
+      "source_group": "pipes",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "battery",
+      "name": "Batteries",
+      "name_pt": "Baterias",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "beans",
+      "name": "Beans",
+      "name_pt": "Feijão",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "beverages",
+      "name": "Beverages",
+      "name_pt": "Bebidas",
+      "source_group": "drinks",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "bottle_water",
+      "name": "Bottled Water",
+      "name_pt": "Água engarrafada",
+      "source_group": "drinks",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "brake_pads",
+      "name": "Brake Pads",
+      "name_pt": "Pastilhas de freio",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "bricks",
+      "name": "Bricks",
+      "name_pt": "Tijolos",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "cable_reel",
+      "name": "Industrial Cable Reel",
+      "name_pt": "Rolo de cabo industrial",
+      "source_group": "cables",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "can_sardines",
+      "name": "Canned Sardines",
+      "name_pt": "Sardinhas enlatadas",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "canned_beans",
+      "name": "Canned Beans",
+      "name_pt": "Feijão enlatado",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "canned_beef",
+      "name": "Canned Beef",
+      "name_pt": "Carne enlatada",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "canned_pork",
+      "name": "Canned Pork",
+      "name_pt": "Carne de porco enlatada",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "canned_tuna",
+      "name": "Canned Tuna",
+      "name_pt": "Atum enlatado",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "carb_water",
+      "name": "Carbonated Water",
+      "name_pt": "Água com gás",
+      "source_group": "vehicles",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "carbn_pwdr_c",
+      "name": "Carbon Black Powder",
+      "name_pt": "Carvão em pó",
+      "source_group": "vehicles",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "carrots_c",
+      "name": "Carrots",
+      "name_pt": "Cenouras",
+      "source_group": "vehicles",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "cement",
+      "name": "Cement",
+      "name_pt": "Cimento",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "chewing_gums",
+      "name": "Chewing Gums",
+      "name_pt": "Chicletes",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "chimney_syst",
+      "name": "Chimney Systems",
+      "name_pt": "Sistemas de chaminés",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "chocolate",
+      "name": "Chocolate",
+      "name_pt": "Chocolate",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "clothes",
+      "name": "Clothes",
+      "name_pt": "Roupas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "clothes_c",
+      "name": "Clothes",
+      "name_pt": "Roupas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "coconut_milk",
+      "name": "Coconut Milk",
+      "name_pt": "Leite de coco",
+      "source_group": "dairy",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "comp_process",
+      "name": "Computer Processors",
+      "name_pt": "Processadores de computador",
+      "source_group": "electronics",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "concr_beams",
+      "name": "Concrete Beams",
+      "name_pt": "Vigas de concreto",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "concr_beams2",
+      "name": "Concrete Beams",
+      "name_pt": "Vigas de concreto",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "concr_cent",
+      "name": "Concrete Centring",
+      "name_pt": "Centração de concreto",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "concr_stair",
+      "name": "Concrete Stairs",
+      "name_pt": "Escadas de concreto",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "copp_rf_gutt",
+      "name": "Copper Roof Gutters",
+      "name_pt": "Calhas de cobre para telhado",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "corks",
+      "name": "Corks",
+      "name_pt": "Rolhas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "drymilk",
+      "name": "Dry Milk",
+      "name_pt": "Leite em pó",
+      "source_group": "dairy",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "dumper_tire",
+      "name": "Huge Tyres",
+      "name_pt": "Pneus gigantes",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "elect_wiring",
+      "name": "Electrical Wiring",
+      "name_pt": "Fiação elétrica",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "electronics",
+      "name": "Electronics",
+      "name_pt": "Produtos eletrônicos",
+      "source_group": "electronics",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "emp_wine_bar",
+      "name": "Empty Wine Barrels",
+      "name_pt": "Barris de vinho vazios",
+      "source_group": "drinks",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "emp_wine_bot",
+      "name": "Empty Wine Bottles",
+      "name_pt": "Garrafas de vinho vazias",
+      "source_group": "drinks",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "empty_barr",
+      "name": "Empty Barrels",
+      "name_pt": "Barris vazios",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "empty_palet",
+      "name": "Empty Pallets",
+      "name_pt": "Paletes vazios\\n",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "empty_spool",
+      "name": "Empty Spool",
+      "name_pt": "Bobina vazia",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "emptytank",
+      "name": "Reservoir Tank",
+      "name_pt": "Tanque reservatório",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "exhausts_c",
+      "name": "Exhaust Systems",
+      "name_pt": "Sistemas de escapamento",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "floorpanels",
+      "name": "Floor Panels",
+      "name_pt": "Placas de piso",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "furniture",
+      "name": "Furniture",
+      "name_pt": "Mobília",
+      "source_group": "furniture",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "glass",
+      "name": "Glass Panels",
+      "name_pt": "Painéis de vidro",
+      "source_group": "glass",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "glass_packed",
+      "name": "Packed Glass",
+      "name_pt": "Vidro embalado",
+      "source_group": "glass",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "gnocchi",
+      "name": "Gnocchi",
+      "name_pt": "Nhoque",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "graph_grease",
+      "name": "Graphite Grease",
+      "name_pt": "Graxa grafite",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "guard_rails",
+      "name": "Guard Rails",
+      "name_pt": "Muretas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "gummy_bears",
+      "name": "Gummy Bears",
+      "name_pt": "Ursinhos de goma",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "harvest_bins",
+      "name": "Harvesting Bins",
+      "name_pt": "Cestos para colheita",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "hi_volt_cabl",
+      "name": "High Voltage Cables",
+      "name_pt": "Cabos de alta tensão",
+      "source_group": "cables",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "hipresstank",
+      "name": "Pressure Tank",
+      "name_pt": "Tanque pressurizado",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "hmetal",
+      "name": "Heavy Metals",
+      "name_pt": "Metais pesados",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "honey",
+      "name": "Honey",
+      "name_pt": "Mel",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "hwaste",
+      "name": "Hospital Waste",
+      "name_pt": "Lixo hospitalar",
+      "source_group": "medical",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "iced_coffee",
+      "name": "Canned Iced Coffee",
+      "name_pt": "Café gelado enlatado",
+      "source_group": "drinks",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "iron_pipes",
+      "name": "Iron Pipes (large)",
+      "name_pt": "Tubos de ferro",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "ketchup",
+      "name": "Ketchup",
+      "name_pt": "Ketchup",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "largetubes",
+      "name": "Large Tubes",
+      "name_pt": "Tubos grandes",
+      "source_group": "pipes",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "lattice",
+      "name": "Construction Staircase",
+      "name_pt": "Escadaria para Construção",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "lead",
+      "name": "Lead",
+      "name_pt": "Chumbo",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "limonades",
+      "name": "Lemonade",
+      "name_pt": "Limonada",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "maple_syrup",
+      "name": "Maple Syrup",
+      "name_pt": "Xarope de bordo",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "mason_jars",
+      "name": "Mason Jars",
+      "name_pt": "Potes de vidro",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "med_equip",
+      "name": "Medical Equipment",
+      "name_pt": "Equipamento médico",
+      "source_group": "medical",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "metal_beams",
+      "name": "Metal Beams",
+      "name_pt": "Vigas de metal",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "metal_cans",
+      "name": "Metal Cans",
+      "name_pt": "Latas de metal",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "metal_center",
+      "name": "Metal Centring",
+      "name_pt": "Centração de metal",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "metal_pipes",
+      "name": "Iron Pipes (small)",
+      "name_pt": "Tubos de ferro",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "moto_tires",
+      "name": "Motorcycle Tyres",
+      "name_pt": "Pneus de moto",
+      "source_group": "motorcycles",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "mtl_coil",
+      "name": "Metal Coil",
+      "name_pt": "Bobina de metal",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "mystery_cyl",
+      "name": "High-Tech Device",
+      "name_pt": "Dispositivo high-tech",
+      "source_group": "electronics",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "natur_rubber",
+      "name": "Natural Rubber",
+      "name_pt": "Borracha natural",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "nonalco_beer",
+      "name": "Non-alcoholic Beer",
+      "name_pt": "Cerveja sem álcool",
+      "source_group": "drinks",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "nuts",
+      "name": "Nuts",
+      "name_pt": "Nozes",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "nylon_cord",
+      "name": "Nylon Cord",
+      "name_pt": "Fio de náilon",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "oil_filt_c",
+      "name": "Oil Filters",
+      "name_pt": "Filtros de óleo",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "oil_filters",
+      "name": "Oil Filters",
+      "name_pt": "Filtros de óleo",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "olives",
+      "name": "Olives",
+      "name_pt": "Azeitonas",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "outdr_flr_tl",
+      "name": "Outdoor Floor Tiles",
+      "name_pt": "Cerâmica de piso externo",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "packag_food",
+      "name": "Packaged Food",
+      "name_pt": "Comida enlatada",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "paper",
+      "name": "Office Paper",
+      "name_pt": "Papel de escritório",
+      "source_group": "paper",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "pasta",
+      "name": "Pasta",
+      "name_pt": "Macarrão",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "peas",
+      "name": "Peas",
+      "name_pt": "Ervilhas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "perfor_frks",
+      "name": "Performance Forks",
+      "name_pt": "Suspensão de alto desempenho",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "pesto",
+      "name": "Pesto",
+      "name_pt": "Molho Pesto",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "pet_food",
+      "name": "Pet Food",
+      "name_pt": "Ração",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "pet_food_c",
+      "name": "Pet Food",
+      "name_pt": "Ração",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "plast_film",
+      "name": "Plastic Film Rolls",
+      "name_pt": "Rolos de papel filme",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "plast_film_c",
+      "name": "Plastic Film Rolls",
+      "name_pt": "Rolos de papel filme",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "plast_pipes",
+      "name": "Plastic Pipes",
+      "name_pt": "Tubos de plástico",
+      "source_group": "pipes",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "plastic_gra",
+      "name": "Plastic Granules",
+      "name_pt": "Plástico granulado",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "plumb_suppl",
+      "name": "Plumbing Supplies",
+      "name_pt": "Material de encanamento",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "pnut_butter",
+      "name": "Peanut Butter",
+      "name_pt": "Manteiga de amendoim",
+      "source_group": "dairy",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "polyst_box",
+      "name": "Polystyrene Boxes",
+      "name_pt": "Caixas de poliestireno",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "post_packag",
+      "name": "Post Packages",
+      "name_pt": "Pacotes de encomendas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "precast_strs",
+      "name": "Precast Stairs",
+      "name_pt": "Escadas pré-fabricadas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "press_sl_val",
+      "name": "High Pressure Slide Valves",
+      "name_pt": "Válvulas de gaveta de alta pressão",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "protec_cloth",
+      "name": "Protective Clothing",
+      "name_pt": "Roupas de proteção",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "radiators",
+      "name": "Radiators",
+      "name_pt": "Radiadores",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "re_bars",
+      "name": "Reinforcing Bars",
+      "name_pt": "Barras de reforço",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "refl_posts",
+      "name": "Reflective Posts",
+      "name_pt": "Postes refletores",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "roof_tiles",
+      "name": "Roof Tiles",
+      "name_pt": "Telhas",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "roofing_felt",
+      "name": "Roofing Felt",
+      "name_pt": "Feltro de telhado",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "rooflights",
+      "name": "Rooflights",
+      "name_pt": "Tetos solares",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "salt_spice_c",
+      "name": "Salt & Spices",
+      "name_pt": "Sal e temperos",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "salt_spices",
+      "name": "Salt & Spices",
+      "name_pt": "Sal e temperos",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "sandwch_pnls",
+      "name": "Sandwich Panels",
+      "name_pt": "Painéis sanduíches",
+      "source_group": "construction",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "scaffoldings",
+      "name": "Scaffolding",
+      "name_pt": "Andaimes",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "scrap_metals",
+      "name": "Scrap Metals",
+      "name_pt": "Sucata de metal",
+      "source_group": "scrap",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "seal_bearing",
+      "name": "Sealed Bearings",
+      "name_pt": "Rolamentos selados",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "shock_absorb",
+      "name": "Shock Absorbers",
+      "name_pt": "Amortecedores de impacto",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "soy_milk",
+      "name": "Soy Milk",
+      "name_pt": "Leite de soja",
+      "source_group": "dairy",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "spher_valves",
+      "name": "Spherical Valves",
+      "name_pt": "Válvulas esféricas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "sq_tub",
+      "name": "Square Tubing",
+      "name_pt": "Tubos quadrados",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "steel_cord",
+      "name": "Steel Cord",
+      "name_pt": "Cabo de aço",
+      "source_group": "steel",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "stone_wool",
+      "name": "Stone Wool",
+      "name_pt": "Lã de pedra",
+      "source_group": "rural",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "sugar",
+      "name": "Sugar",
+      "name_pt": "Açúcar",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "sugar_b",
+      "name": "Sugar",
+      "name_pt": "Açúcar",
+      "source_group": "food",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "tableware",
+      "name": "Tableware",
+      "name_pt": "Louças",
+      "source_group": "furniture",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "tank",
+      "name": "Large Reservoir Tank",
+      "name_pt": "Tanque reservatório grande",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "toys",
+      "name": "Toys",
+      "name_pt": "Brinquedos",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "tracks",
+      "name": "Tracks",
+      "name_pt": "Esteiras",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "train_part",
+      "name": "Train Axles",
+      "name_pt": "Eixos de trem",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "train_part2",
+      "name": "Train Undercarriage",
+      "name_pt": "Material rodante de trem",
+      "source_group": "vehicles",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "transmis",
+      "name": "Transmissions",
+      "name_pt": "Transmissões",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "truck_batt",
+      "name": "Truck Batteries",
+      "name_pt": "Baterias de caminhão",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "truck_batt_c",
+      "name": "Truck Batteries",
+      "name_pt": "Baterias de caminhão",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "truck_rims",
+      "name": "Truck Rims",
+      "name_pt": "Rodas de caminhão",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "truck_rims_c",
+      "name": "Truck Rims",
+      "name_pt": "Rodas de caminhão",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "truck_tyres",
+      "name": "Truck Tyres",
+      "name_pt": "Pneus de caminhão\\n",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "tube",
+      "name": "Gas Pipeline Parts",
+      "name_pt": "Peças para gasoduto",
+      "source_group": "pipes",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "tyres",
+      "name": "Tyres",
+      "name_pt": "Pneus",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "used_battery",
+      "name": "Used Car Batteries",
+      "name_pt": "Baterias automotivas usadas",
+      "source_group": "vehicles",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "used_packag",
+      "name": "Used Packaging",
+      "name_pt": "Embalagens usadas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "used_plast",
+      "name": "Used Plastics",
+      "name_pt": "Plásticos usados",
+      "source_group": "scrap",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "used_plast_c",
+      "name": "Used Plastics",
+      "name_pt": "Plásticos usados",
+      "source_group": "scrap",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "vent_tube",
+      "name": "Ventilation Shaft",
+      "name_pt": "Duto de ventilação",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "vinegar",
+      "name": "Vinegar",
+      "name_pt": "Vinagre",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "vinegar_c",
+      "name": "Vinegar",
+      "name_pt": "Vinagre",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "volvo_rims",
+      "name": "Wheels with Volvo Rims",
+      "name_pt": "Rodas Volvo",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "wagon",
+      "name": "Railcar",
+      "name_pt": "Vagão",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "wallpanels",
+      "name": "Wall Panels",
+      "name_pt": "Paredes pré-fabricadas",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "watertank",
+      "name": "Water Tank",
+      "name_pt": "Tanque de água",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "windblade",
+      "name": "Wind Turbine Blade",
+      "name_pt": "Pá de Turbina Aeólica",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "windml_eng",
+      "name": "Wind Turbine Nacelle",
+      "name_pt": "Nacele de Turbina Aeólica",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "windml_tube",
+      "name": "Wind Turbine Tower",
+      "name_pt": "Torre de Turbina Aeólica",
+      "source_group": "industrial",
+      "selection_reason": "general_goods_selection"
+    },
+    {
+      "cargo_id": "wrk_cloth",
+      "name": "Work Clothes",
+      "name_pt": "Roupas de trabalho",
+      "source_group": "custom",
+      "selection_reason": "general_goods_selection"
+    }
+  ]
+}

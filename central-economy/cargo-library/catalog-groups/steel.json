@@ -1,0 +1,174 @@
+{
+  "id": "steel",
+  "title": "Aço e metais",
+  "entries": [
+    {
+      "name": "Aluminium Ingots",
+      "dlc": "West Balkans",
+      "weight": "23",
+      "name_pt": "Lingotes de alumínio",
+      "cargo_ids": [
+        "alu_ingot"
+      ],
+      "aliases": [
+        "Aluminium Ingots"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Aluminium Profiles",
+      "dlc": "West Balkans",
+      "weight": "16",
+      "name_pt": "Perfis de alumínio",
+      "cargo_ids": [
+        "alu_profile"
+      ],
+      "aliases": [
+        "Aluminium Profiles"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Copper Roof Gutters",
+      "dlc": "Launch",
+      "weight": "4–8",
+      "name_pt": "Calhas de cobre para telhado",
+      "cargo_ids": [
+        "copp_rf_gutt"
+      ],
+      "aliases": [
+        "Calhas de cobre",
+        "Copper Roof Gutters"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Heavy Metals",
+      "dlc": "Launch",
+      "weight": "10–20",
+      "name_pt": "Metais pesados",
+      "cargo_ids": [
+        "hmetal"
+      ],
+      "aliases": [
+        "Heavy Metals"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Iron Pipes (large)",
+      "dlc": "Launch",
+      "weight": "20",
+      "name_pt": "Tubos de ferro",
+      "cargo_ids": [
+        "iron_pipes"
+      ],
+      "aliases": [
+        "Iron Pipes",
+        "Iron Pipes (large)",
+        "Tubos de ferro (grandes)",
+        "Tubos de ferro (pequenos)"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Iron Pipes (small)",
+      "dlc": "Launch",
+      "weight": "12",
+      "name_pt": "Tubos de ferro",
+      "cargo_ids": [
+        "metal_pipes"
+      ],
+      "aliases": [
+        "Iron Pipes",
+        "Iron Pipes (small)",
+        "Tubos de ferro (grandes)",
+        "Tubos de ferro (pequenos)"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Lead",
+      "dlc": "Launch",
+      "weight": "9–18",
+      "name_pt": "Chumbo",
+      "cargo_ids": [
+        "lead"
+      ],
+      "aliases": [
+        "Lead"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Metal Beams",
+      "dlc": "Beyond the Baltic Sea",
+      "weight": "23",
+      "name_pt": "Vigas de metal",
+      "cargo_ids": [
+        "metal_beams"
+      ],
+      "aliases": [
+        "Metal Beams",
+        "Vigas metálicas"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Metal Cans",
+      "dlc": "Scandinavia",
+      "weight": "5–9",
+      "name_pt": "Latas de metal",
+      "cargo_ids": [
+        "metal_cans"
+      ],
+      "aliases": [
+        "Latas metálicas",
+        "Metal Cans"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Metal Centring",
+      "dlc": "Heavy Cargo Pack",
+      "weight": "28",
+      "name_pt": "Centração de metal",
+      "cargo_ids": [
+        "metal_center"
+      ],
+      "aliases": [
+        "Escoramento metálico",
+        "Metal Centring"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Metal Coil",
+      "dlc": "Italia",
+      "weight": "12",
+      "name_pt": "Bobina de metal",
+      "cargo_ids": [
+        "mtl_coil"
+      ],
+      "aliases": [
+        "Bobina metálica",
+        "Metal Coil"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Steel Cord",
+      "dlc": "Vive la France!",
+      "weight": "8–14",
+      "name_pt": "Cabo de aço",
+      "cargo_ids": [
+        "steel_cord"
+      ],
+      "aliases": [
+        "Cordão de aço",
+        "Steel Cord"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

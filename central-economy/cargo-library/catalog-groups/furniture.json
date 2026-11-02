@@ -1,0 +1,33 @@
+{
+  "id": "furniture",
+  "title": "Móveis",
+  "entries": [
+    {
+      "name": "Furniture",
+      "dlc": "Launch",
+      "weight": "9–16",
+      "name_pt": "Mobília",
+      "cargo_ids": [
+        "furniture"
+      ],
+      "aliases": [
+        "Furniture",
+        "Móveis"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Tableware",
+      "dlc": "Launch",
+      "weight": "9–16",
+      "name_pt": "Louças",
+      "cargo_ids": [
+        "tableware"
+      ],
+      "aliases": [
+        "Tableware"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

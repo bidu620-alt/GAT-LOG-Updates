@@ -1,0 +1,113 @@
+{
+  "id": "timber",
+  "title": "Madeira e toras",
+  "entries": [
+    {
+      "name": "Logs",
+      "dlc": "Launch",
+      "weight": "24",
+      "name_pt": "Troncos",
+      "cargo_ids": [
+        "logs"
+      ],
+      "aliases": [
+        "Logs",
+        "Toras"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Lumber",
+      "dlc": "Launch",
+      "weight": "15",
+      "name_pt": "Madeira serrada",
+      "cargo_ids": [
+        "lumber"
+      ],
+      "aliases": [
+        "Lumber"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Packed Lumber",
+      "dlc": "1.57",
+      "weight": "???",
+      "name_pt": "Madeira embalada",
+      "cargo_ids": [
+        "lumber_p"
+      ],
+      "aliases": [
+        "Madeira serrada embalada",
+        "Packed Lumber"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Sawdust Panels",
+      "dlc": "Launch",
+      "weight": "12–21",
+      "name_pt": "Painéis de serragem",
+      "cargo_ids": [
+        "sawpanels"
+      ],
+      "aliases": [
+        "Sawdust Panels"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wood Bark",
+      "dlc": "Scandinavia",
+      "weight": "6–9",
+      "name_pt": "Casca de madeira",
+      "cargo_ids": [
+        "wood_bark"
+      ],
+      "aliases": [
+        "Wood Bark"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wood Chipper",
+      "dlc": "Forest Machinery",
+      "weight": "26",
+      "name_pt": "Picador de madeira",
+      "cargo_ids": [
+        "wood_chipper"
+      ],
+      "aliases": [
+        "Wood Chipper"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wood Shavings",
+      "dlc": "Launch",
+      "weight": "3–6",
+      "name_pt": "Serragem",
+      "cargo_ids": [
+        "wshavings"
+      ],
+      "aliases": [
+        "Aparas de madeira",
+        "Wood Shavings"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Wooden Beams",
+      "dlc": "Scandinavia",
+      "weight": "6–13",
+      "name_pt": "Vigas de madeira",
+      "cargo_ids": [
+        "wooden_beams"
+      ],
+      "aliases": [
+        "Wooden Beams"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

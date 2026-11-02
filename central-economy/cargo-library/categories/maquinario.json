@@ -1,0 +1,689 @@
+{
+  "schema_version": 1,
+  "id": "maquinario",
+  "title": "Maquinário & Construção",
+  "cargo_ids": [
+    "aircond",
+    "art_dumper",
+    "asph_miller",
+    "auger_wag",
+    "bob_d30",
+    "bob_e10e",
+    "bob_e60",
+    "bob_l95",
+    "bob_pa127v",
+    "bob_s86",
+    "bob_tl3070a",
+    "boiler_parts",
+    "condensator",
+    "cott_harvest",
+    "crawler",
+    "czl_es1000",
+    "czl_es300",
+    "czl_muv75",
+    "diesel_gen",
+    "digger1000",
+    "digger500",
+    "disc_harrows",
+    "dozer",
+    "driller",
+    "dryers",
+    "dumper",
+    "ex_bucket",
+    "exc_craw",
+    "excavator",
+    "fert_spread",
+    "forage_harv",
+    "forklifts",
+    "forwarder",
+    "fuel_tanks",
+    "heat_exch",
+    "hvac",
+    "jcb_bhl4cx",
+    "jcb_dmp6t2",
+    "jcb_dmphtd5e",
+    "jcb_exc245xr",
+    "jcb_ft4220",
+    "jcb_g100rs",
+    "jcb_mexc19ce",
+    "jcb_pw125qe",
+    "jcb_th540180",
+    "jcb_wload457",
+    "kr_bigm450",
+    "kr_bigp1290",
+    "kr_bigx1180",
+    "kr_ecb880cv",
+    "kr_gx520",
+    "kr_stc1370",
+    "kr_vpv190xc",
+    "load_un",
+    "locomotive",
+    "log_harvest",
+    "log_stacker",
+    "mat_handler",
+    "mob_crusher",
+    "mob_screener",
+    "mob_stacker",
+    "mob_tr_winch",
+    "mobile_compr",
+    "mobile_crane",
+    "mulcher",
+    "planter",
+    "pumps",
+    "roller",
+    "silo",
+    "skidder",
+    "sprayer",
+    "square_baler",
+    "ter_forklift",
+    "tractor",
+    "tractor_au",
+    "tractor_c",
+    "tractors",
+    "transformat",
+    "vol_ew240emh",
+    "volvo_a25g",
+    "volvo_bucket",
+    "volvo_ec220e",
+    "volvo_l250h",
+    "volvo_sd160b",
+    "wood_chipper"
+  ],
+  "entries": [
+    {
+      "cargo_id": "aircond",
+      "name": "Air Conditioners",
+      "name_pt": "Condicionadores de ar",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "art_dumper",
+      "name": "Articulated Hauler",
+      "name_pt": "Caminhão articulado",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "asph_miller",
+      "name": "Asphalt Miller - AM 0880",
+      "name_pt": "Moedor de asfalto",
+      "source_group": "road_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "auger_wag",
+      "name": "Auger Wagon",
+      "name_pt": "Carreta graneleira",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "bob_d30",
+      "name": "Forklift Bobcat D30",
+      "name_pt": "Empilhadeira Bobcat D30",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "bob_e10e",
+      "name": "Mini Excavator Bobcat E10e",
+      "name_pt": "Escavadeira compacta Bobcat E10e",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "bob_e60",
+      "name": "Excavator Bobcat E60",
+      "name_pt": "Escavadeira Bobcat E60",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "bob_l95",
+      "name": "Wheel Loader Bobcat L95",
+      "name_pt": "Pá-carregadeira compacta sobre rodas Bobcat L95",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "bob_pa127v",
+      "name": "Compressor Bobcat PA12.7v",
+      "name_pt": "Compressor de ar Bobcat PA12.7v",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "bob_s86",
+      "name": "Skid-Steer Loader Bobcat S86",
+      "name_pt": "Minicarregadeira Bobcat S86",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "bob_tl3070a",
+      "name": "Agricultural Telehandler Bobcat TL30.70",
+      "name_pt": "Manipulador telescópico agrícola Bobcat TL30.70",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "boiler_parts",
+      "name": "Boiler Part",
+      "name_pt": "Peça de uma caldeira",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "condensator",
+      "name": "Industrial Condenser",
+      "name_pt": "Condensador industrial",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "cott_harvest",
+      "name": "Cotton Harvester",
+      "name_pt": "Colheitadeira de algodão",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "crawler",
+      "name": "Crawler Carrier",
+      "name_pt": "Caminhão sobre esteiras",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "czl_es1000",
+      "name": "Locomotive CZ LOKO EffiShunter 1000",
+      "name_pt": "Locomotiva CZ LOKO EffiShunter 1000",
+      "source_group": "food",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "czl_es300",
+      "name": "Locomotive CZ LOKO EffiShunter 300",
+      "name_pt": "Locomotiva CZ LOKO EffiShunter 300",
+      "source_group": "food",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "czl_muv75",
+      "name": "Locomotive CZ LOKO MUV 75",
+      "name_pt": "Locomotiva CZ LOKO MUV 75",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "diesel_gen",
+      "name": "Diesel Generators",
+      "name_pt": "Geradores à Diesel",
+      "source_group": "fuel",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "digger1000",
+      "name": "Wheel Loader",
+      "name_pt": "Pá-carregadeira",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "digger500",
+      "name": "Backhoe Loader",
+      "name_pt": "Retroescavadeira",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "disc_harrows",
+      "name": "Disc Harrows",
+      "name_pt": "Arados de discos",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "dozer",
+      "name": "Dozer Crawl - Z35K",
+      "name_pt": "Esteira de trator",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "driller",
+      "name": "Driller - D-50",
+      "name_pt": "Perfuratriz D-50",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "dryers",
+      "name": "Dryers",
+      "name_pt": "Secadoras",
+      "source_group": "grain",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "dumper",
+      "name": "Haul Truck Chassis",
+      "name_pt": "Chassis de Caminhão de Mineração",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "ex_bucket",
+      "name": "Excavator Bucket",
+      "name_pt": "Balde para Escavadeira",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "exc_craw",
+      "name": "Forestry Crawler Excavator",
+      "name_pt": "Escavadeira florestal sobre esteiras",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "excavator",
+      "name": "Excavator",
+      "name_pt": "Escavadeira",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "fert_spread",
+      "name": "Fertilizer Spreader",
+      "name_pt": "Adubadora",
+      "source_group": "chemicals",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "forage_harv",
+      "name": "Forage Harvester",
+      "name_pt": "Colheitadeira de forragem",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "forklifts",
+      "name": "Forklifts",
+      "name_pt": "Empilhadeiras",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "forwarder",
+      "name": "Forwarder",
+      "name_pt": "Trator florestal autocarregável",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "fuel_tanks",
+      "name": "Fuel Tanks",
+      "name_pt": "Tanques de combustível",
+      "source_group": "fuel",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "heat_exch",
+      "name": "Heat Exchanger",
+      "name_pt": "Trocador de Calor",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "hvac",
+      "name": "Air Conditioners",
+      "name_pt": "Condicionadores de ar",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "jcb_bhl4cx",
+      "name": "Backhoe Loader JCB 4CX",
+      "name_pt": "Retroescavadeira JCB 4CX",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "jcb_dmp6t2",
+      "name": "Site Dumper JCB 6T-2",
+      "name_pt": "Basculante de obra JCB 6T-2",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "jcb_dmphtd5e",
+      "name": "Electric Dumpster JCB HTD-5E",
+      "name_pt": "Caçamba elétrica JCB HTD-5E",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "jcb_exc245xr",
+      "name": "Excavator JCB 245XR",
+      "name_pt": "Escavadeira JCB 245XR",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "jcb_ft4220",
+      "name": "Tractor JCB Fastrac 4220",
+      "name_pt": "Trator JCB Fastrac 4220",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "jcb_g100rs",
+      "name": "Compact Generators JCB G100RS",
+      "name_pt": "Geradores compactos JCB G100RS",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "jcb_mexc19ce",
+      "name": "Electric Mini Excavator JCB 19C-E",
+      "name_pt": "Miniescavadeira Elétrica JCB 19C-E",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "jcb_pw125qe",
+      "name": "Powerpack JCB 1.25QE",
+      "name_pt": "Gerador JCB 1.25QE",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "jcb_th540180",
+      "name": "Telescopic Handler JCB 540-180",
+      "name_pt": "Manipulador telescópico JCB 540-180",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "jcb_wload457",
+      "name": "Wheel Loader JCB 457",
+      "name_pt": "Pá-carregadeira JCB 457",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "kr_bigm450",
+      "name": "Mower Conditioner Krone BiG M 450",
+      "name_pt": "Segadora condicionadora Krone BiG M 450",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "kr_bigp1290",
+      "name": "Square Baler Krone BiG Pack 1290 HDP VC",
+      "name_pt": "Enfardadeira quadradas Krone BiG Pack 1290 HDC VC",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "kr_bigx1180",
+      "name": "Forage Harvester Krone BiG X 1180",
+      "name_pt": "Colheitadeira de forragem Krone BiG X 1180",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "kr_ecb880cv",
+      "name": "Disk Mower Krone EasyCut B 880 CV",
+      "name_pt": "Cortadores de grama Krone EasyCut B 880 CV",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "kr_gx520",
+      "name": "Wagon Krone GX 520",
+      "name_pt": "Vagão Krone GX 520",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "kr_stc1370",
+      "name": "Rotary Rakes Krone Swadro TC 1370",
+      "name_pt": "Ancinhos rotativos Krone Swadro TC 1370",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "kr_vpv190xc",
+      "name": "Round Baler Krone VariPack V 190 XC",
+      "name_pt": "Enfardadeira redonda Krone VariPack V 190 XC",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "load_un",
+      "name": "Underground Loader",
+      "name_pt": "Carregadeira subterrânea",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "locomotive",
+      "name": "Locomotive - Vossloh G6",
+      "name_pt": "Locomotiva Vossloh G6",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "log_harvest",
+      "name": "Log Harvester",
+      "name_pt": "Colheitadeira florestal",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "log_stacker",
+      "name": "Log Stacker",
+      "name_pt": "Empilhador de troncos",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "mat_handler",
+      "name": "Material Handler",
+      "name_pt": "Manipulador de materiais",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "mob_crusher",
+      "name": "Mobile Crusher",
+      "name_pt": "Triturador móvel",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "mob_screener",
+      "name": "Mobile Screener",
+      "name_pt": "Peneira móvel",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "mob_stacker",
+      "name": "Mobile Stacker",
+      "name_pt": "Esteira móvel",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "mob_tr_winch",
+      "name": "Mobile Traction Winch",
+      "name_pt": "Guincho móvel",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "mobile_compr",
+      "name": "Mobile Air Compressor",
+      "name_pt": "Compressor de ar móvel",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "mobile_crane",
+      "name": "Mobile Crane - UTM SD-833",
+      "name_pt": "Guindaste móvel",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "mulcher",
+      "name": "Mulcher",
+      "name_pt": "Triturador florestal",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "planter",
+      "name": "Planter",
+      "name_pt": "Semeadora",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "pumps",
+      "name": "Pumps",
+      "name_pt": "Bombas",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "roller",
+      "name": "Roller - DYNA CC-2200",
+      "name_pt": "Rolo compressor",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "silo",
+      "name": "Giant Silo",
+      "name_pt": "Silo gigante",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "skidder",
+      "name": "Skidder",
+      "name_pt": "Arrastador de toras",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "sprayer",
+      "name": "Sprayer",
+      "name_pt": "Pulverizador",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "square_baler",
+      "name": "Square Baler",
+      "name_pt": "Enfardadeira quadrada",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "ter_forklift",
+      "name": "Rough Terrain Forklift",
+      "name_pt": "Empilhadeira para terrenos acidentados",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "tractor",
+      "name": "Crawler Tractor",
+      "name_pt": "Trator de esteiras",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "tractor_au",
+      "name": "Autonomous Tractor",
+      "name_pt": "Trator autônomo",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "tractor_c",
+      "name": "Crawler Tractor",
+      "name_pt": "Trator de esteiras",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "tractors",
+      "name": "Tractors",
+      "name_pt": "Tratores",
+      "source_group": "tractor",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "transformat",
+      "name": "Transformer - PK900",
+      "name_pt": "Transformador",
+      "source_group": "industrial",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "vol_ew240emh",
+      "name": "Excavator Volvo EW240E MH",
+      "name_pt": "Escavadeira Volvo EW240E MH",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "volvo_a25g",
+      "name": "Articulated Hauler Volvo A25G",
+      "name_pt": "Caminhão articulado Volvo A25G",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "volvo_bucket",
+      "name": "Rock Bucket Volvo SPN P T SEG",
+      "name_pt": "Caçamba Volvo SPN P T SEG",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "volvo_ec220e",
+      "name": "Excavator Volvo EC220E",
+      "name_pt": "Escavadeira Volvo EC220E",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "volvo_l250h",
+      "name": "Wheel Loader Volvo L250H",
+      "name_pt": "Pá-carregadeira Volvo L250H",
+      "source_group": "heavy_machine",
+      "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "volvo_sd160b",
+      "name": "Compactor Volvo SD160B",
+      "name_pt": "Compactador Volvo SD160B",
+      "source_group": "custom",
+      "selection_reason": "equipment_selection"
+    },
+    {
+      "cargo_id": "wood_chipper",
+      "name": "Wood Chipper",
+      "name_pt": "Picador de madeira",
+      "source_group": "timber",
+      "selection_reason": "equipment_selection"
+    }
+  ]
+}

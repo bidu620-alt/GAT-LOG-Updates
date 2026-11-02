@@ -1,0 +1,19 @@
+{
+  "id": "paper",
+  "title": "Papel e celulose",
+  "entries": [
+    {
+      "name": "Office Paper",
+      "dlc": "Launch",
+      "weight": "10–18",
+      "name_pt": "Papel de escritório",
+      "cargo_ids": [
+        "paper"
+      ],
+      "aliases": [
+        "Office Paper"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "id": "frigorifico",
+  "title": "Frigorífico",
+  "cargo_ids": [
+    "apples",
+    "atl_cod_flt",
+    "basil",
+    "beef_meat",
+    "carrots",
+    "cauliflower",
+    "caviar",
+    "cheese",
+    "chicken_meat",
+    "cott_cheese",
+    "fish_chips",
+    "fresh_fish",
+    "froz_octopi",
+    "frozen_hake",
+    "frsh_herbs",
+    "garlic",
+    "goat_cheese",
+    "grapes",
+    "icecream",
+    "lamb_stom",
+    "liver_paste",
+    "med_vaccine",
+    "milk",
+    "milk_t",
+    "mozzarela",
+    "onion",
+    "oranges",
+    "pears",
+    "plums",
+    "pork_meat",
+    "potatoes",
+    "prosciutto",
+    "salm_fillet",
+    "sausages",
+    "smokd_eel",
+    "smokd_sprats",
+    "tomatoes",
+    "watermelons",
+    "yogurt"
+  ],
+  "entries": [
+    {
+      "cargo_id": "apples",
+      "name": "Apples",
+      "name_pt": "Maçãs",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "atl_cod_flt",
+      "name": "Atlantic Cod Fillet",
+      "name_pt": "Filé de Bacalhau-do-atlântico",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "basil",
+      "name": "Basil",
+      "name_pt": "Manjericão",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "beef_meat",
+      "name": "Beef",
+      "name_pt": "Carne",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "carrots",
+      "name": "Carrots",
+      "name_pt": "Cenouras",
+      "source_group": "vehicles",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "cauliflower",
+      "name": "Cauliflower",
+      "name_pt": "Couve-flor",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "caviar",
+      "name": "Caviar",
+      "name_pt": "Caviar",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "cheese",
+      "name": "Cheese",
+      "name_pt": "Queijo",
+      "source_group": "dairy",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "chicken_meat",
+      "name": "Chicken Meat",
+      "name_pt": "Carne de frango",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "cott_cheese",
+      "name": "Cottage Cheese",
+      "name_pt": "Queijo tipo Cottage",
+      "source_group": "dairy",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "fish_chips",
+      "name": "Fish Fingers",
+      "name_pt": "Peixe empanado",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "fresh_fish",
+      "name": "Fresh Fish",
+      "name_pt": "Peixe fresco",
+      "source_group": "refrigerated",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "froz_octopi",
+      "name": "Frozen Octopi",
+      "name_pt": "Polvo congelado",
+      "source_group": "refrigerated",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "frozen_hake",
+      "name": "Frozen Hake",
+      "name_pt": "Merluza congelada",
+      "source_group": "refrigerated",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "frsh_herbs",
+      "name": "Fresh Herbs",
+      "name_pt": "Ervas frescas",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "garlic",
+      "name": "Garlic",
+      "name_pt": "Alho",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "goat_cheese",
+      "name": "Goat Cheese",
+      "name_pt": "Queijo de cabra",
+      "source_group": "dairy",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "grapes",
+      "name": "Grapes",
+      "name_pt": "Uvas",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "icecream",
+      "name": "Ice Cream",
+      "name_pt": "Sorvetes",
+      "source_group": "refrigerated",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "lamb_stom",
+      "name": "Lamb Stomachs",
+      "name_pt": "Estômagos de ovelha",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "liver_paste",
+      "name": "Liver Paste",
+      "name_pt": "Patê de fígado",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "med_vaccine",
+      "name": "Medical Vaccines",
+      "name_pt": "Vacinas",
+      "source_group": "medical",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "milk",
+      "name": "Milk",
+      "name_pt": "Leite",
+      "source_group": "dairy",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "milk_t",
+      "name": "Milk",
+      "name_pt": "Leite",
+      "source_group": "dairy",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "mozzarela",
+      "name": "Mozzarella",
+      "name_pt": "Muçarela",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "onion",
+      "name": "Onions",
+      "name_pt": "Cebolas",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "oranges",
+      "name": "Oranges",
+      "name_pt": "Laranjas",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "pears",
+      "name": "Pears",
+      "name_pt": "Peras",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "plums",
+      "name": "Plums",
+      "name_pt": "Plumas",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "pork_meat",
+      "name": "Pork",
+      "name_pt": "Carne de porco",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "potatoes",
+      "name": "Potatoes",
+      "name_pt": "Batatas",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "prosciutto",
+      "name": "Prosciutto",
+      "name_pt": "Prosciutto",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "salm_fillet",
+      "name": "Salmon Fillet",
+      "name_pt": "Filé de salmão",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "sausages",
+      "name": "Sausages",
+      "name_pt": "Salsichas",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "smokd_eel",
+      "name": "Smoked Eel",
+      "name_pt": "Enguia defumada",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "smokd_sprats",
+      "name": "Smoked Sprats",
+      "name_pt": "Arenque defumado",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "tomatoes",
+      "name": "Tomatoes",
+      "name_pt": "Tomates",
+      "source_group": "food",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "watermelons",
+      "name": "Watermelons",
+      "name_pt": "Melancias",
+      "source_group": "custom",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    },
+    {
+      "cargo_id": "yogurt",
+      "name": "Yoghurt",
+      "name_pt": "Iogurte",
+      "source_group": "dairy",
+      "selection_reason": "fresh_or_refrigerated_selection"
+    }
+  ]
+}

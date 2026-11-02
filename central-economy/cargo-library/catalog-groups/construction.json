@@ -1,0 +1,208 @@
+{
+  "id": "construction",
+  "title": "Material de construção",
+  "entries": [
+    {
+      "name": "Bricks",
+      "dlc": "Launch",
+      "weight": "17–19",
+      "name_pt": "Tijolos",
+      "cargo_ids": [
+        "bricks"
+      ],
+      "aliases": [
+        "Bricks"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Cement",
+      "dlc": "Launch",
+      "weight": "24–25",
+      "name_pt": "Cimento",
+      "cargo_ids": [
+        "cement"
+      ],
+      "aliases": [
+        "Cement"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Chimney Systems",
+      "dlc": "Launch",
+      "weight": "10–18",
+      "name_pt": "Sistemas de chaminés",
+      "cargo_ids": [
+        "chimney_syst"
+      ],
+      "aliases": [
+        "Chimney Systems",
+        "Sistemas de chaminé"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Concrete Beams",
+      "dlc": "Beyond the Baltic Sea",
+      "weight": "14",
+      "name_pt": "Vigas de concreto",
+      "cargo_ids": [
+        "concr_beams2"
+      ],
+      "aliases": [
+        "Concrete Beams"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Concrete Beams",
+      "dlc": "Heavy Cargo Pack",
+      "weight": "51",
+      "name_pt": "Vigas de concreto",
+      "cargo_ids": [
+        "concr_beams"
+      ],
+      "aliases": [
+        "Concrete Beams"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Concrete Centring",
+      "dlc": "Beyond the Baltic Sea",
+      "weight": "19",
+      "name_pt": "Centração de concreto",
+      "cargo_ids": [
+        "concr_cent"
+      ],
+      "aliases": [
+        "Concrete Centring",
+        "Escoramento de concreto"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Concrete Stairs",
+      "dlc": "Beyond the Baltic Sea",
+      "weight": "18",
+      "name_pt": "Escadas de concreto",
+      "cargo_ids": [
+        "concr_stair"
+      ],
+      "aliases": [
+        "Concrete Stairs"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Construction Staircase",
+      "dlc": "Special Transport",
+      "weight": "50",
+      "name_pt": "Escadaria para Construção",
+      "cargo_ids": [
+        "lattice"
+      ],
+      "aliases": [
+        "Construction Staircase",
+        "Escadaria de construção"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Granite Cubes",
+      "dlc": "Vive la France!",
+      "weight": "20–27",
+      "name_pt": "Cubos de granito",
+      "cargo_ids": [
+        "granite_cube"
+      ],
+      "aliases": [
+        "Blocos de granito",
+        "Granite Cubes"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Gravel",
+      "dlc": "Launch",
+      "weight": "21–27",
+      "name_pt": "Cascalho",
+      "cargo_ids": [
+        "gravel"
+      ],
+      "aliases": [
+        "Gravel"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Marble Blocks",
+      "dlc": "Italia",
+      "weight": "12–21",
+      "name_pt": "Blocos de mármore",
+      "cargo_ids": [
+        "marb_blck",
+        "marb_blck2"
+      ],
+      "aliases": [
+        "Marble Blocks"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Marble Slab",
+      "dlc": "Italia",
+      "weight": "23",
+      "name_pt": "Lâmina de mármore",
+      "cargo_ids": [
+        "marb_slab"
+      ],
+      "aliases": [
+        "Marble Slab",
+        "Placa de mármore"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Roof Tiles",
+      "dlc": "Launch",
+      "weight": "11–19",
+      "name_pt": "Telhas",
+      "cargo_ids": [
+        "roof_tiles"
+      ],
+      "aliases": [
+        "Roof Tiles"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Sand",
+      "dlc": "Launch",
+      "weight": "21–27",
+      "name_pt": "Areia",
+      "cargo_ids": [
+        "sand"
+      ],
+      "aliases": [
+        "Sand"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Sandwich Panels",
+      "dlc": "Launch",
+      "weight": "7–12",
+      "name_pt": "Painéis sanduíches",
+      "cargo_ids": [
+        "sandwch_pnls"
+      ],
+      "aliases": [
+        "Painéis sanduíche",
+        "Sandwich Panels"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}

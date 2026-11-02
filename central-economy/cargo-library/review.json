@@ -1,0 +1,509 @@
+{
+  "note": "Cargas disponíveis nos grupos internos do catálogo, mas não pré-selecionadas para as oito categorias do Passe. Nenhum fallback automático.",
+  "entries": [
+    {
+      "cargo_id": "diesel",
+      "name": "Diesel",
+      "name_pt": "Diesel",
+      "source_group": "fuel",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "fuel_oil",
+      "name": "Fuel Oil",
+      "name_pt": "Óleo combustível",
+      "source_group": "fuel",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "fueltanker",
+      "name": "Fuel Tanker",
+      "name_pt": "Caminhão-tanque",
+      "source_group": "fuel",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "kerosene",
+      "name": "Kerosene",
+      "name_pt": "Querosene",
+      "source_group": "fuel",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "lpg",
+      "name": "LPG",
+      "name_pt": "GLP",
+      "source_group": "fuel",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "lpg_t",
+      "name": "LPG",
+      "name_pt": "GLP",
+      "source_group": "fuel",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "petrol",
+      "name": "Petrol",
+      "name_pt": "Gasolina",
+      "source_group": "fuel",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "propane",
+      "name": "Propane",
+      "name_pt": "Propano",
+      "source_group": "fuel",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "food_oil_t",
+      "name": "Food Oil",
+      "name_pt": "Óleo alimentício",
+      "source_group": "food",
+      "reason": "liquid_bulk_no_matching_pass_category"
+    },
+    {
+      "cargo_id": "olive_oil",
+      "name": "Olive Oil",
+      "name_pt": "Azeite de oliva",
+      "source_group": "food",
+      "reason": "liquid_bulk_no_matching_pass_category"
+    },
+    {
+      "cargo_id": "olive_oil_t",
+      "name": "Olive Oil",
+      "name_pt": "Azeite de oliva",
+      "source_group": "food",
+      "reason": "liquid_bulk_no_matching_pass_category"
+    },
+    {
+      "cargo_id": "beverages_t",
+      "name": "Beverages",
+      "name_pt": "Bebidas",
+      "source_group": "drinks",
+      "reason": "liquid_bulk_no_matching_pass_category"
+    },
+    {
+      "cargo_id": "conc_juice_t",
+      "name": "Juice Concentrate",
+      "name_pt": "Suco concentrado",
+      "source_group": "drinks",
+      "reason": "liquid_bulk_no_matching_pass_category"
+    },
+    {
+      "cargo_id": "concen_juice",
+      "name": "Juice Concentrate",
+      "name_pt": "Suco concentrado",
+      "source_group": "drinks",
+      "reason": "liquid_bulk_no_matching_pass_category"
+    },
+    {
+      "cargo_id": "acetylene",
+      "name": "Acetylene",
+      "name_pt": "Acetileno",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "acid",
+      "name": "Acid",
+      "name_pt": "Ácido",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "ammonia",
+      "name": "Anhydrous Ammonia",
+      "name_pt": "Amônia anidra",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "arsenic",
+      "name": "Arsenic",
+      "name_pt": "Arsênico",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "boric_acid",
+      "name": "Boric Acid",
+      "name_pt": "Ácido bórico",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "brake_fluid",
+      "name": "Brake Fluid",
+      "name_pt": "Fluído de freio",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "chem_granule",
+      "name": "Chemical Granules",
+      "name_pt": "Químico granulado",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "chem_sorb_c",
+      "name": "Chemical Sorbent",
+      "name_pt": "Solvente químico",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "chem_sorbent",
+      "name": "Chemical Sorbent",
+      "name_pt": "Solvente químico",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "chemicals",
+      "name": "Chemicals",
+      "name_pt": "Químicos",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "chlorine",
+      "name": "Chlorine",
+      "name_pt": "Cloro",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "chlorine_t",
+      "name": "Chlorine",
+      "name_pt": "Cloro",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "hchemicals",
+      "name": "Hot Chemicals",
+      "name_pt": "Produtos químicos quentes",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "hydrochlor",
+      "name": "Hydrochloric Acid",
+      "name_pt": "Ácido clorídrico",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "sulfuric",
+      "name": "Sulphuric Acid",
+      "name_pt": "Ácido sulfúrico",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "sulfuric_t",
+      "name": "Sulphuric Acid",
+      "name_pt": "Ácido sulfúrico",
+      "source_group": "chemicals",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "soy_milk_t",
+      "name": "Soy Milk",
+      "name_pt": "Leite de soja",
+      "source_group": "dairy",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "lux_yacht",
+      "name": "Luxury Yacht",
+      "name_pt": "Iate de luxo",
+      "source_group": "boats",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "pilot_boat",
+      "name": "Service Boat",
+      "name_pt": "Barco rebocador",
+      "source_group": "boats",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "yacht",
+      "name": "Yacht",
+      "name_pt": "Iate",
+      "source_group": "boats",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "helicopter",
+      "name": "Helicopter - 1808TX",
+      "name_pt": "Helicóptero",
+      "source_group": "aircraft",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "ammunition",
+      "name": "Ammunition",
+      "name_pt": "Munição",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "coconut_oil",
+      "name": "Coconut Oil",
+      "name_pt": "Óleo de coco",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "contamin",
+      "name": "Contaminated Material",
+      "name_pt": "Material contaminado",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "cyanide",
+      "name": "Cyanide",
+      "name_pt": "Cianeto",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "desinfection",
+      "name": "Disinfectant",
+      "name_pt": "Desinfetante",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "dynamite",
+      "name": "Dynamite",
+      "name_pt": "Dinamite",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "ethane",
+      "name": "Ethane",
+      "name_pt": "Etano",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "explosives",
+      "name": "Explosives",
+      "name_pt": "Explosivos",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "ffb_eut35",
+      "name": "Feldbinder EUT",
+      "name_pt": "Feldbinder EUT",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "ffb_kip60",
+      "name": "Feldbinder KIP",
+      "name_pt": "Feldbinder KIP",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "ffb_tsaadr22",
+      "name": "Feldbinder TSA ADR",
+      "name_pt": "Feldbinder TSA ADR",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "ffb_tsalm32",
+      "name": "Feldbinder TSA LM",
+      "name_pt": "Feldbinder TSA LM",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "fireworks",
+      "name": "Fireworks",
+      "name_pt": "Fogos de artifício",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "fluorine",
+      "name": "Fluorine",
+      "name_pt": "Flúor",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "horse_tr",
+      "name": "Horse Trailer",
+      "name_pt": "Reboque para cavalos",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "hydrogen",
+      "name": "Hydrogen",
+      "name_pt": "Hidrogênio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "krone_box",
+      "name": "Krone Box Liner",
+      "name_pt": "Krone Box Liner",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "krone_cool",
+      "name": "Krone Cool Liner",
+      "name_pt": "Krone Cool Liner",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "krone_profi",
+      "name": "Krone Profi Liner",
+      "name_pt": "Krone Profi Liner",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "krone_profib",
+      "name": "Krone Profi Liner Building",
+      "name_pt": "Krone Profi Liner Building",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "overweight",
+      "name": "Low Bed Semi-trailers",
+      "name_pt": "Semirreboques prancha baixa",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "magnesium",
+      "name": "Magnesium",
+      "name_pt": "Magnésio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "mystery_box",
+      "name": "Massive Tech Part",
+      "name_pt": "Peça gigante secreta",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "mercuric",
+      "name": "Mercuric Chloride",
+      "name_pt": "Cloreto de mercúrio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "motor_oil",
+      "name": "Motor Oil",
+      "name_pt": "Óleo de motor",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "motor_oil_c",
+      "name": "Motor Oil",
+      "name_pt": "Óleo de motor",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "neon",
+      "name": "Neon",
+      "name_pt": "Neon",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "nitrocel",
+      "name": "Nitrocellulose",
+      "name_pt": "Nitrocelulose",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "nitrogen",
+      "name": "Nitrogen",
+      "name_pt": "Nitrogênio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "oil",
+      "name": "Oil",
+      "name_pt": "Óleo",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "potassium",
+      "name": "Potassium",
+      "name_pt": "Potássio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "potahydro",
+      "name": "Potassium Hydroxide",
+      "name_pt": "Hidróxido de potássio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "sodium",
+      "name": "Sodium",
+      "name_pt": "Sódio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "sodhydro",
+      "name": "Sodium Hydroxide",
+      "name_pt": "Hidróxido de sódio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "sodchlor",
+      "name": "Sodium Hypochlorite",
+      "name_pt": "Hipoclorito de sódio",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "sulfur",
+      "name": "Sulphur",
+      "name_pt": "Enxofre",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    },
+    {
+      "cargo_id": "phosphor",
+      "name": "White Phosphorus",
+      "name_pt": "Fósforo branco",
+      "source_group": "custom",
+      "reason": "no_matching_pass_category"
+    }
+  ]
+}

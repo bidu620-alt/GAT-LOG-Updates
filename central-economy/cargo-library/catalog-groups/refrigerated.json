@@ -1,0 +1,61 @@
+{
+  "id": "refrigerated",
+  "title": "Carga refrigerada",
+  "entries": [
+    {
+      "name": "Fresh Fish",
+      "dlc": "Scandinavia",
+      "weight": "10–18",
+      "name_pt": "Peixe fresco",
+      "cargo_ids": [
+        "fresh_fish"
+      ],
+      "aliases": [
+        "Fresh Fish"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Frozen Hake",
+      "dlc": "Scandinavia",
+      "weight": "10–17",
+      "name_pt": "Merluza congelada",
+      "cargo_ids": [
+        "frozen_hake"
+      ],
+      "aliases": [
+        "Frozen Hake",
+        "Pescada congelada"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Frozen Octopi",
+      "dlc": "Italia",
+      "weight": "8–14",
+      "name_pt": "Polvo congelado",
+      "cargo_ids": [
+        "froz_octopi"
+      ],
+      "aliases": [
+        "Frozen Octopi",
+        "Polvos congelados"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    },
+    {
+      "name": "Ice Cream",
+      "dlc": "Launch",
+      "weight": "8–14",
+      "name_pt": "Sorvetes",
+      "cargo_ids": [
+        "icecream"
+      ],
+      "aliases": [
+        "Ice Cream",
+        "Sorvete"
+      ],
+      "name_source": "ets2_locale_pt_br"
+    }
+  ]
+}
