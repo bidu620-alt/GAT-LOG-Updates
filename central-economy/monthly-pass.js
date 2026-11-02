@@ -3,16 +3,11 @@ const fail=(status,code)=>{throw Object.assign(new Error(code),{status})};
 export const MONTHLY_PASS=Object.freeze({id:'2026-11',product_id:'pass_2026_11',title:'Passe BiduLog • Novembro 2026',starts_at:'2026-11-01T00:00:00-03:00',ends_at:'2026-11-30T23:50:00-03:00',timezone:'America/Sao_Paulo',price_gold:2000,price_brl:5,rewards_defined:false});
 // Explicit game cargo IDs from the installed ETS2 cargo catalog. Never classify by
 // fuzzy/localized display names, trailer appearance, or the last 100 profile trips.
-export const PASS_CARGO_IDS=Object.freeze({
- cegonheiro:['car_balt1','car_balt2','car_d','car_f','car_ibe','car_it','cars_fr','mondeos','volvo_cars','pickup_gr','car_gr','vans_fd','vans_id','vans_vt','motorcycles','scooters','daf_tr','scania_tr','volvo_tr','caravans'],
- madeireiro:['logs','lumber','lumber_p','sawpanels','wood_bark','wshavings','wooden_beams'],
- frigorifico:['beef_meat','pork_meat','chicken_meat','salm_fillet','fresh_fish','frozen_hake','froz_octopi','icecream','atl_cod_flt','cheese','cott_cheese','goat_cheese','milk','milk_t','yogurt','mozzarela','prosciutto','sausages','apples','apples_c','carrots','carrots_c','cauliflower','grapes','onion','oranges','pears','potatoes','tomatoes','frsh_herbs','garlic','plums','watermelons'],
- carga_seca:['almond','beans','canned_beans','canned_beef','canned_pork','can_sardines','canned_tuna','chewing_gums','chocolate','packag_food','pasta','pet_food','pet_food_c','sugar','sugar_b','beverages','bottle_water','nonalco_beer','paper','electronics','comp_process','furniture','tableware','glass_packed','clothes','clothes_c','wrk_cloth','protec_cloth','toys','post_packag','used_packag','empty_palet','empty_barr','mason_jars','drymilk','pnut_butter','gummy_bears','honey','maple_syrup','nuts','nylon_cord','plast_film','plast_film_c','polyst_box','rooflights','floorpanels'],
- maquinario:['bob_tl3070a','tractor_au','cott_harvest','tractor_c','tractor','disc_harrows','kr_ecb880cv','forage_harv','kr_bigx1180','log_harvest','kr_bigm450','kr_vpv190xc','sprayer','square_baler','kr_bigp1290','jcb_ft4220','tractors','volvo_a25g','digger500','jcb_bhl4cx','crawler','dozer','jcb_mexc19ce','excavator','bob_e60','ex_bucket','jcb_exc245xr','volvo_ec220e','vol_ew240emh','exc_craw','dumper','bob_e10e','mobile_crane','volvo_bucket','bob_s86','load_un','digger1000','bob_l95','jcb_wload457','volvo_l250h','art_dumper','asph_miller','forklifts','jcb_g100rs','diesel_gen','transformat','boiler_parts','heat_exch','mobile_compr','ter_forklift','driller','forwarder','log_stacker','mat_handler','mob_crusher','mob_screener','mob_stacker','mob_tr_winch','mulcher','planter','roller','skidder','wood_chipper','fert_spread','dryers'],
- agronegocio:['barley','big_bag_seed','flour','rice','rice_c','rye','wheat','fertilizer','young_seed','straw_bales','plant_substr'],
- granel:['coal','ore','gravel','sand','excav_soil','stone_dust','stones'],
- conteineres:['beverages_c','large_cont','ibc_cont','cont_trees']
-});
+import {getCargoIds, classifyCargoId} from './cargo-library/index.js';
+export const PASS_CARGO_IDS=Object.freeze(Object.fromEntries(
+ ['cegonheiro','madeireiro','frigorifico','carga_seca','maquinario','agronegocio','granel','conteineres']
+  .map(category=>[category,getCargoIds(category)])
+));
 const GOALS=Object.freeze([
  {id:'rodagem_bruta',title:'Rodagem Bruta',target:10000,unit:'km'},
  {id:'peso_pesado',title:'Peso Pesado',target:3,unit:'cargas',weight_over_kg:40000},
@@ -59,7 +54,7 @@ export function monthlyPassState(db,s,month=MONTHLY_PASS.id,at=Date.now()){
    const id=cargoId(row,raw);if(!id)continue;
    // Category lists are disjoint. A delivery may add distance, heavy weight, and
    // ONE cargo category; unknown IDs still add legitimate monthly kilometers.
-   for(const [category,ids] of Object.entries(PASS_CARGO_IDS))if(ids.includes(id)){values[category]++;break;}
+   const category=classifyCargoId(id);if(category&&Object.hasOwn(PASS_CARGO_IDS,category))values[category]++;
   }
  }
  values.rodagem_bruta=Math.round(totalKm*100)/100;
