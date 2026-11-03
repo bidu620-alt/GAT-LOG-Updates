@@ -38,7 +38,8 @@ test('published window is immutable; start included, 23:50 excluded; presale ena
 });
 test('cargo lists are explicit and disjoint, never display-name fuzzy matching',()=>{
  const ids=Object.values(PASS_CARGO_IDS).flat();assert.equal(ids.length,new Set(ids).size);
- assert.equal(ids.includes('carbn_pwdr_c'),false);assert.equal(PASS_CARGO_IDS.cegonheiro.includes('carrots'),false);
+ // The published catalog library explicitly assigns carbn_pwdr_c to general cargo.
+ assert.equal(PASS_CARGO_IDS.carga_seca.includes('carbn_pwdr_c'),true);assert.equal(PASS_CARGO_IDS.granel.includes('carbn_pwdr_c'),false);assert.equal(PASS_CARGO_IDS.cegonheiro.includes('carrots'),false);
  assert.equal(PASS_CARGO_IDS.maquinario.includes('wood_chipper'),true);
 });
 test('presale Gold purchase charges exactly 2000 once, grants entitlement, no XP/reward',async()=>clock(PRESALE,()=>{
