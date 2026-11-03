@@ -45,10 +45,11 @@
     return registry&&typeof registry.achievementList==='function'?registry.achievementList(p):[];
   }
   function achievementsFallback(p,st){
+    const full=p?.achievement_stats&&typeof p.achievement_stats==='object'?p.achievement_stats:null;
     const rows=Array.isArray(p?.deliveries)?p.deliveries:[];
     const parsed=rows.map(parseDelivery);
-    const maxDistance=parsed.reduce((m,x)=>Math.max(m,x.distance),0);
-    const maxWeight=rows.reduce((m,d)=>Math.max(m,Math.max(0,n(d?.weight_kg))),0);
+    const maxDistance=full?n(full.maxDistance):parsed.reduce((m,x)=>Math.max(m,x.distance),0);
+    const maxWeight=full?n(full.maxWeight):rows.reduce((m,d)=>Math.max(m,Math.max(0,n(d?.weight_kg))),0);
     const cityKey=v=>normEvent(v);
     const cities=new Set();
     rows.forEach(d=>{const a=cityKey(d?.source),b=cityKey(d?.destination);if(a)cities.add(a);if(b)cities.add(b)});
@@ -60,23 +61,23 @@
       return false;
     };
     const noFine=d=>Number.isFinite(Number(d?.speed_fines))&&Number(d.speed_fines)===0;
-    const perfectCargo500=rows.some(d=>n(d?.distance_km)>=500&&exactZero(d,'cargo_damage_pct'));
-    const impeccable1000=rows.some(d=>n(d?.distance_km)>=1000&&exactZero(d,'cargo_damage_pct')&&truckZero(d)&&noFine(d));
-    const cleanCargoTrips=rows.filter(d=>exactZero(d,'cargo_damage_pct')).length;
-    const safeSpeedTrips=rows.filter(d=>hasOwn(d,'gat_speeding_penalty_points')?n(d.gat_speeding_penalty_points)===0:true).length;
-    const exemplarTrips=rows.filter(d=>{
+    const perfectCargo500=full?n(full.perfectCargo500)>=1:rows.some(d=>n(d?.distance_km)>=500&&exactZero(d,'cargo_damage_pct'));
+    const impeccable1000=full?n(full.impeccable1000)>=1:rows.some(d=>n(d?.distance_km)>=1000&&exactZero(d,'cargo_damage_pct')&&truckZero(d)&&noFine(d));
+    const cleanCargoTrips=full?n(full.cleanCargo):rows.filter(d=>exactZero(d,'cargo_damage_pct')).length;
+    const safeSpeedTrips=full?n(full.safeSpeed):rows.filter(d=>hasOwn(d,'gat_speeding_penalty_points')?n(d.gat_speeding_penalty_points)===0:true).length;
+    const exemplarTrips=full?n(full.exemplar):rows.filter(d=>{
       const speedOk=hasOwn(d,'gat_speeding_penalty_points')?n(d.gat_speeding_penalty_points)===0:true;
       const cargoOk=exactZero(d,'cargo_damage_pct');
       const truckOk=truckZero(d);
       return speedOk&&cargoOk&&truckOk;
     }).length;
-    const heavy40Trips=rows.filter(d=>n(d?.weight_kg)>=40000).length;
-    const marathonTrips=rows.filter(d=>n(d?.distance_km)>=2000).length;
-    const estradeiro500Trips=rows.filter(d=>n(d?.distance_km)>=500).length;
+    const heavy40Trips=full?n(full.heavy40):rows.filter(d=>n(d?.weight_kg)>=40000).length;
+    const marathonTrips=full?n(full.marathon):rows.filter(d=>n(d?.distance_km)>=2000).length;
+    const estradeiroTrips=full?n(full.deliveries):rows.length;
     return [
       {id:'peso_pesado',title:'Peso Pesado',description:'Entregue uma carga válida de 30 toneladas ou mais.',unlocked:maxWeight>=30000,medal:'🏋️',difficulty:'Fácil',xpReward:250},
       {id:'entrega_perfeita',title:'Entrega Perfeita',description:'Conclua 500 km ou mais com 0% de dano na carga.',unlocked:perfectCargo500,medal:'🎯',difficulty:'Média',xpReward:500},
-      {id:'explorador',title:'Explorador',description:'Realize entregas válidas envolvendo 25 cidades diferentes.',unlocked:cities.size>=25,medal:'🧭',difficulty:'Média',xpReward:500},
+      {id:'explorador',title:'Explorador',description:'Realize entregas válidas envolvendo 25 cidades diferentes.',unlocked:(full?n(full.cities):cities.size)>=25,medal:'🧭',difficulty:'Média',xpReward:500},
       {id:'gigante_estrada',title:'Gigante da Estrada',description:'Entregue uma carga válida de 50 toneladas ou mais.',unlocked:maxWeight>=50000,medal:'🦾',difficulty:'Média',xpReward:500},
       {id:'carga_extrema',title:'Carga Extrema',description:'Entregue uma carga válida de 60 toneladas ou mais.',unlocked:maxWeight>=60000,medal:'🚧',difficulty:'Difícil',xpReward:1000},
       {id:'longa_jornada',title:'Longa Jornada',description:'Conclua uma viagem válida de 3.000 km ou mais.',unlocked:maxDistance>=3000,medal:'🛣️',difficulty:'Difícil',xpReward:1000},
@@ -86,7 +87,7 @@
       {id:'lenda_estrada',title:'Lenda da Estrada',description:'Complete 1.500 entregas válidas.',unlocked:n(p?.total_deliveries)>=1500,medal:'👑',difficulty:'Muito difícil',xpReward:2000},
 
       {id:'primeiros_passos',title:'Primeiros Passos',description:'Complete 10 entregas válidas.',unlocked:n(p?.total_deliveries)>=10,medal:'🚚',difficulty:'Fácil',xpReward:250},
-      {id:'estradeiro',title:'Estradeiro',description:'Complete 50 entregas válidas. Distância mínima: 500 km por entrega.',unlocked:estradeiro500Trips>=50,medal:'🛣️',difficulty:'Média',xpReward:500},
+      {id:'estradeiro',title:'Estradeiro',description:'Complete 50 entregas válidas.',unlocked:estradeiroTrips>=50,medal:'🛣️',difficulty:'Média',xpReward:500},
       {id:'rodagem_inicial',title:'Rodagem Inicial',description:'Atinja 5.000 km totais na carreira.',unlocked:n(p?.total_km)>=5000,medal:'🧭',difficulty:'Fácil',xpReward:250},
       {id:'pe_na_estrada',title:'Pé na Estrada',description:'Atinja 25.000 km totais na carreira.',unlocked:n(p?.total_km)>=25000,medal:'🌎',difficulty:'Média',xpReward:500},
       {id:'rodador_nato',title:'Rodador Nato',description:'Atinja 100.000 km totais na carreira.',unlocked:n(p?.total_km)>=100000,medal:'🏁',difficulty:'Difícil',xpReward:1000},
@@ -111,7 +112,7 @@
       const longest=parsed.reduce((a,b)=>b.distance>(a?.distance||0)?b:a,null),avg=parsed.length?parsed.reduce((s,x)=>s+x.distance,0)/parsed.length:0;
       stats.innerHTML=`<div class="gat-game-grid"><article class="gat-game-card blue"><small>KM TOTAL</small><b>${km2(p.total_km)}</b></article><article class="gat-game-card"><small>MÉDIA POR ENTREGA</small><b>${km2(avg)}</b></article><article class="gat-game-card"><small>MAIOR VIAGEM</small><b>${longest?km2(longest.distance):'—'}</b></article><article class="gat-game-card gold"><small>VIAGENS PERFEITAS</small><b>${fmt(st.perfect_trips)}</b></article><article class="gat-game-card good"><small>KM SEM MULTA</small><b>${km2(st.no_fine_km)}</b></article></div><div class="gat-game-grid"><article class="gat-game-card gold"><small>PONTOS BiduLog DO MÊS</small><b>${fmt(p.points)}</b></article><article class="gat-game-card"><small>ENTREGAS</small><b>${fmt(p.total_deliveries)}</b></article><article class="gat-game-card"><small>XP TOTAL</small><b>${fmt(p.xp)}</b></article><article class="gat-game-card bad"><small>PONTOS PERDIDOS</small><b>-${fmt(lost)}</b></article><article class="gat-game-card gold"><small>TAXA PERFEITA</small><b>${pct(n(st.deliveries)?n(st.perfect_trips)/n(st.deliveries)*100:0)}</b></article></div>`;
     }
-    const ach=document.getElementById('gat-achievements-body');if(ach){const eventRows=eventAchievements(p),eventKeys=new Set(eventRows.map(a=>normEvent(a.title))),isEventCopy=a=>eventRows.some(e=>{const title=normEvent(a.title||a.name||a.label||a.event_title||''),id=normEvent(a.id||''),eventId=normEvent(a.eventId||'');return (title&&title===normEvent(e.title))||id===normEvent(e.id)||id===normEvent('event_'+e.eventId)||(a.kind==='event'&&title&&eventKeys.has(title))}),calculated=[...achievementsFallback(p,st),...eventRows],saved=(Array.isArray(p.achievements)?p.achievements:[]).filter(a=>!isEventCopy(a)),savedById=new Map(saved.map(a=>[a.id||a.title,a])),list=calculated.map(a=>savedById.has(a.id)?(a.kind==='event'?{...savedById.get(a.id),...a}:{...a,...savedById.get(a.id)}):a),known=new Set(list.map(a=>a.id||a.title));saved.forEach(a=>{const id=a.id||a.title;if(id&&!known.has(id)){list.push(a);known.add(id)}});const seenRenderedEvents=new Set(),displayList=list.filter(a=>{const title=normEvent(a.title||a.name||a.label||a.event_title||''),id=normEvent(a.id||''),eventId=normEvent(a.eventId||''),matched=eventRows.find(e=>title===normEvent(e.title)||id===normEvent(e.id)||id===normEvent('event_'+e.eventId));if(a.kind==='event_cargo')return true;if(!matched&&a.kind!=='event')return true;const key=normEvent(matched?.eventId||matched?.id||a.eventId||a.id||title);if(!key||seenRenderedEvents.has(key))return false;seenRenderedEvents.add(key);return true});const html='<div class="gat-achievements">'+displayList.map(a=>{const isEvent=a.kind==='event',isHalloween=isEvent&&String(a.eventId||'').includes('halloween');const kind=isHalloween?' halloween-achievement':'';const medal=a.unlocked?(a.medal||'🏆'):'🔒';const goal=Math.max(1,n(a.goal)||1);const pctEvent=isEvent?Math.min(100,Math.round((n(a.progress)/goal)*100)):null;const date=isEvent&&a.unlocked&&a.completedAt?'<span class="gat-achievement-date">Concluída em '+new Date(a.completedAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+'</span>':'';const progress=isEvent?'<div class="gat-achievement-progress"><i style="width:'+pctEvent+'%"></i></div>':'';const meta=(a.difficulty||a.xpReward||a.xp)?`<div class="gat-achievement-meta">${a.difficulty?`<span>${esc2(a.difficulty)}</span>`:''}${(a.xpReward||a.xp)?`<span class="xp">+${fmt(a.xpReward||a.xp)} XP</span>`:''}</div>`:'';return `<article class="gat-achievement ${a.unlocked?'unlocked':''}${kind}"><div class="medal">${medal}</div><b>${esc2(a.title||'Conquista')}</b><small>${esc2(a.description||'')}</small>${meta}${progress}${date}</article>`}).join('')+'</div>';const sig=displayList.map(a=>[a.id||a.title,a.description,!!a.unlocked,a.progress||0,a.goal||0,a.completedAt||''].join('|')).join('||');if(ach.dataset.gatAchievementSig!==sig){ach.innerHTML=html;ach.dataset.gatAchievementSig=sig}}
+    const ach=document.getElementById('gat-achievements-body');if(ach){const eventRows=eventAchievements(p),eventKeys=new Set(eventRows.map(a=>normEvent(a.title))),isEventCopy=a=>eventRows.some(e=>{const title=normEvent(a.title||a.name||a.label||a.event_title||''),id=normEvent(a.id||''),eventId=normEvent(a.eventId||'');return (title&&title===normEvent(e.title))||id===normEvent(e.id)||id===normEvent('event_'+e.eventId)||(a.kind==='event'&&title&&eventKeys.has(title))}),calculated=[...achievementsFallback(p,st),...eventRows],saved=(Array.isArray(p.achievements)?p.achievements:[]).map(a=>({...a,unlocked:a.unlocked!==false})).filter(a=>!isEventCopy(a)),savedById=new Map(saved.map(a=>[a.id||a.title,a])),list=calculated.map(a=>savedById.has(a.id)?(a.kind==='event'?{...savedById.get(a.id),...a}:{...a,...savedById.get(a.id)}):a),known=new Set(list.map(a=>a.id||a.title));saved.forEach(a=>{const id=a.id||a.title;if(id&&!known.has(id)){list.push(a);known.add(id)}});const seenRenderedEvents=new Set(),displayList=list.filter(a=>{const title=normEvent(a.title||a.name||a.label||a.event_title||''),id=normEvent(a.id||''),eventId=normEvent(a.eventId||''),matched=eventRows.find(e=>title===normEvent(e.title)||id===normEvent(e.id)||id===normEvent('event_'+e.eventId));if(a.kind==='event_cargo')return true;if(!matched&&a.kind!=='event')return true;const key=normEvent(matched?.eventId||matched?.id||a.eventId||a.id||title);if(!key||seenRenderedEvents.has(key))return false;seenRenderedEvents.add(key);return true});const html='<div class="gat-achievements">'+displayList.map(a=>{const isEvent=a.kind==='event',isHalloween=isEvent&&String(a.eventId||'').includes('halloween');const kind=isHalloween?' halloween-achievement':'';const medal=a.unlocked?(a.medal||'🏆'):'🔒';const goal=Math.max(1,n(a.goal)||1);const pctEvent=isEvent?Math.min(100,Math.round((n(a.progress)/goal)*100)):null;const date=isEvent&&a.unlocked&&a.completedAt?'<span class="gat-achievement-date">Concluída em '+new Date(a.completedAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+'</span>':'';const progress=isEvent?'<div class="gat-achievement-progress"><i style="width:'+pctEvent+'%"></i></div>':'';const meta=(a.difficulty||a.xpReward||a.xp)?`<div class="gat-achievement-meta">${a.difficulty?`<span>${esc2(a.difficulty)}</span>`:''}${(a.xpReward||a.xp)?`<span class="xp">+${fmt(a.xpReward||a.xp)} XP</span>`:''}</div>`:'';return `<article class="gat-achievement ${a.unlocked?'unlocked':''}${kind}"><div class="medal">${medal}</div><b>${esc2(a.title||'Conquista')}</b><small>${esc2(a.description||'')}</small>${meta}${progress}${date}</article>`}).join('')+'</div>';const sig=displayList.map(a=>[a.id||a.title,a.description,!!a.unlocked,a.progress||0,a.goal||0,a.completedAt||''].join('|')).join('||');if(ach.dataset.gatAchievementSig!==sig){ach.innerHTML=html;ach.dataset.gatAchievementSig=sig}}
   }
 
   injectStyle();ensureTabs();

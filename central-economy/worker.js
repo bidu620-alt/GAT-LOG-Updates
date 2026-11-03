@@ -88,15 +88,40 @@ async function live(env){return cachedRead('live',5,()=>readLive(env))}
 async function readLive(env){const r=await env.DB.prepare('SELECT driver,account_user,updated_at,telemetry_json FROM telemetry_live WHERE updated_at>=? ORDER BY updated_at DESC').bind(new Date(Date.now()-45000).toISOString()).all();return(r.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.telemetry_json||'{}')}catch{}return flat(x.driver,x.account_user,x.updated_at,raw)})}
 async function profile(env,user){return cachedRead('profile:'+user,15,()=>readProfile(env,user))}
 async function farmEventHistory(env,user){const rows=await env.DB.prepare("WITH identified AS (SELECT id,cargo,distance_km,delivered_at,COALESCE(NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_identity.cargo_id_raw'),''),NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_identity.cargo_id'),''),NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.mission.cargo_id'),''),NULLIF(json_extract(CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END,'$.cargo_id'),'')) AS cargo_id FROM deliveries WHERE user=? AND distance_km>=1000 AND julianday(delivered_at) IS NOT NULL), grouped AS (SELECT *,CASE WHEN cargo_id IN ('live_cattle') THEN 'Live Cattle' WHEN cargo_id IN ('live_pigs') THEN 'Live Pigs' WHEN cargo_id IN ('sheep_wool') THEN 'Sheep Wool' WHEN cargo_id IN ('cheese') THEN 'Cheese' WHEN cargo_id IN ('milk','milk_t') THEN 'Milk' WHEN cargo_id IN ('nonalco_beer') THEN 'Non-alcoholic Beer' WHEN cargo_id IN ('beef_meat') THEN 'Beef' WHEN cargo_id IN ('pork_meat') THEN 'Pork' WHEN cargo_id IN ('chicken_meat') THEN 'Chicken Meat' WHEN cargo_id IN ('pet_food','pet_food_c') THEN 'Pet Food' WHEN cargo_id IN ('straw_bales') THEN 'Straw Bales' WHEN cargo_id IN ('fertilizer') THEN 'Fertilizer' WHEN cargo_id IN ('big_bag_seed') THEN 'Big-Bags of Seeds' WHEN cargo_id IN ('drymilk') THEN 'Dry Milk' WHEN cargo_id IN ('young_seed') THEN 'Young Seedlings' ELSE NULL END AS category FROM identified), numbered AS (SELECT *,ROW_NUMBER() OVER(PARTITION BY category ORDER BY delivered_at,id) AS event_number FROM grouped WHERE category IS NOT NULL) SELECT id,cargo,cargo_id,distance_km,delivered_at FROM numbered WHERE event_number<=10 ORDER BY delivered_at,id").bind(user).all();return rows.results||[];}
+// Complete, compact delivery evidence for event progress across month boundaries.
+// Keep the detailed profile.deliveries list capped for the trip history UI.
+async function careerEventHistory(env,user){
+ const safeJson="CASE WHEN json_valid(raw_json) THEN raw_json ELSE '{}' END";
+ const r=await env.DB.prepare(`SELECT id,source,destination,cargo,weight_kg,distance_km,delivered_at,
+  COALESCE(
+   NULLIF(json_extract(${safeJson},'$.cargo_identity.cargo_id_raw'),''),
+   NULLIF(json_extract(${safeJson},'$.cargo_identity.cargo_id'),''),
+   NULLIF(json_extract(${safeJson},'$.mission.cargo_id'),''),
+   NULLIF(json_extract(${safeJson},'$.cargo_id'),'')
+  ) AS cargo_id,
+  COALESCE(json_extract(${safeJson},'$.state'),json_extract(${safeJson},'$.mission.state')) AS state,
+  json_extract(${safeJson},'$.status') AS status,
+  CASE WHEN json_type(${safeJson},'$.completed')='false' THEN 0 ELSE 1 END AS completed_flag,
+  CASE WHEN json_type(${safeJson},'$.delivered')='false' THEN 0 ELSE 1 END AS delivered_flag
+  FROM deliveries WHERE user=? ORDER BY delivered_at,id`).bind(user).all();
+ return (r.results||[]).map(({completed_flag,delivered_flag,...row})=>({
+  ...row,
+  ...(completed_flag===0?{completed:false}:{}),
+  ...(delivered_flag===0?{delivered:false}:{})
+ }));
+}
 async function readProfile(env,user){
  const p=await env.DB.prepare('SELECT * FROM profiles WHERE user=?').bind(user).first();if(!p)return null;
+  const [eventHistory,achievementStats,achievements]=await Promise.all([
+   careerEventHistory(env,user),gatAchievementStats(env,user),gatAchievementRewards(env,user)
+  ]);
  const d=await env.DB.prepare('SELECT id,sequence_no AS sequence,source,destination,cargo,weight_kg,distance_km,xp,xp AS xp_awarded,perfect,perfect AS perfect_trip,penalty_xp,speed_fines,delivered_at,delivered_at AS completed_at,raw_json FROM deliveries WHERE user=? ORDER BY id DESC LIMIT 100').bind(user).all();
  const c=await env.DB.prepare('SELECT cargo,weight_kg FROM deliveries WHERE user=? GROUP BY cargo,weight_kg').bind(user).all();
  const currentMonth=month(),ma=await env.DB.prepare("SELECT COUNT(*) total,COALESCE(SUM(COALESCE(CAST(json_extract(raw_json,'$.audit.gat_points') AS INTEGER),MAX(0,100-penalty_xp))),0) points FROM deliveries WHERE user=? AND strftime('%Y-%m',delivered_at,'-3 hours')=?").bind(user,currentMonth).first();
  let mission=null;try{mission=p.current_mission_json?JSON.parse(p.current_mission_json):null}catch{}
  const deliveries=(d.results||[]).map(x=>{let raw={};try{raw=JSON.parse(x.raw_json||'{}')}catch{}return{...x,...raw.audit}}).reverse(),points=Number(ma?.points||0),monthlyCompleted=Number(ma?.total||0);
  const goldWallet=await env.DB.prepare('SELECT gold_units FROM eco_wallets WHERE user=?').bind(user).first();
- return{user,gold_balance:Number(goldWallet?.gold_units||0)/100,event_deliveries:await farmEventHistory(env,user),monthly_completed:monthlyCompleted,monthly_deliveries:monthlyCompleted,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}
+ return{user,gold_balance:Number(goldWallet?.gold_units||0)/100,event_deliveries:await farmEventHistory(env,user),event_history:eventHistory,achievement_stats:achievementStats,achievements,monthly_completed:monthlyCompleted,monthly_deliveries:monthlyCompleted,total_deliveries:p.total_deliveries,total_km:p.total_km,xp:p.xp,level:level(p.xp),points,perfect_trips:p.perfect_trips,penalty_xp:p.penalty_xp,speed_fines:p.speed_fines,safety_score:p.safety_score,avatar_url:p.avatar_url||'',current_mission:mission,cargo_history:c.results||[],deliveries}
 }
 
 function updateMissionSpeedingTracker(m,raw,t){
