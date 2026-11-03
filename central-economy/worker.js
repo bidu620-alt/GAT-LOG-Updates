@@ -1,6 +1,7 @@
 import {telemetryCanonical} from './journal-canonical.js';
 import {economyTrack,economyFinish,economyAction,ensureEconomy} from './economy-official.js';
 import {monthlyPassConfig} from './monthly-pass.js';
+import {adminWorkspace} from './admin-workspace.js';
 import {ensureCompanies,companyPublic,companyAction} from './company-community.js';
 import {createHash,createHmac,pbkdf2Sync} from 'node:crypto';
 import {rankingPeriod} from './ranking-period.js';
@@ -1278,6 +1279,7 @@ async function route(req,env){const u=new URL(req.url),p=u.pathname,m=req.method
   await audit(env,s.user,'radio_update','radio',{enabled:!!enabled,source_type:parsed.type,source_id:sourceId,label});
   return json(req,{ok:true,radio:await gatRadioState(env)});
  }
+ if(p.startsWith('/api/site/admin/workspace/')&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return json(req,adminWorkspace(env.DB,s,p.slice('/api/site/admin/workspace/'.length),b));}
  if(p==='/api/site/admin/session'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return json(req,{ok:true,user:s.user,role:s.role})}
  if(p==='/api/site/admin/drivers'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b),r=await env.DB.prepare('SELECT a.user,a.role,a.disabled,a.created_at,p.monthly_completed,p.total_deliveries,p.xp,p.total_km,p.current_mission_json,t.driver,t.updated_at last_telemetry_at,t.telemetry_json FROM accounts a LEFT JOIN profiles p ON p.user=a.user LEFT JOIN telemetry_live t ON t.account_user=a.user ORDER BY a.user').all(),drivers=(r.results||[]).map(x=>{let mission=null,raw={};try{mission=x.current_mission_json?JSON.parse(x.current_mission_json):null}catch{}try{raw=x.telemetry_json?JSON.parse(x.telemetry_json):{}}catch{}const f=flat(x.driver||x.user,x.user,x.last_telemetry_at||'',raw);return{user:x.user,role:x.role,disabled:!!x.disabled,created_at:x.created_at,monthly_completed:Number(x.monthly_completed||0),total_deliveries:Number(x.total_deliveries||0),xp:Number(x.xp||0),level:level(x.xp),total_km:Number(x.total_km||0),current_mission:mission,last_telemetry_at:x.last_telemetry_at,online:!!x.last_telemetry_at&&Date.now()-Date.parse(x.last_telemetry_at)<30000,truck:[f.truck_make,f.truck_model].filter(Boolean).join(' '),cargo:f.cargo_name}});return json(req,{ok:true,viewer_role:s.role,drivers})}
  if(p==='/api/site/admin/driver'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b),d=await adminDriver(env,clean(b.target));if(!d)throw new HttpError(404,'not_found');return json(req,{ok:true,viewer_role:s.role,...d})}
@@ -1319,6 +1321,8 @@ async function economicalRoute(req,env){
  });
  return json(req,data);
 }
+
+
 
 
 

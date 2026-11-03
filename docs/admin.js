@@ -48,13 +48,15 @@ function renderEventProgress(history,user){
        if(index<result.count)state='done';
        else if(index===result.count&&!completed)state='next';
      }else{
-       state=result.matched?.has(cargo.official)?'done':'pending';
+       const required=Number(cargo.required_deliveries||event.repetitions||1);
+       state=result.cargoCounts?(Number(result.cargoCounts.get(cargo.official)||0)>=required?'done':'pending'):(result.matched?.has(cargo.official)?'done':'pending');
      }
      const row=result.matched?.get(cargo.official)?.row;
      const route=[cargo.origin,cargo.destination].filter(Boolean).join(' → ');
      const actual=row?[row.source,row.destination].filter(Boolean).join(' → '):'';
      const text=state==='done'?'✓':state==='next'?'→':'○';
-     return '<div class="detail-event-step '+state+'"><span class="detail-event-mark">'+text+'</span><div><b>'+esc(cargo.label||cargo.official)+'</b>'+(route?'<small>'+esc(route)+'</small>':'')+(actual&&actual!==route?'<small class="actual-route">Realizada: '+esc(actual)+'</small>':'')+'</div></div>';
+     const countLabel=result.cargoCounts?'<small>'+n(result.cargoCounts.get(cargo.official))+' / '+n(cargo.required_deliveries||event.repetitions||1)+' entregas</small>':'';
+     return '<div class="detail-event-step '+state+'"><span class="detail-event-mark">'+text+'</span><div><b>'+esc(cargo.label||cargo.official)+'</b>'+countLabel+(route?'<small>'+esc(route)+'</small>':'')+(actual&&actual!==route?'<small class="actual-route">Realizada: '+esc(actual)+'</small>':'')+'</div></div>';
    }).join('');
    const status=completed?'CONCLUÍDO':(result.count>0?'EM ANDAMENTO':'NÃO INICIADO');
    card.innerHTML='<div class="detail-event-group-head"><div><span class="eyebrow">'+esc(event.medal||'🏆')+' '+esc(event.name||event.id)+'</span><h4>'+esc(event.title||event.name||event.id)+'</h4></div><div class="detail-event-badges"><span class="detail-event-progress '+(completed?'complete':'')+'">'+n(result.count)+' / '+n(result.goal)+'</span><span class="detail-event-status '+(completed?'complete':'')+'">'+status+'</span></div></div><div class="detail-event-steps">'+cargoHtml+'</div>'+(manual?'<p class="detail-event-reason">Correção administrativa: '+esc(result.reason||'Conclusão ajustada manualmente.')+'</p>':'');
@@ -84,4 +86,6 @@ document.querySelectorAll('.admin-tabs button').forEach(b=>b.addEventListener('c
 window.addEventListener('gat-account-change',()=>initAdmin());
 initAdmin();
 setInterval(()=>{if(!$('adminContent').hidden)loadDrivers()},7000);
+
+
 
