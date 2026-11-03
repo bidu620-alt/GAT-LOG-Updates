@@ -112,6 +112,9 @@ async function careerEventHistory(env,user){
 }
 async function readProfile(env,user){
  const p=await env.DB.prepare('SELECT * FROM profiles WHERE user=?').bind(user).first();if(!p)return null;
+  const [eventHistory,achievementStats,achievements]=await Promise.all([
+   careerEventHistory(env,user),gatAchievementStats(env,user),gatAchievementRewards(env,user)
+  ]);
  const d=await env.DB.prepare('SELECT id,sequence_no AS sequence,source,destination,cargo,weight_kg,distance_km,xp,xp AS xp_awarded,perfect,perfect AS perfect_trip,penalty_xp,speed_fines,delivered_at,delivered_at AS completed_at,raw_json FROM deliveries WHERE user=? ORDER BY id DESC LIMIT 100').bind(user).all();
  const c=await env.DB.prepare('SELECT cargo,weight_kg FROM deliveries WHERE user=? GROUP BY cargo,weight_kg').bind(user).all();
  const currentMonth=month(),ma=await env.DB.prepare("SELECT COUNT(*) total,COALESCE(SUM(COALESCE(CAST(json_extract(raw_json,'$.audit.gat_points') AS INTEGER),MAX(0,100-penalty_xp))),0) points FROM deliveries WHERE user=? AND strftime('%Y-%m',delivered_at,'-3 hours')=?").bind(user,currentMonth).first();
