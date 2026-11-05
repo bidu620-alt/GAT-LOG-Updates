@@ -73,7 +73,11 @@
     const heavy40Trips=rows.filter(d=>n(d?.weight_kg)>=40000).length;
     const marathonTrips=rows.filter(d=>n(d?.distance_km)>=2000).length;
     const estradeiro500Trips=rows.filter(d=>n(d?.distance_km)>=500).length;
+    const alpineHistory=Array.isArray(p.event_history)?p.event_history:rows;
+    const alpineNorm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const alpineCompleted=alpineHistory.some(d=>{const c=alpineNorm(d.cargo);return (c.includes('locomotiva vossloh g6')||c.includes('locomotive vossloh g6'))&&alpineNorm(d.source).includes('innsbruck')&&alpineNorm(d.destination).includes('klagenfurt')&&n(d.weight_kg)>=60000&&n(d.weight_kg)<=62000});
     return [
+      {id:'travessia_alpes',title:'Travessia dos Alpes',description:'Transporte a Locomotiva Vossloh G6 de 61 t de Innsbruck até Klagenfurt pela rota marcada na serra.',unlocked:alpineCompleted,medal:'🚂',difficulty:'Difícil',xpReward:1000},
       {id:'peso_pesado',title:'Peso Pesado',description:'Entregue uma carga válida de 30 toneladas ou mais.',unlocked:maxWeight>=30000,medal:'🏋️',difficulty:'Fácil',xpReward:250},
       {id:'entrega_perfeita',title:'Entrega Perfeita',description:'Conclua 500 km ou mais com 0% de dano na carga.',unlocked:perfectCargo500,medal:'🎯',difficulty:'Média',xpReward:500},
       {id:'explorador',title:'Explorador',description:'Realize entregas válidas envolvendo 25 cidades diferentes.',unlocked:cities.size>=25,medal:'🧭',difficulty:'Média',xpReward:500},

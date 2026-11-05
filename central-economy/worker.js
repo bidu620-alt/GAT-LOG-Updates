@@ -1,3 +1,4 @@
+import {awardAlpineAchievement} from './alpine-achievement.js';
 import {telemetryCanonical} from './journal-canonical.js';
 import {economyTrack,economyFinish,economyAction,ensureEconomy} from './economy-official.js';
 import {monthlyPassConfig} from './monthly-pass.js';
@@ -930,8 +931,9 @@ async function awardGatAchievements(env,user,t){
 
  const stats=await gatAchievementStats(env,user);
 
+ const alpine=await awardAlpineAchievement(env,user,t);
  let xpReward=0;
- const unlocked=[];
+ const unlocked=[...alpine.unlocked];
 
  for(const a of GAT_ACHIEVEMENTS){
 
@@ -971,7 +973,7 @@ async function awardGatAchievements(env,user,t){
  }
 
  return{
-  xp:xpReward,
+  xp:xpReward+alpine.xp,
   unlocked
  };
 }
