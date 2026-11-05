@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import {DatabaseSync} from 'node:sqlite';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import {awardAlpineAchievement,matchesAlpine} from '../alpine-achievement.js';
+const sql=new DatabaseSync(':memory:');
+sql.exec('CREATE TABLE profiles(user TEXT PRIMARY KEY,xp INTEGER,updated_at TEXT);CREATE TABLE meta(key TEXT PRIMARY KEY,value TEXT);CREATE TABLE deliveries(id INTEGER PRIMARY KEY,user TEXT,cargo TEXT,source TEXT,destination TEXT,weight_kg REAL,delivered_at TEXT)');
+const DB={prepare(q){let a=[];return {bind(...v){a=v;return this},async first(){return sql.prepare(q).get(...a)},async all(){return {results:sql.prepare(q).all(...a)}},async run(){return {meta:{changes:sql.prepare(q).run(...a).changes}}}}},async batch(stmts){sql.exec('BEGIN');try{const r=[];for(const s of stmts)r.push(await s.run());sql.exec('COMMIT');return r}catch(e){sql.exec('ROLLBACK');throw e}}};
+const row={id:1,cargo:'Locomotiva Vossloh G6',source:'Innsbruck',destination:'Klagenfurt am Wörthersee',weight_kg:61750,delivered_at:'2026-10-05T02:16:10.585Z'};
+sql.prepare('INSERT INTO profiles VALUES(?,?,?)').run('driver',500,'old');
+sql.prepare('INSERT INTO deliveries VALUES(?,?,?,?,?,?,?)').run(1,'driver',row.cargo,row.source,row.destination,row.weight_kg,row.delivered_at);
+assert.equal(matchesAlpine({...row,source:row.destination,destination:row.source}),false);
+assert.equal(matchesAlpine({...row,weight_kg:59000}),false);
+assert.equal((await awardAlpineAchievement({DB},'driver','now')).xp,1000);
+assert.equal((await awardAlpineAchievement({DB},'driver','now')).xp,0);
+assert.equal(sql.prepare('SELECT xp FROM profiles').get().xp,1500);
+const saved=JSON.parse(sql.prepare('SELECT value FROM meta').get().value);
+assert.equal(saved.delivery_id,1);assert.equal(saved.unlocked_at,row.delivered_at);
+sql.exec('DELETE FROM deliveries');
+assert.equal((await awardAlpineAchievement({DB},'driver','later')).xp,0);
+function renderProfile(profile){let card;const grid={appendChild(c){card=c}};const context={profile,document:{getElementById(id){return id==='gatSecretConquestStyle'?{}:null},querySelector(){return grid},createElement(){return {dataset:{}}}},setTimeout(fn){fn()},setInterval(){}};vm.runInNewContext(readFileSync(new URL('../../docs/secret-conquest.js',import.meta.url),'utf8'),context);return card.dataset.completed;}
+const recent=Array.from({length:100},()=>({...row,cargo:'Madeira'}));
+assert.equal(renderProfile({deliveries:recent,event_history:[row,...recent]}),'true');
+assert.equal(renderProfile({deliveries:recent,event_history:[],achievements:[saved]}),'true');
+assert.equal(renderProfile({deliveries:recent,event_history:[],achievements:[]}),'false');
+assert.equal(renderProfile({deliveries:recent,event_history:[],achievements:[{id:saved.id,unlocked:false}]}),'false');
+console.log('PASS: historical delivery beyond 100; saved unlock survives missing history; reward once; date preserved; wrong route/weight rejected; locked profile stays locked.');
+const gamification={};
+vm.runInNewContext(readFileSync(new URL('../../docs/driver-gamification.js',import.meta.url),'utf8').replace('  injectStyle();ensureTabs();','  globalThis.fallback=achievementsFallback;return;'),gamification);
+assert.equal(gamification.fallback({deliveries:recent,event_history:[row,...recent]},{}).find(a=>a.id==='travessia_alpes').unlocked,true);
+assert.equal(gamification.fallback({deliveries:recent,event_history:[]},{}).find(a=>a.id==='travessia_alpes').unlocked,false);
+console.log('PASS: integrated achievements renderer uses full history without duplicate secret card.');
+
