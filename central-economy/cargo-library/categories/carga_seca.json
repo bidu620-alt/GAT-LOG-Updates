@@ -8,7 +8,6 @@
     "almond",
     "alu_ingot",
     "alu_profile",
-    "apples_c",
     "backfl_prev",
     "battery",
     "beans",
@@ -23,14 +22,11 @@
     "canned_pork",
     "canned_tuna",
     "carb_water",
-    "carbn_pwdr_c",
-    "carrots_c",
     "cement",
     "chewing_gums",
     "chimney_syst",
     "chocolate",
     "clothes",
-    "clothes_c",
     "coconut_milk",
     "comp_process",
     "concr_beams",
@@ -49,7 +45,6 @@
     "empty_palet",
     "empty_spool",
     "emptytank",
-    "exhausts_c",
     "floorpanels",
     "furniture",
     "glass",
@@ -85,7 +80,6 @@
     "nonalco_beer",
     "nuts",
     "nylon_cord",
-    "oil_filt_c",
     "oil_filters",
     "olives",
     "outdr_flr_tl",
@@ -96,9 +90,7 @@
     "perfor_frks",
     "pesto",
     "pet_food",
-    "pet_food_c",
     "plast_film",
-    "plast_film_c",
     "plast_pipes",
     "plastic_gra",
     "plumb_suppl",
@@ -114,7 +106,6 @@
     "roof_tiles",
     "roofing_felt",
     "rooflights",
-    "salt_spice_c",
     "salt_spices",
     "sandwch_pnls",
     "scaffoldings",
@@ -136,16 +127,13 @@
     "train_part2",
     "transmis",
     "truck_batt",
-    "truck_batt_c",
     "truck_rims",
-    "truck_rims_c",
     "truck_tyres",
     "tube",
     "tyres",
     "used_battery",
     "used_packag",
     "used_plast",
-    "used_plast_c",
     "vent_tube",
     "vinegar",
     "vinegar_c",
@@ -192,13 +180,6 @@
       "name": "Aluminium Profiles",
       "name_pt": "Perfis de alumínio",
       "source_group": "steel",
-      "selection_reason": "catalog_group"
-    },
-    {
-      "cargo_id": "apples_c",
-      "name": "Apples",
-      "name_pt": "Maçãs",
-      "source_group": "food",
       "selection_reason": "catalog_group"
     },
     {
@@ -300,20 +281,6 @@
       "selection_reason": "general_goods_selection"
     },
     {
-      "cargo_id": "carbn_pwdr_c",
-      "name": "Carbon Black Powder",
-      "name_pt": "Carvão em pó",
-      "source_group": "vehicles",
-      "selection_reason": "general_goods_selection"
-    },
-    {
-      "cargo_id": "carrots_c",
-      "name": "Carrots",
-      "name_pt": "Cenouras",
-      "source_group": "vehicles",
-      "selection_reason": "general_goods_selection"
-    },
-    {
       "cargo_id": "cement",
       "name": "Cement",
       "name_pt": "Cimento",
@@ -343,13 +310,6 @@
     },
     {
       "cargo_id": "clothes",
-      "name": "Clothes",
-      "name_pt": "Roupas",
-      "source_group": "custom",
-      "selection_reason": "general_goods_selection"
-    },
-    {
-      "cargo_id": "clothes_c",
       "name": "Clothes",
       "name_pt": "Roupas",
       "source_group": "custom",
@@ -479,13 +439,6 @@
       "name": "Reservoir Tank",
       "name_pt": "Tanque reservatório",
       "source_group": "industrial",
-      "selection_reason": "general_goods_selection"
-    },
-    {
-      "cargo_id": "exhausts_c",
-      "name": "Exhaust Systems",
-      "name_pt": "Sistemas de escapamento",
-      "source_group": "custom",
       "selection_reason": "general_goods_selection"
     },
     {
@@ -734,13 +687,6 @@
       "selection_reason": "general_goods_selection"
     },
     {
-      "cargo_id": "oil_filt_c",
-      "name": "Oil Filters",
-      "name_pt": "Filtros de óleo",
-      "source_group": "custom",
-      "selection_reason": "general_goods_selection"
-    },
-    {
       "cargo_id": "oil_filters",
       "name": "Oil Filters",
       "name_pt": "Filtros de óleo",
@@ -811,21 +757,7 @@
       "selection_reason": "catalog_group"
     },
     {
-      "cargo_id": "pet_food_c",
-      "name": "Pet Food",
-      "name_pt": "Ração",
-      "source_group": "food",
-      "selection_reason": "catalog_group"
-    },
-    {
       "cargo_id": "plast_film",
-      "name": "Plastic Film Rolls",
-      "name_pt": "Rolos de papel filme",
-      "source_group": "custom",
-      "selection_reason": "general_goods_selection"
-    },
-    {
-      "cargo_id": "plast_film_c",
       "name": "Plastic Film Rolls",
       "name_pt": "Rolos de papel filme",
       "source_group": "custom",
@@ -933,13 +865,6 @@
       "cargo_id": "rooflights",
       "name": "Rooflights",
       "name_pt": "Tetos solares",
-      "source_group": "custom",
-      "selection_reason": "general_goods_selection"
-    },
-    {
-      "cargo_id": "salt_spice_c",
-      "name": "Salt & Spices",
-      "name_pt": "Sal e temperos",
       "source_group": "custom",
       "selection_reason": "general_goods_selection"
     },
@@ -1091,21 +1016,7 @@
       "selection_reason": "general_goods_selection"
     },
     {
-      "cargo_id": "truck_batt_c",
-      "name": "Truck Batteries",
-      "name_pt": "Baterias de caminhão",
-      "source_group": "custom",
-      "selection_reason": "general_goods_selection"
-    },
-    {
       "cargo_id": "truck_rims",
-      "name": "Truck Rims",
-      "name_pt": "Rodas de caminhão",
-      "source_group": "custom",
-      "selection_reason": "general_goods_selection"
-    },
-    {
-      "cargo_id": "truck_rims_c",
       "name": "Truck Rims",
       "name_pt": "Rodas de caminhão",
       "source_group": "custom",
@@ -1148,13 +1059,6 @@
     },
     {
       "cargo_id": "used_plast",
-      "name": "Used Plastics",
-      "name_pt": "Plásticos usados",
-      "source_group": "scrap",
-      "selection_reason": "catalog_group"
-    },
-    {
-      "cargo_id": "used_plast_c",
       "name": "Used Plastics",
       "name_pt": "Plásticos usados",
       "source_group": "scrap",
@@ -1239,3 +1143,4 @@
     }
   ]
 }
+

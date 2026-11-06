@@ -149,13 +149,6 @@
       "reason": "no_matching_pass_category"
     },
     {
-      "cargo_id": "chem_sorb_c",
-      "name": "Chemical Sorbent",
-      "name_pt": "Solvente químico",
-      "source_group": "chemicals",
-      "reason": "no_matching_pass_category"
-    },
-    {
       "cargo_id": "chem_sorbent",
       "name": "Chemical Sorbent",
       "name_pt": "Solvente químico",
@@ -507,3 +500,4 @@
     }
   ]
 }
+

@@ -1,0 +1,149 @@
+{
+  "version": "2026-11-06.1",
+  "corrected_ids": [
+    "apples_c",
+    "carbn_pwdr_c",
+    "carrots_c",
+    "chem_sorb_c",
+    "clothes_c",
+    "exhausts_c",
+    "oil_filt_c",
+    "pet_food_c",
+    "plast_film_c",
+    "salt_spice_c",
+    "truck_batt_c",
+    "truck_rims_c",
+    "used_plast_c"
+  ],
+  "evidence": [
+    {
+      "cargo_id": "apples_c",
+      "name_pt": "Maçãs",
+      "observed_deliveries": 19,
+      "trailer_ids": [
+        "tirsan_shg.ch_3x2esii",
+        "krone.boxliner.chassis_20x2esii",
+        "kogel_port_triplex.ch_3_220x2esii",
+        "kogel_port_duplex.ch_3_220x2esii",
+        "scs_gooseneck.black220x2esii",
+        "krone.boxliner.chassis_40x2esii",
+        "tirsan_shf.ch_3x2esii",
+        "kogel_port_duplex.ch_3_20x2esii",
+        "kassbohrer_shg.ch_3e_40x2esii",
+        "scs_gooseneck.red20x2esii",
+        "scs_gooseneck.blue40x2esii"
+      ]
+    },
+    {
+      "cargo_id": "carbn_pwdr_c",
+      "name_pt": "Carvão em pó",
+      "observed_deliveries": 1,
+      "trailer_ids": [
+        "krone.boxliner.chassis_40x2esii"
+      ]
+    },
+    {
+      "cargo_id": "carrots_c",
+      "name_pt": "Cenouras",
+      "observed_deliveries": 1,
+      "trailer_ids": [
+        "scs_gooseneck.blue40x2esii"
+      ]
+    },
+    {
+      "cargo_id": "chem_sorb_c",
+      "name_pt": "Solvente químico",
+      "observed_deliveries": 2,
+      "trailer_ids": [
+        "scs_gooseneck.black220x2esii",
+        "kogel_port_triplex.ch_3_220x2esii"
+      ]
+    },
+    {
+      "cargo_id": "clothes_c",
+      "name_pt": "Roupas",
+      "observed_deliveries": 1,
+      "trailer_ids": [
+        "scs_gooseneck.red20x2esii"
+      ]
+    },
+    {
+      "cargo_id": "exhausts_c",
+      "name_pt": "Sistemas de escapamento",
+      "observed_deliveries": 1,
+      "trailer_ids": [
+        "scs_gooseneck.blue40x2esii"
+      ]
+    },
+    {
+      "cargo_id": "oil_filt_c",
+      "name_pt": "Filtros de óleo",
+      "observed_deliveries": 1,
+      "trailer_ids": [
+        "krone.boxliner.chassis_2x20x2esii"
+      ]
+    },
+    {
+      "cargo_id": "pet_food_c",
+      "name_pt": "Ração",
+      "observed_deliveries": 6,
+      "trailer_ids": [
+        "kogel_port_triplex.ch_3_40x2esii",
+        "krone.boxliner.chassis_2x20x2esii",
+        "scs_gooseneck.blue40x2esii",
+        "scs_gooseneck.red20x2esii",
+        "kogel_port_triplex.ch_3_220x2esii"
+      ]
+    },
+    {
+      "cargo_id": "plast_film_c",
+      "name_pt": "Rolos de papel filme",
+      "observed_deliveries": 4,
+      "trailer_ids": [
+        "kogel_port_duplex.ch_3_20x2esii",
+        "kassbohrer_shg.ch_3e_20x2esii",
+        "scs_gooseneck.blue40x2esii",
+        "tirsan_shg.ch_3x2esii"
+      ]
+    },
+    {
+      "cargo_id": "salt_spice_c",
+      "name_pt": "Sal e temperos",
+      "observed_deliveries": 1,
+      "trailer_ids": [
+        "krone.boxliner.chassis_40x2esii"
+      ]
+    },
+    {
+      "cargo_id": "truck_batt_c",
+      "name_pt": "Baterias de caminhão",
+      "observed_deliveries": 1,
+      "trailer_ids": [
+        "krone.boxliner.chassis_2x20x2esii"
+      ]
+    },
+    {
+      "cargo_id": "truck_rims_c",
+      "name_pt": "Rodas de caminhão",
+      "observed_deliveries": 1,
+      "trailer_ids": [
+        "scs_gooseneck.blue40x2esii"
+      ]
+    },
+    {
+      "cargo_id": "used_plast_c",
+      "name_pt": "Plásticos usados",
+      "observed_deliveries": 3,
+      "trailer_ids": [
+        "scs_gooseneck.blue40x2esii",
+        "kogel_port_triplex.ch_3_40x2esii"
+      ]
+    }
+  ],
+  "excluded_counterexample": {
+    "cargo_id": "tractor_c",
+    "category": "maquinario",
+    "reason": "Low-loader telemetry; suffix alone is not a container rule."
+  }
+}
+

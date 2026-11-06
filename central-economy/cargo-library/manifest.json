@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "version": "2026-11-02.1",
+  "version": "2026-11-06.1",
   "source": {
     "repository": "bidu620-alt/GAT-LOG-Updates",
     "path": "docs/ets2-official-cargos.json",
@@ -12,8 +12,8 @@
     "catalog_entries": 380,
     "catalog_cargo_ids": 413,
     "catalog_groups": 30,
-    "selected_cargo_ids": 341,
-    "unselected_cargo_ids": 72
+    "selected_cargo_ids": 342,
+    "unselected_cargo_ids": 71
   },
   "catalog_groups": [
     {
@@ -189,7 +189,7 @@
     {
       "id": "carga_seca",
       "title": "Carga Seca / Geral",
-      "cargo_id_count": 154,
+      "cargo_id_count": 142,
       "file": "categories/carga_seca.json"
     },
     {
@@ -213,8 +213,9 @@
     {
       "id": "conteineres",
       "title": "Contêineres",
-      "cargo_id_count": 4,
+      "cargo_id_count": 17,
       "file": "categories/conteineres.json"
     }
   ]
 }
+

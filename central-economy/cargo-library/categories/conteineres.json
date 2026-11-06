@@ -3,12 +3,32 @@
   "id": "conteineres",
   "title": "Contêineres",
   "cargo_ids": [
+    "apples_c",
     "beverages_c",
+    "carbn_pwdr_c",
+    "carrots_c",
+    "chem_sorb_c",
+    "clothes_c",
     "cont_trees",
+    "exhausts_c",
     "ibc_cont",
-    "large_cont"
+    "large_cont",
+    "oil_filt_c",
+    "pet_food_c",
+    "plast_film_c",
+    "salt_spice_c",
+    "truck_batt_c",
+    "truck_rims_c",
+    "used_plast_c"
   ],
   "entries": [
+    {
+      "cargo_id": "apples_c",
+      "name": "Apples",
+      "name_pt": "Maçãs",
+      "source_group": "food",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
     {
       "cargo_id": "beverages_c",
       "name": "Beverages",
@@ -17,11 +37,46 @@
       "selection_reason": "confirmed_container_variant"
     },
     {
+      "cargo_id": "carbn_pwdr_c",
+      "name": "Carbon Black Powder",
+      "name_pt": "Carvão em pó",
+      "source_group": "vehicles",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "carrots_c",
+      "name": "Carrots",
+      "name_pt": "Cenouras",
+      "source_group": "vehicles",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "chem_sorb_c",
+      "name": "Chemical Sorbent",
+      "name_pt": "Solvente químico",
+      "source_group": "chemicals",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "clothes_c",
+      "name": "Clothes",
+      "name_pt": "Roupas",
+      "source_group": "custom",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
       "cargo_id": "cont_trees",
       "name": "Containerized Trees",
       "name_pt": "Árvores contentorizadas",
       "source_group": "container",
       "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "exhausts_c",
+      "name": "Exhaust Systems",
+      "name_pt": "Sistemas de escapamento",
+      "source_group": "custom",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
     },
     {
       "cargo_id": "ibc_cont",
@@ -36,6 +91,56 @@
       "name_pt": "Contêiner grande",
       "source_group": "container",
       "selection_reason": "catalog_group"
+    },
+    {
+      "cargo_id": "oil_filt_c",
+      "name": "Oil Filters",
+      "name_pt": "Filtros de óleo",
+      "source_group": "custom",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "pet_food_c",
+      "name": "Pet Food",
+      "name_pt": "Ração",
+      "source_group": "food",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "plast_film_c",
+      "name": "Plastic Film Rolls",
+      "name_pt": "Rolos de papel filme",
+      "source_group": "custom",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "salt_spice_c",
+      "name": "Salt & Spices",
+      "name_pt": "Sal e temperos",
+      "source_group": "custom",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "truck_batt_c",
+      "name": "Truck Batteries",
+      "name_pt": "Baterias de caminhão",
+      "source_group": "custom",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "truck_rims_c",
+      "name": "Truck Rims",
+      "name_pt": "Rodas de caminhão",
+      "source_group": "custom",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
+    },
+    {
+      "cargo_id": "used_plast_c",
+      "name": "Used Plastics",
+      "name_pt": "Plásticos usados",
+      "source_group": "scrap",
+      "selection_reason": "container_variant_verified_telemetry_20261106"
     }
   ]
 }
+
