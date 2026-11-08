@@ -1,0 +1,678 @@
+[
+  {
+    "make": "scania Vabis 111",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-Vabis 111 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania 110",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-110 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania 111",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-111 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania 112",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-112 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania 113",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-113 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania 124G",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-124G WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania 143",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-143 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania 164",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-164 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania T 113",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-T 113 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania R 440",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-R 440 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania S 770",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-S 770 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania P 320",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-P 320 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania G 450",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-G 450 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania L 280",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-L 280 WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania Streamline",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-Streamline WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "scania Super",
+    "expected": "scania"
+  },
+  {
+    "make": "SCANIA-Super WS Mods",
+    "expected": "scania"
+  },
+  {
+    "make": "volvo N10",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-N10 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo N12",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-N12 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo NL12",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-NL12 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo NH12",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-NH12 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo F10",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-F10 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo F12",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-F12 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo F16",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-F16 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo FH12",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-FH12 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo FH16",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-FH16 WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo FH 2024 Aero",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-FH 2024 Aero WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo FM",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-FM WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo FMX",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-FMX WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo VM",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-VM WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "volvo VNL",
+    "expected": "volvo"
+  },
+  {
+    "make": "VOLVO-VNL WS Mods",
+    "expected": "volvo"
+  },
+  {
+    "make": "daf 95",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-95 WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf 95XF",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-95XF WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf XF105",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-XF105 WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf CF",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-CF WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf LF",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-LF WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf XF",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-XF WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf XG",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-XG WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf XG+",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-XG+ WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf XD",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-XD WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "daf XB",
+    "expected": "daf"
+  },
+  {
+    "make": "DAF-XB WS Mods",
+    "expected": "daf"
+  },
+  {
+    "make": "iveco TurboStar",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-TurboStar WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco EuroTech",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-EuroTech WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco EuroStar",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-EuroStar WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco EuroTrakker",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-EuroTrakker WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco Stralis",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-Stralis WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco Hi-Way",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-Hi-Way WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco S-Way",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-S-Way WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco X-Way",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-X-Way WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco T-Way",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-T-Way WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "iveco S-eWay",
+    "expected": "iveco"
+  },
+  {
+    "make": "IVECO-S-eWay WS Mods",
+    "expected": "iveco"
+  },
+  {
+    "make": "man F8",
+    "expected": "man"
+  },
+  {
+    "make": "MAN-F8 WS Mods",
+    "expected": "man"
+  },
+  {
+    "make": "man F90",
+    "expected": "man"
+  },
+  {
+    "make": "MAN-F90 WS Mods",
+    "expected": "man"
+  },
+  {
+    "make": "man F2000",
+    "expected": "man"
+  },
+  {
+    "make": "MAN-F2000 WS Mods",
+    "expected": "man"
+  },
+  {
+    "make": "man TGA",
+    "expected": "man"
+  },
+  {
+    "make": "MAN-TGA WS Mods",
+    "expected": "man"
+  },
+  {
+    "make": "man TGL",
+    "expected": "man"
+  },
+  {
+    "make": "MAN-TGL WS Mods",
+    "expected": "man"
+  },
+  {
+    "make": "man TGM",
+    "expected": "man"
+  },
+  {
+    "make": "MAN-TGM WS Mods",
+    "expected": "man"
+  },
+  {
+    "make": "man TGS",
+    "expected": "man"
+  },
+  {
+    "make": "MAN-TGS WS Mods",
+    "expected": "man"
+  },
+  {
+    "make": "man TGX",
+    "expected": "man"
+  },
+  {
+    "make": "MAN-TGX WS Mods",
+    "expected": "man"
+  },
+  {
+    "make": "mercedes L 1113",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-L 1113 WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes L 1620",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-L 1620 WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes LS 1935",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-LS 1935 WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes NG",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-NG WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes SK",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-SK WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes Accelo",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-Accelo WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes Atego",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-Atego WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes Axor",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-Axor WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes Actros",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-Actros WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes Arocs",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-Arocs WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "mercedes eActros",
+    "expected": "mercedes"
+  },
+  {
+    "make": "MERCEDES-eActros WS Mods",
+    "expected": "mercedes"
+  },
+  {
+    "make": "renault AE",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-AE WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault Magnum",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-Magnum WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault Premium",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-Premium WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault Midlum",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-Midlum WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault Kerax",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-Kerax WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault T",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-T WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault T High",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-T High WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault C",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-C WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault K",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-K WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault D",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-D WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "renault E-Tech T",
+    "expected": "renault"
+  },
+  {
+    "make": "RENAULT-E-Tech T WS Mods",
+    "expected": "renault"
+  },
+  {
+    "make": "Unknown Volvo",
+    "expected": "unknown volvo"
+  },
+  {
+    "make": "Fake Scania",
+    "expected": "fake scania"
+  },
+  {
+    "make": "Scaniax",
+    "expected": "scaniax"
+  },
+  {
+    "make": "Human TGX",
+    "expected": "human tgx"
+  },
+  {
+    "make": "Volvo Scania",
+    "expected": "volvo scania"
+  },
+  {
+    "make": "Scania Mercedes",
+    "expected": "scania mercedes"
+  },
+  {
+    "make": "Scania Volvo FH",
+    "expected": "scania volvo fh"
+  },
+  {
+    "make": "",
+    "expected": ""
+  },
+  {
+    "make": "Kenworth W900",
+    "expected": "kenworth w900"
+  }
+]

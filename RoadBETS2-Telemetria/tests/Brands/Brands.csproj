@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net48</TargetFramework><LangVersion>latest</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="BrandCheck.cs" />
+    <Compile Include="../../src/GatTelemetry/TruckBrandResolver.cs" Link="TruckBrandResolver.cs" />
+    <Compile Include="../../src/GatTelemetry/TruckModelEvidence.cs" Link="TruckModelEvidence.cs" />
+    <Compile Include="../../src/GatTelemetry/VehicleEconomyKey.cs" Link="VehicleEconomyKey.cs" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+</Project>

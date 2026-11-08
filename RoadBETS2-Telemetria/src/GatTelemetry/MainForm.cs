@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -360,7 +360,7 @@ internal sealed partial class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.36";
+	private const string CurrentVersion = "1.0.68.38";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -753,7 +753,7 @@ internal sealed partial class MainForm : Form
 
 	public MainForm()
 	{
-		Text = "BIDUTRUCK TELEMETRIA BETA";
+		Text = "BIDULOG TELEMETRIA BETA";
 		StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new System.Drawing.Size(900, 700);
 		Size = new System.Drawing.Size(940, 740);
@@ -779,7 +779,7 @@ internal sealed partial class MainForm : Form
 			{
 				string text = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GAT-LOG", "GAT-Telemetria");
 				Directory.CreateDirectory(text);
-				File.AppendAllText(System.IO.Path.Combine(text, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.30: " + ex?.ToString() + Environment.NewLine);
+				File.AppendAllText(System.IO.Path.Combine(text, "startup-error.log"), DateTime.Now.ToString("s") + " HUB 1.0.68.38: " + ex?.ToString() + Environment.NewLine);
 			}
 			catch
 			{
@@ -908,7 +908,7 @@ internal sealed partial class MainForm : Form
 			Anchor = (AnchorStyles.Top | AnchorStyles.Right)
 		};
 		Controls.Add(value4);
-		ModernCard modernCard = NewCard("CONTA BIDUTRUCK", 24, 88, ClientSize.Width - 48, 172);
+		ModernCard modernCard = NewCard("CONTA BIDULOG", 24, 88, ClientSize.Width - 48, 172);
 		modernCard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 		Controls.Add(modernCard);
 		modernCard.Controls.Add(NewCaption("Usuário", 28, 48, 205));
@@ -1029,7 +1029,7 @@ internal sealed partial class MainForm : Form
 		btnEnter = MakeButton("ENTRAR / AGUARDAR", 0, 0, 1, 1, EnterClicked);
 		btnEnter.Visible = false;
 		Controls.Add(btnEnter);
-		lblSession = MakeValue("BIDUTRUCK: parado", 0, 0, 1);
+		lblSession = MakeValue("BIDULOG: parado", 0, 0, 1);
 		lblSession.Visible = false;
 		Controls.Add(lblSession);
 		ModernCard modernCard3 = NewCard("TELEMETRIA", 24, 416, ClientSize.Width - 48, 154);
@@ -1042,7 +1042,7 @@ internal sealed partial class MainForm : Form
 		lblTruck = MakeValue("TruckSim GPS: aguardando", 28, 50, 260);
 		lblCargo = MakeValue("Carga: Sem carga", 28, 81, 260);
 		lblDistance = MakeValue("Restante: -", 28, 112, 260);
-		lblTelemetry = MakeValue("Central BiduTruck: aguardando", 330, 50, 260);
+		lblTelemetry = MakeValue("Central BiduLog: aguardando", 330, 50, 260);
 		lblRoute = MakeValue("Rota: -", 330, 81, 260);
 		lblSpeed = MakeValue("Velocidade: 0 km/h", 330, 112, 260);
 		lblWeight = MakeValue("Peso: -", 630, 50, 225);
@@ -1092,7 +1092,7 @@ internal sealed partial class MainForm : Form
 		{
 			DashMediaBridge.Stop();
 		};
-		System.Windows.Forms.Button button = MakeButton("RÁDIO BIDUTRUCK", 278, 654, 190, 36, delegate
+		System.Windows.Forms.Button button = MakeButton("RÁDIO BIDULOG", 278, 654, 190, 36, delegate
 		{
 			if (radioForm == null || radioForm.IsDisposed)
 			{
@@ -1115,7 +1115,7 @@ internal sealed partial class MainForm : Form
 		Controls.Add(btnUpdate);
 		lblVersion = new System.Windows.Forms.Label
 		{
-			Text = "Cliente 1.0.68.30",
+			Text = "Cliente 1.0.68.38",
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(105, 118, 136),
 			Anchor = (AnchorStyles.Bottom | AnchorStyles.Right),
@@ -1372,7 +1372,7 @@ internal sealed partial class MainForm : Form
 		string text2 = txtAccountPassword.Text ?? string.Empty;
 		if (text.Length == 0 || text2.Length == 0)
 		{
-			System.Windows.Forms.MessageBox.Show("Informe o usuário e a senha criados no site BIDUTRUCK.", "Conta BiduTruck", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+			System.Windows.Forms.MessageBox.Show("Informe o usuário e a senha criados no site BIDULOG.", "Conta BiduLog", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			return;
 		}
 		btnAccountLogin.Enabled = false;
@@ -1383,14 +1383,14 @@ internal sealed partial class MainForm : Form
 			if (apiResponse.StatusCode != 200 || apiResponse.Json == null || !ApiClient.Bool(apiResponse.Json["ok"]))
 			{
 				lblAccount.Text = "Conta: login inválido";
-				System.Windows.Forms.MessageBox.Show("Usuário ou senha inválidos. Use a mesma conta cadastrada no site.", "Conta BiduTruck", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				System.Windows.Forms.MessageBox.Show("Usuário ou senha inválidos. Use a mesma conta cadastrada no site.", "Conta BiduLog", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
 			string text3 = ApiClient.Str(apiResponse.Json["user"]);
 			string text4 = ApiClient.Str(apiResponse.Json["token"]);
 			if (string.IsNullOrWhiteSpace(text3) || string.IsNullOrWhiteSpace(text4))
 			{
-				throw new InvalidOperationException("O servidor não retornou a sessão da Conta BiduTruck.");
+				throw new InvalidOperationException("O servidor não retornou a sessão da Conta BiduLog.");
 			}
 			ClientStore.SaveAccountCredential(text3, text4);
 			txtAccountUser.Text = text3;
@@ -1400,7 +1400,7 @@ internal sealed partial class MainForm : Form
 			_loggedIn = false;
 			_driver = string.Empty;
 			_token = string.Empty;
-			lblSession.Text = "BIDUTRUCK: conta reconhecida, aguardando sessão";
+			lblSession.Text = "BIDULOG: conta reconhecida, aguardando sessão";
 			if (chkAuto.Checked && cmbServers.SelectedItem is ServerEntry)
 			{
 				BeginWaiting(manual: false);
@@ -1408,8 +1408,8 @@ internal sealed partial class MainForm : Form
 		}
 		catch (Exception ex)
 		{
-			ClientStore.Log("Conta BiduTruck: " + ex);
-			System.Windows.Forms.MessageBox.Show("Falha ao entrar na Conta BiduTruck: " + ex.Message, "Conta BiduTruck", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			ClientStore.Log("Conta BiduLog: " + ex);
+			System.Windows.Forms.MessageBox.Show("Falha ao entrar na Conta BiduLog: " + ex.Message, "Conta BiduLog", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 		finally
 		{
@@ -1437,7 +1437,7 @@ internal sealed partial class MainForm : Form
 			}
 			if (lblPcRegisterDetail != null)
 			{
-				lblPcRegisterDetail.Text = "A Central BiduTruck confirma o vínculo automaticamente.";
+				lblPcRegisterDetail.Text = "A Central BiduLog confirma o vínculo automaticamente.";
 			}
 			return;
 		}
@@ -1456,8 +1456,8 @@ internal sealed partial class MainForm : Form
 		{
 			lblPcRegisterDetail.Text = "Entre na conta para validar este PC.";
 		}
-		lblSession.Text = "BIDUTRUCK: entre na Conta BiduTruck";
-		lblTelemetry.Text = "Central BiduTruck: aguardando conta";
+		lblSession.Text = "BIDULOG: entre na Conta BiduLog";
+		lblTelemetry.Text = "Central BiduLog: aguardando conta";
 	}
 
 	private void SetPcRegistrationState(bool linked, string pairingCode)
@@ -1510,7 +1510,7 @@ internal sealed partial class MainForm : Form
 			{
 				lblPcRegister.Text = "Validando registro do PC";
 				lblPcRegister.ForeColor = System.Drawing.Color.Gold;
-				lblPcRegisterDetail.Text = "A Central BiduTruck vai tentar novamente automaticamente.";
+				lblPcRegisterDetail.Text = "A Central BiduLog vai tentar novamente automaticamente.";
 			}
 		}
 		catch (Exception ex)
@@ -1523,7 +1523,7 @@ internal sealed partial class MainForm : Form
 			}
 			if (lblPcRegisterDetail != null)
 			{
-				lblPcRegisterDetail.Text = "A Central BiduTruck vai tentar novamente automaticamente.";
+				lblPcRegisterDetail.Text = "A Central BiduLog vai tentar novamente automaticamente.";
 			}
 		}
 	}
@@ -1682,7 +1682,7 @@ internal sealed partial class MainForm : Form
 			{
 				int num = ((apiResponse.Json["xp_awarded"] != null) ? apiResponse.Json["xp_awarded"].Value<int>() : 0);
 				int num2 = ((apiResponse.Json["penalty_xp"] != null) ? apiResponse.Json["penalty_xp"].Value<int>() : 0);
-				lblTelemetry.Text = ((num2 > 0) ? ("Central BiduTruck: ENTREGA " + num + " XP (-" + num2 + ")") : ("Central BiduTruck: ENTREGA " + num + " XP"));
+				lblTelemetry.Text = ((num2 > 0) ? ("Central BiduLog: ENTREGA " + num + " XP (-" + num2 + ")") : ("Central BiduLog: ENTREGA " + num + " XP"));
 			}
 			ClientStore.Log("recibo de viagem confirmado: " + receipt.TripId);
 			return;
@@ -1703,12 +1703,12 @@ internal sealed partial class MainForm : Form
 				System.Windows.Forms.Label label = lblTelemetry;
 				label.Text = text switch
 				{
-					"integrity_not_verified" => "Central BiduTruck: ENTREGA NAO VALIDADA - INTEGRIDADE", 
-					"integrity_mod_blocked" => "Central BiduTruck: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
-					"actual_distance_below_minimum" => "Central BiduTruck: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
-					_ => "Central BiduTruck: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
+					"integrity_not_verified" => "Central BiduLog: ENTREGA NAO VALIDADA - INTEGRIDADE", 
+					"integrity_mod_blocked" => "Central BiduLog: ENTREGA NAO VALIDADA - MOD PROIBIDO", 
+					"actual_distance_below_minimum" => "Central BiduLog: ENTREGA NAO VALIDADA - KM REAL INSUFICIENTE", 
+					_ => "Central BiduLog: ENTREGA NAO VALIDADA - ODOMETRO/VEICULO", 
 				};
-				ClientStore.Log("entrega nao validada pela Central BiduTruck: " + text + " / " + receipt.TripId);
+				ClientStore.Log("entrega nao validada pela Central BiduLog: " + text + " / " + receipt.TripId);
 				return;
 			}
 			}
@@ -2074,14 +2074,14 @@ internal sealed partial class MainForm : Form
 		catch (Exception ex)
 		{
 			ClientStore.Log("fila local recusada por integridade: " + ex.Message);
-			lblTelemetry.Text = "Central BiduTruck: caixa-preta local com erro de integridade";
+			lblTelemetry.Text = "Central BiduLog: caixa-preta local com erro de integridade";
 			return 1;
 		}
 		if (packets.Count == 0)
 		{
 			return 0;
 		}
-		lblTelemetry.Text = "Central BiduTruck: enviando viagem pendente...";
+		lblTelemetry.Text = "Central BiduLog: enviando viagem pendente...";
 		int sent = 0;
 		int limit = Math.Min(240, packets.Count);
 		for (int i = 0; i < limit; i++)
@@ -2120,7 +2120,7 @@ internal sealed partial class MainForm : Form
 		if (tele == null)
 		{
 			lblTruck.Text = "TruckSim GPS: aguardando";
-			lblTelemetry.Text = "Central BiduTruck: aguardando ETS2";
+			lblTelemetry.Text = "Central BiduLog: aguardando ETS2";
 			return;
 		}
 		tele["gat_account_user"] = _accountUser;
@@ -2154,7 +2154,7 @@ internal sealed partial class MainForm : Form
 				lblAccount.Text = (string.IsNullOrWhiteSpace(text) ? ("Conta: @" + _accountUser) : ("Vincular PC: " + text));
 				lblAccount.ForeColor = System.Drawing.Color.Gold;
 				SetPcRegistrationState(linked: false, text);
-				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central BiduTruck: computador ainda nao vinculado" : ("Central BiduTruck: digite o codigo " + text + " no site"));
+				lblTelemetry.Text = (string.IsNullOrWhiteSpace(text) ? "Central BiduLog: computador ainda nao vinculado" : ("Central BiduLog: digite o codigo " + text + " no site"));
 				return;
 			}
 			if (apiResponse.StatusCode == 200 && apiResponse.Json != null && ApiClient.Bool(apiResponse.Json["ok"]))
@@ -2170,7 +2170,7 @@ internal sealed partial class MainForm : Form
 			}
 			if (string.IsNullOrWhiteSpace(centralClientToken))
 			{
-				lblTelemetry.Text = ((apiResponse.StatusCode == 0) ? "Central BiduTruck: reconectando..." : ("Central BiduTruck: falha ao vincular HTTP " + apiResponse.StatusCode));
+				lblTelemetry.Text = ((apiResponse.StatusCode == 0) ? "Central BiduLog: reconectando..." : ("Central BiduLog: falha ao vincular HTTP " + apiResponse.StatusCode));
 				return;
 			}
 		}
@@ -2179,7 +2179,7 @@ internal sealed partial class MainForm : Form
 		if (await FlushCentralTelemetryQueueAsync(centralDriver, centralClientToken) > 0)
 		{
 			QueueCentralTelemetry(tele);
-			lblTelemetry.Text = "Central BiduTruck: viagem salva • aguardando servidor";
+			lblTelemetry.Text = "Central BiduLog: viagem salva • aguardando servidor";
 			return;
 		}
 		ApiResponse apiResponse2 = await _api.SendTelemetryAsync("https://api.bidulog.com.br", centralDriver, _deviceId, centralClientToken, tele);
@@ -2210,19 +2210,19 @@ internal sealed partial class MainForm : Form
 			UpdateWorkStatus(apiResponse2.Json);
 			if (flag2)
 			{
-				lblTelemetry.Text = "Central BiduTruck: ONLINE • MISSÃO CONCLUÍDA";
+				lblTelemetry.Text = "Central BiduLog: ONLINE • MISSÃO CONCLUÍDA";
 			}
 			else if (flag)
 			{
-				lblTelemetry.Text = "Central BiduTruck: ONLINE • MISSÃO INICIADA";
+				lblTelemetry.Text = "Central BiduLog: ONLINE • MISSÃO INICIADA";
 			}
 			else if (BoolAny(tele, "job_latched") || BoolAny(tele, "on_job"))
 			{
-				lblTelemetry.Text = "Central BiduTruck: ONLINE • TRABALHO EM ANDAMENTO";
+				lblTelemetry.Text = "Central BiduLog: ONLINE • TRABALHO EM ANDAMENTO";
 			}
 			else
 			{
-				lblTelemetry.Text = "Central BiduTruck: ONLINE";
+				lblTelemetry.Text = "Central BiduLog: ONLINE";
 			}
 		}
 		else if (apiResponse2.StatusCode == 401)
@@ -2234,30 +2234,30 @@ internal sealed partial class MainForm : Form
 				lblAccount.Text = "Vincular PC: " + text2;
 				lblAccount.ForeColor = System.Drawing.Color.Gold;
 				SetPcRegistrationState(linked: false, text2);
-				lblTelemetry.Text = "Central BiduTruck: digite o codigo " + text2 + " no site";
+				lblTelemetry.Text = "Central BiduLog: digite o codigo " + text2 + " no site";
 			}
 			else
 			{
-				lblTelemetry.Text = "Central BiduTruck: dispositivo precisa ser vinculado";
+				lblTelemetry.Text = "Central BiduLog: dispositivo precisa ser vinculado";
 			}
 		}
 		else if (apiResponse2.StatusCode == 0)
 		{
 			QueueCentralTelemetry(tele);
-			lblTelemetry.Text = "Central BiduTruck: viagem salva • aguardando servidor";
+			lblTelemetry.Text = "Central BiduLog: viagem salva • aguardando servidor";
 		}
 		else if (apiResponse2.StatusCode == 429 || apiResponse2.StatusCode >= 500)
 		{
 			QueueCentralTelemetry(tele);
-			lblTelemetry.Text = "Central BiduTruck: viagem salva • aguardando servidor";
+			lblTelemetry.Text = "Central BiduLog: viagem salva • aguardando servidor";
 		}
 		else if (apiResponse2.StatusCode == 404)
 		{
-			lblTelemetry.Text = "Central BiduTruck: atualize o servidor central";
+			lblTelemetry.Text = "Central BiduLog: atualize o servidor central";
 		}
 		else
 		{
-			lblTelemetry.Text = "Central BiduTruck: falha HTTP " + apiResponse2.StatusCode;
+			lblTelemetry.Text = "Central BiduLog: falha HTTP " + apiResponse2.StatusCode;
 		}
 	}
 
@@ -2307,11 +2307,11 @@ internal sealed partial class MainForm : Form
 	{
 		if (!AccountReady)
 		{
-			System.Windows.Forms.MessageBox.Show("Entre primeiro com a mesma conta criada no site BIDUTRUCK.", "BIDUTRUCK TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+			System.Windows.Forms.MessageBox.Show("Entre primeiro com a mesma conta criada no site BIDULOG.", "BIDULOG TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 		}
 		else if (!(cmbServers.SelectedItem is ServerEntry))
 		{
-			System.Windows.Forms.MessageBox.Show("Adicione ou selecione um servidor primeiro.", "BIDUTRUCK TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+			System.Windows.Forms.MessageBox.Show("Adicione ou selecione um servidor primeiro.", "BIDULOG TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 		}
 		else
 		{
@@ -2323,7 +2323,7 @@ internal sealed partial class MainForm : Form
 	{
 		if (!AccountReady)
 		{
-			lblSession.Text = "BIDUTRUCK: entre na Conta BiduTruck";
+			lblSession.Text = "BIDULOG: entre na Conta BiduLog";
 			lblTelemetry.Text = "Envio: aguardando conta";
 		}
 		else if (cmbServers.SelectedItem is ServerEntry serverEntry)
@@ -2336,7 +2336,7 @@ internal sealed partial class MainForm : Form
 			{
 				_loggedIn = false;
 			}
-			lblSession.Text = "BIDUTRUCK: aguardando sessão...";
+			lblSession.Text = "BIDULOG: aguardando sessão...";
 			lblTelemetry.Text = "Envio: aguardando motorista";
 			ClientStore.Log("aguardando sessao em " + _endpoint);
 		}
@@ -2483,7 +2483,7 @@ internal sealed partial class MainForm : Form
 			{
 				_loggedIn = false;
 				_waiting = false;
-				lblTelemetry.Text = "Central BiduTruck: aguardando conta";
+				lblTelemetry.Text = "Central BiduLog: aguardando conta";
 				return;
 			}
 			await SendCentralTelemetryAsync();
@@ -2502,13 +2502,13 @@ internal sealed partial class MainForm : Form
 			if (!_serverInfo.Reachable)
 			{
 				_loggedIn = false;
-				lblSession.Text = "BIDUTRUCK: servidor indisponível";
+				lblSession.Text = "BIDULOG: servidor indisponível";
 				return;
 			}
 			if (_serverInfo.Supported && !_serverInfo.Online)
 			{
 				_loggedIn = false;
-				lblSession.Text = "BIDUTRUCK: servidor ETS2 offline";
+				lblSession.Text = "BIDULOG: servidor ETS2 offline";
 				return;
 			}
 			PlayersResult players = null;
@@ -2533,7 +2533,7 @@ internal sealed partial class MainForm : Form
 				{
 					_loggedIn = false;
 					lblDriver.Text = "Motorista: -";
-					lblSession.Text = ((players.Players.Count == 0) ? "BIDUTRUCK: aguardando você entrar na sessão" : "BIDUTRUCK: aguardando motorista conhecido");
+					lblSession.Text = ((players.Players.Count == 0) ? "BIDULOG: aguardando você entrar na sessão" : "BIDULOG: aguardando motorista conhecido");
 					return;
 				}
 				if (!string.Equals(_driver, text, StringComparison.OrdinalIgnoreCase))
@@ -3005,13 +3005,13 @@ internal sealed partial class MainForm : Form
 		}
 		if (!IsAccepted(apiResponse))
 		{
-			lblSession.Text = "BIDUTRUCK: login recusado";
+			lblSession.Text = "BIDULOG: login recusado";
 			ClientStore.Log("login recusado " + apiResponse.StatusCode + " " + apiResponse.Text);
 			return false;
 		}
 		if (!string.Equals(ApiClient.Str(apiResponse.Json?["account_user"]), _accountUser, StringComparison.OrdinalIgnoreCase))
 		{
-			lblSession.Text = "BIDUTRUCK: servidor precisa da versão 1.0.12";
+			lblSession.Text = "BIDULOG: servidor precisa da versão 1.0.12";
 			lblTelemetry.Text = "Envio: conta não vinculada";
 			return false;
 		}
@@ -3036,7 +3036,7 @@ internal sealed partial class MainForm : Form
 			ClientStore.SaveCredential(_endpoint, text, text2);
 		}
 		lblDriver.Text = "Motorista: " + text;
-		lblSession.Text = "BIDUTRUCK: CONECTADO";
+		lblSession.Text = "BIDULOG: CONECTADO";
 		lblTelemetry.Text = "Envio: iniciando telemetria";
 		ClientStore.Log("login ok: " + text);
 		return true;
@@ -3174,7 +3174,7 @@ internal sealed partial class MainForm : Form
 			string name = (string.IsNullOrWhiteSpace(addServerForm.ServerName) ? endpoint : addServerForm.ServerName.Trim());
 			if (_servers.Any((ServerEntry x) => string.Equals(ClientStore.NormalizeEndpoint(x.Endpoint), endpoint, StringComparison.OrdinalIgnoreCase)))
 			{
-				System.Windows.Forms.MessageBox.Show("Esse servidor já está cadastrado.", "BIDUTRUCK TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				System.Windows.Forms.MessageBox.Show("Esse servidor já está cadastrado.", "BIDULOG TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
 			}
 			_servers.Add(new ServerEntry
@@ -3191,7 +3191,7 @@ internal sealed partial class MainForm : Form
 	private void RemoveServerClicked(object sender, EventArgs e)
 	{
 		int selectedIndex = cmbServers.SelectedIndex;
-		if (selectedIndex >= 0 && selectedIndex < _servers.Count && System.Windows.Forms.MessageBox.Show("Remover este servidor da lista?", "BIDUTRUCK TELEMETRIA", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+		if (selectedIndex >= 0 && selectedIndex < _servers.Count && System.Windows.Forms.MessageBox.Show("Remover este servidor da lista?", "BIDULOG TELEMETRIA", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 		{
 			_servers.RemoveAt(selectedIndex);
 			ClientStore.SaveServers(_servers);
@@ -3229,14 +3229,14 @@ internal sealed partial class MainForm : Form
 			btnUpdate.Text = "VERIFICAR ATUALIZAÇÃO";
 			if (showNoUpdate)
 			{
-				System.Windows.Forms.MessageBox.Show("Você já está na versão mais recente.", "BIDUTRUCK TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				System.Windows.Forms.MessageBox.Show("Você já está na versão mais recente.", "BIDULOG TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			}
 		}
 		catch (Exception ex)
 		{
 			if (showNoUpdate)
 			{
-				System.Windows.Forms.MessageBox.Show("Não foi possível verificar atualização.\r\n\r\n" + ex.Message, "BIDUTRUCK TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				System.Windows.Forms.MessageBox.Show("Não foi possível verificar atualização.\r\n\r\n" + ex.Message, "BIDULOG TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
 		}
 	}
@@ -3249,7 +3249,7 @@ internal sealed partial class MainForm : Form
 		}
 		else
 		{
-			if (System.Windows.Forms.MessageBox.Show("Instalar atualizacao do BIDUTRUCK TELEMETRIA BETA?\r\n\r\n" + (_availableUpdate.Notes ?? string.Empty), "Atualizacao BIDUTRUCK TELEMETRIA BETA", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) != DialogResult.Yes)
+			if (System.Windows.Forms.MessageBox.Show("Instalar atualizacao do BIDULOG TELEMETRIA BETA?\r\n\r\n" + (_availableUpdate.Notes ?? string.Empty), "Atualizacao BIDULOG TELEMETRIA BETA", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) != DialogResult.Yes)
 			{
 				return;
 			}
@@ -3288,7 +3288,7 @@ internal sealed partial class MainForm : Form
 			{
 				btnUpdate.Enabled = true;
 				btnUpdate.Text = "TENTAR ATUALIZAÇÃO";
-				System.Windows.Forms.MessageBox.Show("Falha ao atualizar:\r\n\r\n" + ex.Message, "BIDUTRUCK TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				System.Windows.Forms.MessageBox.Show("Falha ao atualizar:\r\n\r\n" + ex.Message, "BIDULOG TELEMETRIA", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
 	}
@@ -3311,10 +3311,10 @@ internal sealed partial class MainForm : Form
 		_hubApplied041 = true;
 		SuspendLayout();
 		List<System.Windows.Forms.Control> source = Controls.Cast<System.Windows.Forms.Control>().ToList();
-		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA BIDUTRUCK");
+		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA BIDULOG");
 		_hubServerCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
 		Controls.Clear();
-		Text = "BIDUTRUCK TELEMETRIA 1.0.68.30";
+		Text = "BIDULOG TELEMETRIA 1.0.68.38";
 		MinimumSize = new System.Drawing.Size(740, 500);
 		AutoScaleMode = AutoScaleMode.Dpi;
 		System.Drawing.Rectangle workingArea = Screen.FromControl(this).WorkingArea;
@@ -3348,7 +3348,7 @@ internal sealed partial class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "BIDUTRUCK ETS2  •  Cliente 1.0.68.30  •  conexão que move distâncias",
+			Text = "BIDULOG ETS2  •  Cliente 1.0.68.38  •  conexão que move distâncias",
 			Padding = new Padding(20, 0, 0, 0),
 			TextAlign = ContentAlignment.MiddleLeft,
 			ForeColor = System.Drawing.Color.FromArgb(104, 128, 155),
@@ -3976,7 +3976,7 @@ internal sealed partial class MainForm : Form
 		panel.Controls.Add(pictureBox);
 		var brandTitle = new System.Windows.Forms.Label
 		{
-			Text = "BIDUTRUCK",
+			Text = "BIDULOG",
 			Left = 80,
 			Top = 7,
 			AutoSize = true,
@@ -4013,7 +4013,7 @@ internal sealed partial class MainForm : Form
 		};
 		Nav041(flowLayoutPanel, "home", "INÍCIO", 105);
 		Nav041(flowLayoutPanel, "dash", "DASHBOARD", 120);
-		Nav041(flowLayoutPanel, "radio", "RÁDIO BIDUTRUCK", 125);
+		Nav041(flowLayoutPanel, "radio", "RÁDIO BIDULOG", 125);
 		Nav041(flowLayoutPanel, "gps", "GPS", 80);
 		Nav041(flowLayoutPanel, "server", "COMBOIO / SERVIDOR", 175);
 		Nav041(flowLayoutPanel, "updates", "ATUALIZAÇÕES", 135);
@@ -4112,9 +4112,9 @@ internal sealed partial class MainForm : Form
 		{
 			tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
 		}
-		_hAccount041 = StatusCard041(tableLayoutPanel, 0, "CONTA BIDUTRUCK", "Conta não conectada");
+		_hAccount041 = StatusCard041(tableLayoutPanel, 0, "CONTA BIDULOG", "Conta não conectada");
 		_hEts041 = StatusCard041(tableLayoutPanel, 1, "ETS2 / TELEMETRIA", "Aguardando TruckSim GPS");
-		_hCentral041 = StatusCard041(tableLayoutPanel, 2, "CENTRAL BIDUTRUCK", "Aguardando conexão");
+		_hCentral041 = StatusCard041(tableLayoutPanel, 2, "CENTRAL BIDULOG", "Aguardando conexão");
 		_hServer041 = StatusCard041(tableLayoutPanel, 3, "COMBOIO / SERVIDOR", "Opcional");
 		panel.Controls.Add(tableLayoutPanel);
 		FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel
@@ -4127,8 +4127,8 @@ internal sealed partial class MainForm : Form
 			WrapContents = false,
 			AutoScroll = true
 		};
-		Module041(flowLayoutPanel, "DASHBOARD", "BiduTruck Dash e sobreposição de vídeo", "dash");
-		Module041(flowLayoutPanel, "RÁDIO BIDUTRUCK", "Canal BiduTruck e Meu Vídeo", "radio");
+		Module041(flowLayoutPanel, "DASHBOARD", "BiduLog Dash e sobreposição de vídeo", "dash");
+		Module041(flowLayoutPanel, "RÁDIO BIDULOG", "Canal BiduLog e Meu Vídeo", "radio");
 		Module041(flowLayoutPanel, "GPS", "Navegação e alertas", "gps");
 		Module041(flowLayoutPanel, "COMBOIO", "Servidor e sala", "server");
 		Module041(flowLayoutPanel, "CONFIGURAÇÕES", "Conta e preferências", "settings");
@@ -4140,7 +4140,7 @@ internal sealed partial class MainForm : Form
 			Width = panel.Width,
 			Height = 85,
 			Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
-			Text = "TUDO EM UM SÓ LUGAR\r\nNovos recursos passam a abrir como páginas dentro do BiduTruck Telemetria, sem precisar criar outro aplicativo.",
+			Text = "TUDO EM UM SÓ LUGAR\r\nNovos recursos passam a abrir como páginas dentro do BiduLog Telemetria, sem precisar criar outro aplicativo.",
 			ForeColor = System.Drawing.Color.FromArgb(122, 164, 210),
 			Font = new Font("Segoe UI Semibold", 11f)
 		});
@@ -4193,7 +4193,7 @@ internal sealed partial class MainForm : Form
 	private System.Windows.Forms.Panel Dash041()
 	{
 		System.Windows.Forms.Panel panel = Page041();
-		panel.Controls.Add(Head041("DASHBOARD", "BIDUTRUCK TELEMETRIA • escolha um dos overlays."));
+		panel.Controls.Add(Head041("DASHBOARD", "BIDULOG TELEMETRIA • escolha um dos overlays."));
 		System.Windows.Forms.Panel panel2 = new System.Windows.Forms.Panel
 		{
 			Left = 0,
@@ -4203,7 +4203,7 @@ internal sealed partial class MainForm : Form
 			Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
 			BackColor = System.Drawing.Color.FromArgb(5, 24, 17)
 		};
-		System.Windows.Forms.Button button = HubButton041("BIDUTRUCK DASH", 190);
+		System.Windows.Forms.Button button = HubButton041("BIDULOG DASH", 190);
 		button.Left = 10;
 		button.Top = 9;
 		button.Height = 40;
@@ -4228,7 +4228,7 @@ internal sealed partial class MainForm : Form
 			Top = 145,
 			Width = 760,
 			Height = 62,
-			Text = "BiduTruck Dash mostra os dados recebidos pelo BiduTruck Telemetria.\r\nA sobreposição de vídeo abre em uma janela flutuante.",
+			Text = "BiduLog Dash mostra os dados recebidos pelo BiduLog Telemetria.\r\nA sobreposição de vídeo abre em uma janela flutuante.",
 			ForeColor = System.Drawing.Color.FromArgb(176, 205, 188),
 			Font = new Font("Segoe UI", 10.5f)
 		};
@@ -4239,7 +4239,7 @@ internal sealed partial class MainForm : Form
 	private System.Windows.Forms.Panel Radio041()
 	{
 		System.Windows.Forms.Panel panel = Page041();
-		panel.Controls.Add(Head041("RÁDIO BIDUTRUCK", "Rádio BiduTruck integrada ao aplicativo e pelo overlay de vídeo."));
+		panel.Controls.Add(Head041("RÁDIO BIDULOG", "Rádio BiduLog integrada ao aplicativo e pelo overlay de vídeo."));
 		_hubRadioHost041 = new System.Windows.Forms.Panel
 		{
 			Left = 0,
@@ -4271,7 +4271,7 @@ internal sealed partial class MainForm : Form
 	private System.Windows.Forms.Panel Settings041()
 	{
 		System.Windows.Forms.Panel panel = Page041();
-		panel.Controls.Add(Head041("CONFIGURAÇÕES", "Conta BiduTruck e preferências. Novas opções de voz entram aqui depois."));
+		panel.Controls.Add(Head041("CONFIGURAÇÕES", "Conta BiduLog e preferências. Novas opções de voz entram aqui depois."));
 		if (_hubAccountCard041 != null)
 		{
 			_hubAccountCard041.Left = 0;
@@ -4286,7 +4286,7 @@ internal sealed partial class MainForm : Form
 
 	private System.Windows.Forms.Panel Updates041()
 	{
-		System.Windows.Forms.Panel panel = Simple041("ATUALIZAÇÕES", "Verifique novas versões do BiduTruck Telemetria sem sair do aplicativo.");
+		System.Windows.Forms.Panel panel = Simple041("ATUALIZAÇÕES", "Verifique novas versões do BiduLog Telemetria sem sair do aplicativo.");
 		System.Windows.Forms.Button button = HubButton041("VERIFICAR ATUALIZAÇÃO", 230);
 		button.Left = 0;
 		button.Top = 100;
@@ -4341,7 +4341,7 @@ internal sealed partial class MainForm : Form
 		}
 		if (_hCentral041 != null)
 		{
-			_hCentral041.Text = Safe041(lblTelemetry, "Central BiduTruck: aguardando");
+			_hCentral041.Text = Safe041(lblTelemetry, "Central BiduLog: aguardando");
 		}
 		if (_hServer041 != null)
 		{
@@ -4393,7 +4393,7 @@ internal sealed partial class MainForm : Form
 			_hubRadioHost041.Controls.Add(new System.Windows.Forms.Label
 			{
 				Dock = DockStyle.Fill,
-				Text = "Rádio BiduTruck indisponível.\r\n" + ex.Message,
+				Text = "Rádio BiduLog indisponível.\r\n" + ex.Message,
 				TextAlign = ContentAlignment.MiddleCenter,
 				ForeColor = System.Drawing.Color.OrangeRed
 			});
@@ -4482,7 +4482,7 @@ internal sealed partial class MainForm : Form
 		{
 			if (!AccountReady)
 			{
-				await DashJs041("window.gatDashLoginTransportError('Entre primeiro na Conta BiduTruck em Configurações.')");
+				await DashJs041("window.gatDashLoginTransportError('Entre primeiro na Conta BiduLog em Configurações.')");
 				return;
 			}
 			JObject jObject = new JObject
@@ -4525,7 +4525,7 @@ internal sealed partial class MainForm : Form
 		}
 		catch
 		{
-			await DashJs041("window.gatDashMediaError('Rádio BiduTruck indisponível')");
+			await DashJs041("window.gatDashMediaError('Rádio BiduLog indisponível')");
 		}
 	}
 
@@ -4613,7 +4613,7 @@ internal sealed partial class MainForm : Form
 		}
 		catch (Exception ex)
 		{
-			System.Windows.Forms.MessageBox.Show("Não foi possível abrir o BIDUTRUCK DASH completo.\r\n" + ex.Message, "BIDUTRUCK DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			System.Windows.Forms.MessageBox.Show("Não foi possível abrir o BIDULOG DASH completo.\r\n" + ex.Message, "BIDULOG DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 		}
 	}
 
@@ -4717,7 +4717,7 @@ internal sealed partial class MainForm : Form
 			return;
 		}
 		_hub042Applied = true;
-		Text = "BIDUTRUCK TELEMETRIA BETA 1.0.44";
+		Text = "BIDULOG TELEMETRIA BETA 1.0.44";
 		RebuildHome042();
 		ImproveDash042();
 		WireMediaRouting042();
@@ -4795,7 +4795,7 @@ internal sealed partial class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "INÍCIO\r\nSeu perfil, sua viagem e o ecossistema BIDUTRUCK em um só lugar.",
+			Text = "INÍCIO\r\nSeu perfil, sua viagem e o ecossistema BIDULOG em um só lugar.",
 			ForeColor = System.Drawing.Color.White,
 			Font = new Font("Segoe UI Semibold", 12f, System.Drawing.FontStyle.Bold),
 			TextAlign = ContentAlignment.MiddleLeft
@@ -4838,7 +4838,7 @@ internal sealed partial class MainForm : Form
 			Height = 88,
 			ForeColor = System.Drawing.Color.FromArgb(159, 187, 214),
 			Font = new Font("Segoe UI", 9.5f),
-			Text = "Conta BiduTruck aguardando..."
+			Text = "Conta BiduLog aguardando..."
 		};
 		panel.Controls.Add(_avatar042);
 		panel.Controls.Add(_profileName042);
@@ -4849,7 +4849,7 @@ internal sealed partial class MainForm : Form
 			Top = 157,
 			Width = 92,
 			Height = 27,
-			Text = "BIDUTRUCK",
+			Text = "BIDULOG",
 			TextAlign = ContentAlignment.MiddleCenter,
 			BackColor = System.Drawing.Color.FromArgb(10, 76, 130),
 			ForeColor = System.Drawing.Color.FromArgb(177, 224, 255),
@@ -4867,14 +4867,14 @@ internal sealed partial class MainForm : Form
 		};
 		panel2.Controls.Add(_trip042);
 		tableLayoutPanel2.Controls.Add(panel2, 1, 0);
-		System.Windows.Forms.Panel panel3 = Card042("RÁDIO / TV BIDUTRUCK • TOCANDO AGORA");
+		System.Windows.Forms.Panel panel3 = Card042("RÁDIO / TV BIDULOG • TOCANDO AGORA");
 		_radio042 = new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
 			Padding = new Padding(0, 8, 0, 0),
 			ForeColor = System.Drawing.Color.Gainsboro,
 			Font = new Font("Segoe UI Semibold", 10f),
-			Text = "Canal BiduTruck\r\nAguardando mídia..."
+			Text = "Canal BiduLog\r\nAguardando mídia..."
 		};
 		panel3.Controls.Add(_radio042);
 		tableLayoutPanel2.Controls.Add(panel3, 2, 0);
@@ -4891,7 +4891,7 @@ internal sealed partial class MainForm : Form
 		};
 		banner.Controls.Add(new System.Windows.Forms.Label
 		{
-			Text = "BIDUTRUCK ETS2\r\nCONEXÃO QUE MOVE DISTÂNCIAS",
+			Text = "BIDULOG ETS2\r\nCONEXÃO QUE MOVE DISTÂNCIAS",
 			Left = 28,
 			Top = 36,
 			Width = 500,
@@ -4901,7 +4901,7 @@ internal sealed partial class MainForm : Form
 		});
 		banner.Controls.Add(new System.Windows.Forms.Label
 		{
-			Text = "Telemetria • comunidade • rádio • dashboard • GPS • comboios\r\nTudo integrado no mesmo BIDUTRUCK TELEMETRIA.",
+			Text = "Telemetria • comunidade • rádio • dashboard • GPS • comboios\r\nTudo integrado no mesmo BIDULOG TELEMETRIA.",
 			Left = 30,
 			Top = 132,
 			Width = 540,
@@ -4918,7 +4918,7 @@ internal sealed partial class MainForm : Form
 		};
 		System.Windows.Forms.Label gatTruck = new System.Windows.Forms.Label
 		{
-			Text = "BIDUTRUCK",
+			Text = "BIDULOG",
 			Width = 150,
 			Height = 34,
 			Top = 150,
@@ -4966,7 +4966,7 @@ internal sealed partial class MainForm : Form
 			}
 			if (_profileMeta042 != null)
 			{
-				_profileMeta042.Text = (AccountReady ? ("@" + text + "\r\nConta BiduTruck conectada\r\nPC vinculado a esta instalação") : "Conta BiduTruck não conectada\r\nAbra Configurações para entrar.");
+				_profileMeta042.Text = (AccountReady ? ("@" + text + "\r\nConta BiduLog conectada\r\nPC vinculado a esta instalação") : "Conta BiduLog não conectada\r\nAbra Configurações para entrar.");
 			}
 			if (_trip042 != null)
 			{
@@ -4982,7 +4982,7 @@ internal sealed partial class MainForm : Form
 				}
 				else
 				{
-					text4 = ((text3 == "web") ? "CANAL WEB" : "CANAL BIDUTRUCK");
+					text4 = ((text3 == "web") ? "CANAL WEB" : "CANAL BIDULOG");
 				}
 				string text5 = "";
 				try
@@ -5003,7 +5003,7 @@ internal sealed partial class MainForm : Form
 			}
 			if (_connect042 != null)
 			{
-				_connect042.Text = Safe041(lblTelemetry, "Central BiduTruck: aguardando") + "\r\n" + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.44 TESTE";
+				_connect042.Text = Safe041(lblTelemetry, "Central BiduLog: aguardando") + "\r\n" + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.44 TESTE";
 			}
 		}
 		catch
@@ -5201,7 +5201,7 @@ internal sealed partial class MainForm : Form
 			return;
 		}
 		_hub044Applied = true;
-		Text = "BIDUTRUCK TELEMETRIA BETA 1.0.50";
+		Text = "BIDULOG TELEMETRIA BETA 1.0.50";
 		MinimumSize = new System.Drawing.Size(1100, 720);
 		if (Width < 1240 || Height < 820)
 		{
@@ -5210,7 +5210,7 @@ internal sealed partial class MainForm : Form
 		StyleHub044();
 		BuildHome044();
 		ReplaceTextRecursive044(this, "Cliente 1.0.43 TESTE", "Cliente 1.0.50 TESTE");
-		ReplaceTextRecursive044(this, "Central principal do ecossistema BIDUTRUCK ETS2 • tudo em um só lugar", "Conectando motoristas, estradas e amizades • BIDUTRUCK ETS2");
+		ReplaceTextRecursive044(this, "Central principal do ecossistema BIDULOG ETS2 • tudo em um só lugar", "Conectando motoristas, estradas e amizades • BIDULOG ETS2");
 		_hubStatusTimer041.Tick += delegate
 		{
 			SyncHome044();
@@ -5327,7 +5327,7 @@ internal sealed partial class MainForm : Form
 			Top = 98,
 			Width = 270,
 			Height = 105,
-			Text = "Conta BiduTruck aguardando...",
+			Text = "Conta BiduLog aguardando...",
 			ForeColor = System.Drawing.Color.FromArgb(161, 193, 222),
 			Font = new Font("Segoe UI", 9.5f)
 		};
@@ -5366,13 +5366,13 @@ internal sealed partial class MainForm : Form
 		tableLayoutPanel2.Controls.Add(glassCard2, 1, 0);
 		GlassCard044 glassCard3 = new GlassCard044
 		{
-			Caption = "RÁDIO BIDUTRUCK • TOCANDO AGORA",
+			Caption = "RÁDIO BIDULOG • TOCANDO AGORA",
 			Dock = DockStyle.Fill
 		};
 		_homeRadio044 = new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "Canal BiduTruck\r\nAguardando mídia...",
+			Text = "Canal BiduLog\r\nAguardando mídia...",
 			ForeColor = System.Drawing.Color.FromArgb(225, 236, 248),
 			Font = new Font("Segoe UI Semibold", 10.2f),
 			TextAlign = ContentAlignment.MiddleLeft,
@@ -5478,7 +5478,7 @@ internal sealed partial class MainForm : Form
 				}
 				else
 				{
-					text4 = ((text3 == "web") ? "CANAL WEB" : "CANAL BIDUTRUCK");
+					text4 = ((text3 == "web") ? "CANAL WEB" : "CANAL BIDULOG");
 				}
 				string text5 = "";
 				try
@@ -5495,11 +5495,11 @@ internal sealed partial class MainForm : Form
 				{
 					text5 = "Fonte selecionada: " + text4;
 				}
-				_homeRadio044.Text = text4 + "\r\n\r\n" + text5 + "\r\n\r\nMídia compartilhada com o BIDUTRUCK DASH e o overlay.";
+				_homeRadio044.Text = text4 + "\r\n\r\n" + text5 + "\r\n\r\nMídia compartilhada com o BIDULOG DASH e o overlay.";
 			}
 			if (_homeSystem044 != null)
 			{
-				_homeSystem044.Text = "● SISTEMA GAT\r\n" + Safe041(lblTelemetry, "Central BiduTruck: aguardando") + "   •   " + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.50 TESTE";
+				_homeSystem044.Text = "● SISTEMA GAT\r\n" + Safe041(lblTelemetry, "Central BiduLog: aguardando") + "   •   " + Safe041(lblServer, "Servidor: opcional") + "\r\nCliente 1.0.50 TESTE";
 			}
 		}
 		catch
@@ -5562,7 +5562,7 @@ internal sealed partial class MainForm : Form
 		if (!_hub045Applied)
 		{
 			_hub045Applied = true;
-			Text = "BIDUTRUCK TELEMETRIA 1.0.68.30";
+			Text = "BIDULOG TELEMETRIA 1.0.68.38";
 			ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
 			BuildHome045();
 			_hubStatusTimer041.Tick += async delegate
@@ -5642,7 +5642,7 @@ internal sealed partial class MainForm : Form
 			Top = 89,
 			Width = 270,
 			Height = 92,
-			Text = "Conta BiduTruck aguardando...",
+			Text = "Conta BiduLog aguardando...",
 			ForeColor = System.Drawing.Color.FromArgb(161, 193, 222),
 			Font = new Font("Segoe UI", 9.2f)
 		};
@@ -5687,7 +5687,7 @@ internal sealed partial class MainForm : Form
 		_homeSystem045 = new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "Central BiduTruck: aguardando...",
+			Text = "Central BiduLog: aguardando...",
 			ForeColor = System.Drawing.Color.FromArgb(191, 219, 242),
 			Font = new Font("Segoe UI Semibold", 9.6f),
 			TextAlign = ContentAlignment.MiddleLeft,
@@ -5888,9 +5888,9 @@ internal sealed partial class MainForm : Form
 			}
 			if (_homeSystem045 != null)
 			{
-				string text3 = Safe041(lblTelemetry, "Central BiduTruck: aguardando");
+				string text3 = Safe041(lblTelemetry, "Central BiduLog: aguardando");
 				string text4 = Safe041(lblServer, "Servidor: opcional");
-				_homeSystem045.Text = "● " + text3 + "\r\n● " + text4 + "\r\n● Cliente: " + CurrentVersion + "\r\n\r\n" + (AccountReady ? "✓ Ecossistema GAT conectado." : "Aguardando Conta BiduTruck.");
+				_homeSystem045.Text = "● " + text3 + "\r\n● " + text4 + "\r\n● Cliente: " + CurrentVersion + "\r\n\r\n" + (AccountReady ? "✓ Ecossistema GAT conectado." : "Aguardando Conta BiduLog.");
 				_homeSystem045.ForeColor = (AccountReady ? System.Drawing.Color.FromArgb(125, 231, 154) : System.Drawing.Color.FromArgb(191, 219, 242));
 			}
 		}
@@ -6414,7 +6414,7 @@ internal sealed partial class MainForm : Form
 			string text = RoadLifeOverlayXaml();
 			if (!File.Exists(text))
 			{
-				System.Windows.Forms.MessageBox.Show("RoadLifeDash.xaml não encontrado.\r\n\r\n" + text, "BIDUTRUCK DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				System.Windows.Forms.MessageBox.Show("RoadLifeDash.xaml não encontrado.\r\n\r\n" + text, "BIDULOG DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
 			string xaml = File.ReadAllText(text);
@@ -6532,12 +6532,12 @@ internal sealed partial class MainForm : Form
 			_roadLifeOverlay.Show();
 			SetRoadLifeText("DateText", DateTime.Now.ToString("dd/MM/yy"));
 			SetRoadLifeText("TimeText", DateTime.Now.ToString("HH:mm:ss"));
-			ClientStore.Log("BiduTruck Dashboard2 aberto como overlay interno do GAT Telemetria.");
+			ClientStore.Log("BiduLog Dashboard2 aberto como overlay interno do GAT Telemetria.");
 		}
 		catch (Exception ex)
 		{
-			ClientStore.Log("BiduTruck Dashboard2 abrir: " + ex);
-			System.Windows.Forms.MessageBox.Show(ex.Message, "BIDUTRUCK DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			ClientStore.Log("BiduLog Dashboard2 abrir: " + ex);
+			System.Windows.Forms.MessageBox.Show(ex.Message, "BIDULOG DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 		}
 	}
 
@@ -6620,7 +6620,7 @@ internal sealed partial class MainForm : Form
 		}
 		catch (Exception ex)
 		{
-			ClientStore.Log("BiduTruck Dashboard2 atualizar: " + ex.Message);
+			ClientStore.Log("BiduLog Dashboard2 atualizar: " + ex.Message);
 		}
 	}
 
@@ -6808,7 +6808,7 @@ internal sealed partial class MainForm : Form
 		}
 		catch (Exception ex)
 		{
-			ClientStore.Log("BiduTruck cargo aliases: " + ex.Message);
+			ClientStore.Log("BiduLog cargo aliases: " + ex.Message);
 		}
 	}
 

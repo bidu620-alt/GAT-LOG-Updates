@@ -14,6 +14,6 @@ internal static class VehicleEconomyKey
           ||Regex.IsMatch(identity,@"\bo\s?(371|400|500)[a-z0-9]*\b")
           ||Regex.IsMatch(identity,@"\bk\s?(230|250|270|310|320|340|360|380|400|410|420|440|450|460|480|500)[a-z0-9]*\b")
           ||Regex.IsMatch(identity,@"\bb\s?(7|9|10|11|12|13|250|270|290|340|360|380|420|450)(r|m|s|rh)[a-z0-9]*\b");
-        return bus?"onibus":brand=="mercedes benz"?"mercedes":brand=="renault trucks"?"renault":brand;
+        return bus?"onibus":TruckBrandResolver.Resolve(make);
     }
 }

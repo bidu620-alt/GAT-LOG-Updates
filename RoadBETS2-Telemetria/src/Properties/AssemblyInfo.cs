@@ -1,15 +1,15 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Security;
 using System.Security.Permissions;
 
-[assembly: AssemblyCompany("BiduTruck Telemetria")]
+[assembly: AssemblyCompany("BiduLog Telemetria")]
 [assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyFileVersion("1.0.68.36")]
-[assembly: AssemblyInformationalVersion("1.0.68.36+trip-continuity-test")]
-[assembly: AssemblyProduct("BiduTruck Telemetria")]
-[assembly: AssemblyTitle("BiduTruck Telemetria")]
-[assembly: AssemblyVersion("1.0.68.36")]
+[assembly: AssemblyFileVersion("1.0.68.38")]
+[assembly: AssemblyInformationalVersion("1.0.68.38+truck-brands-models")]
+[assembly: AssemblyProduct("BiduLog Telemetria")]
+[assembly: AssemblyTitle("BiduLog Telemetria")]
+[assembly: AssemblyVersion("1.0.68.38")]
 

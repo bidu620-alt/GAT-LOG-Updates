@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -27,7 +27,7 @@ internal sealed class TruckModelEvidence
             if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark) b.Append(char.ToLowerInvariant(c));
         return Regex.Replace(b.ToString(), "[^a-z0-9]+", " ").Trim();
     }
-    public static string BrandKey(string make) { string key = Normalize(make); return key == "mercedes benz" ? "mercedes" : key == "renault trucks" ? "renault" : key; }
+    public static string BrandKey(string make) { return TruckBrandResolver.Resolve(make); }
     public static TruckModelEvidence Read(JObject raw)
     {
         var e = new TruckModelEvidence();
