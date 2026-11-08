@@ -1,4 +1,5 @@
 name: Release BiduLog Telemetria 1.0.68.38
+# Brand tests are isolated from the existing road-limit test project.
 on:
   workflow_dispatch:
   push:

@@ -1,9 +1,13 @@
 using System;
+using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 namespace GatTelemetry;
 internal static class TruckBrandResolver {
  public static string Resolve(string make) {
- string n=TruckModelEvidence.Normalize(make);
+ var builder=new StringBuilder();
+ foreach(char c in (make??"").Normalize(NormalizationForm.FormD))if(CharUnicodeInfo.GetUnicodeCategory(c)!=UnicodeCategory.NonSpacingMark)builder.Append(char.ToLowerInvariant(c));
+ string n=Regex.Replace(builder.ToString(),"[^a-z0-9]+"," ").Trim();
  string found=null;
  if(n=="scania"||n.StartsWith("scania ",StringComparison.Ordinal)||n=="scania vabis"||n.StartsWith("scania vabis ",StringComparison.Ordinal)) { if(found!=null&&found!="scania")return n;found="scania"; }
  if(n=="volvo"||n.StartsWith("volvo ",StringComparison.Ordinal)||n=="volvo trucks"||n.StartsWith("volvo trucks ",StringComparison.Ordinal)) { if(found!=null&&found!="volvo")return n;found="volvo"; }
@@ -23,3 +27,4 @@ internal static class TruckBrandResolver {
  return found;
  }
 }
+
