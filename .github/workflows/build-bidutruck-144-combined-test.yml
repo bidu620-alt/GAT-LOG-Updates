@@ -1,0 +1,76 @@
+name: BiduTruck memory + TruckSim 1.4.4 (combined test; no publish)
+on:
+  pull_request:
+    paths:
+      - 'RoadBETS2-Telemetria/**'
+      - 'trucksim-gps-gat/**'
+      - '.github/workflows/build-bidutruck-144-combined-test.yml'
+permissions:
+  contents: read
+jobs:
+  compile-combined:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            RoadBETS2-Telemetria
+            trucksim-gps-gat
+            .github/workflows
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: microsoft/setup-msbuild@v2
+      - name: Run legacy regression tests and build BiduTruck
+        shell: pwsh
+        run: |
+          dotnet run --project 'RoadBETS2-Telemetria/tests/RoadLimitTests.csproj' -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Regression tests failed' }
+          dotnet build 'RoadBETS2-Telemetria/src/GAT_TELEMETRIA.csproj' -c Release -p:UseSharedCompilation=false
+          if ($LASTEXITCODE -ne 0) { throw 'BiduTruck compilation failed' }
+      - name: Build pinned TruckSim GPS 1.4.4 with GAT damage fields
+        shell: pwsh
+        run: |
+          $root = 'trucksim-gps-gat/build/trucksim-gps-server'
+          git clone --depth 1 --branch 1.4.4 https://github.com/TruckSim-GPS/trucksim-gps-server.git $root
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot clone official 1.4.4' }
+          & './trucksim-gps-gat/apply-patch.ps1' -Root "$PWD/$root"
+          nuget restore "$root/source/Funbit.Ets.Telemetry.sln" -NonInteractive
+          if ($LASTEXITCODE -ne 0) { throw 'NuGet restore failed' }
+          msbuild "$root/source/Funbit.Ets.Telemetry.sln" /m /t:Rebuild /p:Configuration=Release /p:Platform="Mixed Platforms"
+          if ($LASTEXITCODE -ne 0) { throw 'TruckSim compilation failed' }
+      - name: Stage app and isolated TruckSim, no driver-data changes
+        shell: pwsh
+        run: |
+          $payload = 'RoadBETS2-Telemetria/Installer/payload'
+          $server = 'trucksim-gps-gat/build/trucksim-gps-server/source/Funbit.Ets.Telemetry.Server/bin/Release'
+          New-Item -ItemType Directory -Force $payload | Out-Null
+          Copy-Item 'RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe' "$payload/GAT_TELEMETRIA_APP.exe" -Force
+          Copy-Item 'RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe.config' "$payload/GAT_TELEMETRIA_APP.exe.config" -Force
+          New-Item -ItemType Directory -Force "$payload/TruckSimGPS_144_GAT_TEST" | Out-Null
+          Copy-Item "$server/*" "$payload/TruckSimGPS_144_GAT_TEST" -Recurse -Force
+          if (-not (Test-Path "$payload/TruckSimGPS_144_GAT_TEST/TruckSimGPS_Server.exe")) { throw 'Bundled TruckSim missing' }
+      - name: Install verified Inno Setup
+        shell: pwsh
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'inno-setup.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+          if ((Get-FileHash $setup).Hash.ToLowerInvariant() -ne '9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732') { throw 'Checksum mismatch' }
+          $dest = Join-Path $env:RUNNER_TEMP 'InnoSetup'
+          $args = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/NOICONS',('/DIR="' + $dest + '"'))
+          $p = Start-Process $setup -ArgumentList $args -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Inno installation failed' }
+          "INNO_ISCC=$dest/ISCC.exe" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Compile full test updater
+        shell: pwsh
+        run: |
+          & $env:INNO_ISCC /Q 'RoadBETS2-Telemetria/Installer/MemoryTruckSimTest35.iss'
+          if ($LASTEXITCODE -ne 0) { throw 'Combined installer build failed' }
+          $exe = 'RoadBETS2-Telemetria/Installer/Output/BIDUTRUCK_TELEMETRIA_MEMORIA_TRUCKSIM_1.0.68.35_TESTE.exe'
+          if (-not (Test-Path $exe)) { throw 'Combined test EXE missing' }
+          Get-FileHash $exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIDUTRUCK_TELEMETRIA_MEMORIA_TRUCKSIM_1.0.68.35_TESTE
+          path: RoadBETS2-Telemetria/Installer/Output/BIDUTRUCK_TELEMETRIA_MEMORIA_TRUCKSIM_1.0.68.35_TESTE.exe
+          retention-days: 14
