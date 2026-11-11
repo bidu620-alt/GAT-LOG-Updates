@@ -5,27 +5,36 @@
 @media(max-width:760px){.driver-hero:has(.gat-pass-tier){padding-top:84px}.gat-pass-tier{left:calc(50% - 26px);top:10px}}
 @media(prefers-reduced-motion:reduce){.gat-pass-tier{animation:none}}
 
-/* Permanent profile reward, unlocked from the server's completed-pass Tier. */
+/* Theme earned from the latest completed monthly pass. */
 .driver-hero.gat-pass-elite{
- border-color:#94713a;
- background:
-  repeating-linear-gradient(122deg,transparent 0 66px,#e4ba5c08 67px 68px,transparent 69px 136px),
-  radial-gradient(ellipse at 82% 10%,#b8893333,transparent 58%),
-  linear-gradient(120deg,#191b1b,#101722 58%,#1b211f);
- box-shadow:inset 0 1px 0 #efd39126,0 8px 32px #0003;
+ --pass-light:#f2d38c;--pass-edge:#94713a;--pass-dark:#191b1b;--pass-wash:#333324;--pass-angle:122deg;
+ border-color:var(--pass-edge);
+ background:repeating-linear-gradient(var(--pass-angle),transparent 0 66px,#ffffff06 67px 68px,transparent 69px 136px),
+ radial-gradient(ellipse at 82% 10%,var(--pass-wash),transparent 58%),
+ linear-gradient(120deg,var(--pass-dark),#101722 58%,var(--pass-dark));
+ box-shadow:inset 0 1px 0 #ffffff16,0 8px 32px #0003;
 }
-.gat-pass-elite .driver-avatar{
- border-color:#efd08a;
- box-shadow:0 0 0 4px #151a21,0 0 0 6px #9d793b,0 0 28px #dcaa3c33;
-}
-.gat-pass-elite .driver-ident h1{color:#fff0c9}
-.gat-pass-elite .driver-ident>.eyebrow{color:#e8c67c}
+.gat-pass-elite .driver-avatar{border-color:var(--pass-light);box-shadow:0 0 0 4px #151a21,0 0 0 6px var(--pass-edge)}
+.gat-pass-elite .driver-ident h1{color:var(--pass-light)}
+.gat-pass-elite .driver-ident>.eyebrow{color:var(--pass-light)}
 .gat-pass-title{
  display:inline-flex;align-items:center;gap:6px;max-width:100%;
- margin-top:13px;padding:5px 9px;border:1px solid #9b793f80;border-radius:5px;
- color:#f2d38c;background:#c3993712;font-size:9px;font-weight:900;
- line-height:1.5;letter-spacing:1.3px;
+ margin-top:13px;padding:5px 9px;border:1px solid var(--pass-edge);border-radius:5px;
+ color:var(--pass-light);background:#ffffff08;font-size:9px;font-weight:900;
+ line-height:1.5;letter-spacing:1.1px;
 }
-.gat-pass-title span{font-size:11px;color:#f6ce67}
-.gat-pass-elite .driver-month{border-color:#80613766;background:#0c131bd9}
-@media(max-width:560px){.gat-pass-title{font-size:8px;letter-spacing:.8px;padding:4px 6px}}
+.gat-pass-title>span:first-child{font-size:11px}
+.gat-pass-elite .driver-month{border-color:var(--pass-edge);background:#0c131bd9}
+@media(max-width:560px){.gat-pass-title{font-size:8px;letter-spacing:.6px;padding:4px 6px}}
+.driver-hero[data-pass-theme="01"]{--pass-light:#a6e7ff;--pass-edge:#3b8ed4;--pass-dark:#081b2e;--pass-wash:#153b57;--pass-angle:125deg}
+.driver-hero[data-pass-theme="02"]{--pass-light:#e6c0ff;--pass-edge:#9856c4;--pass-dark:#1e102e;--pass-wash:#3a204d;--pass-angle:145deg}
+.driver-hero[data-pass-theme="03"]{--pass-light:#a5f2c7;--pass-edge:#369d70;--pass-dark:#0a241e;--pass-wash:#164937;--pass-angle:115deg}
+.driver-hero[data-pass-theme="04"]{--pass-light:#ffd0a6;--pass-edge:#b57445;--pass-dark:#2c1a13;--pass-wash:#503022;--pass-angle:130deg}
+.driver-hero[data-pass-theme="05"]{--pass-light:#b7cfff;--pass-edge:#4d6fcb;--pass-dark:#0d1733;--pass-wash:#233b69;--pass-angle:155deg}
+.driver-hero[data-pass-theme="06"]{--pass-light:#a8fff1;--pass-edge:#36bba4;--pass-dark:#092127;--pass-wash:#19344f;--pass-angle:110deg}
+.driver-hero[data-pass-theme="07"]{--pass-light:#d8f3ff;--pass-edge:#79a5bf;--pass-dark:#111f30;--pass-wash:#30445b;--pass-angle:140deg}
+.driver-hero[data-pass-theme="08"]{--pass-light:#eef2f8;--pass-edge:#929dac;--pass-dark:#171d25;--pass-wash:#3b4552;--pass-angle:125deg}
+.driver-hero[data-pass-theme="09"]{--pass-light:#f4c0e8;--pass-edge:#ba6c9e;--pass-dark:#251525;--pass-wash:#4d2a44;--pass-angle:150deg}
+.driver-hero[data-pass-theme="10"]{--pass-light:#ffcb9b;--pass-edge:#cf6838;--pass-dark:#2e1510;--pass-wash:#5d3020;--pass-angle:120deg}
+.driver-hero[data-pass-theme="11"]{--pass-light:#f2d38c;--pass-edge:#94713a;--pass-dark:#191b1b;--pass-wash:#333324;--pass-angle:122deg}
+.driver-hero[data-pass-theme="12"]{--pass-light:#ffc7c7;--pass-edge:#b75d65;--pass-dark:#29141c;--pass-wash:#4f2536;--pass-angle:135deg}
