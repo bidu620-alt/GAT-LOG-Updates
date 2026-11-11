@@ -13,11 +13,11 @@
    if(!response.ok)throw Error(response.status===401?'Sua sessão expirou. Entre novamente pelo perfil.':'Evento aguardando ativação na Central.');
    const d=await response.json();if(!d.ok||!d.event)throw Error('Evento aguardando ativação na Central.');
    const active=d.event.active===true,owned=d.owned===true;
-   el('buy').hidden=!active||owned;
+   el('buy').hidden=owned;
    el('availability').textContent=owned?'EVENTO ADQUIRIDO • acesso liberado':active?'Compra única • escolha Gold ou pagamento em reais na loja.':'Evento em preparação. As compras ainda não foram liberadas.';
    if(d.event.starts_at)el('start').textContent='Início do evento: '+new Date(d.event.starts_at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+' (Brasília). Evento permanente, sem prazo de encerramento.';
    if(d.progress){const p=d.progress;el('count').textContent=p.count+' / 14';el('bar').style.width=p.count/14*100+'%';document.querySelector('[role=progressbar]').setAttribute('aria-valuenow',p.count);draw(p.cities?.length?p.cities:names.map(label=>({label,completed:false})));el('status').textContent=p.completed?'Conquista desbloqueada: Desbravador da Islândia!':owned?'Complete entregas para marcar as cidades. Seu progresso é salvo na Central.':'Adquira o evento para começar a registrar suas cidades.';}
-  }catch(e){el('availability').textContent=e.message==='Failed to fetch'?'Não foi possível consultar a Central agora.':e.message;el('status').textContent='A contagem não pôde ser atualizada. Nenhum progresso salvo foi apagado.';el('buy').hidden=true;
+  }catch(e){el('availability').textContent=e.message==='Failed to fetch'?'Não foi possível consultar a Central agora.':e.message;el('status').textContent='A contagem não pôde ser atualizada. Nenhum progresso salvo foi apagado.';el('buy').hidden=false;
   }finally{loading=false;el('refresh').disabled=false;}
  }
  el('refresh').addEventListener('click',refresh);window.addEventListener('gat-account-change',()=>{el('count').textContent='— / 14';el('bar').style.width='0';draw(names.map(label=>({label,completed:false})));refresh()});
