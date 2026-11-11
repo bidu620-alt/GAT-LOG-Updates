@@ -38,3 +38,15 @@
 .driver-hero[data-pass-theme="10"]{--pass-light:#ffcb9b;--pass-edge:#cf6838;--pass-dark:#2e1510;--pass-wash:#5d3020;--pass-angle:120deg}
 .driver-hero[data-pass-theme="11"]{--pass-light:#f2d38c;--pass-edge:#94713a;--pass-dark:#191b1b;--pass-wash:#333324;--pass-angle:122deg}
 .driver-hero[data-pass-theme="12"]{--pass-light:#ffc7c7;--pass-edge:#b75d65;--pass-dark:#29141c;--pass-wash:#4f2536;--pass-angle:135deg}
+
+/* Level aura is independent of monthly pass ownership. No animation or extra image. */
+.driver-hero[data-driver-aura="silver"]{--aura-edge:#c4d1df;--aura-glow:#b4d4ff55}
+.driver-hero[data-driver-aura="green"]{--aura-edge:#64e8a8;--aura-glow:#27e88d66}
+.driver-hero[data-driver-aura="blue"]{--aura-edge:#73c5ff;--aura-glow:#359bff77}
+.driver-hero[data-driver-aura="violet"]{--aura-edge:#ce9bff;--aura-glow:#a25bff88}
+.driver-hero[data-driver-aura="gold"]{--aura-edge:#ffdf88;--aura-glow:#ffbd3d88}
+.driver-hero[data-driver-aura="red"]{--aura-edge:#ff9b9b;--aura-glow:#ff424288}
+.driver-hero[data-driver-aura] .driver-avatar{
+ border-color:var(--aura-edge);
+ box-shadow:0 0 0 3px #101720,0 0 0 5px var(--aura-edge),0 0 16px 5px var(--aura-glow),0 0 36px 10px var(--aura-glow);
+}

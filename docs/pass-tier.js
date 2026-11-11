@@ -7,8 +7,24 @@
   document.getElementById('gat-pass-title')?.remove();
   document.getElementById('gat-pass-tier')?.remove();
  }
+ function clearAura(){
+  const hero=document.querySelector('.driver-hero');
+  hero?.removeAttribute('data-driver-aura');
+  const avatar=hero?.querySelector('.driver-avatar');
+  if(avatar?.hasAttribute('data-aura-title')){
+   avatar.removeAttribute('title');avatar.removeAttribute('data-aura-title');
+  }
+ }
  function render(profile){
   const hero=document.querySelector('.driver-hero');if(!hero)return;
+  const level=Number(profile?.level);
+  if(Number.isSafeInteger(level)&&level>0){
+   const aura=level>=100?'red':level>=80?'gold':level>=60?'violet':level>=40?'blue':level>=20?'green':'silver';
+   const names={silver:'Prata',green:'Verde',blue:'Azul',violet:'Violeta',gold:'Dourada',red:'Vermelha'};
+   hero.setAttribute('data-driver-aura',aura);
+   const avatar=hero.querySelector('.driver-avatar');
+   if(avatar){avatar.title='Aura '+names[aura]+' · Nível '+level;avatar.setAttribute('data-aura-title','1');}
+  }else clearAura();
   const count=Number(profile?.pass_tier?.tier),badge=document.getElementById('gat-pass-tier');
   if(!Number.isSafeInteger(count)||count<1){clearReward();return;}
   hero.classList.add('gat-pass-elite');
@@ -41,7 +57,7 @@
   element.querySelector('[data-tier-month]').textContent=month;
  }
  window.addEventListener('gat-driver-profile-updated',event=>render(event.detail?.profile));
- window.addEventListener('gat-account-change',clearReward);
+ window.addEventListener('gat-account-change',()=>{clearReward();clearAura();});
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>render(window.GATCurrentDriverProfile),{once:true});
  else render(window.GATCurrentDriverProfile);
 })();
