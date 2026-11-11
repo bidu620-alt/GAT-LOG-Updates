@@ -4,3 +4,28 @@
 /* Reserve a small top strip on narrow screens, away from profile text/buttons. */
 @media(max-width:760px){.driver-hero:has(.gat-pass-tier){padding-top:84px}.gat-pass-tier{left:calc(50% - 26px);top:10px}}
 @media(prefers-reduced-motion:reduce){.gat-pass-tier{animation:none}}
+
+/* Permanent profile reward, unlocked from the server's completed-pass Tier. */
+.driver-hero.gat-pass-elite{
+ border-color:#94713a;
+ background:
+  repeating-linear-gradient(122deg,transparent 0 66px,#e4ba5c08 67px 68px,transparent 69px 136px),
+  radial-gradient(ellipse at 82% 10%,#b8893333,transparent 58%),
+  linear-gradient(120deg,#191b1b,#101722 58%,#1b211f);
+ box-shadow:inset 0 1px 0 #efd39126,0 8px 32px #0003;
+}
+.gat-pass-elite .driver-avatar{
+ border-color:#efd08a;
+ box-shadow:0 0 0 4px #151a21,0 0 0 6px #9d793b,0 0 28px #dcaa3c33;
+}
+.gat-pass-elite .driver-ident h1{color:#fff0c9}
+.gat-pass-elite .driver-ident>.eyebrow{color:#e8c67c}
+.gat-pass-title{
+ display:inline-flex;align-items:center;gap:6px;max-width:100%;
+ margin-top:13px;padding:5px 9px;border:1px solid #9b793f80;border-radius:5px;
+ color:#f2d38c;background:#c3993712;font-size:9px;font-weight:900;
+ line-height:1.5;letter-spacing:1.3px;
+}
+.gat-pass-title span{font-size:11px;color:#f6ce67}
+.gat-pass-elite .driver-month{border-color:#80613766;background:#0c131bd9}
+@media(max-width:560px){.gat-pass-title{font-size:8px;letter-spacing:.8px;padding:4px 6px}}

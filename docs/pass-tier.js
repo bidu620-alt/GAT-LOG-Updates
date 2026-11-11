@@ -1,9 +1,22 @@
 (()=>{
  'use strict';
+ function clearReward(){
+  document.querySelector('.driver-hero')?.classList.remove('gat-pass-elite');
+  document.getElementById('gat-pass-title')?.remove();
+  document.getElementById('gat-pass-tier')?.remove();
+ }
  function render(profile){
   const hero=document.querySelector('.driver-hero');if(!hero)return;
   const count=Number(profile?.pass_tier?.tier),badge=document.getElementById('gat-pass-tier');
-  if(!Number.isSafeInteger(count)||count<1){badge?.remove();return;}
+  if(!Number.isSafeInteger(count)||count<1){clearReward();return;}
+  hero.classList.add('gat-pass-elite');
+  const ident=hero.querySelector('.driver-ident');
+  if(ident&&!document.getElementById('gat-pass-title')){
+   const title=document.createElement('div');title.id='gat-pass-title';title.className='gat-pass-title';
+   title.innerHTML='<span aria-hidden="true">★</span> ELITE DA ESTRADA';
+   title.title='Personalização permanente desbloqueada ao concluir o passe mensal.';
+   ident.appendChild(title);
+  }
   let element=badge;
   if(!element){
    element=document.createElement('div');element.id='gat-pass-tier';element.className='gat-pass-tier';
@@ -21,7 +34,7 @@
   element.querySelector('[data-tier-month]').textContent=month;
  }
  window.addEventListener('gat-driver-profile-updated',event=>render(event.detail?.profile));
- window.addEventListener('gat-account-change',()=>document.getElementById('gat-pass-tier')?.remove());
+ window.addEventListener('gat-account-change',clearReward);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>render(window.GATCurrentDriverProfile),{once:true});
  else render(window.GATCurrentDriverProfile);
 })();
