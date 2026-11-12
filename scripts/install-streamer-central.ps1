@@ -18,9 +18,11 @@ $backup=Join-Path $env:LOCALAPPDATA ("GAT-LOG\Backups\streamer-"+$stamp)
 $stage=Join-Path $env:TEMP ("bidulog-streamer-"+$stamp)
 New-Item -ItemType Directory -Path $stage,$backup -Force | Out-Null
 $patch=Join-Path $stage 'apply-streamer-central.mjs'
-$url='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/c5ca9064f031260e837e6d6c660b6f86d426e40a/scripts/apply-streamer-central.mjs'
+$url='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/642d1e5a0ec9fa3366844d49b309229dc3081afb/scripts/apply-streamer-central.mjs'
 Write-Host 'Preparando pacote Streamer sem substituir os arquivos existentes...' -ForegroundColor Cyan
 Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $patch -TimeoutSec 35
+& $node --check $patch
+if($LASTEXITCODE -ne 0){throw 'O atualizador baixado nao passou na verificacao de sintaxe.'}
 & $node $patch $runtime $stage
 if($LASTEXITCODE -ne 0){throw 'Os arquivos nao sao compativeis. Nenhuma alteracao foi aplicada.'}
 foreach($name in @('worker.js','economy-official.js')){
