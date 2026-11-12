@@ -26,6 +26,9 @@
 .gat-directory-count{color:#70b8ff;font-size:10px;font-weight:950;white-space:nowrap}
 .gat-driver-search{width:100%;box-sizing:border-box;margin-bottom:12px;border:1px solid #21364c;border-radius:11px;background:#0d1721;color:#eaf3ff;padding:11px 12px;font-size:11px;outline:none}
 .gat-driver-search:focus{border-color:#368ee5;box-shadow:0 0 0 3px #1d7ed01d}
+.gat-driver-list[hidden],.gat-driver-item[hidden]{display:none!important}
+.gat-driver-search{margin-bottom:0}
+.gat-driver-list:not([hidden]){margin-top:12px}
 .gat-driver-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:9px}
 .gat-driver-item{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px;border:1px solid #1b2c3d;border-radius:13px;background:#0c141d;color:#dce8f6;text-decoration:none;transition:.15s ease}
 .gat-driver-item:hover{transform:translateY(-1px);border-color:#2d6da6;background:#0e1b28}
@@ -78,7 +81,7 @@
     const sec=document.createElement('section');
     sec.id='gatDriverDirectory';
     sec.className='gat-driver-directory';
-    sec.innerHTML=`<div class="gat-driver-directory-nav"><button id="gatMyWorkTab" class="gat-my-work-tab" type="button">MEU TRABALHO</button><span class="gat-all-drivers-tab">TODOS OS MOTORISTAS</span></div><div class="gat-driver-directory-body"><div class="gat-directory-head"><div><small>COMUNIDADE BiduLog</small><h2>Motoristas</h2></div><span id="gatDriverCount" class="gat-directory-count">CARREGANDO...</span></div><input id="gatDriverSearch" class="gat-driver-search" type="search" placeholder="Buscar motorista..." autocomplete="off"><div id="gatDriverList" class="gat-driver-list"><div class="gat-directory-status">Carregando motoristas da Central BiduLog...</div></div></div>`;
+    sec.innerHTML=`<div class="gat-driver-directory-nav"><button id="gatMyWorkTab" class="gat-my-work-tab" type="button">MEU TRABALHO</button><span class="gat-all-drivers-tab">TODOS OS MOTORISTAS</span></div><div class="gat-driver-directory-body"><div class="gat-directory-head"><div><small>COMUNIDADE BiduLog</small><h2>Motoristas</h2></div><span id="gatDriverCount" class="gat-directory-count">CARREGANDO...</span></div><input id="gatDriverSearch" class="gat-driver-search" type="search" placeholder="Digite um nome para buscar motorista..." aria-label="Buscar motorista" aria-controls="gatDriverList" autocomplete="off"><div id="gatDriverList" class="gat-driver-list" hidden><div class="gat-directory-status">Carregando motoristas da Central BiduLog...</div></div></div>`;
     if(back)back.insertAdjacentElement('afterend',sec);else main.prepend(sec);
     document.getElementById('gatMyWorkTab')?.addEventListener('click',goMyWork);
     document.getElementById('gatDriverSearch')?.addEventListener('input',e=>filterDirectory(e.target.value));
@@ -86,11 +89,22 @@
 
   let directoryItems=[];
   function filterDirectory(value){
-    const term=clean(value);
-    document.querySelectorAll('#gatDriverList .gat-driver-item').forEach(el=>{
+    const term=clean(value),list=document.getElementById('gatDriverList');
+    if(!list)return;
+    list.hidden=!term;
+    document.getElementById('gatDriverSearchEmpty')?.remove();
+    let matches=0;
+    list.querySelectorAll('.gat-driver-item').forEach(el=>{
       const user=clean(el.dataset.user),name=clean(el.dataset.name);
-      el.hidden=!!term&&!user.includes(term)&&!name.includes(term);
+      const match=!!term&&(user.includes(term)||name.includes(term));
+      el.hidden=!match;if(match)matches++;
     });
+    if(term&&directoryItems.length&&!matches){
+      const empty=document.createElement('div');
+      empty.id='gatDriverSearchEmpty';empty.className='gat-directory-status';
+      empty.setAttribute('role','status');empty.textContent='Nenhum motorista encontrado.';
+      list.appendChild(empty);
+    }
   }
 
   function liveUsers(data){
@@ -139,6 +153,8 @@
     }catch(_){
       count.textContent='INDISPONÍVEL';
       list.innerHTML='<div class="gat-directory-status">Não foi possível carregar a lista de motoristas agora.</div>';
+    }finally{
+      filterDirectory(document.getElementById('gatDriverSearch')?.value||'');
     }
   }
 
