@@ -1,8 +1,8 @@
-﻿{
-    "app":  "TruckSim GPS GAT",
-    "version":  "1.0",
-    "notas":  "Versao GAT com danos reais de Motor, Cambio, Cabine, Chassi e Rodas para o GAT Telemetria 1.0.28. Pacote portatil substitui o atualizador automatico como download principal.",
-    "update_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0_PORTABLE.zip",
-    "source_url":  "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_GAT_DANOS_1.0_SOURCE.zip",
-    "sha256":  "13c9b0eab769a58d402bcba032ac6da3b1be598704fc6d7ca16b7c01e24a2213"
+{
+  "app": "TruckSim GPS BiduLog Danos",
+  "version": "1.4.4",
+  "notas": "Substitui o pacote legado 1.0 bloqueado pelo Defender. Compilado da base oficial 1.4.4 com cinco campos de dano nullable. Testes aprovados; Defender sem deteccoes em 12/11/2026. Leitura real no computador do motorista ainda deve ser conferida.",
+  "update_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_1.4.4_BiduLog_Danos_VERIFICADO.zip",
+  "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_1.4.4_BiduLog_Danos_FONTES.zip",
+  "sha256": "702a299b84d43c22afcd4247cc903b1bc4756f2b803eb0abbf39732b322277df"
 }

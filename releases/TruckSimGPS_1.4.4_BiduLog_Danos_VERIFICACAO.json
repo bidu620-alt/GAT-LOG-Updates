@@ -1,0 +1,30 @@
+{
+  "created": "2026-11-12T14:20:19.6339504-03:00",
+  "file": "TruckSimGPS_1.4.4_BiduLog_Danos_VERIFICADO.zip",
+  "sha256": "702a299b84d43c22afcd4247cc903b1bc4756f2b803eb0abbf39732b322277df",
+  "upstream_commit": "892615e886f6653c687c759befb04b37cd401ff6",
+  "source_changes": [
+    "Data/ScsTelemetryDataReader.cs",
+    "Data/TelemetryV1.cs"
+  ],
+  "build": "Source compiled locally with MSBuild/.NET Framework 4.8; no executable from old 1.0 ZIP reused",
+  "defender_exit_code": 0,
+  "defender_output": "Scan starting...\nScan finished.\nScanning TruckSimGPS_1.4.4_BiduLog_Danos_VERIFICADO.zip found no threats. [local path omitted]",
+  "damage_tests": {
+    "Result": "PASS",
+    "Version": "1.4.4.0",
+    "Mappings": 5,
+    "Checks": [
+      "five nonzero components",
+      "real zero preserved",
+      "inactive SDK returns null",
+      "missing sample returns null"
+    ]
+  },
+  "limitations": [
+    "No Authenticode signature",
+    "Old package alert root cause not established",
+    "No detections at scan time is not an absolute security guarantee",
+    "Live ETS2 on Gensey computer not tested"
+  ]
+}

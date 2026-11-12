@@ -11,6 +11,9 @@ permissions:
 
 jobs:
   build:
+    # Retired 2026-11-12: legacy 1.0 package blocked by Defender.
+    # Replacement 1.4.4 is documented in trucksim_gps_gat_version.json.
+    if: ${{ false }}
     runs-on: windows-latest
     steps:
       - name: Checkout GAT

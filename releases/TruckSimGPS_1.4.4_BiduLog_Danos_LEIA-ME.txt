@@ -1,0 +1,49 @@
+TruckSimGPS 1.4.4 - BiduLog: danos reais do caminhao
+Preparado em 12/11/2026.
+
+Este pacote substitui o antigo TruckSimGPS_GAT_DANOS_1.0_PORTABLE.zip.
+O pacote antigo foi bloqueado pelo Defender e nao deve ser restaurado.
+A causa exata daquele alerta nao foi determinada.
+
+INSTALACAO NO COMPUTADOR DO GENSEY
+1. Feche o ETS2, o BiduLog Telemetria e o TruckSimGPS.
+2. Extraia o ZIP inteiro. Nao execute de dentro do ZIP.
+3. Abra TruckSimGPS_Server.exe desta pasta. Mantenha somente uma instancia.
+4. Abra o ETS2 e o BiduLog Telemetria atualizado (1.0.68.38).
+5. Confira se Motor, Cambio, Cabine, Chassi e Rodas aparecem no BiduLog.
+   Zero significa leitura real sem desgaste; ausencia aparece sem valor.
+
+Se o jogo nao conectar, no TruckSimGPS use a configuracao de plugins e
+selecione a pasta correta do ETS2. O ZIP inclui os plugins oficiais x64/x86.
+Nao exclua plugins de outros aplicativos.
+
+Se o BiduLog continuar abrindo automaticamente a versao antiga:
+- Com todos os aplicativos fechados, localize a instalacao do BiduLog.
+- Guarde uma copia da pasta TruckSimGPS_144_GAT_TEST.
+- Copie o conteudo deste pacote para essa pasta, preservando as subpastas.
+- Essa e a pasta preferida pelo BiduLog 1.0.68.38 ao iniciar o TruckSimGPS.
+- Se o Windows pedir permissao para gravar em Arquivos de Programas,
+  confirme apenas a copia dos arquivos deste pacote.
+
+VERIFICACAO
+Base: TruckSim-GPS/trucksim-gps-server, versao oficial 1.4.4,
+commit 892615e886f6653c687c759befb04b37cd401ff6.
+Alteracoes de codigo: cinco campos de desgaste nullable no REST v1 e seus
+mapeamentos para Motor, Cambio, Cabine, Chassi e Rodas.
+Sem amostra ou com SDK inativo, esses campos retornam null, nunca zero inventado.
+Testados os cinco componentes, zero real, SDK inativo e amostra ausente.
+Compilacao local do codigo-fonte. Nenhum executavel do ZIP antigo foi reutilizado.
+Dependencias: mesmas bibliotecas da instalacao existente do TruckSimGPS 1.4.4.
+O pacote e o ZIP foram examinados pelo Microsoft Defender na data acima.
+Sem deteccoes nessa verificacao; isso nao e garantia absoluta de seguranca.
+Executavel sem assinatura Authenticode. Nao desative o antivirus nem crie exclusoes.
+Se surgir outro alerta, interrompa e envie o nome especifico da deteccao.
+
+FONTES E LICENCA
+GPL-3.0. Licenca incluida neste pacote.
+Fonte correspondente: releases/TruckSimGPS_1.4.4_BiduLog_Danos_FONTES.zip
+no repositorio github.com/bidu620-alt/GAT-LOG-Updates.
+Os hashes SHA-256 dos arquivos distribuidos estao em SHA256SUMS.txt.
+
+Esta verificacao valida o mapeamento dos dados, mas a leitura real no
+computador do Gensey ainda precisa ser confirmada com o ETS2 aberto.
