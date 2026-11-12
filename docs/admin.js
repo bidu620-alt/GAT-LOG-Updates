@@ -37,7 +37,8 @@ function renderEventProgress(history,user){
    const result=window.GATEventRegistry?.progress?.({user,deliveries:history},event.id);
    if(!result)continue;
    activeCount++;
-   const completed=!!result.completed;
+   const preview=!!result.preview;
+   const completed=!preview&&!!result.completed;
    const manual=!!result.manual;
    const card=document.createElement('div');
    card.className='detail-event-group '+(completed?'completed':'');
@@ -58,8 +59,8 @@ function renderEventProgress(history,user){
      const countLabel=result.cargoCounts?'<small>'+n(result.cargoCounts.get(cargo.official))+' / '+n(cargo.required_deliveries||event.repetitions||1)+' entregas</small>':'';
      return '<div class="detail-event-step '+state+'"><span class="detail-event-mark">'+text+'</span><div><b>'+esc(cargo.label||cargo.official)+'</b>'+countLabel+(route?'<small>'+esc(route)+'</small>':'')+(actual&&actual!==route?'<small class="actual-route">Realizada: '+esc(actual)+'</small>':'')+'</div></div>';
    }).join('');
-   const status=completed?'CONCLUÍDO':(result.count>0?'EM ANDAMENTO':'NÃO INICIADO');
-   card.innerHTML='<div class="detail-event-group-head"><div><span class="eyebrow">'+esc(event.medal||'🏆')+' '+esc(event.name||event.id)+'</span><h4>'+esc(event.title||event.name||event.id)+'</h4></div><div class="detail-event-badges"><span class="detail-event-progress '+(completed?'complete':'')+'">'+n(result.count)+' / '+n(result.goal)+'</span><span class="detail-event-status '+(completed?'complete':'')+'">'+status+'</span></div></div><div class="detail-event-steps">'+cargoHtml+'</div>'+(manual?'<p class="detail-event-reason">Correção administrativa: '+esc(result.reason||'Conclusão ajustada manualmente.')+'</p>':'');
+   const status=preview?(result.startUnavailable?'AGUARDANDO CENTRAL':'ROTAS LOCALIZADAS'):completed?'CONCLUÍDO':(result.count>0?'EM ANDAMENTO':'NÃO INICIADO');
+   card.innerHTML='<div class="detail-event-group-head"><div><span class="eyebrow">'+esc(event.medal||'🏆')+' '+esc(event.name||event.id)+'</span><h4>'+esc(event.title||event.name||event.id)+'</h4></div><div class="detail-event-badges"><span class="detail-event-progress '+(completed?'complete':'')+'">'+(result.count==null?'—':n(result.count))+' / '+n(result.goal)+'</span><span class="detail-event-status '+(completed?'complete':'')+'">'+status+'</span></div></div><div class="detail-event-steps">'+cargoHtml+'</div>'+(preview?'<p class="detail-event-reason">'+(result.startUnavailable?'Data de início indisponível na Central. Nenhuma rota foi validada.':'Prévia de cidades com entregas de 200 km ou mais desde o início. Compra, liberação e contagem oficial precisam de confirmação na Central.')+'</p>':'')+(manual?'<p class="detail-event-reason">Correção administrativa: '+esc(result.reason||'Conclusão ajustada manualmente.')+'</p>':'');
    root.appendChild(card);
  }
  summary.textContent=activeCount+' evento'+(activeCount===1?'':'s');
