@@ -2,6 +2,7 @@ import {readFileSync} from 'node:fs';
 const read=file=>JSON.parse(readFileSync(new URL(file,import.meta.url),'utf8'));
 const freeze=value=>{if(value&&typeof value==='object'){for(const child of Object.values(value))freeze(child);Object.freeze(value);}return value;};
 const manifest=freeze(read('./manifest.json'));
+const passengerTransport=freeze(read('./coaches-2026.json'));
 const categories=new Map(manifest.categories.map(item=>[item.id,freeze(read('./'+item.file))]));
 const sourceGroups=new Map(manifest.catalog_groups.map(item=>[item.id,item.file]));
 const cargoCategory=new Map();
@@ -15,3 +16,7 @@ export function classifyCargoId(id){return cargoCategory.get(normalize(id))||nul
 export function matchesCategory(category,id){getCategory(category);return classifyCargoId(id)===category;}
 export function getCatalogGroup(id){const file=sourceGroups.get(id);if(!file)throw new RangeError('Grupo de catálogo desconhecido: '+id);return freeze(read('./'+file));}
 export function getUnselectedCargoIds(){return freeze(read('./review.json'));}
+
+// Passenger services are not freight IDs; they do not affect cargo classification.
+export function getPassengerTransportCatalog(){return passengerTransport;}
+export function listPassengerServices(){return passengerTransport.services;}
