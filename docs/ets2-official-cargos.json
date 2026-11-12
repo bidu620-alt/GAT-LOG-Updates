@@ -5259,5 +5259,42 @@
   "name_locale": "pt_br",
   "name_game_version": "1.61.1.1",
   "name_source": "cargo_data and localization files extracted from installed ETS2 on 2026-10-08",
-  "cargo_id_count": 413
+  "cargo_id_count": 413,
+  "passenger_transport": {
+    "id": "passageiros",
+    "title": "Passageiros / Transporte rodoviário",
+    "dlc": "Coaches",
+    "release_date": "2026-11-12",
+    "source": "https://blog.scssoft.com/2026/11/coaches-release.html",
+    "type": "passenger_transport",
+    "brand_policy": "manufacturer",
+    "telemetry_cargo_ids_verified": false,
+    "note": "O DLC Coaches transporta passageiros. Estes são tipos oficiais de serviço, não códigos internos confirmados de carga. As entradas de passageiros não integram total_entries nem cargo_id_count de mercadorias.",
+    "services": [
+      {
+        "id": "coach_quick_job",
+        "name": "Quick Jobs",
+        "name_pt": "Transporte de passageiros — viagem rápida",
+        "description": "Serviço com ônibus fornecido pelo jogo",
+        "cargo_ids": [],
+        "telemetry_status": "pending"
+      },
+      {
+        "id": "coach_contract_job",
+        "name": "Contract Jobs",
+        "name_pt": "Transporte de passageiros — linha regular",
+        "description": "Serviço regular com horários e múltiplas paradas",
+        "cargo_ids": [],
+        "telemetry_status": "pending"
+      },
+      {
+        "id": "coach_tourist_job",
+        "name": "Tourist Jobs",
+        "name_pt": "Transporte de passageiros — excursão turística",
+        "description": "Passeio turístico com passageiros até locais de interesse",
+        "cargo_ids": [],
+        "telemetry_status": "pending"
+      }
+    ]
+  }
 }
