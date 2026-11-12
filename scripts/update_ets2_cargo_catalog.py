@@ -246,6 +246,32 @@ def main() -> None:
         "category_counts": {key: len(categories[key]) for key in CATEGORY_ORDER},
         "categories": categories,
     }
+    # Keep the official passenger-service index separate from freight cargo IDs.
+    coaches_path = Path("central-economy/cargo-library/coaches-2026.json")
+    if coaches_path.is_file():
+        coaches = json.loads(coaches_path.read_text(encoding="utf-8"))
+        payload["passenger_transport"] = {
+            "id": coaches["category_id"],
+            "title": coaches["category_title"],
+            "dlc": coaches["dlc"],
+            "release_date": coaches["release_date"],
+            "source": coaches["source"],
+            "type": "passenger_transport",
+            "brand_policy": "manufacturer",
+            "telemetry_cargo_ids_verified": False,
+            "note": "O DLC Coaches transporta passageiros. Estes sao tipos oficiais de servico, nao codigos internos confirmados de carga. As entradas de passageiros nao integram total_entries nem cargo_id_count de mercadorias.",
+            "services": [
+                {
+                    "id": job["service_id"],
+                    "name": job["name"],
+                    "name_pt": job["name_pt"],
+                    "description": job["description"],
+                    "cargo_ids": job["cargo_ids"],
+                    "telemetry_status": job["telemetry_status"],
+                }
+                for job in coaches["services"]
+            ],
+        }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"{len(rows)} cargas gravadas em {OUT}")
