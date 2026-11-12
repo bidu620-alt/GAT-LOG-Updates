@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "type": "passenger_transport",
+  "status": "official_jobs_confirmed_telemetry_pending",
+  "game": "Euro Truck Simulator 2",
+  "dlc": "Coaches",
+  "release_date": "2026-11-12",
+  "source": "https://blog.scssoft.com/2026/11/coaches-release.html",
+  "notes_pt": "Serviços de passageiros não são mercadorias. IDs de cargo e eventos de conclusão ainda não confirmados pela telemetria 1.62; não gerar Gold/XP nem validar entregas apenas pelos nomes.",
+  "vehicle_economy_key": "onibus",
+  "vehicles": [
+    {
+      "make": "Scania",
+      "model": "Touring",
+      "id": "scania_touring",
+      "telemetry_vehicle_id": null
+    },
+    {
+      "make": "Volvo",
+      "model": "9700 DD",
+      "id": "volvo_9700_dd",
+      "telemetry_vehicle_id": null
+    },
+    {
+      "make": "MAN",
+      "model": "Lion's Coach",
+      "id": "man_lions_coach",
+      "telemetry_vehicle_id": null
+    }
+  ],
+  "services": [
+    {
+      "service_id": "coach_quick_job",
+      "name": "Quick Jobs",
+      "name_pt": "Viagem rápida de passageiros",
+      "cargo_ids": [],
+      "telemetry_status": "pending",
+      "description": "Transporte de passageiros usando ônibus fornecido pelo jogo"
+    },
+    {
+      "service_id": "coach_contract_job",
+      "name": "Contract Jobs",
+      "name_pt": "Linha regular de passageiros",
+      "cargo_ids": [],
+      "telemetry_status": "pending",
+      "description": "Serviço com horários e múltiplas paradas"
+    },
+    {
+      "service_id": "coach_tourist_job",
+      "name": "Tourist Jobs",
+      "name_pt": "Excursão turística de passageiros",
+      "cargo_ids": [],
+      "telemetry_status": "pending",
+      "description": "Viagem turística até pontos de interesse e retorno"
+    }
+  ],
+  "validation_requirements": [
+    "Capturar telemetria bruta de uma viagem oficial concluída de cada modalidade",
+    "Identificar os IDs oficiais de serviços/cargas e campos de status de conclusão",
+    "Confirmar modelo e tipo de veículo fornecidos pelo TruckSimGPS e pelo cliente BiduTruck",
+    "Separar viagens de ônibus das missões de mercadorias sem alterar a contabilização de cargas",
+    "Testar XP, Gold, entregas, garagem e histórico em ambiente de testes antes de atualizar a Central"
+  ]
+}
