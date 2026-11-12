@@ -16,7 +16,7 @@
    const select='<label class="aw-role-control"><span>ALTERAR CARGO</span><select data-role-user="'+e(d.user)+'" aria-label="Alterar cargo de '+e(d.user)+'">'+
      roles.map(([value,label])=>'<option value="'+value+'"'+(role===value?' selected':'')+(value==='streamer'&&!streamerSupported?' disabled':'')+'>'+e(label)+'</option>').join('')+
      '</select></label>';
-   return open+select+(!streamerSupported?'<small class="aw-role-pending">Streamer requer Central atualizada.</small>':'');
+   return open+select+(!streamerSupported?'<small class="aw-role-pending">🎥 Streamer indisponível: é necessário instalar a nova versão da Central no PC.</small>':'');
  };
  let active='overview',page=1,loadRequest=0,passData=null,companyData=null,eventCache=null,detailVersion=0,detailTab='summary',detailData=null,requestedEvent='';
  const navs=['overview','drivers','loads','events','pass','companies','settings'];
