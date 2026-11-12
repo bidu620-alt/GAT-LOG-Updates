@@ -8,10 +8,9 @@ internal static class VehicleEconomyKey
     private static string Normalize(string value){var b=new StringBuilder();foreach(char c in (value??"").Normalize(NormalizationForm.FormD))if(CharUnicodeInfo.GetUnicodeCategory(c)!=UnicodeCategory.NonSpacingMark)b.Append(char.ToLowerInvariant(c));return Regex.Replace(b.ToString(),"[^a-z0-9]+"," ").Trim();}
     public static string Resolve(string make,string model,string id,string type=""){
         string brand=Normalize(make),identity=Normalize(make+" "+model+" "+id);
-        bool officialCoach=(Regex.IsMatch(brand,@"^scania(?:\s|$)")&&Regex.IsMatch(identity,@"\btouring\b"))
-          ||(Regex.IsMatch(brand,@"^volvo(?:\s|$)")&&Regex.IsMatch(identity,@"\b9700(?:\s*dd)?\b"))
-          ||(Regex.IsMatch(brand,@"^man(?:\s|$)")&&Regex.IsMatch(identity,@"\blion(?:\s+s)?\s+coach\b"));
-        bool bus=officialCoach||Regex.IsMatch(Normalize(type),"^(bus|coach|onibus|autocarro)$")
+        string maker=TruckBrandResolver.Resolve(make);
+        if(Regex.IsMatch(maker,"^(daf|iveco|man|mercedes|renault|scania|volvo)$"))return maker;
+        bool bus=Regex.IsMatch(Normalize(type),"^(bus|coach|onibus|autocarro)$")
           ||Regex.IsMatch(identity,@"\b(bus|coach|onibus|autocarro|marcopolo|busscar|comil|neobus|caio|irizar|paradiso|viaggio|torino|urbanuss)\b")
           ||Regex.IsMatch(identity,@"\b(vissta\s*buss|apache\s*vip|g[78])\b")
           ||Regex.IsMatch(identity,@"\bo\s?(371|400|500)[a-z0-9]*\b")
