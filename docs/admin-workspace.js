@@ -7,7 +7,17 @@
  const labels={overview:'Visão geral',drivers:'Motoristas',loads:'Cargas',events:'Eventos',pass:'Passe',companies:'Empresas',settings:'Administração'};
  const categories={cegonheiro:'Cegonheiro',madeireiro:'Madeireiro',frigorifico:'Frigorífico',carga_seca:'Carga seca / geral',maquinario:'Maquinário',agronegocio:'Agronegócio',granel:'Granel',conteineres:'Contêineres'};
  const accountActions=actionButtons;
- actionButtons=function(d){return '<button class="detail" data-detail-user="'+e(d.user)+'">ABRIR PERFIL</button>';};
+ // Preserva o acesso rápido ao cargo no painel Motoristas.
+ actionButtons=function(d){
+   const role=String(d.role||'driver'),canManage=viewerRole==='owner'&&role!=='owner';
+   const open='<button class="detail" data-detail-user="'+e(d.user)+'">ABRIR PERFIL</button>';
+   if(!canManage)return open;
+   const roles=[['driver','Motorista'],['streamer',streamerSupported?'🎥 Streamer':'🎥 Streamer (atualize a Central)'],['moderator','Moderador'],['admin','Admin']];
+   const select='<label class="aw-role-control"><span>ALTERAR CARGO</span><select data-role-user="'+e(d.user)+'" aria-label="Alterar cargo de '+e(d.user)+'">'+
+     roles.map(([value,label])=>'<option value="'+value+'"'+(role===value?' selected':'')+(value==='streamer'&&!streamerSupported?' disabled':'')+'>'+e(label)+'</option>').join('')+
+     '</select></label>';
+   return open+select+(!streamerSupported?'<small class="aw-role-pending">Streamer requer Central atualizada.</small>':'');
+ };
  let active='overview',page=1,loadRequest=0,passData=null,companyData=null,eventCache=null,detailVersion=0,detailTab='summary',detailData=null,requestedEvent='';
  const navs=['overview','drivers','loads','events','pass','companies','settings'];
  const layout=document.createElement('div');layout.className='aw-layout';const main=document.createElement('div');main.className='aw-main';root.appendChild(layout);layout.append(tabs,main);for(const el of [...root.children])if(el!==layout)main.appendChild(el);
