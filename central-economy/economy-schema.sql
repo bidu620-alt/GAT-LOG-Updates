@@ -24,3 +24,5 @@ CREATE TABLE IF NOT EXISTS eco_support(id TEXT PRIMARY KEY,user TEXT NOT NULL RE
 
 CREATE TRIGGER IF NOT EXISTS eco_no_new_bcoin_orders BEFORE INSERT ON eco_orders WHEN NEW.product_id GLOB 'bcoin:*' BEGIN SELECT RAISE(ABORT,'bcoin_purchase_disabled'); END;
 INSERT OR REPLACE INTO eco_config(key,value) VALUES('bcoin_sales_enabled','0');
+
+CREATE TABLE IF NOT EXISTS eco_streamer_rewards(user TEXT PRIMARY KEY REFERENCES accounts(user),brand_key TEXT NOT NULL,claimed_at TEXT NOT NULL);
