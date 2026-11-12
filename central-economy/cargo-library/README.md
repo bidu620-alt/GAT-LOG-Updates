@@ -31,3 +31,14 @@ Exemplos: `beverages_c` está em Contêineres; `beverages` em Carga Seca. `truck
 A biblioteca está pronta para importação futura. Criar ou instalar estes arquivos NÃO ativa alterações no passe/eventos existentes. A conexão a cada consumidor deve ser implementada e testada separadamente. Não há necessidade de reiniciar a central apenas para armazenar a biblioteca.
 
 Para uma atualização do catálogo, gere e revise uma nova versão da biblioteca antes de substituir a versão em uso. Não modifique o arquivo original para encaixá-lo nas categorias do passe.
+
+
+## Transporte de passageiros (ETS2 Coaches DLC — 12/11/2026)
+
+A expansão oficial **Coaches** adicionou três ônibus (Scania Touring, Volvo 9700 DD e MAN Lion's Coach) e três modalidades: **Quick Jobs**, **Contract Jobs** e **Tourist Jobs**.
+
+O pré-catálogo separado está em `coaches-2026.json`. Ele **não cria códigos de carga fictícios** nem mistura passageiros com as 413 IDs de mercadorias. A SCS confirmou as modalidades, mas não foram validados os IDs internos que o DLC entrega pela telemetria.
+
+O reconhecimento do veículo agora aceita os três modelos de fábrica no `vehicle-economy-key.js`, mesmo quando a telemetria informar a marca de caminhão e não enviar `vehicle_type=coach`. A ativação das viagens, recompensas, cargas e Gold exige validar um registro real de cada modalidade e implantar alterações compatíveis na Central local. Apenas criar o catálogo não instala nem modifica a Central do PC.
+
+Referência: https://blog.scssoft.com/2026/11/coaches-release.html
