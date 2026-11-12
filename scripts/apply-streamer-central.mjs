@@ -21,10 +21,19 @@ worker=one(worker,
  "const p=await env.DB.prepare('SELECT * FROM profiles WHERE user=?').bind(user).first();if(!p)return null;",
  "const p=await env.DB.prepare(\"SELECT p.*,COALESCE(a.role,'driver') AS role FROM profiles p LEFT JOIN accounts a ON a.user=p.user WHERE p.user=?\").bind(user).first();if(!p)return null;",
  'perfil do motorista');
-worker=one(worker,
- "return{user,gold_balance:Number(goldWallet?.gold_units||0)/100,event_deliveries:",
- "return{user,role:p.role||'driver',gold_balance:Number(goldWallet?.gold_units||0)/100,event_deliveries:",
- 'resposta do perfil');
+// O retorno do perfil muda entre atualizacoes da Central (Gold, estatisticas e
+// historico). Inserir somente role, sem substituir a lista de campos existente.
+const profileStart=worker.indexOf('async function readProfile(env,user){');
+if(profileStart<0)throw new Error('Funcao readProfile ausente. Nenhum arquivo sera aplicado.');
+const profileEnd=worker.indexOf('\n}\n',profileStart);
+if(profileEnd<0)throw new Error('Fim da funcao readProfile nao encontrado. Nenhum arquivo sera aplicado.');
+const segment=worker.slice(profileStart,profileEnd);
+if(!/\brole\s*:\s*p\.role/.test(segment)){
+ const returns=[...segment.matchAll(/return\s*\{\s*user\s*,/g)];
+ if(returns.length!==1)throw new Error('Retorno do perfil tem formato inesperado ('+returns.length+'). Nenhum arquivo sera aplicado.');
+ const insertion=profileStart+returns[0].index+returns[0][0].length;
+ worker=worker.slice(0,insertion)+"role:p.role||'driver',"+worker.slice(insertion);
+}
 worker=one(worker,
  "if(p==='/api/site/admin/session'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return json(req,{ok:true,user:s.user,role:s.role})}",
  "if(p==='/api/site/admin/session'&&m==='POST'){const b=await body(req),s=await requireAdmin(req,env,b);return json(req,{ok:true,user:s.user,role:s.role,streamer_role_supported:true})}",
