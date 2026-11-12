@@ -69,10 +69,20 @@ economy=one(economy,
  "function eligibleAccount(db,s){ensureEconomy(db);if(!s?.user)fail(401,'invalid_session');",
  "function eligibleAccount(db,s){ensureEconomy(db);if(!s?.user)fail(401,'invalid_session');if(s.role==='streamer')syncStreamerBenefits(db,s.user);",
  'ativacao das vantagens');
-economy=one(economy,
- "ok:true,mode:'official',rule:'brand-v1',user:s.user,is_admin:isAdmin(s),gold_balance:w.gold_units/100,bcoin_balance:w.bcoin_units/100,",
- "ok:true,mode:'official',rule:'brand-v1',user:s.user,is_admin:isAdmin(s),streamer:{eligible:s.role==='streamer',brand_key:s.role==='streamer'?(sql(db).prepare('SELECT brand_key FROM eco_streamer_rewards WHERE user=?').get(s.user)?.brand_key||null):null,free_events:s.role==='streamer',profile_customization:s.role==='streamer'},gold_balance:w.gold_units/100,bcoin_balance:w.bcoin_units/100,",
- 'estado da garagem');
+// Localizar o objeto retornado por state() em vez de depender de todos os campos
+// de garagem, que variam entre versoes do BiduLog.
+const stateStart=economy.indexOf('function state(db,s){');
+if(stateStart<0)throw new Error('Funcao state() nao encontrada; Central inalterada.');
+const stateEnd=economy.indexOf('function economyAction(',stateStart);
+if(stateEnd<0)throw new Error('Limite da funcao state() nao encontrado; Central inalterada.');
+const stateSlice=economy.slice(stateStart,stateEnd);
+if(!/\bstreamer\s*:\s*\{\s*eligible\s*:/.test(stateSlice)){
+ const ret=[...stateSlice.matchAll(/\breturn\s*\{/g)];
+ if(ret.length!==1)throw new Error('state() com retorno inesperado ('+ret.length+'); Central inalterada.');
+ const at=stateStart+ret[0].index+ret[0][0].length;
+ const value="streamer:{eligible:s.role==='streamer',brand_key:s.role==='streamer'?(sql(db).prepare('SELECT brand_key FROM eco_streamer_rewards WHERE user=?').get(s.user)?.brand_key||null):null,free_events:s.role==='streamer',profile_customization:s.role==='streamer'},";
+ economy=economy.slice(0,at)+value+economy.slice(at);
+}
 const action=[
  " if(path==='streamer-brand')return op(db,s,b,path,()=>{",
  "  if(s.role!=='streamer')fail(403,'streamer_required');",
@@ -87,8 +97,19 @@ const action=[
  " });",
  ""
 ].join('\n');
-if(!economy.includes("if(path==='streamer-brand')"))
- economy=one(economy," if(path==='select-truck')return op(db,s,b,path,()=>economySelect(db,s.user,String(b.model_key||'')));",action+" if(path==='select-truck')return op(db,s,b,path,()=>economySelect(db,s.user,String(b.model_key||'')));",'escolha da marca');
+// Inserir o resgate antes das rotas existentes da economia, sem alterar
+// as formas atuais de selecao de caminhão e compras.
+if(!economy.includes("if(path==='streamer-brand')")){
+ const start=economy.indexOf('function economyAction(db,s,path,b){');
+ if(start<0)throw new Error('economyAction() ausente; Central inalterada.');
+ const end=economy.indexOf("if(path==='pass-state')",start);
+ if(end<0)throw new Error('Rotas da economia nao reconhecidas; Central inalterada.');
+ const section=economy.slice(start,end);
+ const match=[...section.matchAll(/\beligibleAccount\(db,s\)\s*;/g)];
+ if(match.length!==1)throw new Error('Entrada de economyAction() inesperada ('+match.length+'); Central inalterada.');
+ const at=start+match[0].index+match[0][0].length;
+ economy=economy.slice(0,at)+'\n'+action+economy.slice(at);
+}
 if(!schema.includes('CREATE TABLE IF NOT EXISTS eco_streamer_rewards'))
  schema+='\nCREATE TABLE IF NOT EXISTS eco_streamer_rewards(user TEXT PRIMARY KEY REFERENCES accounts(user),brand_key TEXT NOT NULL,claimed_at TEXT NOT NULL);\n';
 fs.mkdirSync(stage,{recursive:true});
