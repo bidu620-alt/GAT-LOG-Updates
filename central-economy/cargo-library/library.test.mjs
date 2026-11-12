@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {getLibraryMetadata,listCategories,getCategory,getCargoIds,classifyCargoId,matchesCategory,getCatalogGroup,getUnselectedCargoIds} from './index.js';
+import {getLibraryMetadata,listCategories,getCategory,getCargoIds,classifyCargoId,matchesCategory,getCatalogGroup,getUnselectedCargoIds,getPassengerTransportCatalog,listPassengerServices} from './index.js';
 const manifest=getLibraryMetadata();
 assert.equal(listCategories().length,8);
 const byId=new Map();let entries=0;
@@ -23,3 +23,11 @@ assert.throws(()=>getCargoIds('madeireiro').push('unknown'),TypeError);
 const fixture=JSON.parse(readFileSync(new URL('./manifest.json',import.meta.url),'utf8'));
 assert.equal(fixture.counts.catalog_entries,entries);
 console.log(JSON.stringify({status:'passed',catalogEntries:entries,cargoIds:byId.size,selected:selected.size,availableForOtherEvents:unselected.length,categories:listCategories().map(c=>({category:c.title,cargoIds:c.cargo_id_count}))}));
+
+const passengers=getPassengerTransportCatalog();
+assert.equal(passengers.category_id,'passageiros');
+assert.equal(passengers.brand_policy,'manufacturer');
+assert.equal(listPassengerServices().length,3);
+for(const service of listPassengerServices()){assert.deepEqual(service.cargo_ids,[]);assert.equal(classifyCargoId(service.service_id),null);}
+assert.deepEqual(passengers.vehicles.map(v=>v.economy_brand_key),['scania','volvo','man']);
+assert(Object.isFrozen(passengers));
