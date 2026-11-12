@@ -1,64 +1,72 @@
 {
   "schema_version": 1,
   "type": "passenger_transport",
-  "status": "official_jobs_confirmed_telemetry_pending",
+  "status": "official_passenger_services_confirmed_telemetry_codes_pending",
   "game": "Euro Truck Simulator 2",
   "dlc": "Coaches",
   "release_date": "2026-11-12",
   "source": "https://blog.scssoft.com/2026/11/coaches-release.html",
-  "notes_pt": "Serviços de passageiros não são mercadorias. IDs de cargo e eventos de conclusão ainda não confirmados pela telemetria 1.62; não gerar Gold/XP nem validar entregas apenas pelos nomes.",
-  "vehicle_economy_key": "onibus",
+  "notes_pt": "O DLC Coaches transporta passageiros, não mercadorias; os serviços oficiais são Quick Jobs, Contract Jobs e Tourist Jobs. A marca econômica é sempre a do fabricante reconhecido, independentemente de ser ônibus ou caminhão. Os cargo IDs de telemetria permanecem pendentes de captura real.",
   "vehicles": [
     {
       "make": "Scania",
       "model": "Touring",
       "id": "scania_touring",
-      "telemetry_vehicle_id": null
+      "telemetry_vehicle_id": null,
+      "economy_brand_key": "scania"
     },
     {
       "make": "Volvo",
       "model": "9700 DD",
       "id": "volvo_9700_dd",
-      "telemetry_vehicle_id": null
+      "telemetry_vehicle_id": null,
+      "economy_brand_key": "volvo"
     },
     {
       "make": "MAN",
       "model": "Lion's Coach",
       "id": "man_lions_coach",
-      "telemetry_vehicle_id": null
+      "telemetry_vehicle_id": null,
+      "economy_brand_key": "man"
     }
   ],
   "services": [
     {
       "service_id": "coach_quick_job",
       "name": "Quick Jobs",
-      "name_pt": "Viagem rápida de passageiros",
+      "name_pt": "Transporte de passageiros — viagem rápida",
       "cargo_ids": [],
       "telemetry_status": "pending",
-      "description": "Transporte de passageiros usando ônibus fornecido pelo jogo"
+      "description": "Serviço com ônibus fornecido pelo jogo",
+      "catalog_status": "listed_not_auto_classifiable"
     },
     {
       "service_id": "coach_contract_job",
       "name": "Contract Jobs",
-      "name_pt": "Linha regular de passageiros",
+      "name_pt": "Transporte de passageiros — linha regular",
       "cargo_ids": [],
       "telemetry_status": "pending",
-      "description": "Serviço com horários e múltiplas paradas"
+      "description": "Serviço regular com horários e múltiplas paradas",
+      "catalog_status": "listed_not_auto_classifiable"
     },
     {
       "service_id": "coach_tourist_job",
       "name": "Tourist Jobs",
-      "name_pt": "Excursão turística de passageiros",
+      "name_pt": "Transporte de passageiros — excursão turística",
       "cargo_ids": [],
       "telemetry_status": "pending",
-      "description": "Viagem turística até pontos de interesse e retorno"
+      "description": "Passeio turístico com passageiros até locais de interesse",
+      "catalog_status": "listed_not_auto_classifiable"
     }
   ],
   "validation_requirements": [
     "Capturar telemetria bruta de uma viagem oficial concluída de cada modalidade",
     "Identificar os IDs oficiais de serviços/cargas e campos de status de conclusão",
-    "Confirmar modelo e tipo de veículo fornecidos pelo TruckSimGPS e pelo cliente BiduTruck",
+    "Confirmar marca do fabricante no TruckSimGPS e BiduTruck sem depender do modelo do veículo",
     "Separar viagens de ônibus das missões de mercadorias sem alterar a contabilização de cargas",
     "Testar XP, Gold, entregas, garagem e histórico em ambiente de testes antes de atualizar a Central"
-  ]
+  ],
+  "category_id": "passageiros",
+  "category_title": "Passageiros / Transporte rodoviário",
+  "brand_policy": "manufacturer"
 }
