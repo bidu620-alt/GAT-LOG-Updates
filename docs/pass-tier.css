@@ -1,10 +1,4 @@
 .driver-hero{position:relative}
-.gat-pass-tier{position:absolute;left:41%;top:10px;width:52px;height:62px;filter:drop-shadow(0 0 7px #185edb50);pointer-events:auto}
-.gat-pass-tier svg{display:block;width:100%;height:100%}
-/* Reserve a small top strip on narrow screens, away from profile text/buttons. */
-@media(max-width:760px){.driver-hero:has(.gat-pass-tier){padding-top:84px}.gat-pass-tier{left:calc(50% - 26px);top:10px}}
-@media(prefers-reduced-motion:reduce){.gat-pass-tier{animation:none}}
-
 /* Theme earned from the latest completed monthly pass. */
 .driver-hero.gat-pass-elite{
  --pass-light:#f2d38c;--pass-edge:#94713a;--pass-dark:#191b1b;--pass-wash:#333324;--pass-angle:122deg;
