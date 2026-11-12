@@ -39,6 +39,8 @@ A expansão oficial **Coaches** adicionou três ônibus (Scania Touring, Volvo 9
 
 O pré-catálogo separado está em `coaches-2026.json`. Ele **não cria códigos de carga fictícios** nem mistura passageiros com as 413 IDs de mercadorias. A SCS confirmou as modalidades, mas não foram validados os IDs internos que o DLC entrega pela telemetria.
 
-O reconhecimento do veículo agora aceita os três modelos de fábrica no `vehicle-economy-key.js`, mesmo quando a telemetria informar a marca de caminhão e não enviar `vehicle_type=coach`. A ativação das viagens, recompensas, cargas e Gold exige validar um registro real de cada modalidade e implantar alterações compatíveis na Central local. Apenas criar o catálogo não instala nem modifica a Central do PC.
+A chave econômica é sempre a marca do fabricante conhecida (`scania`, `volvo`, `man` etc.), independentemente do modelo e de ser caminhão ou ônibus. Fabricantes fora das sete marcas da garagem continuam usando as regras legadas, incluindo a categoria `onibus` quando cabível. A ativação das viagens, recompensas, cargas e Gold exige validar um registro real de cada modalidade e implantar alterações compatíveis na Central local. Apenas criar o catálogo não instala nem modifica a Central do PC.
 
 Referência: https://blog.scssoft.com/2026/11/coaches-release.html
+
+O arquivo `docs/ets2-official-cargos.json` inclui uma seção `passenger_transport` com as três modalidades oficiais, sem contaminar as 380 cargas e 413 IDs validados de mercadorias. A API interna `getPassengerTransportCatalog()` fornece esses serviços, mas nenhum `cargo_id` do novo DLC foi inventado e nenhuma recompensa é ativada antes de capturar a telemetria real.
