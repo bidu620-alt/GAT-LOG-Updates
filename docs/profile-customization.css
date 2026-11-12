@@ -15,3 +15,8 @@ body.gat-has-profile-background{position:relative;isolation:isolate;min-height:1
 .pc-fixed{display:block;font-size:12px;line-height:1.6;color:#bdcfe3;margin:16px 0}.pc-fixed input{accent-color:#e6bd60}
 .pc-bio{display:block;box-sizing:border-box;resize:vertical;width:100%;min-height:110px;border:1px solid #334c65;border-radius:10px;background:#0b1928;color:#e5eef9;font:inherit;font-size:12px;line-height:1.6;padding:12px}
 .pc-bio-count{display:block;text-align:right;margin-top:6px;font-size:11px;color:#97afc6}
+
+/* Identidade Streamer: destaque sem remover capas/temas escolhidos pelo motorista. */
+.driver-hero.gat-streamer-profile[data-selected-theme],.driver-hero.gat-streamer-profile{border-color:#9b6ccb;box-shadow:0 0 0 1px #b67bdb44,0 16px 45px #461b6a50}
+.driver-hero.gat-streamer-profile #profileType{color:#f2c7ff;letter-spacing:.12em}
+.driver-hero.gat-streamer-profile .driver-badges::after{content:'🎥 STREAMER BIDULOG';display:inline-flex;align-items:center;border-radius:8px;background:#55246b;color:#ffeaff;padding:7px 10px;font-size:10px;font-weight:950;letter-spacing:.03em;border:1px solid #ae78c8}
