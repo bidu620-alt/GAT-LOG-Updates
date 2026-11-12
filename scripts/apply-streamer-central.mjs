@@ -73,7 +73,7 @@ economy=one(economy,
 // de garagem, que variam entre versoes do BiduLog.
 const stateStart=economy.indexOf('function state(db,s){');
 if(stateStart<0)throw new Error('Funcao state() nao encontrada; Central inalterada.');
-const stateEnd=economy.indexOf('function economyAction(',stateStart);
+const stateEnd=economy.indexOf('export function ',stateStart+20);
 if(stateEnd<0)throw new Error('Limite da funcao state() nao encontrado; Central inalterada.');
 const stateSlice=economy.slice(stateStart,stateEnd);
 if(!/\bstreamer\s*:\s*\{\s*eligible\s*:/.test(stateSlice)){
