@@ -4,3 +4,9 @@
 @media(max-width:1000px){.aw-layout{grid-template-columns:155px minmax(0,1fr);gap:15px}.aw-stats{grid-template-columns:1fr 1fr}.aw-two{grid-template-columns:1fr}.admin-page.shell{width:calc(100% - 24px)}}
 @media(max-width:760px){.aw-layout{display:block}.admin-tabs{flex-direction:row;flex-wrap:wrap;margin-bottom:18px;padding:7px}.admin-tabs button{padding:9px;font-size:11px}.aw-menu-label{width:100%;padding:5px 9px}.admin-tabs .aw-subnav{padding:7px 9px}.admin-head h1{font-size:25px}.admin-head p{font-size:12px}.aw-goals,.aw-fields,.aw-admin-links{grid-template-columns:1fr}.driver-detail-modal .detail-panel{width:100%;padding:18px}.aw-tools input{font-size:16px}.aw-table td{padding:12px}.aw-detail-tabs button{padding:9px}.admin-tools{width:100%}.admin-tools input{width:100%}.aw-stats{gap:8px}.aw-stat{padding:12px}}
 
+
+/* Seleção direta de cargo na lista Motoristas, restrita ao proprietário. */
+.row-actions .aw-role-control{display:inline-flex;align-items:stretch;flex-direction:column;gap:4px;min-width:140px;max-width:185px;color:var(--aw-muted)}
+.row-actions .aw-role-control span{font-size:9px;font-weight:800;letter-spacing:.04em}
+.row-actions .aw-role-control select{width:100%;max-width:185px;background:#10263b;border:1px solid #52708c;color:#e1f0ff;border-radius:7px;cursor:pointer}
+.row-actions .aw-role-pending{display:block;max-width:175px;font-size:10px;color:#f0bc84;line-height:1.3}
