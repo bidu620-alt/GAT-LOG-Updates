@@ -1,0 +1,184 @@
+name: Release BiduLog Telemetria 1.0.68.39
+# Brand tests are isolated from the existing road-limit test project.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/release-telemetry-39.yml']
+permissions:
+  contents: write
+concurrency:
+  group: release-telemetry-39
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build and regression checks
+        shell: pwsh
+        run: |
+          dotnet run --project RoadBETS2-Telemetria/tests/RoadLimitTests.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Road limit tests failed' }
+          dotnet run --project RoadBETS2-Telemetria/tests/TripContinuity/TripContinuityTests.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Trip continuity tests failed' }
+          dotnet run --project RoadBETS2-Telemetria/tests/Damage/Damage.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Damage integration tests failed' }
+          dotnet build RoadBETS2-Telemetria/src/GAT_TELEMETRIA.csproj -c Release -p:UseSharedCompilation=false
+          if ($LASTEXITCODE -ne 0) { throw 'Client build failed' }
+          dotnet run --project RoadBETS2-Telemetria/tests/Brands/Brands.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Brand regression tests failed' }
+          $app = Get-Item RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe
+          if ($app.VersionInfo.FileVersion -ne '1.0.68.39') { throw 'Unexpected executable version' }
+      - name: Recover complete validated payload
+        shell: pwsh
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'base36.exe'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.36.exe' -OutFile $setup
+          if ((Get-FileHash $setup).Hash.ToLowerInvariant() -ne 'ed1735ec6025ec74a2effc47592586bb593dcfc44e0532b2fbd8dfcebbfd6249') { throw 'Base installer hash mismatch' }
+          $base = Join-Path $env:RUNNER_TEMP 'base36'
+          $p = Start-Process $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/CURRENTUSER','/ISOLATEDTEST=1',('/DIR="'+$base+'"')) -WindowStyle Hidden -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Base extraction failed' }
+          if (!(Test-Path "$base/GAT_TELEMETRIA_APP.exe")) { throw 'Missing original app payload' }
+          $installer = 'RoadBETS2-Telemetria/Installer'
+          $payload = "$installer/payload"
+          New-Item -ItemType Directory -Force $payload | Out-Null
+          Copy-Item "$base/*" $payload -Recurse
+          Copy-Item RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe "$payload/GAT_TELEMETRIA_APP.exe" -Force
+          Copy-Item RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe.config "$payload/GAT_TELEMETRIA_APP.exe.config" -Force
+          $compiled = 'RoadBETS2-Telemetria/src/bin/Release/net48'
+          Get-ChildItem $compiled -File | Where-Object Extension -in '.dll','.pdb' | Copy-Item -Destination $payload -Force
+          $root = (Resolve-Path $payload).Path
+          $paths = @(Get-ChildItem $root -Recurse -File | ForEach-Object { $_.FullName.Substring($root.Length+1) })
+          $paths | Set-Content "$installer/managed-files.txt" -Encoding utf8
+          if ($paths.Count -lt 20) { throw 'Incomplete payload' }
+          if (!(Test-Path "$payload/ROADLIFE_TELEMETRIA.ico")) { throw 'Missing installer icon' }
+      - name: Include verified TruckSimGPS damage package
+        shell: pwsh
+        run: |
+          $zip = Join-Path $env:RUNNER_TEMP 'gps144.zip'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_1.4.4_BiduLog_Danos_VERIFICADO.zip' -OutFile $zip
+          if ((Get-FileHash $zip).Hash.ToLowerInvariant() -ne '702a299b84d43c22afcd4247cc903b1bc4756f2b803eb0abbf39732b322277df') { throw 'GPS package hash mismatch' }
+          $gps = Join-Path $env:RUNNER_TEMP 'gps144'
+          Expand-Archive -LiteralPath $zip -DestinationPath $gps
+          foreach ($folder in @('TruckSimGPS_144_GAT_TEST','TruckSimGPS')) {
+            $target = Join-Path 'RoadBETS2-Telemetria/Installer/payload' $folder
+            # Only clean the staged payload, never an installed application or user data.
+            $absolute = [IO.Path]::GetFullPath($target)
+            $staging = [IO.Path]::GetFullPath('RoadBETS2-Telemetria/Installer/payload') + [IO.Path]::DirectorySeparatorChar
+            if (!$absolute.StartsWith($staging,[StringComparison]::OrdinalIgnoreCase)) { throw 'Invalid staging path' }
+            if (Test-Path -LiteralPath $absolute) { Remove-Item -LiteralPath $absolute -Recurse -Force }
+            New-Item -ItemType Directory -Force $absolute | Out-Null
+            Copy-Item "$gps/*" $absolute -Recurse
+          }
+          & RoadBETS2-Telemetria/tests/Damage/Test-GpsDamage.ps1 -Root $gps
+          if (!$?) { throw 'GPS damage mapping checks failed' }
+          $root = (Resolve-Path 'RoadBETS2-Telemetria/Installer/payload').Path
+          Get-ChildItem $root -Recurse -File | ForEach-Object { $_.FullName.Substring($root.Length+1) } | Set-Content 'RoadBETS2-Telemetria/Installer/managed-files.txt' -Encoding utf8
+      - name: Install pinned Inno compiler
+        shell: pwsh
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'inno-setup.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+          if ((Get-FileHash $setup).Hash.ToLowerInvariant() -ne '9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732') { throw 'Compiler hash mismatch' }
+          $compiler = Join-Path $env:RUNNER_TEMP 'InnoSetup'
+          $p = Start-Process $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/NOICONS',('/DIR="'+$compiler+'"')) -WindowStyle Hidden -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Compiler installation failed' }
+          "INNO_ISCC=$compiler/ISCC.exe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Build full installer
+        shell: pwsh
+        run: |
+          & $env:INNO_ISCC /Q RoadBETS2-Telemetria/Installer/Full39.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+      - name: Verify isolated install and preservation
+        shell: pwsh
+        run: |
+          $setup = (Resolve-Path 'RoadBETS2-Telemetria/Installer/Output/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.39.exe').Path
+          $testDir = Join-Path $env:RUNNER_TEMP 'test39'
+          New-Item -ItemType Directory -Force $testDir | Out-Null
+          'PRESERVE-USER-FILE' | Set-Content "$testDir/user-sentinel.txt"
+          $p = Start-Process $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/CURRENTUSER','/ISOLATEDTEST=1',('/DIR="'+$testDir+'"')) -WindowStyle Hidden -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Isolated installation failed' }
+          $app = Get-Item "$testDir/GAT_TELEMETRIA_APP.exe"
+          if ($app.VersionInfo.FileVersion -ne '1.0.68.39') { throw 'Installed version mismatch' }
+          if ((Get-Content "$testDir/user-sentinel.txt" -Raw).Trim() -ne 'PRESERVE-USER-FILE') { throw 'User file modified' }
+          if ((Get-FileHash $app.FullName).Hash -ne (Get-FileHash RoadBETS2-Telemetria/src/bin/Release/net48/GAT_TELEMETRIA.exe).Hash) { throw 'Installed app hash mismatch' }
+          if (!(Test-Path "$testDir/GAT_TELEMETRIA.exe")) { throw 'Launcher missing' }
+      - name: Verify installed GPS copies and hashes
+        shell: pwsh
+        run: |
+          $testDir = Join-Path $env:RUNNER_TEMP 'test39'
+          foreach ($folder in @('TruckSimGPS_144_GAT_TEST','TruckSimGPS')) {
+            $root = Join-Path $testDir $folder
+            & RoadBETS2-Telemetria/tests/Damage/Test-GpsDamage.ps1 -Root $root
+            if (!$?) { throw 'Installed GPS tests failed' }
+            foreach ($line in Get-Content "$root/SHA256SUMS.txt") {
+              if ($line -notmatch '^([a-f0-9]{64})  (.+)$') { throw 'Invalid GPS hash list' }
+              $expected=$Matches[1]; $path=Join-Path $root $Matches[2]
+              if ((Get-FileHash -LiteralPath $path).Hash.ToLowerInvariant() -ne $expected) { throw "Installed GPS file differs: $path" }
+            }
+          }
+      - name: Verify upgrade backup and user file preservation
+        shell: pwsh
+        run: |
+          $testDir = Join-Path $env:RUNNER_TEMP 'test39'
+          $gpsFile = Join-Path $testDir 'TruckSimGPS_144_GAT_TEST/TruckSimGPS_Server.exe'
+          'OLD-GPS-UPGRADE-SENTINEL' | Set-Content -LiteralPath $gpsFile
+          $oldHash = (Get-FileHash -LiteralPath $gpsFile).Hash
+          $setup = (Resolve-Path 'RoadBETS2-Telemetria/Installer/Output/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.39.exe').Path
+          $p = Start-Process $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/CURRENTUSER','/ISOLATEDTEST=1',('/DIR="'+$testDir+'"')) -WindowStyle Hidden -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Upgrade install failed' }
+          if ((Get-Content "$testDir/user-sentinel.txt" -Raw).Trim() -ne 'PRESERVE-USER-FILE') { throw 'User file changed during upgrade' }
+          $backup = Get-ChildItem -LiteralPath $testDir -Directory -Filter 'backup-completa-1.0.68.39-*' | Select-Object -First 1
+          if (!$backup -or (Get-FileHash (Join-Path $backup.FullName 'TruckSimGPS_144_GAT_TEST/TruckSimGPS_Server.exe')).Hash -ne $oldHash) { throw 'GPS backup missing or incorrect' }
+          $payloadFile = 'RoadBETS2-Telemetria/Installer/payload/TruckSimGPS_144_GAT_TEST/TruckSimGPS_Server.exe'
+          if ((Get-FileHash -LiteralPath $gpsFile).Hash -ne (Get-FileHash $payloadFile).Hash) { throw 'New GPS not installed over old copy' }
+      - name: Scan complete payload and installer with Defender
+        shell: pwsh
+        run: |
+          $scan = Get-ChildItem "$env:ProgramData/Microsoft/Windows Defender/Platform/*/MpCmdRun.exe" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (!$scan) { throw 'Defender scanner unavailable; update will not be published' }
+          foreach ($target in @('RoadBETS2-Telemetria/Installer/payload','RoadBETS2-Telemetria/Installer/Output')) {
+            $output = & $scan.FullName -Scan -ScanType 3 -File (Resolve-Path $target).Path -DisableRemediation 2>&1
+            $exitCode = $LASTEXITCODE
+            $output | Tee-Object -FilePath 'RoadBETS2-Telemetria/Installer/DEFENDER-VERIFICACAO.txt' -Append
+            if ($exitCode -ne 0) { throw "Defender did not pass ($exitCode); no publication" }
+          }
+      - name: Publish verified package and update manifest
+        shell: pwsh
+        run: |
+          $name = 'BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.39.exe'
+          Copy-Item "RoadBETS2-Telemetria/Installer/Output/$name" "releases/$name" -Force
+          $hash = (Get-FileHash "releases/$name").Hash.ToLowerInvariant()
+          $url = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/$name"
+          $manifest = [ordered]@{app='BiduLog Telemetria';channel='stable';version='1.0.68.39';display_version='1.0.68.39';notas='Inclui TruckSimGPS 1.4.4 recompilado com danos reais de motor, cambio, cabine, chassi e rodas; mantem danos da carga e reboque. Preserva conta, configuracoes, diario e fila de viagens. Feche o ETS2 e o TruckSimGPS antes de atualizar.';setup_url=$url;download_url=$url;sha256=$hash;package_type='full'}
+          $manifest | ConvertTo-Json | Set-Content client_dotnet_version.json -Encoding utf8
+          "$hash  $name" | Set-Content RoadBETS2-Telemetria/Installer/RELEASE.sha256 -Encoding ascii
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "releases/$name" client_dotnet_version.json RoadBETS2-Telemetria/Installer/RELEASE.sha256
+          git commit -m 'Release verified BiduLog Telemetria 1.0.68.39 to updater'
+          if ($LASTEXITCODE -ne 0) { throw 'Release commit failed' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Concurrent publication conflict; manifest not pushed' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE -ne 0) { throw 'Publication push failed' }
+          $remote = Invoke-RestMethod ('https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json?verify='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
+          if ($remote.version -ne '1.0.68.39' -or $remote.sha256 -ne $hash) { throw 'Public manifest readback mismatch' }
+          $download = Join-Path $env:RUNNER_TEMP 'published39.exe'
+          Invoke-WebRequest ($url+'?verify='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -OutFile $download
+          if ((Get-FileHash $download).Hash.ToLowerInvariant() -ne $hash) { throw 'Public download hash mismatch' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: BiduLog-Telemetria-1.0.68.39
+          path: |
+            RoadBETS2-Telemetria/Installer/Output/*.exe
+            RoadBETS2-Telemetria/Installer/RELEASE.sha256
+            RoadBETS2-Telemetria/Installer/DEFENDER-VERIFICACAO.txt

@@ -104,9 +104,10 @@ internal sealed class TelemetryEngine : IDisposable
 			string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 			string folderPath2 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 			string folderPath3 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-			string[] array2 = new string[5]
+			string[] array2 = new string[6]
             {
                 Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TruckSimGPS_144_GAT_TEST", "TruckSimGPS_Server.exe"),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TruckSimGPS", "TruckSimGPS_Server.exe"),
 				Path.Combine(folderPath, "Programs", "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
 				Path.Combine(folderPath, "Programs", "TruckSim GPS", "TruckSimGPS_Server.exe"),
 				Path.Combine(folderPath2, "TruckSim GPS Telemetry Server", "TruckSimGPS_Server.exe"),
