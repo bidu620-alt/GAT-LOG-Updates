@@ -1,7 +1,7 @@
 (()=>{
-  const CATALOG_URL='ets2-official-cargos.json?v=game-ids-20261008';
+  const CATALOG_URL='ets2-official-cargos.json?v=coaches-20261112';
   const GRID='workCatalogGrid',STATUS='workCatalogStatus';
-  let items=[],visible=80,query='',catalogTotal=0;
+  let items=[],visible=80,query='',catalogTotal=0,passengerCount=0;
 
   const clean=v=>String(v||'').trim();
   const norm=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
@@ -96,6 +96,11 @@
   function flatCatalog(data){
     const out=[];const titles=data?.category_titles||{};const cats=data?.categories||{};
     Object.entries(cats).forEach(([category,rows])=>{if(!Array.isArray(rows))return;rows.forEach((row,i)=>{const name=clean(row?.name);if(!name)return;out.push({id:category+'-'+i,name,namePt:clean(row?.name_pt)||toPt(name),cargoIds:Array.isArray(row?.cargo_ids)?row.cargo_ids:[],aliases:Array.isArray(row?.aliases)?row.aliases:[],dlc:clean(row?.dlc),weight:clean(row?.weight),category,title:clean(titles[category])})})});
+    const coach=data?.passenger_transport;
+    if(coach&&Array.isArray(coach.services))coach.services.forEach((job,i)=>{
+      const name=clean(job?.name);if(!name)return;
+      out.push({id:'passageiros-'+i,name,namePt:clean(job?.name_pt)||name,cargoIds:[],aliases:[],dlc:'Coaches',weight:'',category:'passageiros',title:clean(coach.title)||'Passageiros',passenger:true});
+    });
     return out.sort((a,b)=>a.namePt.localeCompare(b.namePt,'pt-BR',{sensitivity:'base'}));
   }
 
@@ -112,7 +117,7 @@
 
   async function load(){
     injectStyle();ensureToolbar();const status=document.getElementById(STATUS);if(status)status.textContent='Carregando catálogo de cargas em português...';
-    try{const r=await fetch(CATALOG_URL+'?v=full-cargo-pt-3',{cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error('HTTP '+r.status);items=flatCatalog(data);GatCargoIdentity.setCatalog(items);catalogTotal=Number(data?.total_entries)||items.length;patchCopy(catalogTotal);render();if(status)status.textContent=catalogTotal+' cargas oficiais • nomes em português • busca PT/EN • sem limite de categorias.'}
+    try{const r=await fetch(CATALOG_URL,{cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error('HTTP '+r.status);items=flatCatalog(data);GatCargoIdentity.setCatalog(items);catalogTotal=Number(data?.total_entries)||items.length;passengerCount=Array.isArray(data?.passenger_transport?.services)?data.passenger_transport.services.length:0;patchCopy(catalogTotal);render();if(status)status.textContent=catalogTotal+' cargas oficiais + '+passengerCount+' serviços de passageiros • nomes em português • busca PT/EN.'}
     catch(_){items=[];catalogTotal=0;patchCopy(0);if(status)status.textContent='Não foi possível carregar o catálogo oficial agora.';render()}
   }
 
