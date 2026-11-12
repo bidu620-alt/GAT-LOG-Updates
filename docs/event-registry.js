@@ -549,6 +549,21 @@
 
   EVENTS.push({"id":"fazenda_bidu_2026","name":"Fazenda do Bidu","title":"Fazenda do Bidu — Do Campo ao Mundo","medal":"🌾","draft":false,"achievement_enabled":true,"require_cargo_id":true,"goal":45,"min_km":500,"repetitions":3,"cargos":[{"official":"Live Cattle","label":"Gado bovino vivo","emoji":"🐄","ids":["live_cattle"],"aliases":["Gado bovino vivo","Gado vivo","Live Cattle"],"catalog_name":"Gado bovino vivo","dlc":"Scandinavia","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Live Pigs","label":"Porcos Vivos","emoji":"🐖","ids":["live_pigs"],"aliases":["Porcos Vivos","Live Pigs","Porcos vivos"],"catalog_name":"Porcos Vivos","dlc":"1.47","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Sheep Wool","label":"Lã de ovelha","emoji":"🐑","ids":["sheep_wool"],"aliases":["Lã de ovelha","Sheep Wool"],"catalog_name":"Lã de ovelha","dlc":"Scandinavia","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Cheese","label":"Queijo","emoji":"🧀","ids":["cheese"],"aliases":["Queijo","Cheese"],"catalog_name":"Queijo","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Milk","label":"Leite","emoji":"🥛","ids":["milk","milk_t"],"aliases":["Leite","Milk"],"catalog_name":"Leite","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Non-alcoholic Beer","label":"Cerveja sem álcool","emoji":"🍺","ids":["nonalco_beer"],"aliases":["Cerveja sem álcool","Non-alcoholic Beer"],"catalog_name":"Cerveja sem álcool","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Beef","label":"Carne","emoji":"🥩","ids":["beef_meat"],"aliases":["Carne","Beef","Carne bovina"],"catalog_name":"Carne","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Pork","label":"Carne de porco","emoji":"🥩","ids":["pork_meat"],"aliases":["Carne de porco","Carne suína","Pork"],"catalog_name":"Carne de porco","dlc":"Scandinavia","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Chicken Meat","label":"Carne de frango","emoji":"🍗","ids":["chicken_meat"],"aliases":["Carne de frango","Chicken Meat"],"catalog_name":"Carne de frango","dlc":"Scandinavia","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Pet Food","label":"Ração","emoji":"🌾","ids":["pet_food","pet_food_c"],"aliases":["Ração","Pet Food","Ração para animais"],"catalog_name":"Ração","dlc":"Scandinavia","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Straw Bales","label":"Fardos de palha","emoji":"🌿","ids":["straw_bales"],"aliases":["Fardos de palha","Straw Bales"],"catalog_name":"Fardos de palha","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Fertilizer","label":"Fertilizante","emoji":"🌱","ids":["fertilizer"],"aliases":["Fertilizante","Adubo","Fertilizer"],"catalog_name":"Fertilizante","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Big-Bags of Seeds","label":"Sacos grandes de sementes","emoji":"🌻","ids":["big_bag_seed"],"aliases":["Sacos grandes de sementes","Big-Bags of Seeds","Big-bags de sementes"],"catalog_name":"Sacos grandes de sementes","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Dry Milk","label":"Leite em pó","emoji":"🥛","ids":["drymilk"],"aliases":["Leite em pó","Dry Milk"],"catalog_name":"Leite em pó","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false},{"official":"Young Seedlings","label":"Mudas de plantas","emoji":"🌱","ids":["young_seed"],"aliases":["Mudas de plantas","Mudas jovens","Young Seedlings"],"catalog_name":"Mudas de plantas","dlc":"Launch","min_km":500,"required_deliveries":3,"pending_catalog":false}]});
 
+  // Espelho administrativo do ICE: as cidades são uma prévia, não o direito adquirido
+  // nem o progresso oficial. O início é obtido da API pública da Central.
+  const ICE_CITIES=[
+    ['Akureyri'],['Blönduós','Blonduos'],['Borgarnes'],['Egilsstaðir','Egilsstadir'],
+    ['Höfn í Hornafirði','Hofn i Hornafirdi'],['Hólmavík','Holmavik'],
+    ['Húsavík','Husavik'],['Ísafjörður','Isafjordur'],['Keflavík','Keflavik'],
+    ['Ólafsvík','Olafsvik'],['Patreksfjörður','Patreksfjordur'],
+    ['Reykjavík','Reykjavik','Reiquiavique'],['Selfoss'],
+    ['Þórshöfn','Thórshöfn','Thorshofn','Thorshavn']
+  ];
+  EVENTS.push({id:'iceland_2026',name:'Evento ICE',title:'Evento ICE — Expedição Islândia',
+    medal:'❄️',kind:'city',goal:14,min_km:200,start:null,
+    requires_server_start:true,achievement_enabled:false,
+    cargos:ICE_CITIES.map(([official,...aliases])=>({official,label:official,aliases}))});
+
   function eventById(id){return EVENTS.find(e=>e.id===id)||null}
   function rawOf(row){
     if(row?.raw_json&&typeof row.raw_json==='object')return row.raw_json;
@@ -590,6 +605,29 @@
   }
   function progress(profile,eventId){
     const event=eventById(eventId);if(!event)return {count:0,goal:0,completed:false,completedAt:null,matched:new Map()};
+    if(event.kind==='city'){
+      const matched=new Map(),goal=event.goal||14;
+      const start=Date.parse(event.start||'');
+      // Sem marco oficial, não declarar 0/14 nem aceitar viagens históricas.
+      if(!Number.isFinite(start))return {count:null,goal,completed:false,matched,preview:true,startUnavailable:true};
+      const rows=Array.isArray(profile?.event_history)?profile.event_history:
+        (Array.isArray(profile?.deliveries)?profile.deliveries:(Array.isArray(profile?.cargo_history)?profile.cargo_history:[]));
+      for(const row of rows){
+        const t=rowTime(row),km=Number(row?.distance_km??row?.distance??row?.km);
+        if(!completedDelivery(row)||t<start||!Number.isFinite(km)||km<event.min_km)continue;
+        const source=norm(row.source||row.source_city||row.origin||row.origin_city||'');
+        const destination=norm(row.destination||row.destination_city||'');
+        for(const city of event.cargos){
+          const variants=[city.official,...(city.aliases||[])].map(norm);
+          if(!variants.includes(source)&&!variants.includes(destination))continue;
+          if(!matched.has(city.official))matched.set(city.official,{row,t,city});
+        }
+      }
+      // A API administrativa ainda não disponibiliza aquisição e estado oficial por motorista.
+      // Não promover prévias de rotas a conquistas ou progresso salvo.
+      return {count:matched.size,goal,completed:false,matched,preview:true,
+        purchaseUnverified:true,completedAt:null};
+    }
     const start=event.start?Date.parse(event.start):-Infinity,end=event.end?Date.parse(event.end):Infinity;
     const rows=Array.isArray(profile?.event_history)?profile.event_history:(Array.isArray(profile?.deliveries)?profile.deliveries:(Array.isArray(profile?.cargo_history)?profile.cargo_history:[]));
     const matched=new Map();
