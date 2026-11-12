@@ -18,7 +18,7 @@ $backup=Join-Path $env:LOCALAPPDATA ("GAT-LOG\Backups\streamer-"+$stamp)
 $stage=Join-Path $env:TEMP ("bidulog-streamer-"+$stamp)
 New-Item -ItemType Directory -Path $stage,$backup -Force | Out-Null
 $patch=Join-Path $stage 'apply-streamer-central.mjs'
-$url='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/642d1e5a0ec9fa3366844d49b309229dc3081afb/scripts/apply-streamer-central.mjs'
+$url='https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/4b0efb2fc47dbef7ec345f2b70aab5374469b7f2/scripts/apply-streamer-central.mjs'
 Write-Host 'Preparando pacote Streamer sem substituir os arquivos existentes...' -ForegroundColor Cyan
 Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $patch -TimeoutSec 35
 & $node --check $patch
