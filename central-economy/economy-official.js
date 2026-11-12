@@ -17,7 +17,28 @@ const parse=v=>{try{return JSON.parse(v||'null')}catch{return null}};
 const isAdmin=s=>['owner','admin'].includes(s.role);
 export function ensureEconomy(db){if(!initialized.has(db)){sql(db).exec(readFileSync(new URL('./economy-schema.sql',import.meta.url),'utf8'));initialized.add(db)}grantBiduCatalog(db)}
 function grantBiduCatalog(db){if(!isBiduOwner(db,'biduzao'))return;tx(db,()=>{let count=0;for(const p of catalog(db)){if(p.kind==='brand')count+=sql(db).prepare('INSERT OR IGNORE INTO eco_brands VALUES(?,?,?,?)').run('biduzao',p.brand_key,now(),'owner-catalog-access').changes;else if(p.kind!=='bcoin')count+=sql(db).prepare('INSERT OR IGNORE INTO eco_entitlements VALUES(?,?,?,?,?,?)').run('biduzao',p.id,p.title,p.kind,now(),'owner-catalog-access').changes}if(count)audit(db,'biduzao','owner_catalog_access','biduzao',{items:count});})}
-function eligibleAccount(db,s){ensureEconomy(db);if(!s?.user)fail(401,'invalid_session');if(cfg(db,'public_enabled')!=='1'&&!isAdmin(s))fail(403,'economy_not_released')}
+const STREAMER_SOURCE='streamer-benefit';
+export function syncStreamerBenefits(db,user){
+ ensureEconomy(db);
+ if(sql(db).prepare('SELECT role FROM accounts WHERE user=?').get(user)?.role!=='streamer')return;
+ tx(db,()=>{
+  const t=now(),gifts=[{id:'event_iceland_2026',title:'Islândia — Terra de Fogo e Gelo',kind:'event'},
+   {id:'profile_customization',title:'Personalização do perfil',kind:'personalization'},
+   ...sql(db).prepare("SELECT id,title,kind FROM eco_products WHERE kind='event' AND active=1").all()];
+  for(const g of gifts)sql(db).prepare('INSERT OR IGNORE INTO eco_entitlements(user,product_id,title,kind,acquired_at,source) VALUES(?,?,?,?,?,?)').run(user,g.id,g.title,g.kind,t,STREAMER_SOURCE);
+  const claim=sql(db).prepare('SELECT brand_key FROM eco_streamer_rewards WHERE user=?').get(user);
+  if(claim?.brand_key&&Object.hasOwn(BRANDS,claim.brand_key))sql(db).prepare('INSERT OR IGNORE INTO eco_brands(user,brand_key,acquired_at,source) VALUES(?,?,?,?)').run(user,claim.brand_key,t,STREAMER_SOURCE);
+ });
+}
+export function revokeStreamerBenefits(db,user){
+ ensureEconomy(db);
+ tx(db,()=>{
+  sql(db).prepare("DELETE FROM eco_selected WHERE user=? AND brand_key IN (SELECT brand_key FROM eco_brands WHERE user=? AND source=?)").run(user,user,STREAMER_SOURCE);
+  sql(db).prepare('DELETE FROM eco_brands WHERE user=? AND source=?').run(user,STREAMER_SOURCE);
+  sql(db).prepare('DELETE FROM eco_entitlements WHERE user=? AND source=?').run(user,STREAMER_SOURCE);
+ });
+}
+function eligibleAccount(db,s){ensureEconomy(db);if(!s?.user)fail(401,'invalid_session');if(s.role==='streamer')syncStreamerBenefits(db,s.user);if(cfg(db,'public_enabled')!=='1'&&!isAdmin(s))fail(403,'economy_not_released')}
 function admin(s){if(!isAdmin(s))fail(403,'forbidden')}
 export function units(v){const s=String(v??'').trim().replace(',','.');if(!/^\d{1,8}(?:\.\d{1,2})?$/.test(s))fail(400,'invalid_amount');const [a,b='']=s.split('.');const n=Number(a)*100+Number((b+'00').slice(0,2));if(!Number.isSafeInteger(n)||n<1||n>1000000000)fail(400,'invalid_amount');return n}
 function wallet(db,user){sql(db).prepare('INSERT OR IGNORE INTO eco_wallets(user,updated_at) VALUES(?,?)').run(user,now());return sql(db).prepare('SELECT * FROM eco_wallets WHERE user=?').get(user)}
@@ -64,7 +85,7 @@ function currentValidation(db,user){
 }
 function companyState(db,user){const member=sql(db).prepare('SELECT * FROM eco_company_members WHERE user=?').get(user);if(!member)return null;const c=sql(db).prepare('SELECT * FROM eco_companies WHERE id=?').get(member.company_id);return {...c,my_role:member.role,members:sql(db).prepare('SELECT user,role,joined_at FROM eco_company_members WHERE company_id=? ORDER BY joined_at').all(c.id)}}
 export function state(db,s){eligibleAccount(db,s);const w=wallet(db,s.user),sel=sql(db).prepare('SELECT brand_key FROM eco_selected WHERE user=?').get(s.user)?.brand_key;const last=sql(db).prepare('SELECT * FROM eco_rewards WHERE user=? ORDER BY delivery_id DESC LIMIT 1').get(s.user);return{
- ok:true,mode:'official',rule:'brand-v1',user:s.user,is_admin:isAdmin(s),gold_balance:w.gold_units/100,bcoin_balance:w.bcoin_units/100,
+ ok:true,mode:'official',rule:'brand-v1',user:s.user,is_admin:isAdmin(s),streamer:{eligible:s.role==='streamer',brand_key:s.role==='streamer'?(sql(db).prepare('SELECT brand_key FROM eco_streamer_rewards WHERE user=?').get(s.user)?.brand_key||null):null,free_events:s.role==='streamer',profile_customization:s.role==='streamer'},gold_balance:w.gold_units/100,bcoin_balance:w.bcoin_units/100,
  gold_starts_at:cfg(db,'gold_starts_at'),selection_locked:['active','suspended'].includes(mission(db,s.user)?.state),
  garage:sql(db).prepare('SELECT * FROM eco_brands WHERE user=? ORDER BY brand_key').all(s.user).map(x=>({...x,model_key:x.brand_key,label:BRANDS[x.brand_key]+' • todos os modelos',selected:x.brand_key===sel})),validation:currentValidation(db,s.user),
  last_reward_message:last?`Entrega #${last.delivery_id}: ${last.gold_units/100} Gold (${last.gat_points} Pontos GAT). ${last.reason==='validated'?'Creditado na carteira.':'Motivo: '+last.reason}`:'Nenhuma entrega gerou Gold nesta carteira ainda.',
@@ -112,6 +133,17 @@ export function economyAction(db,s,path,b){
  eligibleAccount(db,s);
  if(path==='pass-state')return monthlyPassState(db,s,String(b.month||'2026-11'));
  if(path==='state')return state(db,s);
+ if(path==='streamer-brand')return op(db,s,b,path,()=>{
+  if(s.role!=='streamer')fail(403,'streamer_required');
+  const key=clean(b.brand_key);if(!Object.hasOwn(BRANDS,key))fail(400,'invalid_brand');
+  if(sql(db).prepare('SELECT 1 FROM eco_streamer_rewards WHERE user=?').get(s.user))fail(409,'streamer_brand_claimed');
+  if(owned(db,s.user,key))fail(409,'brand_already_owned');
+  const t=now();
+  sql(db).prepare('INSERT INTO eco_streamer_rewards(user,brand_key,claimed_at) VALUES(?,?,?)').run(s.user,key,t);
+  sql(db).prepare('INSERT INTO eco_brands(user,brand_key,acquired_at,source) VALUES(?,?,?,?)').run(s.user,key,t,STREAMER_SOURCE);
+  audit(db,s.user,'streamer_brand_claimed',s.user,{brand_key:key});
+  return{ok:true,brand_key:key,message:'Marca '+BRANDS[key]+' liberada gratuitamente para sua conta.'};
+ });
  if(path==='select-truck')return op(db,s,b,path,()=>economySelect(db,s.user,String(b.model_key||'')));
  if(path==='recipient'){const recipient=existsUser(db,b.user);return{ok:true,user:recipient,is_self:recipient===s.user}}
  if(path==='transfer')return op(db,s,b,path,()=>{
