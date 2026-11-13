@@ -8,3 +8,5 @@
 @media(max-width:850px){.streamers-grid{grid-template-columns:1fr}.streamers-heading{align-items:flex-start;flex-direction:column}.streamer-list{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
 @media(max-width:460px){.streamers-home{padding:16px;margin:24px auto}.streamers-heading h2{font-size:21px}.streamer-player.is-twitch{display:none}.streamer-player-fallback{flex-direction:column;font-size:12px}.streamer-empty{min-height:230px;padding:20px}.streamer-channel-top{flex-wrap:wrap}.streamer-list{grid-template-columns:1fr}}
 
+
+@media(max-width:600px){.streamer-player.is-twitch{display:none}}

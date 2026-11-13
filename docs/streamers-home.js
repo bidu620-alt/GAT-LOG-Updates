@@ -8,8 +8,8 @@
  function fresh(c){const age=Date.now()-Date.parse(c.checked_at||'');return Number.isFinite(age)&&age>=-60000&&age<MAX_AGE}
  function eligible(p,c){return p?.user===c.user&&(p.role==='streamer'||c.user==='biduzao'&&p.role==='owner')}
  function embed(c){
-  if(c.platform==='twitch')return 'https://player.twitch.tv/?'+new URLSearchParams({channel:c.handle,parent:location.hostname,muted:'true',autoplay:'false'});
-  if(c.platform==='youtube'&&/^[A-Za-z0-9_-]{11}$/.test(c.video_id||''))return 'https://www.youtube.com/embed/'+c.video_id+'?autoplay=0&playsinline=1';
+  if(c.platform==='twitch')return 'https://player.twitch.tv/?'+new URLSearchParams({channel:c.handle,parent:location.hostname,muted:'true',autoplay:'true'});
+  if(c.platform==='youtube'&&/^[A-Za-z0-9_-]{11}$/.test(c.video_id||''))return 'https://www.youtube.com/embed/'+c.video_id+'?autoplay=1&mute=1&playsinline=1';
   return '';
  }
  function draw(){
@@ -34,7 +34,7 @@
   }
   const header=node('div','streamer-player-heading');header.append(node('span','streamer-state is-live','● AO VIVO'),node('strong','',current.name),node('span','',names[current.platform]));stage.append(header);
   const wrap=node('div','streamer-player '+(current.platform==='twitch'?'is-twitch':''));
-  const iframe=node('iframe');iframe.src=url;iframe.title='Live de '+current.name+' na '+names[current.platform];iframe.allow='fullscreen; picture-in-picture; encrypted-media';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';wrap.append(iframe);stage.append(wrap);
+  const iframe=node('iframe');iframe.src=url;iframe.title='Live de '+current.name+' na '+names[current.platform];iframe.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';wrap.append(iframe);stage.append(wrap);
   const fallback=node('div','streamer-player-fallback');fallback.append(node('span','','Se o player não abrir, assista diretamente no canal.'),channelLink(current));stage.append(fallback);
  }
  async function json(url){const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();return r.json()}
@@ -42,7 +42,7 @@
   if(loading)return;loading=true;
   try{
    if(!config.length){const data=await json('streamer-channels.json?v=20261112-1');config=data.channels.filter(c=>/^[a-z0-9_-]{1,40}$/i.test(c.user)&&/^[a-z0-9_.-]{1,100}$/i.test(c.handle)&&((c.platform==='twitch'&&c.url==='https://www.twitch.tv/'+c.handle)||(c.platform==='youtube'&&c.url==='https://www.youtube.com/@'+c.handle+'/streams')))}
-   let data;try{data=await json('streamer-status.json?t='+Math.floor(Date.now()/60000))}catch{data={channels:[]}}
+   let data;try{data=await json('https://bidu620-alt.github.io/GAT-LOG-Updates/streamer-status.json?t='+Math.floor(Date.now()/60000))}catch{data={channels:[]}}
    channels=(await Promise.all(config.map(async c=>{
     try{const account=await json('https://api.bidulog.com.br/api/public/driver?user='+encodeURIComponent(c.user));if(!account.ok||!eligible(account.profile,c))return null;
      const status=data.channels?.find(x=>x.user===c.user&&x.platform===c.platform&&x.handle===c.handle);
