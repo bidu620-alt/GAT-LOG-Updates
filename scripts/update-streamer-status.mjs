@@ -33,6 +33,45 @@ export function extractChannelId(html){
  ];
  return candidates.find(id=>/^UC[A-Za-z0-9_-]{22}$/.test(id||''))||null;
 }
+// The /live player may demand login even when the public /streams channel tab is available.
+// Only explicit LIVE badges on videos belonging to the verified channel tab count.
+export function findLiveInChannelTab(initial){
+ if(!initial||typeof initial!=='object')return null;
+ const seen=new WeakSet();
+ function hasLiveBadge(item){
+  if(!item||typeof item!=='object')return false;
+  if(item.isLiveNow===true)return true;
+  const items=[...(item.badges||[]),...(item.thumbnailOverlays||[]),...(item.overlays||[])];
+  return items.some(b=>{
+   const badge=b?.metadataBadgeRenderer;
+   if(badge?.style==='BADGE_STYLE_TYPE_LIVE_NOW')return true;
+   if(b?.thumbnailOverlayTimeStatusRenderer?.style==='LIVE')return true;
+   const tag=b?.thumbnailOverlayBadgeViewModel||b?.badgeViewModel;
+   const label=tag?.text?.content||tag?.text||tag?.label||'';
+   return typeof label==='string'&&/^(LIVE|AO VIVO)$/i.test(label.trim());
+  });
+ }
+ function walk(node){
+  if(!node||typeof node!=='object'||seen.has(node))return null;
+  seen.add(node);
+  for(const item of [node.videoRenderer,node.gridVideoRenderer,node.lockupViewModel]){
+   if(!item)continue;
+   const id=item.videoId||item.contentId;
+   if(/^[A-Za-z0-9_-]{11}$/.test(id||'')&&!item.upcomingEventData&&hasLiveBadge(item)){
+    const title=item.title?.runs?.map(x=>x.text).join('')||item.metadata?.lockupMetadataViewModel?.title?.content||'';
+    return {video_id:id,title:String(title).slice(0,180)};
+   }
+  }
+  for(const value of Object.values(node)){
+   if(value&&typeof value==='object'){
+    if(Array.isArray(value)){for(const child of value){const found=walk(child);if(found)return found}}
+    else {const found=walk(value);if(found)return found}
+   }
+  }
+  return null;
+ }
+ return walk(initial);
+}
 export function ownerMatchesHandle(player,handle){
  if(!handle||!player)return false;
  const micro=player.microformat?.playerMicroformatRenderer||{};
@@ -70,11 +109,13 @@ async function youtube(channel){
  const html=await response(`https://www.youtube.com/@${channel.handle}/streams`);
  const metadata=findMetadata(readAssignedObject(html,'ytInitialData'));
  const channelId=extractChannelId(html);
+ const tabLive=channelId?findLiveInChannelTab(readAssignedObject(html,'ytInitialData')):null;
  const vanity=metadata?.vanityChannelUrl||'';
  if(channel.user==='gensey'){
   const title=html.split('<title>')[1]?.split('</title>')[0]?.slice(0,120)||'';
-  console.log('youtube_streams_diagnostic',JSON.stringify({user:channel.user,bytes:html.length,title,hasInitialData:!!readAssignedObject(html,'ytInitialData'),hasMetadata:!!metadata,channelId:channelId||null,vanity:vanity||null,hasExternalChannelId:html.includes('externalChannelId')}));
+  console.log('youtube_streams_diagnostic',JSON.stringify({user:channel.user,bytes:html.length,title,hasInitialData:!!readAssignedObject(html,'ytInitialData'),hasMetadata:!!metadata,channelId:channelId||null,vanity:vanity||null,hasExternalChannelId:html.includes('externalChannelId'),tabLiveId:tabLive?.video_id||null}));
  }
+ if(tabLive) return {state:'live',video_id:tabLive.video_id,title:tabLive.title,channel_id:channelId};
  // Reject a channel page that explicitly identifies a different handle.
  if(vanity){
   try{
