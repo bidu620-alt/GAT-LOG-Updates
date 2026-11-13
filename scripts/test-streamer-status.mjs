@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readAssignedObject,findMetadata,classifyYouTube,classifyTwitch} from './update-streamer-status.mjs';
+import {readAssignedObject,findMetadata,extractChannelId,ownerMatchesHandle,classifyYouTube,classifyTwitch} from './update-streamer-status.mjs';
 const id='UCabcdefghijklmnopqrstuv',video='abcdefghijk';
 const player={videoDetails:{channelId:id,videoId:video,title:'A live {de hoje}'},playabilityStatus:{status:'OK'},microformat:{playerMicroformatRenderer:{liveBroadcastDetails:{isLiveNow:true}}}};
 assert.equal(classifyYouTube(player,id).state,'live');
@@ -17,5 +17,15 @@ assert.equal(classifyTwitch('<html>Error 500</html>','bidugamess').state,'unknow
 assert.deepEqual(readAssignedObject('var ytInitialPlayerResponse = '+JSON.stringify(player)+'; other();','ytInitialPlayerResponse'),player);
 assert.equal(readAssignedObject('var ytInitialPlayerResponse = {broken','ytInitialPlayerResponse'),null);
 assert.equal(findMetadata({a:[{b:{channelMetadataRenderer:{externalId:id}}}]}).externalId,id);
-console.log('13 verificacoes passaram: live, gravacao, agendamento, canal divergente, bloqueios e respostas invalidas.');
+const owner=structuredClone(player);
+owner.microformat.playerMicroformatRenderer.ownerProfileUrl='https://www.youtube.com/@GenseyGamer';
+assert.equal(ownerMatchesHandle(owner,'GenseyGamer'),true);
+assert.equal(ownerMatchesHandle(owner,'JcGamerOriginal'),false);
+assert.equal(classifyYouTube(owner,null,'GenseyGamer').state,'live');
+assert.equal(classifyYouTube(owner,null,'JcGamerOriginal').state,'unknown');
+assert.equal(classifyYouTube(owner,id,'GenseyGamer').state,'live');
+assert.equal(extractChannelId('var ytInitialData = '+JSON.stringify({metadata:{channelMetadataRenderer:{externalId:id}}})+';'),id);
+assert.equal(extractChannelId('<meta itemprop="channelId" content="'+id+'">'),id);
+assert.equal(extractChannelId('{"externalChannelId":"'+id+'"}'),id);
+console.log('21 verificacoes passaram: inclui detecção de lives com identificação alternativa do canal YouTube.');
 
