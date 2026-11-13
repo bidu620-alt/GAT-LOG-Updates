@@ -4,38 +4,58 @@
  const names={twitch:'Twitch',youtube:'YouTube'},MAX_AGE=20*60*1000;
  let config=[],channels=[],selected='',frameKey='',loading=false;
  function node(tag,className,text){const n=document.createElement(tag);if(className)n.className=className;if(text)n.textContent=text;return n}
- function channelLink(c){const a=node('a','streamer-channel-link','Abrir canal ↗');a.href=c.url;a.target='_blank';a.rel='noopener noreferrer';return a}
+
+ const JULIANO_ID='uLKxfxqM8BY',JULIANO_URL='https://www.youtube.com/watch?v='+JULIANO_ID;
  function fresh(c){const age=Date.now()-Date.parse(c.checked_at||'');return Number.isFinite(age)&&age>=-60000&&age<MAX_AGE}
+ function isLive(c){return c.state==='live'&&fresh(c)}
+ function videoAvailable(c){return /^[A-Za-z0-9_-]{11}$/.test(c.featured_video_id||'')}
+ function addJuliano(items){
+  const juliano=items.find(c=>c.user==='julianos'||c.user==='juliano');
+  if(juliano){juliano.featured_video_id=JULIANO_ID;juliano.featured_video_url=JULIANO_URL;juliano.name='Juliano';}
+  else items.push({user:'julianos',name:'Juliano',platform:'youtube',state:'featured',url:JULIANO_URL,featured_video_id:JULIANO_ID,featured_video_url:JULIANO_URL});
+  return items;
+ }
+ function channelLink(c){
+  const video=!isLive(c)&&videoAvailable(c);
+  const a=node('a','streamer-channel-link',video?'Abrir vídeo ↗':'Abrir canal ↗');
+  a.href=video?c.featured_video_url:c.url;a.target='_blank';a.rel='noopener noreferrer';return a;
+ }
  function eligible(p,c){return p?.user===c.user&&(p.role==='streamer'||c.user==='biduzao'&&p.role==='owner')}
  function embed(c){
-  if(c.platform==='twitch')return 'https://player.twitch.tv/?'+new URLSearchParams({channel:c.handle,parent:location.hostname,muted:'true',autoplay:'true'});
-  if(c.platform==='youtube'&&/^[A-Za-z0-9_-]{11}$/.test(c.video_id||''))return 'https://www.youtube.com/embed/'+c.video_id+'?autoplay=1&mute=1&playsinline=1';
+  if(isLive(c)&&c.platform==='twitch')return 'https://player.twitch.tv/?'+new URLSearchParams({channel:c.handle,parent:location.hostname,muted:'true',autoplay:'true'});
+  const id=isLive(c)?c.video_id:c.featured_video_id;
+  if(c.platform==='youtube'&&/^[A-Za-z0-9_-]{11}$/.test(id||''))return 'https://www.youtube.com/embed/'+id+'?autoplay=1&mute=1&playsinline=1';
   return '';
  }
  function draw(){
-  const live=channels.filter(c=>c.state==='live'&&fresh(c));
+  const live=channels.filter(isLive),viewable=channels.filter(c=>isLive(c)||videoAvailable(c));
   summary.textContent=live.length?live.length+' motorista'+(live.length>1?'s':'')+' ao vivo':'Acompanhe os canais da comunidade';
-  if(!live.some(c=>c.user===selected))selected=live[0]?.user||'';
+  if(!viewable.some(c=>c.user===selected))selected=live[0]?.user||viewable[0]?.user||'';
   list.replaceChildren();
-  for(const c of [...channels].sort((a,b)=>(b.state==='live')-(a.state==='live'))){
+  for(const c of [...channels].sort((a,b)=>Number(isLive(b))-Number(isLive(a)))){
    const card=node('article','streamer-channel'+(c.user===selected?' selected':''));
-   const top=node('div','streamer-channel-top');const avatar=node('span','streamer-avatar',c.name.charAt(0));
+   const top=node('div','streamer-channel-top'),avatar=node('span','streamer-avatar',c.name.charAt(0));
    const identity=node('div','streamer-identity');identity.append(node('strong','',c.name),node('small','',names[c.platform]));top.append(avatar,identity);
-   const active=c.state==='live'&&fresh(c),label=active?'● AO VIVO':c.state==='offline'?'Offline':'Canal cadastrado';
-   top.append(node('span','streamer-state'+(active?' is-live':''),label));card.append(top);
+   const active=isLive(c),video=!active&&videoAvailable(c),label=active?'● AO VIVO':video?'▶ VÍDEO DISPONÍVEL':c.state==='offline'?'Offline':'Canal cadastrado';
+   top.append(node('span','streamer-state'+(active?' is-live':video?' is-video':''),label));card.append(top);
    const actions=node('div','streamer-actions');
-   if(active){const button=node('button','streamer-watch',c.user===selected?'Assistindo':'Assistir aqui');button.type='button';button.setAttribute('aria-pressed',String(c.user===selected));button.addEventListener('click',()=>{selected=c.user;draw()});actions.append(button)}
+   if(active||video){
+    const button=node('button','streamer-watch',c.user===selected?'Assistindo':video?'Assistir vídeo':'Assistir aqui');
+    button.type='button';button.setAttribute('aria-pressed',String(c.user===selected));
+    button.addEventListener('click',()=>{selected=c.user;draw()});actions.append(button);
+   }
    actions.append(channelLink(c));card.append(actions);list.append(card);
   }
-  const current=live.find(c=>c.user===selected);
+  const current=viewable.find(c=>c.user===selected);
   const url=current?embed(current):'',key=url||'empty';if(key===frameKey)return;frameKey=key;stage.replaceChildren();
   if(!current||!url){
    const empty=node('div','streamer-empty');empty.append(node('span','streamer-empty-icon','▶'),node('h3','','A próxima viagem pode ser ao vivo.'),node('p','','Quando uma transmissão for confirmada, você poderá assistir aqui. Enquanto isso, conheça os canais ao lado.'));stage.append(empty);return;
   }
-  const header=node('div','streamer-player-heading');header.append(node('span','streamer-state is-live','● AO VIVO'),node('strong','',current.name),node('span','',names[current.platform]));stage.append(header);
+  const liveNow=isLive(current),header=node('div','streamer-player-heading');
+  header.append(node('span','streamer-state '+(liveNow?'is-live':'is-video'),liveNow?'● AO VIVO':'▶ VÍDEO'),node('strong','',current.name),node('span','',names[current.platform]));stage.append(header);
   const wrap=node('div','streamer-player '+(current.platform==='twitch'?'is-twitch':''));
-  const iframe=node('iframe');iframe.src=url;iframe.title='Live de '+current.name+' na '+names[current.platform];iframe.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';wrap.append(iframe);stage.append(wrap);
-  const fallback=node('div','streamer-player-fallback');fallback.append(node('span','','Se o player não abrir, assista diretamente no canal.'),channelLink(current));stage.append(fallback);
+  const iframe=node('iframe');iframe.src=url;iframe.title=(liveNow?'Live de ':'Vídeo de ')+current.name+' no '+names[current.platform];iframe.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';wrap.append(iframe);stage.append(wrap);
+  const fallback=node('div','streamer-player-fallback');fallback.append(node('span','',liveNow?'Se o player não abrir, assista diretamente no canal.':'Vídeo da comunidade. Uma gravação não é contabilizada como transmissão ao vivo.'),channelLink(current));stage.append(fallback);
  }
  async function json(url){const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();return r.json()}
  const validUser=/^[a-z0-9_-]{1,40}$/i,validHandle=/^[a-z0-9_.-]{1,100}$/i;
@@ -78,7 +98,7 @@
      }
      return {...c,name:c.name||account.profile?.display_name||c.user,state,checked_at:checkedAt,video_id:status?.video_id};
     }catch{return null}
-   }))).filter(Boolean);root.hidden=!channels.length;draw();
+   }))).filter(Boolean);addJuliano(channels);root.hidden=!channels.length;draw();
   }catch{root.hidden=true}finally{loading=false}
  }
  refresh();setInterval(()=>{if(!document.hidden)refresh();else if(channels.some(c=>c.state==='live'&&!fresh(c)))draw()},90000);
