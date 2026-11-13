@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readAssignedObject,findMetadata,extractChannelId,ownerMatchesHandle,classifyYouTube,classifyTwitch} from './update-streamer-status.mjs';
+import {readAssignedObject,findMetadata,extractChannelId,findLiveInChannelTab,ownerMatchesHandle,classifyYouTube,classifyTwitch} from './update-streamer-status.mjs';
 const id='UCabcdefghijklmnopqrstuv',video='abcdefghijk';
 const player={videoDetails:{channelId:id,videoId:video,title:'A live {de hoje}'},playabilityStatus:{status:'OK'},microformat:{playerMicroformatRenderer:{liveBroadcastDetails:{isLiveNow:true}}}};
 assert.equal(classifyYouTube(player,id).state,'live');
@@ -27,5 +27,11 @@ assert.equal(classifyYouTube(owner,id,'GenseyGamer').state,'live');
 assert.equal(extractChannelId('var ytInitialData = '+JSON.stringify({metadata:{channelMetadataRenderer:{externalId:id}}})+';'),id);
 assert.equal(extractChannelId('<meta itemprop="channelId" content="'+id+'">'),id);
 assert.equal(extractChannelId('{"externalChannelId":"'+id+'"}'),id);
-console.log('21 verificacoes passaram: inclui detecção de lives com identificação alternativa do canal YouTube.');
+const liveCard={richItemRenderer:{content:{videoRenderer:{videoId:'kLMnOPqRsTu',title:{runs:[{text:'Ao vivo agora'}]},badges:[{metadataBadgeRenderer:{style:'BADGE_STYLE_TYPE_LIVE_NOW'}}]}}}};
+const scheduledCard={richItemRenderer:{content:{videoRenderer:{videoId:'scheduled01',upcomingEventData:{startTime:'100'},title:{runs:[{text:'LIVE amanhã'}]},badges:[{metadataBadgeRenderer:{style:'BADGE_STYLE_TYPE_LIVE_NOW'}}]}}}};
+assert.equal(findLiveInChannelTab({contents:[liveCard]})?.video_id,'kLMnOPqRsTu');
+assert.equal(findLiveInChannelTab({contents:[scheduledCard]}),null);
+assert.equal(findLiveInChannelTab({contents:[{videoRenderer:{videoId:'offline0123',title:{runs:[{text:'LIVE gravada'}]}}}]}),null);
+assert.equal(findLiveInChannelTab({contents:[{lockupViewModel:{contentId:'kLMnOPqRsTu',overlays:[{thumbnailOverlayBadgeViewModel:{text:'AO VIVO'}}]}}]})?.video_id,'kLMnOPqRsTu');
+console.log('25 verificacoes passaram: inclui badge YouTube AO VIVO, gravação, agendamento e player com login obrigatório.');
 
