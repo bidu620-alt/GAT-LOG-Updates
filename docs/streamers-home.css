@@ -10,15 +10,4 @@
 
 
 @media(max-width:600px){.streamer-player.is-twitch{display:none}}
-
-/* Featured community video, distinct from the verified AO VIVO directory. */
-.streamer-featured{margin:18px auto 34px;display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,340px);gap:20px;align-items:center;padding:20px 24px;border:1px solid #28445a;border-radius:17px;background:linear-gradient(120deg,#101e2b,#102734);box-sizing:border-box}
-.streamer-featured .eyebrow{color:#8bc8fa;font-size:10px;letter-spacing:.15em}
-.streamer-featured h2{color:#f1f8ff;font-size:20px;margin:6px 0 9px}
-.streamer-featured p{font-size:12px;line-height:1.6;color:#b0c2d4;margin:0 0 14px}
-.streamer-featured-link{display:inline-flex;gap:8px;align-items:center;padding:10px 13px;border:1px solid #3a6d91;border-radius:9px;color:#c9edff;text-decoration:none;font-weight:800;font-size:11px}
-.streamer-featured-link:hover{background:#153953}
-.streamer-featured-thumb{display:block;position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:11px;background:#080e15}
-.streamer-featured-thumb img{width:100%;height:100%;object-fit:cover}
-.streamer-featured-thumb span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;border-radius:50%;width:50px;height:50px;background:#081520c7;border:1px solid #ffffff77;color:#fff;font-size:18px}
-@media(max-width:700px){.streamer-featured{grid-template-columns:1fr;padding:17px}.streamer-featured-thumb{max-width:470px}}
+.streamer-state.is-video{color:#9ecbff}
