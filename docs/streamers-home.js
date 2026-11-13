@@ -38,10 +38,29 @@
   const fallback=node('div','streamer-player-fallback');fallback.append(node('span','','Se o player não abrir, assista diretamente no canal.'),channelLink(current));stage.append(fallback);
  }
  async function json(url){const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();return r.json()}
+ const validUser=/^[a-z0-9_-]{1,40}$/i,validHandle=/^[a-z0-9_.-]{1,100}$/i;
+ function valid(c){
+  return validUser.test(c?.user||'')&&validHandle.test(c?.handle||'')&&
+    ((c.platform==='twitch'&&c.url==='https://www.twitch.tv/'+c.handle)||
+     (c.platform==='youtube'&&c.url==='https://www.youtube.com/@'+c.handle+'/streams'));
+ }
+ async function channelConfig(){
+  const fixed=await json('streamer-channels.json?v=20261112-1');
+  const merged=new Map((fixed.channels||[]).filter(valid).map(c=>[c.user,c]));
+  try{
+   const directory=await json('https://streamers.bidulog.com.br/api/channels?t='+Math.floor(Date.now()/60000));
+   if(directory.ok)for(const c of directory.channels||[]){
+    if(!valid(c))continue;
+    const previous=merged.get(c.user);
+    merged.set(c.user,{...c,name:previous?.name||c.user});
+   }
+  }catch{} // The community's existing channels remain available during registry outages.
+  return [...merged.values()];
+ }
  async function refresh(){
   if(loading)return;loading=true;
   try{
-   if(!config.length){const data=await json('streamer-channels.json?v=20261112-1');config=data.channels.filter(c=>/^[a-z0-9_-]{1,40}$/i.test(c.user)&&/^[a-z0-9_.-]{1,100}$/i.test(c.handle)&&((c.platform==='twitch'&&c.url==='https://www.twitch.tv/'+c.handle)||(c.platform==='youtube'&&c.url==='https://www.youtube.com/@'+c.handle+'/streams')))}
+   config=await channelConfig();
    let data;try{data=await json('https://bidu620-alt.github.io/GAT-LOG-Updates/streamer-status.json?t='+Math.floor(Date.now()/60000))}catch{data={channels:[]}}
    channels=(await Promise.all(config.map(async c=>{
     try{const account=await json('https://api.bidulog.com.br/api/public/driver?user='+encodeURIComponent(c.user));if(!account.ok||!eligible(account.profile,c))return null;
@@ -57,7 +76,7 @@
        }
       }catch{}
      }
-     return {...c,state,checked_at:checkedAt,video_id:status?.video_id};
+     return {...c,name:c.name||account.profile?.display_name||c.user,state,checked_at:checkedAt,video_id:status?.video_id};
     }catch{return null}
    }))).filter(Boolean);root.hidden=!channels.length;draw();
   }catch{root.hidden=true}finally{loading=false}
