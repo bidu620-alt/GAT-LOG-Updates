@@ -46,7 +46,18 @@
    channels=(await Promise.all(config.map(async c=>{
     try{const account=await json('https://api.bidulog.com.br/api/public/driver?user='+encodeURIComponent(c.user));if(!account.ok||!eligible(account.profile,c))return null;
      const status=data.channels?.find(x=>x.user===c.user&&x.platform===c.platform&&x.handle===c.handle);
-     return {...c,state:status&&fresh(status)?status.state:'unknown',checked_at:status?.checked_at,video_id:status?.video_id};
+     let state=status&&fresh(status)?status.state:'unknown',checkedAt=status?.checked_at;
+     if(c.platform==='twitch'){
+      try{
+       const response=await fetch('https://decapi.me/twitch/uptime/'+encodeURIComponent(c.handle),{signal:AbortSignal.timeout(8000),cache:'no-store'});
+       if(response.ok){
+        const text=(await response.text()).trim();
+        if(text.toLowerCase()===(c.handle+' is offline').toLowerCase()){state='offline';checkedAt=new Date().toISOString()}
+        else if(/^(?:\d+\s+(?:years?|months?|weeks?|days?|hours?|minutes?|seconds?)(?:,?\s+|$))+$/i.test(text)){state='live';checkedAt=new Date().toISOString()}
+       }
+      }catch{}
+     }
+     return {...c,state,checked_at:checkedAt,video_id:status?.video_id};
     }catch{return null}
    }))).filter(Boolean);root.hidden=!channels.length;draw();
   }catch{root.hidden=true}finally{loading=false}
