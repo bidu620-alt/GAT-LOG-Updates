@@ -19,8 +19,37 @@ export function findMetadata(value){
  for(const child of Object.values(value)){if(child&&typeof child==='object'){const found=findMetadata(child);if(found)return found}}
  return null;
 }
-export function classifyYouTube(player,channelId){
- if(!player||player.videoDetails?.channelId!==channelId)return {state:'unknown',reason:'channel_not_verified'};
+// The YouTube channel page can use several metadata layouts; never rely on one renderer.
+export function extractChannelId(html){
+ const initial=readAssignedObject(html,'ytInitialData');
+ const meta=findMetadata(initial);
+ const candidates=[
+  meta?.externalId,
+  initial?.metadata?.channelMetadataRenderer?.externalId,
+  initial?.header?.c4TabbedHeaderRenderer?.channelId,
+  html.match(/<meta[^>]*itemprop=["']channelId["'][^>]*content=["'](UC[A-Za-z0-9_-]{22})["']/i)?.[1],
+  html.match(/["']externalChannelId["']\\s*:\\s*["'](UC[A-Za-z0-9_-]{22})["']/)?.[1],
+  html.match(/["']externalId["']\\s*:\\s*["'](UC[A-Za-z0-9_-]{22})["']/)?.[1]
+ ];
+ return candidates.find(id=>/^UC[A-Za-z0-9_-]{22}$/.test(id||''))||null;
+}
+export function ownerMatchesHandle(player,handle){
+ if(!handle||!player)return false;
+ const micro=player.microformat?.playerMicroformatRenderer||{};
+ return [micro.ownerProfileUrl,micro.ownerChannelUrl].some(raw=>{
+  if(!raw)return false;
+  try{
+   const u=new URL(raw,'https://www.youtube.com');
+   return /^(?:www\\.|m\\.)?youtube\\.com$/.test(u.hostname)&&decodeURIComponent(u.pathname).replace(/\\/$/,'').toLowerCase()==='/@'+handle.toLowerCase();
+  }catch{return false}
+ });
+}
+export function classifyYouTube(player,channelId,handle=''){
+ const actual=player?.videoDetails?.channelId;
+ if(!/^UC[A-Za-z0-9_-]{22}$/.test(actual||'')||
+    (channelId&&actual!==channelId)||
+    (!channelId&&!ownerMatchesHandle(player,handle)))
+  return {state:'unknown',reason:'channel_not_verified'};
  const broadcast=player.microformat?.playerMicroformatRenderer?.liveBroadcastDetails;
  const id=player.videoDetails?.videoId;
  if(broadcast?.isLiveNow===true&&!broadcast.endTimestamp&&/^[A-Za-z0-9_-]{11}$/.test(id)&&player.playabilityStatus?.status==='OK')
@@ -34,30 +63,41 @@ export function classifyTwitch(text,handle){
  return {state:'unknown',reason:'provider_unavailable'};
 }
 async function response(url,json=false){
- const r=await fetch(url,{signal:AbortSignal.timeout(12000),headers:{'User-Agent':'BiduLog-StreamDirectory/1.0','Accept-Language':'en-US,en;q=0.9'}});
+ const r=await fetch(url,{signal:AbortSignal.timeout(12000),headers:{'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36','Accept-Language':'en-US,en;q=0.9'}});
  if(!r.ok)throw Error('provider_http_'+r.status);return json?r.json():r.text();
 }
 async function youtube(channel){
  const html=await response(`https://www.youtube.com/@${channel.handle}/streams`);
  const metadata=findMetadata(readAssignedObject(html,'ytInitialData'));
- const channelId=metadata?.externalId;
- if(!/^UC[A-Za-z0-9_-]{22}$/.test(channelId||''))return {state:'unknown',reason:'channel_not_verified'};
- const vanity=metadata.vanityChannelUrl||'';
- if(!vanity.toLowerCase().endsWith('/@'+channel.handle.toLowerCase()))return {state:'unknown',reason:'channel_identity_mismatch'};
- if(process.env.YOUTUBE_DATA_API_KEY){
-  // The uploads playlist is inexpensive to poll; verify broadcast state on videos.list.
-  const key=encodeURIComponent(process.env.YOUTUBE_DATA_API_KEY);
-  const uploads=await response(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=UU${channelId.slice(2)}&maxResults=10&key=${key}`,true);
-  const ids=(uploads.items||[]).map(x=>x.contentDetails?.videoId).filter(x=>/^[A-Za-z0-9_-]{11}$/.test(x)).join(',');
-  if(ids){
-   const videos=await response(`https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails,status&id=${ids}&key=${key}`,true);
-   const live=(videos.items||[]).find(v=>v.snippet?.channelId===channelId&&v.snippet.liveBroadcastContent==='live'&&v.liveStreamingDetails?.actualStartTime&&!v.liveStreamingDetails.actualEndTime&&v.status?.embeddable===true);
-   if(live)return {state:'live',video_id:live.id,channel_id:channelId,title:live.snippet.title};
-  }
+ const channelId=extractChannelId(html);
+ const vanity=metadata?.vanityChannelUrl||'';
+ // Reject a channel page that explicitly identifies a different handle.
+ if(vanity){
+  try{
+   const url=new URL(vanity);
+   const handlePath=decodeURIComponent(url.pathname).replace(/\\/$/,'').toLowerCase();
+   if(handlePath.startsWith('/@')&&handlePath!=='/@'+channel.handle.toLowerCase())
+    return {state:'unknown',reason:'channel_identity_mismatch'};
+  }catch{return {state:'unknown',reason:'invalid_channel_url'}}
  }
+ if(process.env.YOUTUBE_DATA_API_KEY&&channelId){
+  try{
+   // Optional official API lookup; a missing key or quota error must not block the public fallback.
+   const key=encodeURIComponent(process.env.YOUTUBE_DATA_API_KEY);
+   const uploads=await response(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=UU${channelId.slice(2)}&maxResults=10&key=${key}`,true);
+   const ids=(uploads.items||[]).map(x=>x.contentDetails?.videoId).filter(x=>/^[A-Za-z0-9_-]{11}$/.test(x)).join(',');
+   if(ids){
+    const videos=await response(`https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails,status&id=${ids}&key=${key}`,true);
+    const live=(videos.items||[]).find(v=>v.snippet?.channelId===channelId&&v.snippet.liveBroadcastContent==='live'&&v.liveStreamingDetails?.actualStartTime&&!v.liveStreamingDetails.actualEndTime&&v.status?.embeddable===true);
+    if(live)return {state:'live',video_id:live.id,channel_id:channelId,title:live.snippet.title};
+   }
+  }catch(err){console.warn('YouTube API fallback for',channel.user,err.message)}
+ }
+ // /live opens the active broadcast; verify its owner before publishing the video.
  const liveHtml=await response(`https://www.youtube.com/@${channel.handle}/live`);
  const player=readAssignedObject(liveHtml,'ytInitialPlayerResponse');
- return {...classifyYouTube(player,channelId),channel_id:channelId};
+ const status=classifyYouTube(player,channelId,channel.handle);
+ return {...status,channel_id:channelId||player?.videoDetails?.channelId||undefined};
 }
 export async function collect(channels){
  let enabled;
