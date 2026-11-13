@@ -105,6 +105,22 @@ async function response(url,json=false){
  const r=await fetch(url,{signal:AbortSignal.timeout(12000),headers:{'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36','Accept-Language':'en-US,en;q=0.9'}});
  if(!r.ok)throw Error('provider_http_'+r.status);return json?r.json():r.text();
 }
+// DecAPI exposes a recent-video feed where no_livestream filters out active broadcasts.
+// Comparing both results is a fallback when YouTube returns LOGIN_REQUIRED to anonymous viewers.
+export function inferDecapiLive(including,excluding){
+ const videoId=/^[A-Za-z0-9_-]{11}$/;
+ const live=String(including||'').trim(),other=String(excluding||'').trim();
+ if(!videoId.test(live)||!videoId.test(other)||live===other)return null;
+ return live;
+}
+async function youtubeDecapi(channelId){
+ const base='https://decapi.me/youtube/latest_video?id='+encodeURIComponent(channelId)+'&format=%7Bid%7D';
+ try{
+  const [all,withoutLive]=await Promise.all([response(base),response(base+'&no_livestream=1')]);
+  const videoId=inferDecapiLive(all,withoutLive);
+  return videoId?{state:'live',video_id:videoId,channel_id:channelId,source:'decapi'}:null;
+ }catch{return null}
+}
 async function youtube(channel){
  const html=await response(`https://www.youtube.com/@${channel.handle}/streams`);
  const metadata=findMetadata(readAssignedObject(html,'ytInitialData'));
@@ -160,6 +176,8 @@ async function youtube(channel){
  const liveHtml=await response(`https://www.youtube.com/@${channel.handle}/live`);
  const player=readAssignedObject(liveHtml,'ytInitialPlayerResponse');
  const status=classifyYouTube(player,channelId,channel.handle);
+ const fallback=status.state==='unknown'&&channelId?await youtubeDecapi(channelId):null;
+ if(fallback)return fallback;
  if(channel.user==='gensey'){
   const m=player?.microformat?.playerMicroformatRenderer||{};
   console.log('youtube_live_diagnostic',JSON.stringify({user:channel.user,bytes:liveHtml.length,hasPlayer:!!player,playerStatus:player?.playabilityStatus?.status,ownerProfileUrl:m.ownerProfileUrl||null,playerChannelId:player?.videoDetails?.channelId||null,videoId:player?.videoDetails?.videoId||null,liveDetails:m.liveBroadcastDetails||null,reason:status.reason||null}));
