@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readAssignedObject,findMetadata,extractChannelId,findLiveInChannelTab,ownerMatchesHandle,classifyYouTube,classifyTwitch} from './update-streamer-status.mjs';
+import {readAssignedObject,findMetadata,extractChannelId,findLiveInChannelTab,inferDecapiLive,ownerMatchesHandle,classifyYouTube,classifyTwitch} from './update-streamer-status.mjs';
 const id='UCabcdefghijklmnopqrstuv',video='abcdefghijk';
 const player={videoDetails:{channelId:id,videoId:video,title:'A live {de hoje}'},playabilityStatus:{status:'OK'},microformat:{playerMicroformatRenderer:{liveBroadcastDetails:{isLiveNow:true}}}};
 assert.equal(classifyYouTube(player,id).state,'live');
@@ -33,5 +33,8 @@ assert.equal(findLiveInChannelTab({contents:[liveCard]})?.video_id,'kLMnOPqRsTu'
 assert.equal(findLiveInChannelTab({contents:[scheduledCard]}),null);
 assert.equal(findLiveInChannelTab({contents:[{videoRenderer:{videoId:'offline0123',title:{runs:[{text:'LIVE gravada'}]}}}]}),null);
 assert.equal(findLiveInChannelTab({contents:[{lockupViewModel:{contentId:'kLMnOPqRsTu',overlays:[{thumbnailOverlayBadgeViewModel:{text:'AO VIVO'}}]}}]})?.video_id,'kLMnOPqRsTu');
-console.log('25 verificacoes passaram: inclui badge YouTube AO VIVO, gravação, agendamento e player com login obrigatório.');
+assert.equal(inferDecapiLive('abcdefghijk','lmnopqrstuv'),'abcdefghijk');
+assert.equal(inferDecapiLive('abcdefghijk','abcdefghijk'),null);
+assert.equal(inferDecapiLive('The channel was not found','lmnopqrstuv'),null);
+console.log('28 verificacoes passaram: inclui fallback para live YouTube sem acesso ao player.');
 
