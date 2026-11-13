@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {readAssignedObject,findMetadata,classifyYouTube,classifyTwitch} from './update-streamer-status.mjs';
+const id='UCabcdefghijklmnopqrstuv',video='abcdefghijk';
+const player={videoDetails:{channelId:id,videoId:video,title:'A live {de hoje}'},playabilityStatus:{status:'OK'},microformat:{playerMicroformatRenderer:{liveBroadcastDetails:{isLiveNow:true}}}};
+assert.equal(classifyYouTube(player,id).state,'live');
+assert.equal(classifyYouTube(player,'UCoutro').state,'unknown');
+assert.equal(classifyYouTube(null,id).state,'unknown');
+assert.equal(classifyYouTube({...player,playabilityStatus:{status:'LOGIN_REQUIRED'}},id).state,'unknown');
+const ended=structuredClone(player);ended.microformat.playerMicroformatRenderer.liveBroadcastDetails.endTimestamp='2026-11-12T10:00:00Z';
+assert.equal(classifyYouTube(ended,id).state,'offline');
+const scheduled=structuredClone(player);scheduled.microformat.playerMicroformatRenderer.liveBroadcastDetails.isLiveNow=false;
+assert.equal(classifyYouTube(scheduled,id).state,'offline');
+assert.equal(classifyTwitch('bidugamess is offline','bidugamess').state,'offline');
+assert.equal(classifyTwitch('2 hours, 3 minutes, 5 seconds','bidugamess').state,'live');
+assert.equal(classifyTwitch('The channel was not found','bidugamess').state,'unknown');
+assert.equal(classifyTwitch('<html>Error 500</html>','bidugamess').state,'unknown');
+assert.deepEqual(readAssignedObject('var ytInitialPlayerResponse = '+JSON.stringify(player)+'; other();','ytInitialPlayerResponse'),player);
+assert.equal(readAssignedObject('var ytInitialPlayerResponse = {broken','ytInitialPlayerResponse'),null);
+assert.equal(findMetadata({a:[{b:{channelMetadataRenderer:{externalId:id}}}]}).externalId,id);
+console.log('13 verificacoes passaram: live, gravacao, agendamento, canal divergente, bloqueios e respostas invalidas.');
+

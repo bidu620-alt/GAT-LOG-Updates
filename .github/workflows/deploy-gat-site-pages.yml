@@ -8,6 +8,10 @@ on:
       - 'scripts/apply-profile-avatar-site.py'
       - 'scripts/apply-radio-admin-site.py'
       - '.github/workflows/deploy-gat-site-pages.yml'
+      - 'scripts/update-streamer-status.mjs'
+      - 'scripts/test-streamer-status.mjs'
+  schedule:
+    - cron: '7,17,27,37,47,57 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -46,6 +50,16 @@ jobs:
 
       - name: Validate Special Transport event and achievement
         run: node scripts/test-special-transport.cjs
+
+      - name: Validate live stream directory
+        run: |
+          node --check docs/streamers-home.js
+          node scripts/test-streamer-status.mjs
+
+      - name: Refresh public stream status
+        env:
+          YOUTUBE_DATA_API_KEY: ${{ secrets.YOUTUBE_DATA_API_KEY }}
+        run: node scripts/update-streamer-status.mjs
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
