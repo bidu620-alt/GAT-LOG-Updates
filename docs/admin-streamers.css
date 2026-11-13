@@ -1,0 +1,11 @@
+.streamer-admin-form{display:grid;grid-template-columns:minmax(160px,230px) minmax(240px,1fr) auto;gap:12px;align-items:end;margin:18px 0 12px}
+.streamer-admin-form label{color:#9baec0;font-size:11px;font-weight:800;display:grid;gap:7px}
+.streamer-admin-form input{width:100%;min-width:0;box-sizing:border-box;padding:12px;border:1px solid #365474;border-radius:9px;background:#0a1724;color:#f4faff;font:inherit;font-size:13px}
+.streamer-admin-help{font-size:12px;line-height:1.6;color:#a2b8ca;margin:0 0 16px}
+.streamer-admin-list{display:grid;gap:10px;margin:12px 0}
+.streamer-admin-entry{display:flex;align-items:center;gap:14px;padding:12px 15px;background:#0c1826;border:1px solid #284056;border-radius:10px;flex-wrap:wrap}
+.streamer-admin-entry strong{color:#f0f8ff;min-width:140px}
+.streamer-admin-entry a{color:#92ccff;font-size:12px;margin-right:auto}
+.streamer-admin-entry button,.streamer-admin-shortcut{border:1px solid #36648c;background:#142c42;color:#c9ebff;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:800}
+.streamer-admin-shortcut{display:block;margin-top:5px}
+@media(max-width:850px){.streamer-admin-form{grid-template-columns:1fr}.streamer-admin-form button{justify-self:start}}
