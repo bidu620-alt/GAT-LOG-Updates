@@ -113,7 +113,25 @@ async function youtube(channel){
  const vanity=metadata?.vanityChannelUrl||'';
  if(channel.user==='gensey'){
   const title=html.split('<title>')[1]?.split('</title>')[0]?.slice(0,120)||'';
-  console.log('youtube_streams_diagnostic',JSON.stringify({user:channel.user,bytes:html.length,title,hasInitialData:!!readAssignedObject(html,'ytInitialData'),hasMetadata:!!metadata,channelId:channelId||null,vanity:vanity||null,hasExternalChannelId:html.includes('externalChannelId'),tabLiveId:tabLive?.video_id||null}));
+  const initial=readAssignedObject(html,'ytInitialData');
+  const sample=[];
+  const visited=new WeakSet();
+  function inspect(item){
+   if(!item||typeof item!=='object'||visited.has(item)||sample.length>=5)return;
+   visited.add(item);
+   const v=item.videoRenderer||item.gridVideoRenderer||item.lockupViewModel;
+   if(v){
+    sample.push({id:v.videoId||v.contentId||null,badges:(v.badges||[]).map(x=>x?.metadataBadgeRenderer?.style||null),overlays:(v.thumbnailOverlays||[]).map(x=>x?.thumbnailOverlayTimeStatusRenderer?.style||null),hasThumbnailViewModel:!!v.thumbnail,keys:Object.keys(v).slice(0,12)});
+   }
+   for(const child of Object.values(item)){
+    if(child&&typeof child==='object'){
+     if(Array.isArray(child)){for(const n of child)inspect(n)}
+     else inspect(child);
+    }
+   }
+  }
+  inspect(initial);
+  console.log('youtube_streams_diagnostic',JSON.stringify({user:channel.user,bytes:html.length,title,hasInitialData:!!initial,hasMetadata:!!metadata,channelId:channelId||null,vanity:vanity||null,tabLiveId:tabLive?.video_id||null,liveBadgeText:html.includes('BADGE_STYLE_TYPE_LIVE_NOW'),hasLiveOverlay:html.includes('thumbnailOverlayTimeStatusRenderer'),hasLiveNow:html.includes('isLiveNow'),videoSamples:sample}));
  }
  // Reject a channel page that explicitly identifies a different handle.
  if(vanity){
