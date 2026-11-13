@@ -115,7 +115,6 @@ async function youtube(channel){
   const title=html.split('<title>')[1]?.split('</title>')[0]?.slice(0,120)||'';
   console.log('youtube_streams_diagnostic',JSON.stringify({user:channel.user,bytes:html.length,title,hasInitialData:!!readAssignedObject(html,'ytInitialData'),hasMetadata:!!metadata,channelId:channelId||null,vanity:vanity||null,hasExternalChannelId:html.includes('externalChannelId'),tabLiveId:tabLive?.video_id||null}));
  }
- if(tabLive) return {state:'live',video_id:tabLive.video_id,title:tabLive.title,channel_id:channelId};
  // Reject a channel page that explicitly identifies a different handle.
  if(vanity){
   try{
@@ -125,6 +124,7 @@ async function youtube(channel){
     return {state:'unknown',reason:'channel_identity_mismatch'};
   }catch{return {state:'unknown',reason:'invalid_channel_url'}}
  }
+ if(tabLive) return {state:'live',video_id:tabLive.video_id,title:tabLive.title,channel_id:channelId};
  if(process.env.YOUTUBE_DATA_API_KEY&&channelId){
   try{
    // Optional official API lookup; a missing key or quota error must not block the public fallback.
