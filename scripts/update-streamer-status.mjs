@@ -185,14 +185,12 @@ async function youtube(channel){
  return {...status,channel_id:channelId||player?.videoDetails?.channelId||undefined};
 }
 export async function collect(channels){
- let enabled;
- try{const rank=await response(API+'/api/public/ranking',true);if(!rank.ok)throw Error();enabled=new Set((rank.ranking||[]).map(x=>x.user));}catch{return channels.map(c=>({...c,state:'unknown',reason:'central_unavailable'}))}
  return Promise.all(channels.map(async c=>{
   if(!validUser.test(c.user)||!validHandle.test(c.handle)||!['youtube','twitch'].includes(c.platform))throw Error('Invalid channel configuration');
   try{
    const data=await response(API+'/api/public/driver?user='+encodeURIComponent(c.user),true);
    const p=data.profile;
-   if(!data.ok||p?.user!==c.user||!enabled.has(c.user)||!(p.role==='streamer'||c.user==='biduzao'&&p.role==='owner'))return {...c,state:'ineligible'};
+   if(!data.ok||p?.user!==c.user||p.disabled===true||!(p.role==='streamer'||c.user==='biduzao'&&p.role==='owner'))return {...c,state:'ineligible'};
    const status=c.platform==='youtube'?await youtube(c):classifyTwitch(await response('https://decapi.me/twitch/uptime/'+c.handle),c.handle);
    return {...c,...status,checked_at:new Date().toISOString()};
   }catch{return {...c,state:'unknown',reason:'provider_unavailable',checked_at:new Date().toISOString()}}
@@ -200,7 +198,17 @@ export async function collect(channels){
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const config=JSON.parse(await readFile(new URL('../docs/streamer-channels.json',import.meta.url),'utf8'));
- const channels=await collect(config.channels);
+ const merged=new Map(config.channels.map(c=>[c.user,c]));
+ try{
+  const directory=await response('https://streamers.bidulog.com.br/api/channels',true);
+  if(directory.ok)for(const c of directory.channels||[]){
+   if(!validUser.test(c.user||'')||!validHandle.test(c.handle||''))continue;
+   if(!((c.platform==='youtube'&&c.url==='https://www.youtube.com/@'+c.handle+'/streams')||
+         (c.platform==='twitch'&&c.url==='https://www.twitch.tv/'+c.handle)))continue;
+   merged.set(c.user,{...c,name:merged.get(c.user)?.name||c.user});
+  }
+ }catch(err){console.warn('Using saved streamer channels; directory unavailable:',err.message)}
+ const channels=await collect([...merged.values()]);
  const result={version:1,checked_at:new Date().toISOString(),channels};
  await writeFile(new URL('../docs/streamer-status.json',import.meta.url),JSON.stringify(result,null,2)+'\n');
  console.log(JSON.stringify(channels.map(({user,state,reason})=>({user,state,reason}))));
