@@ -16,6 +16,10 @@ jobs:
       - name: Check driver frontend JavaScript
         run: |
           node --check docs/driver-store.js
+          node --check docs/streamers-home.js
+          node --check docs/admin-streamers.js
+          node --check cloudflare-central/stream-directory-worker.js
+          node scripts/test-streamer-status.mjs
           node --check docs/motorista-core.js
           node --check docs/driver-state-guard.js
           node --check docs/ranking-message-cleanup.js
