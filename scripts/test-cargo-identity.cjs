@@ -7,7 +7,13 @@ vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(docs,'cargo-iden
 const expose=(file,code)=>vm.runInContext(fs.readFileSync(path.join(docs,file),'utf8').replace(/\}\)\(\);\s*$/,code+'})();'),ctx);
 expose('work-catalog.js','globalThis.auditFlat=flatCatalog;globalThis.auditLive=exactMatch;globalThis.auditItems=v=>items=v;');
 const items=ctx.auditFlat(source);ctx.auditItems(items);ctx.GatCargoIdentity.setCatalog(items);
-assert.equal(items.length,source.total_entries);
+assert.equal(items.filter(item=>!item.passenger).length,source.total_entries);
+const passengerServices=items.filter(item=>item.passenger);
+assert.equal(passengerServices.length,source.passenger_transport?.services?.length||0);
+for(const service of passengerServices){
+  assert.equal(service.cargoIds.length,0,'Passenger services must not invent freight cargo IDs');
+  assert.equal(service.category,'passageiros');
+}
 const cards=items.map(item=>({dataset:{cargoKey:item.id,cargoIds:JSON.stringify(item.cargoIds),cargoAliases:JSON.stringify(item.aliases)},getAttribute(k){return k==='title'?'Nome oficial SCS: '+item.name:''},querySelector(q){return q==='.cargo-body h3'?{textContent:item.namePt}:null},item}));
 ctx.document.querySelectorAll=()=>cards;
 expose('work-catalog-completion.js','globalThis.auditDone=completedCards;globalThis.auditSignature=signature;');
