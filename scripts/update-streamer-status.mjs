@@ -72,7 +72,7 @@ async function youtube(channel){
  const channelId=extractChannelId(html);
  const vanity=metadata?.vanityChannelUrl||'';
  if(channel.user==='gensey'){
-  const title=html.match(/<title[^>]*>([^<]{0,120})<\\/title>/i)?.[1]||'';
+  const title=html.split('<title>')[1]?.split('</title>')[0]?.slice(0,120)||'';
   console.log('youtube_streams_diagnostic',JSON.stringify({user:channel.user,bytes:html.length,title,hasInitialData:!!readAssignedObject(html,'ytInitialData'),hasMetadata:!!metadata,channelId:channelId||null,vanity:vanity||null,hasExternalChannelId:html.includes('externalChannelId')}));
  }
  // Reject a channel page that explicitly identifies a different handle.
