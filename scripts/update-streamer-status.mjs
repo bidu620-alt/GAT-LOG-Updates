@@ -28,8 +28,8 @@ export function extractChannelId(html){
   initial?.metadata?.channelMetadataRenderer?.externalId,
   initial?.header?.c4TabbedHeaderRenderer?.channelId,
   html.match(/<meta[^>]*itemprop=["']channelId["'][^>]*content=["'](UC[A-Za-z0-9_-]{22})["']/i)?.[1],
-  html.match(/["']externalChannelId["']\\s*:\\s*["'](UC[A-Za-z0-9_-]{22})["']/)?.[1],
-  html.match(/["']externalId["']\\s*:\\s*["'](UC[A-Za-z0-9_-]{22})["']/)?.[1]
+  html.match(/["']externalChannelId["']\s*:\s*["'](UC[A-Za-z0-9_-]{22})["']/)?.[1],
+  html.match(/["']externalId["']\s*:\s*["'](UC[A-Za-z0-9_-]{22})["']/)?.[1]
  ];
  return candidates.find(id=>/^UC[A-Za-z0-9_-]{22}$/.test(id||''))||null;
 }
@@ -40,7 +40,7 @@ export function ownerMatchesHandle(player,handle){
   if(!raw)return false;
   try{
    const u=new URL(raw,'https://www.youtube.com');
-   return /^(?:www\\.|m\\.)?youtube\\.com$/.test(u.hostname)&&decodeURIComponent(u.pathname).replace(/\\/$/,'').toLowerCase()==='/@'+handle.toLowerCase();
+   return /^(?:www\.|m\.)?youtube\.com$/.test(u.hostname)&&decodeURIComponent(u.pathname).replace(/\/$/,'').toLowerCase()==='/@'+handle.toLowerCase();
   }catch{return false}
  });
 }
@@ -75,7 +75,7 @@ async function youtube(channel){
  if(vanity){
   try{
    const url=new URL(vanity);
-   const handlePath=decodeURIComponent(url.pathname).replace(/\\/$/,'').toLowerCase();
+   const handlePath=decodeURIComponent(url.pathname).replace(/\/$/,'').toLowerCase();
    if(handlePath.startsWith('/@')&&handlePath!=='/@'+channel.handle.toLowerCase())
     return {state:'unknown',reason:'channel_identity_mismatch'};
   }catch{return {state:'unknown',reason:'invalid_channel_url'}}
