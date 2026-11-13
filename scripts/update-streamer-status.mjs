@@ -71,6 +71,10 @@ async function youtube(channel){
  const metadata=findMetadata(readAssignedObject(html,'ytInitialData'));
  const channelId=extractChannelId(html);
  const vanity=metadata?.vanityChannelUrl||'';
+ if(channel.user==='gensey'){
+  const title=html.match(/<title[^>]*>([^<]{0,120})<\\/title>/i)?.[1]||'';
+  console.log('youtube_streams_diagnostic',JSON.stringify({user:channel.user,bytes:html.length,title,hasInitialData:!!readAssignedObject(html,'ytInitialData'),hasMetadata:!!metadata,channelId:channelId||null,vanity:vanity||null,hasExternalChannelId:html.includes('externalChannelId')}));
+ }
  // Reject a channel page that explicitly identifies a different handle.
  if(vanity){
   try{
@@ -97,6 +101,10 @@ async function youtube(channel){
  const liveHtml=await response(`https://www.youtube.com/@${channel.handle}/live`);
  const player=readAssignedObject(liveHtml,'ytInitialPlayerResponse');
  const status=classifyYouTube(player,channelId,channel.handle);
+ if(channel.user==='gensey'){
+  const m=player?.microformat?.playerMicroformatRenderer||{};
+  console.log('youtube_live_diagnostic',JSON.stringify({user:channel.user,bytes:liveHtml.length,hasPlayer:!!player,playerStatus:player?.playabilityStatus?.status,ownerProfileUrl:m.ownerProfileUrl||null,playerChannelId:player?.videoDetails?.channelId||null,videoId:player?.videoDetails?.videoId||null,liveDetails:m.liveBroadcastDetails||null,reason:status.reason||null}));
+ }
  return {...status,channel_id:channelId||player?.videoDetails?.channelId||undefined};
 }
 export async function collect(channels){
