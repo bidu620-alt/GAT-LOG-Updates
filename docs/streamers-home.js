@@ -5,16 +5,9 @@
  let config=[],channels=[],selected='',frameKey='',loading=false;
  function node(tag,className,text){const n=document.createElement(tag);if(className)n.className=className;if(text)n.textContent=text;return n}
 
- const JULIANO_ID='uLKxfxqM8BY',JULIANO_URL='https://www.youtube.com/watch?v='+JULIANO_ID;
  function fresh(c){const age=Date.now()-Date.parse(c.checked_at||'');return Number.isFinite(age)&&age>=-60000&&age<MAX_AGE}
  function isLive(c){return c.state==='live'&&fresh(c)}
  function videoAvailable(c){return /^[A-Za-z0-9_-]{11}$/.test(c.featured_video_id||'')}
- function addJuliano(items){
-  const juliano=items.find(c=>c.user==='julianos'||c.user==='juliano');
-  if(juliano){juliano.featured_video_id=JULIANO_ID;juliano.featured_video_url=JULIANO_URL;juliano.name='Juliano';}
-  else items.push({user:'julianos',name:'Juliano',platform:'youtube',state:'featured',url:JULIANO_URL,featured_video_id:JULIANO_ID,featured_video_url:JULIANO_URL});
-  return items;
- }
  function channelLink(c){
   const video=!isLive(c)&&videoAvailable(c);
   const a=node('a','streamer-channel-link',video?'Abrir vídeo ↗':'Abrir canal ↗');
@@ -30,7 +23,10 @@
  function draw(){
   const live=channels.filter(isLive),viewable=channels.filter(c=>isLive(c)||videoAvailable(c));
   summary.textContent=live.length?live.length+' motorista'+(live.length>1?'s':'')+' ao vivo':'Acompanhe os canais da comunidade';
-  if(!viewable.some(c=>c.user===selected))selected=live[0]?.user||viewable[0]?.user||'';
+  // Always prioritize a verified live broadcast over an old selection/recording.
+  // Keep a manually selected live channel if several are broadcasting.
+  if(live.length&&!live.some(c=>c.user===selected))selected=live[0].user;
+  else if(!viewable.some(c=>c.user===selected))selected=viewable[0]?.user||'';
   const previousScroll=list.scrollTop;
   list.replaceChildren();
   for(const c of [...channels].sort((a,b)=>Number(isLive(b))-Number(isLive(a)))){
@@ -83,7 +79,7 @@
   if(loading)return;loading=true;
   try{
    config=await channelConfig();
-   let data;try{data=await json('https://bidu620-alt.github.io/GAT-LOG-Updates/streamer-status.json?t='+Math.floor(Date.now()/60000))}catch{data={channels:[]}}
+   let data;try{data=await json('streamer-status.json?t='+Math.floor(Date.now()/60000))}catch{data={channels:[]}}
    channels=(await Promise.all(config.map(async c=>{
     try{const account=await json('https://api.bidulog.com.br/api/public/driver?user='+encodeURIComponent(c.user));if(!account.ok||!eligible(account.profile,c))return null;
      const status=data.channels?.find(x=>x.user===c.user&&x.platform===c.platform&&x.handle===c.handle);
@@ -100,7 +96,7 @@
      }
      return {...c,name:c.name||account.profile?.display_name||c.user,state,checked_at:checkedAt,video_id:status?.video_id};
     }catch{return null}
-   }))).filter(Boolean);addJuliano(channels);root.hidden=!channels.length;draw();
+   }))).filter(Boolean);root.hidden=!channels.length;draw();
   }catch{root.hidden=true}finally{loading=false}
  }
  refresh();setInterval(()=>{if(!document.hidden)refresh();else if(channels.some(c=>c.state==='live'&&!fresh(c)))draw()},90000);
