@@ -11,7 +11,7 @@ export function truckBrandKey(make){
  else if(/^(?:daf)(?: |$)/.test(n))brand='daf';
  else if(/^(?:iveco)(?: |$)/.test(n))brand='iveco';
  else if(/^(?:man)(?: |$)/.test(n))brand='man';
- else if(/^(?:mercedes(?: benz)?|mb)(?: |$)/.test(n))brand='mercedes';
+ else if(/^(?:mercedes(?: benz)?|mercedesbenz|mb)(?: |$)/.test(n))brand='mercedes';
  else if(/^(?:renault)(?: |$)/.test(n))brand='renault';
  if(!brand)return n;
  // Reject ambiguous manufacturers instead of granting another brand's license.
@@ -21,7 +21,7 @@ export function truckBrandKey(make){
   daf:/(?:^| )daf(?: |$)/,
   iveco:/(?:^| )iveco(?: |$)/,
   man:/(?:^| )man(?: |$)/,
-  mercedes:/(?:^| )(?:mercedes|mb)(?: |$)/,
+  mercedes:/(?:^| )(?:mercedes|mercedesbenz|mb)(?: |$)/,
   renault:/(?:^| )renault(?: |$)/
  };
  for(const [other,regex] of Object.entries(identities))
@@ -30,7 +30,10 @@ export function truckBrandKey(make){
 }
 export function vehicleEconomyKey(raw){
  const t=raw?.truck||{};
- const make=norm(t.make||t.manufacturer||t.brand);
+ // Vehicle maker can be supplied under different TruckSimGPS keys; do not infer
+ // a paid garage license from an untrusted model, mod name or old selected truck.
+ const make=norm([t.make,t.manufacturer,t.brand,t.makeName,t.manufacturerName]
+  .find(v=>typeof v==='string'&&v.trim())||'');
  const type=norm(t.vehicle_type||t.vehicleType||t.type||raw?.vehicle_type||raw?.vehicle?.type);
  const identity=norm([make,t.model,t.modelName,t.model_name,t.id,t.unitId,t.unit_id,t.vehicleId].filter(Boolean).join(' '));
  const maker=truckBrandKey(make);
