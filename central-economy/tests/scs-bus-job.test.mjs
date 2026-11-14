@@ -72,3 +72,15 @@ test('unknown kinds and ordinary freight remain untouched',()=>{
   assert.strictEqual(normalizeSCSJob(t),t);
  }
 });
+test('an empty freight configuration cannot mask active bus_job in the same packet',()=>{
+ const raw={
+  game:{connected:true},
+  job:{source_kind:'job',active:false},
+  bus_job:{active:true,sourceCity:'Recife',destinationCity:'Natal',plannedDistanceKm:300}
+ };
+ assert.equal(scsJobKind(raw),'bus_job');
+ const normalized=normalizeSCSJob(raw);
+ assert.equal(normalized.on_job,true);
+ assert.equal(normalized.job.source_kind,'bus_job');
+ assert.equal(normalized.cargo_name,'Passageiros');
+});
