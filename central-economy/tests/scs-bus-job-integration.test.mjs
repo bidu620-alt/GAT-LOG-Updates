@@ -32,6 +32,7 @@ function setup(){
    gameplay:{onJob:state==='active',jobCancelled:false,...(details?{busJobDeliveredDetails:details}:{})},
    ...(state==='delivered'?{gat_scs_event:'bus_job.delivered'}:{}),
    gat_client_version:'1.0.68.39',
+   gat_collected_at:new Date(Date.now()-10000+step*1000).toISOString(),
    gat_packet_id:'bus-test-'+step.toString().padStart(20,'0')
   };
  };
