@@ -1,0 +1,65 @@
+name: Diagnose Francisco wood delivery
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/diagnose-francisco-wood.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Read current public delivery and telemetry state
+        shell: python
+        run: |
+          import urllib.request,urllib.parse,urllib.error,json,datetime
+          bases=['https://api.bidulog.com.br','https://api.gatlogets2.com.br']
+          users=['francisco3427','francisco']
+          def get(base,path):
+              req=urllib.request.Request(base+path,headers={'User-Agent':'BiduLog-Delivery-Diagnostic/1.0','Cache-Control':'no-cache'})
+              try:
+                  with urllib.request.urlopen(req,timeout=14) as r:return r.status,json.load(r)
+              except urllib.error.HTTPError as e:
+                  try:return e.code,json.loads(e.read().decode('utf-8'))
+                  except:return e.code,{'error':'HTTP '+str(e.code)}
+              except Exception as e:return 0,{'error':type(e).__name__+': '+str(e)[:180]}
+          pick=['id','user','driver','account_user','sequence','cargo','cargo_id','cargo_name','cargoId','cargoName','source','destination','source_city','destination_city','distance_km','km','trip_id','mission_id','state','status','classification_mode','pending_classification','xp','points','gat_points','xp_awarded','rank_eligible','ranking_reason','automatic_ranking_reason','reason','created_at','updated_at','completed_at','delivered_at','started_at','last_rejected_at','last_rejected_reason','client_version','rank_status','on_job','job_finished','job_delivered','last_telemetry_at']
+          def compact(v):
+              if isinstance(v,dict):return {k:compact(v[k]) for k in pick if k in v}
+              if isinstance(v,list):return [compact(x) for x in v[-15:]]
+              return v
+          print('DATE',datetime.datetime.now(datetime.timezone.utc).isoformat())
+          for base in bases:
+              status,version=get(base,'/api/public/version')
+              print('VERSION',base,status,compact(version))
+              for user in users:
+                  status,d=get(base,'/api/public/driver?user='+urllib.parse.quote(user))
+                  p=d.get('profile') or {} if isinstance(d,dict) else {}
+                  print('PROFILE',base,user,'http',status,'ok',d.get('ok') if isinstance(d,dict) else None,'keys',list(p.keys())[:55])
+                  if status==200:
+                      print('SUMMARY',user,json.dumps(compact(p),ensure_ascii=False)[:8500])
+                      for name in ['deliveries','recent_deliveries','delivery_history','history','history_events','career_history','mission_history','latest_deliveries','cargo_history']:
+                          d1=p.get(name)
+                          if isinstance(d1,list):
+                              print('ENTRIES',user,name,'count',len(d1),'last',json.dumps(compact(d1),ensure_ascii=False)[:8500])
+              status,live=get(base,'/api/public/account-live')
+              if status==200 and isinstance(live,dict):
+                  rows=live.get('telemetry') or []
+                  found=[]
+                  for x in rows:
+                      if not isinstance(x,dict):continue
+                      user=str(x.get('account_user') or x.get('driver') or x.get('user') or '').lower()
+                      if not user.startswith('francisc'):continue
+                      result=compact(x)
+                      raw=x.get('telemetry') or {}
+                      if isinstance(raw,dict):
+                          j=raw.get('job') or {}
+                          result['job']=compact(j)
+                          result['gat_trip_id']=raw.get('gat_trip_id')
+                          result['gat_client_version']=raw.get('gat_client_version')
+                      found.append(result)
+                  print('LIVE',base,'rows',len(rows),'matches',json.dumps(found,ensure_ascii=False)[:7500])
+              else:print('LIVE',base,'http',status,'response',str(live)[:200])
