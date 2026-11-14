@@ -63,7 +63,7 @@
      (c.platform==='youtube'&&c.url==='https://www.youtube.com/@'+c.handle+'/streams'));
  }
  async function channelConfig(){
-  const fixed=await json('streamer-channels.json?v=20261112-1');
+  const fixed=await json('streamer-channels.json?v=20261114-juliano-2');
   const merged=new Map((fixed.channels||[]).filter(valid).map(c=>[c.user,c]));
   try{
    const directory=await json('https://streamers.bidulog.com.br/api/channels?t='+Math.floor(Date.now()/60000));
