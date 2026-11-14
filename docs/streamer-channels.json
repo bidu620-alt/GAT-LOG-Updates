@@ -1,8 +1,32 @@
 {
   "channels": [
-    {"user":"biduzao","name":"Biduzao","platform":"twitch","handle":"bidugamess","url":"https://www.twitch.tv/bidugamess"},
-    {"user":"gensey","name":"Gensey","platform":"youtube","handle":"GenseyGamer","url":"https://www.youtube.com/@GenseyGamer/streams"},
-    {"user":"jeanjc","name":"JeanJC","platform":"youtube","handle":"JcGamerOriginal","url":"https://www.youtube.com/@JcGamerOriginal/streams"}
+    {
+      "user": "biduzao",
+      "name": "Biduzao",
+      "platform": "twitch",
+      "handle": "bidugamess",
+      "url": "https://www.twitch.tv/bidugamess"
+    },
+    {
+      "user": "gensey",
+      "name": "Gensey",
+      "platform": "youtube",
+      "handle": "GenseyGamer",
+      "url": "https://www.youtube.com/@GenseyGamer/streams"
+    },
+    {
+      "user": "jeanjc",
+      "name": "JeanJC",
+      "platform": "youtube",
+      "handle": "JcGamerOriginal",
+      "url": "https://www.youtube.com/@JcGamerOriginal/streams"
+    },
+    {
+      "user": "diolinoledes",
+      "name": "Diolinoledes",
+      "platform": "youtube",
+      "handle": "diolinoledes",
+      "url": "https://www.youtube.com/@diolinoledes/streams"
+    }
   ]
 }
-
