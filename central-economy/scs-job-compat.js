@@ -20,6 +20,8 @@ export function scsJobKind(raw){
   job.source_kind,job.sourceKind,t.scs_configuration_id,t.scs_job_configuration
  ));
  if(kind)return kind;
+ const sdkEvent=first(t.gat_scs_event,t.bus_job_event,obj(t.gameplay).busJobEvent).toLowerCase();
+ if(sdkEvent==='bus_job.delivered'||sdkEvent==='bus_job.cancelled')return 'bus_job';
  const bus=obj(t.bus_job);
  const hasBusProof=(bus.active===true||bus.onJob===true)&&
   (location(bus,'source')||location(bus,'destination'));
