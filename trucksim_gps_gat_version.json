@@ -1,8 +1,0 @@
-{
-  "app": "TruckSim GPS BiduLog Danos",
-  "version": "1.4.4",
-  "notas": "Substitui o pacote legado 1.0 bloqueado pelo Defender. Compilado da base oficial 1.4.4 com cinco campos de dano nullable. Testes aprovados; Defender sem deteccoes em 12/11/2026. Leitura real no computador do motorista ainda deve ser conferida.",
-  "update_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_1.4.4_BiduLog_Danos_VERIFICADO.zip",
-  "source_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/TruckSimGPS_1.4.4_BiduLog_Danos_FONTES.zip",
-  "sha256": "702a299b84d43c22afcd4247cc903b1bc4756f2b803eb0abbf39732b322277df"
-}

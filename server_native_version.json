@@ -1,9 +1,0 @@
-{
-  "app": "GAT-LOG Server Native",
-  "channel": "stable-native",
-  "version": "0.1.7",
-  "display_version": "0.1.7",
-  "notas": "0.1.7 estabilidade: remove a repintura completa da janela a cada segundo, impede consultas sobrepostas, envia atualizações visuais pela thread da janela e impede varreduras simultâneas do server.log. Mantém telemetria, tema, logo, mods e configurações.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_LOG_SERVER_UPDATE_0.1.7.exe",
-  "sha256": "9aebe0394d423bcbb7df683ba140bb64e91c7d4f86bebda4042f83e1ecd7804f"
-}

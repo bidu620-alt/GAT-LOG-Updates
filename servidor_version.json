@@ -1,7 +1,0 @@
-{
-  "app": "GAT LOG BETA Servidor",
-  "version": "1.9.4",
-  "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/servidor.json",
-  "obrigatoria": false,
-  "notas": "Verificacao automatica apos login e atualizacao pelo GitHub com backup."
-}

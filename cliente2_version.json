@@ -1,9 +1,0 @@
-{
-  "app": "GAT Telemetria",
-  "channel": "stable-native",
-  "version": "2.0.6",
-  "display_version": "0.1",
-  "notas": "GAT Telemetria 0.1: corrige km restantes e velocidade com TruckSim GPS, envia aliases compativeis com servidor antigo e Server Native e aceita distance_m/remaining_km.",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/GAT_TELEMETRIA_0.1.exe",
-  "sha256": "05e0f9b19874bce99cab8ac06f2a32df976b974718220231b2ebfcd44d9f812b"
-}

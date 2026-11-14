@@ -1,7 +1,0 @@
-{
-  "app": "GAT Telemetria Cliente",
-  "version": "1.8.4",
-  "manifest": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/manifests/cliente.json",
-  "obrigatoria": false,
-  "notas": "Versao estavel restaurada com peso via job.cargoMass."
-}
