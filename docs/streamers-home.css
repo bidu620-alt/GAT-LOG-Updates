@@ -11,3 +11,68 @@
 
 @media(max-width:600px){.streamer-player.is-twitch{display:none}}
 .streamer-state.is-video{color:#9ecbff}
+
+/* Fixed-size desktop live panel: additions scroll inside the driver directory. */
+.streamers-grid{
+  grid-template-columns:minmax(0,1.38fr) minmax(280px,1fr);
+  height:420px;
+  min-height:0;
+  align-items:stretch;
+}
+.streamer-stage{
+  height:100%;
+  min-height:0;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+}
+.streamer-empty{flex:1 1 auto;min-height:0}
+.streamer-player-heading,.streamer-player-fallback{flex-shrink:0}
+.streamer-player,.streamer-player.is-twitch{
+  flex:1 1 auto;
+  height:auto;
+  min-height:0;
+  aspect-ratio:auto;
+}
+.streamer-player iframe{height:100%;min-height:0}
+.streamer-list{
+  height:100%;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#456781 #101f30;
+  padding-right:7px;
+  align-content:start;
+  grid-auto-rows:max-content;
+}
+.streamer-list::-webkit-scrollbar{width:7px}
+.streamer-list::-webkit-scrollbar-thumb{background:#456781;border-radius:8px}
+.streamer-list::-webkit-scrollbar-track{background:#101f30}
+.streamer-channel{min-width:0}
+.streamer-identity{min-width:0;overflow-wrap:anywhere}
+.streamer-channel-top{flex-wrap:wrap}
+@media(max-width:850px){
+  .streamers-grid{
+    grid-template-columns:minmax(0,1fr);
+    height:auto;
+  }
+  .streamer-stage{height:auto;min-height:0}
+  .streamer-empty{min-height:250px}
+  .streamer-player,.streamer-player.is-twitch{
+    flex:0 0 auto;
+    aspect-ratio:16/9;
+    height:auto;
+  }
+  .streamer-player.is-twitch{min-height:300px}
+  .streamer-list{
+    grid-template-columns:minmax(0,1fr);
+    height:270px;
+    max-height:270px;
+  }
+}
+@media(max-width:600px){
+  .streamer-player.is-twitch{display:none}
+  .streamer-list{height:250px;max-height:250px}
+}
