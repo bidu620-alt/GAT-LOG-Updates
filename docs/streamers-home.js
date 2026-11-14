@@ -31,6 +31,7 @@
   const live=channels.filter(isLive),viewable=channels.filter(c=>isLive(c)||videoAvailable(c));
   summary.textContent=live.length?live.length+' motorista'+(live.length>1?'s':'')+' ao vivo':'Acompanhe os canais da comunidade';
   if(!viewable.some(c=>c.user===selected))selected=live[0]?.user||viewable[0]?.user||'';
+  const previousScroll=list.scrollTop;
   list.replaceChildren();
   for(const c of [...channels].sort((a,b)=>Number(isLive(b))-Number(isLive(a)))){
    const card=node('article','streamer-channel'+(c.user===selected?' selected':''));
@@ -46,6 +47,7 @@
    }
    actions.append(channelLink(c));card.append(actions);list.append(card);
   }
+  list.scrollTop=previousScroll;
   const current=viewable.find(c=>c.user===selected);
   const url=current?embed(current):'',key=url||'empty';if(key===frameKey)return;frameKey=key;stage.replaceChildren();
   if(!current||!url){
