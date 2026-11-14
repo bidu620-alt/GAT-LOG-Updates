@@ -34,17 +34,15 @@ try{
  mkdirSync(backups,{recursive:true});
  copyFileSync(workerPath,join(backups,'worker.js'));
  if(existsSync(modulePath))copyFileSync(modulePath,join(backups,'scs-job-compat.js'));
- let doneWorker=false,doneModule=false;
  try{
-  copyFileSync(tmpModule,modulePath);doneModule=true;
-  copyFileSync(tmpWorker,workerPath);doneWorker=true;
+  copyFileSync(tmpModule,modulePath);
+  copyFileSync(tmpWorker,workerPath);
  }catch(err){
-  if(doneWorker)copyFileSync(join(backups,'worker.js'),workerPath);
-  if(doneModule){
-   const old=join(backups,'scs-job-compat.js');
-   if(existsSync(old))copyFileSync(old,modulePath);
-   else rmSync(modulePath,{force:true});
-  }
+  // Always restore even if a failed copy partially truncated its destination.
+  copyFileSync(join(backups,'worker.js'),workerPath);
+  const old=join(backups,'scs-job-compat.js');
+  if(existsSync(old))copyFileSync(old,modulePath);
+  else rmSync(modulePath,{force:true});
   throw err;
  }
  console.log('OK: Central preparada para ler job e bus_job separadamente. Alteracoes: '+applied);
