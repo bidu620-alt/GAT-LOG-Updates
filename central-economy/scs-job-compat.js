@@ -19,13 +19,16 @@ export function scsJobKind(raw){
   t.gat_scs_job_kind,t.gat_job_kind,t.job_source_kind,
   job.source_kind,job.sourceKind,t.scs_configuration_id,t.scs_job_configuration
  ));
- if(kind)return kind;
  const sdkEvent=first(t.gat_scs_event,t.bus_job_event,obj(t.gameplay).busJobEvent).toLowerCase();
  if(sdkEvent==='bus_job.delivered'||sdkEvent==='bus_job.cancelled')return 'bus_job';
  const bus=obj(t.bus_job);
  const hasBusProof=(bus.active===true||bus.onJob===true)&&
   (location(bus,'source')||location(bus,'destination'));
  const truck=job.active===true||job.onJob===true||location(job,'source')&&location(job,'destination');
+ // Some SDK adapters emit an empty "job" alongside a real "bus_job".
+ // A stale freight source_kind must not conceal the active passenger job.
+ if(kind==='job'&&hasBusProof&&!truck)return 'bus_job';
+ if(kind)return kind;
  return hasBusProof&&!truck?'bus_job':'job';
 }
 
