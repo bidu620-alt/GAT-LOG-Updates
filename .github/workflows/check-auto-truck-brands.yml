@@ -1,0 +1,29 @@
+name: Verify automatic truck brands
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'central-economy/vehicle-economy-key.js'
+      - 'central-economy/tests/vehicle-economy-key.test.mjs'
+      - 'scripts/install-brand-prefix-central.mjs'
+      - 'scripts/test-brand-prefix-installer.mjs'
+      - '.github/workflows/check-auto-truck-brands.yml'
+  pull_request:
+    paths:
+      - 'central-economy/vehicle-economy-key.js'
+      - 'central-economy/tests/vehicle-economy-key.test.mjs'
+      - 'scripts/install-brand-prefix-central.mjs'
+      - 'scripts/test-brand-prefix-installer.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  maker-prefix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --check scripts/install-brand-prefix-central.mjs
+      - run: node --test central-economy/tests/vehicle-economy-key.test.mjs scripts/test-brand-prefix-installer.mjs
