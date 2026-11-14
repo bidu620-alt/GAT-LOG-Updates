@@ -41,6 +41,12 @@ jobs:
                   print('PROFILE',base,user,'http',status,'ok',d.get('ok') if isinstance(d,dict) else None,'keys',list(p.keys())[:55])
                   if status==200:
                       print('SUMMARY',user,json.dumps(compact(p),ensure_ascii=False)[:8500])
+                      print('CURRENT_MISSION',user,json.dumps(p.get('current_mission'),ensure_ascii=False)[:4000])
+                      print('PROFILE_COUNTERS',user,json.dumps({k:p.get(k) for k in ['total_deliveries','monthly_completed','monthly_deliveries','total_km','xp','points','last_telemetry_at']},ensure_ascii=False)[:2500])
+                      ds=p.get('deliveries') or []
+                      print('WOOD_DELIVERIES',user,json.dumps([compact(x) for x in ds if isinstance(x,dict) and any(q in str(x.get('cargo','')).lower() for q in ['madeira','toras','logs','lumber','vigas','serragem','troncos'])][-25:],ensure_ascii=False)[:4500])
+                      print('ALL_LAST_DELIVERIES',user,json.dumps(compact(ds[-8:]),ensure_ascii=False)[:4500])
+
                       for name in ['deliveries','recent_deliveries','delivery_history','history','history_events','career_history','mission_history','latest_deliveries','cargo_history']:
                           d1=p.get(name)
                           if isinstance(d1,list):
@@ -60,6 +66,11 @@ jobs:
                           result['job']=compact(j)
                           result['gat_trip_id']=raw.get('gat_trip_id')
                           result['gat_client_version']=raw.get('gat_client_version')
+                          result['journal_flags']={k:raw.get(k) for k in ['gat_journal_verified','gat_journal_invalid','gat_journal_reason','gat_journal_seq','gat_packet_id','gat_trip_id','gat_collected_at','gat_trip_state','gat_journal_version']}
+                          result['game']={k:(raw.get('game') or {}).get(k) for k in ['connected','paused']}
+                          result['job_events']={k:(raw.get('gameplay') or {}).get(k) for k in ['onJob','jobDelivered','jobFinished','jobCancelled']}
+                          result['job_info']={k:(raw.get('job') or {}).get(k) for k in ['cargo','cargoId','plannedDistanceKm','sourceCity','destinationCity']}
+
                       found.append(result)
                   print('LIVE',base,'rows',len(rows),'matches',json.dumps(found,ensure_ascii=False)[:7500])
               else:print('LIVE',base,'http',status,'response',str(live)[:200])
