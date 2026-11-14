@@ -32,3 +32,37 @@ test('manufacturer rule continues for official buses',()=>{
  assert.equal(vehicleEconomyKey({truck:{make:'Scania Touring',type:'coach'}}),'scania');
  assert.equal(vehicleEconomyKey({truck:{make:'Unknown',model:'Marcopolo Paradiso',type:'bus'}}),'onibus');
 });
+
+test('all garage brands accept any model suffix after real manufacturer prefix',()=>{
+ const brands={
+  volvo:['Volvo','VOLVO FH16 750','Volvo-Y','Volvo_XX','volvo Trucks Próximo Modelo','Volvo Future 2030'],
+  scania:['Scania','SCANIA S 770','Scania-R450','Scania Vabis 111','Scania Futuro X'],
+  daf:['DAF','DAF XF 105','DAF-XF 2027','DAF Trucks XG+','DAF Future Y'],
+  man:['MAN','MAN TGX','MAN-Y','MAN Truck 2099'],
+  iveco:['Iveco','IVECO S-Way','Iveco EuroStar','Iveco Future Y'],
+  mercedes:['Mercedes','Mercedes-Benz Actros','MercedesBenz eActros','MB 1113','Mercedes Future Y'],
+  renault:['Renault','Renault Trucks T','Renault-T High','Renault Future Y']
+ };
+ for(const [brand,models] of Object.entries(brands)){
+  for(const make of models){
+   assert.equal(truckBrandKey(make),brand,make);
+   assert.equal(vehicleEconomyKey({truck:{make,model:'Qualquer modelo'}}),brand,make);
+  }
+ }
+});
+
+test('recognizes maker in alternate telemetry fields without guessing from model',()=>{
+ for(const field of ['make','manufacturer','brand','makeName','manufacturerName']){
+  assert.equal(vehicleEconomyKey({truck:{[field]:'VOLVO XX',model:'Qualquer modelo'}}),'volvo',field);
+ }
+ assert.equal(vehicleEconomyKey({truck:{make:' ',manufacturer:'DAF XF 105'}}),'daf');
+ assert.equal(vehicleEconomyKey({truck:{make:' ',makeName:'Scania R'}}),'scania');
+ assert.equal(vehicleEconomyKey({truck:{make:'',model:'Volvo FH',id:'volvo.fh'}}),'');
+});
+
+test('unknown makes and ambiguous cross-brand names never grant a brand',()=>{
+ const invalid=['Novolvo X','VolvoX','MANager Truck','Scania Volvo','Mercedes Volvo','Volvo DAF','DAF Scania','Renault MAN','Iveco DAF','Fake Scania'];
+ for(const name of invalid){
+  assert.ok(!/^(volvo|scania|daf|man|iveco|mercedes|renault)$/.test(vehicleEconomyKey({truck:{make:name}})),name);
+ }
+});
