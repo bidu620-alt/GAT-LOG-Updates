@@ -6,12 +6,14 @@ on:
       - 'central-economy/scs-job-compat.js'
       - 'central-economy/worker.js'
       - 'central-economy/tests/scs-bus-job*.test.mjs'
+      - 'scripts/*scs-bus-job*.mjs'
       - '.github/workflows/check-scs-bus-job.yml'
   pull_request:
     paths:
       - 'central-economy/scs-job-compat.js'
       - 'central-economy/worker.js'
       - 'central-economy/tests/scs-bus-job*.test.mjs'
+      - 'scripts/*scs-bus-job*.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,4 +27,5 @@ jobs:
           node-version: '24'
       - run: node --check central-economy/scs-job-compat.js
       - run: node --check central-economy/worker.js
-      - run: node --test central-economy/tests/scs-bus-job*.test.mjs
+      - run: node --check scripts/install-scs-bus-job-central.mjs
+      - run: node --test central-economy/tests/scs-bus-job*.test.mjs scripts/test-scs-bus-job-installer.mjs
