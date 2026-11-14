@@ -33,7 +33,7 @@ internal sealed class TruckModelEvidence
         var e = new TruckModelEvidence();
         e.Connected = raw?.SelectToken("game.connected")?.Value<bool?>() == true;
         e.Paused = raw?.SelectToken("game.paused")?.Value<bool?>() == true;
-        e.Make = Text(raw, "truck.make", "truck.manufacturer", "truck.brand", "truck.makeName");
+        e.Make = Text(raw, "truck.make", "truck.manufacturer", "truck.brand", "truck.makeName", "truck.manufacturerName");
         e.Model = Text(raw, "truck.model", "truck.modelName", "truck.model_name");
         e.RawId = Text(raw, "truck.id", "truck.unitId", "truck.unit_id", "truck.vehicleId");
         e.EconomyKey = VehicleEconomyKey.Resolve(e.Make,e.Model,e.RawId,Text(raw,"truck.vehicle_type","truck.vehicleType","truck.type","vehicle_type","vehicle.type"));
