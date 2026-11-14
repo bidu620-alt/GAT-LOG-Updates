@@ -1,0 +1,28 @@
+name: Check SCS bus job integration
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'central-economy/scs-job-compat.js'
+      - 'central-economy/worker.js'
+      - 'central-economy/tests/scs-bus-job*.test.mjs'
+      - '.github/workflows/check-scs-bus-job.yml'
+  pull_request:
+    paths:
+      - 'central-economy/scs-job-compat.js'
+      - 'central-economy/worker.js'
+      - 'central-economy/tests/scs-bus-job*.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --check central-economy/scs-job-compat.js
+      - run: node --check central-economy/worker.js
+      - run: node --test central-economy/tests/scs-bus-job*.test.mjs
