@@ -1,7 +1,7 @@
 (()=>{'use strict';
  const root=document.getElementById('bidulog-streamers');if(!root)return;
  const list=root.querySelector('[data-stream-list]'),stage=root.querySelector('[data-stream-stage]'),summary=root.querySelector('[data-stream-summary]');
- const names={twitch:'Twitch',youtube:'YouTube'},MAX_AGE=20*60*1000;
+ const names={twitch:'Twitch',youtube:'YouTube'},MAX_AGE=3*60*1000;
  const JULIANO_ID='uLKxfxqM8BY',JULIANO_URL='https://www.youtube.com/watch?v='+JULIANO_ID;
  let config=[],channels=[],selected='',frameKey='',loading=false,refreshQueued=false;
  let configUpdatedAt=0,hiddenAt=0,playerReloadQueued=false;
@@ -34,7 +34,7 @@
    const card=node('article','streamer-channel'+(c.user===selected?' selected':''));
    const top=node('div','streamer-channel-top'),avatar=node('span','streamer-avatar',c.name.charAt(0));
    const identity=node('div','streamer-identity');identity.append(node('strong','',c.name),node('small','',names[c.platform]));top.append(avatar,identity);
-   const active=isLive(c),video=!active&&videoAvailable(c),label=active?'● AO VIVO':video?'▶ VÍDEO DISPONÍVEL':c.state==='offline'?'Offline':'Canal cadastrado';
+   const active=isLive(c),video=!active&&videoAvailable(c),label=active?'● AO VIVO':video?'▶ VÍDEO DISPONÍVEL':c.state==='offline'?'Offline':c.state==='unknown'?'Status indisponível':'Canal cadastrado';
    top.append(node('span','streamer-state'+(active?' is-live':video?' is-video':''),label));card.append(top);
    const actions=node('div','streamer-actions');
    if(active||video){
@@ -87,20 +87,9 @@
   // directory checks providers on demand and caches them for only 90 seconds.
   const stamp=Math.floor(Date.now()/30000);
   const liveService='https://streamers.bidulog.com.br/api/status?t='+stamp;
-  const direct=json(liveService,16000).catch(()=>null);
-  const staticPaths=[
-   'streamer-status.json',
-   'https://gatlogets2.com.br/streamer-status.json',
-   'https://bidu620-alt.github.io/GAT-LOG-Updates/streamer-status.json'
-  ];
-  const published=Promise.any(staticPaths.map(async url=>{
-   const data=await json(url+'?t='+stamp);
-   if(!Array.isArray(data?.channels)||!data.checked_at)throw Error('invalid_live_status');
-   return data;
-  })).catch(()=>null);
-  const [recent,backup]=await Promise.all([direct,published]);
-  if(recent&&Array.isArray(recent.channels)&&fresh(recent))return recent;
-  if(backup&&Array.isArray(backup.channels))return backup;
+  // The Cloudflare Worker is the source of truth; never use delayed snapshots.
+  const direct=await json(liveService,16000);
+  if(direct&&Array.isArray(direct.channels)&&fresh(direct))return direct;
   throw Error('stream_status_unavailable');
  }
  async function refresh(){
@@ -113,24 +102,13 @@
     publicStatus().catch(()=>null)
    ]);
    if(nextConfig.length)config=nextConfig;
-   const previous=channels;
    channels=await Promise.all(config.map(async c=>{
     const status=data?.channels?.find(x=>x.user===c.user&&x.platform===c.platform&&x.handle===c.handle);
-    const prior=previous.find(x=>x.user===c.user&&x.platform===c.platform&&x.handle===c.handle);
-    // Retain only a recently verified status when the public feed is inaccessible.
-    let state=status&&fresh(status)?status.state:(!data&&prior&&fresh(prior)?prior.state:'unknown');
-    let checkedAt=status?.checked_at||(!data?prior?.checked_at:null);
-    let videoId=status?.video_id||(!data?prior?.video_id:null);
-    if(c.platform==='twitch'){
-     try{
-      const response=await fetch('https://decapi.me/twitch/uptime/'+encodeURIComponent(c.handle),{signal:AbortSignal.timeout(8000),cache:'no-store'});
-      if(response.ok){
-       const text=(await response.text()).trim();
-       if(text.toLowerCase()===(c.handle+' is offline').toLowerCase()){state='offline';checkedAt=new Date().toISOString()}
-       else if(/^(?:\d+\s+(?:years?|months?|weeks?|days?|hours?|minutes?|seconds?)(?:,?\s+|$))+$/i.test(text)){state='live';checkedAt=new Date().toISOString()}
-      }
-     }catch{}
-    }
+    // Do not show AO VIVO if the authoritative feed is absent or expired.
+    const verified=Boolean(status&&fresh(status));
+    let state=verified?status.state:'unknown';
+    let checkedAt=verified?status.checked_at:null;
+    let videoId=verified?status.video_id:null;
     const featured=c.user==='julianos'?{featured_video_id:JULIANO_ID,featured_video_url:JULIANO_URL}:{};
     return {...c,...featured,name:c.name||c.user,state,checked_at:checkedAt,video_id:videoId};
    }));
