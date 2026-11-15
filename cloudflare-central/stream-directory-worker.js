@@ -143,18 +143,20 @@ async function youtubeStatus(channel){
  if(tabVideo)return {state:'live',video_id:tabVideo,source:'verified_channel_tab'};
  // The /live page may require login for anonymous access; preserve the
  // independently-verified recent-live DecAPI fallback used by GitHub.
- let fromPlayer=null;
- try{const html=await streamText('https://www.youtube.com/@'+encodeURIComponent(channel.handle)+'/live');
-  fromPlayer=playerLive(assignedObject(html,'ytInitialPlayerResponse'),channelId,channel.handle);
-  if(fromPlayer?.state==='live')return {...fromPlayer,source:'youtube_player'};
- }catch{}
  const latest='https://decapi.me/youtube/latest_video?id='+encodeURIComponent(channelId)+'&format=%7Bid%7D';
- try{
-  const [all,other]=await Promise.all([streamText(latest),streamText(latest+'&no_livestream=1')]);
-  const a=all.trim(),b=other.trim();
-  if(ID_VIDEO.test(a)&&ID_VIDEO.test(b)&&a!==b)
-   return {state:'live',video_id:a,source:'decapi'};
- }catch{}
+ const [fromPlayer,decapiVideo]=await Promise.all([
+  (async()=>{try{
+   const html=await streamText('https://www.youtube.com/@'+encodeURIComponent(channel.handle)+'/live');
+   return playerLive(assignedObject(html,'ytInitialPlayerResponse'),channelId,channel.handle);
+  }catch{return null;}})(),
+  (async()=>{try{
+   const [all,other]=await Promise.all([streamText(latest),streamText(latest+'&no_livestream=1')]);
+   const a=all.trim(),b=other.trim();
+   return ID_VIDEO.test(a)&&ID_VIDEO.test(b)&&a!==b?a:null;
+  }catch{return null;}})()
+ ]);
+ if(fromPlayer?.state==='live')return {...fromPlayer,source:'youtube_player'};
+ if(decapiVideo)return {state:'live',video_id:decapiVideo,source:'decapi'};
  return fromPlayer||{state:'unknown',reason:'live_not_confirmed'};
 }
 async function statusOf(c){
