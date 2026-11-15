@@ -6,7 +6,7 @@ import subprocess
 import shutil
 from PIL import Image, ImageOps, ImageDraw, ImageFont
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "video"
 OUT.mkdir(parents=True, exist_ok=True)
 W, H, FPS = 1280, 720, 24
@@ -104,7 +104,7 @@ def voice(text_, idx):
     outfile=OUT/("voz_%02d.mp3"%idx)
     try:
         from gtts import gTTS
-        gTTS(text=text_, lang="pt", tld="com.br", slow=False).save(str(outfile))
+        gTTS(text=text_, lang="pt", tld="com.br", slow=False, timeout=12).save(str(outfile))
         if outfile.stat().st_size<1024: return None
         return outfile
     except Exception as e:
