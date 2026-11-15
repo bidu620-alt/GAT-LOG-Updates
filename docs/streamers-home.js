@@ -60,7 +60,7 @@
   const iframe=node('iframe');iframe.src=url;iframe.title=(liveNow?'Live de ':'Vídeo de ')+current.name+' no '+names[current.platform];iframe.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';wrap.append(iframe);stage.append(wrap);
   const fallback=node('div','streamer-player-fallback');fallback.append(node('span','',liveNow?'Se o player não abrir, assista diretamente no canal.':'Vídeo da comunidade. Uma gravação não é contabilizada como transmissão ao vivo.'),channelLink(current));stage.append(fallback);
  }
- async function json(url){const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();return r.json()}
+ async function json(url,timeout=8000){const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(timeout)});if(!r.ok)throw Error();return r.json()}
  const validUser=/^[a-z0-9_-]{1,40}$/i,validHandle=/^[a-z0-9_.-]{1,100}$/i;
  function valid(c){
   return validUser.test(c?.user||'')&&validHandle.test(c?.handle||'')&&
@@ -83,18 +83,25 @@
   configUpdatedAt=Date.now();return [...merged.values()];
  }
  async function publicStatus(){
-  // GitHub Pages uses a custom domain; try published aliases so a single failed
-  // origin cannot make all active drivers look offline.
-  const paths=[
+  // GitHub's scheduled workflows may be delayed for hours. The Cloudflare
+  // directory checks providers on demand and caches them for only 90 seconds.
+  const stamp=Math.floor(Date.now()/30000);
+  const liveService='https://streamers.bidulog.com.br/api/status?t='+stamp;
+  const direct=json(liveService,16000).catch(()=>null);
+  const staticPaths=[
+   'streamer-status.json',
    'https://gatlogets2.com.br/streamer-status.json',
-   'https://bidu620-alt.github.io/GAT-LOG-Updates/streamer-status.json',
-   'streamer-status.json'
-  ],stamp=Math.floor(Date.now()/30000);
-  return Promise.any(paths.map(async url=>{
-   const data=await json(url+(url.includes('?')?'&':'?')+'t='+stamp);
+   'https://bidu620-alt.github.io/GAT-LOG-Updates/streamer-status.json'
+  ];
+  const published=Promise.any(staticPaths.map(async url=>{
+   const data=await json(url+'?t='+stamp);
    if(!Array.isArray(data?.channels)||!data.checked_at)throw Error('invalid_live_status');
    return data;
-  }));
+  })).catch(()=>null);
+  const [recent,backup]=await Promise.all([direct,published]);
+  if(recent&&Array.isArray(recent.channels)&&fresh(recent))return recent;
+  if(backup&&Array.isArray(backup.channels))return backup;
+  throw Error('stream_status_unavailable');
  }
  async function refresh(){
   if(loading){refreshQueued=true;return;}
