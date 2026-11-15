@@ -1,0 +1,43 @@
+name: Gerar video de apresentacao BiduLog
+on:
+  push:
+    branches: [capturas-bidulog-2026-11-14]
+    paths:
+      - '.github/workflows/gerar-video-bidulog.yml'
+      - 'criar_video_bidulog.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Receber capturas reais
+        uses: actions/checkout@v4
+      - name: Preparar renderizacao
+        run: |
+          python3 -m pip install --break-system-packages Pillow gTTS
+          ffmpeg -version | head -1
+      - name: Gerar apresentacao em MP4
+        run: python3 criar_video_bidulog.py
+      - name: Conferir o video final
+        run: |
+          test -s BiduLog_Apresentacao.mp4
+          ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 BiduLog_Apresentacao.mp4
+          ls -lh BiduLog_Apresentacao.mp4
+      - name: Anexar video para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: BiduLog-Apresentacao-Video
+          path: BiduLog_Apresentacao.mp4
+          retention-days: 30
+      - name: Publicar MP4 na branch de capturas
+        run: |
+          git config user.name "BiduLog Video Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add BiduLog_Apresentacao.mp4
+          git commit -m "video: apresentacao oficial do BiduLog"
+          git push origin HEAD:capturas-bidulog-2026-11-14
