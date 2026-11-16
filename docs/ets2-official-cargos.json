@@ -2,9 +2,9 @@
   "game": "Euro Truck Simulator 2",
   "source": "https://trucksimulator.wiki.gg/wiki/Cargo_types/Euro_Truck_Simulator_2",
   "source_note": "Catálogo com nomes e IDs conferidos nos arquivos oficiais instalados do ETS2; pesos e DLCs de referência preservados da Wiki quando disponíveis.",
-  "reference_game_version": "1.61.1.1",
-  "reference_data_refreshed": "2026-10-03",
-  "generated_at": "2026-11-09T17:43:54Z",
+  "reference_game_version": "1.62.2.1",
+  "reference_data_refreshed": "2026-11-11",
+  "generated_at": "2026-11-16T17:16:21Z",
   "total_entries": 380,
   "category_titles": {
     "tractor": "Trator e máquinas agrícolas",
@@ -5255,11 +5255,6 @@
       }
     ]
   },
-  "removed_entries_excluded": 1,
-  "name_locale": "pt_br",
-  "name_game_version": "1.61.1.1",
-  "name_source": "cargo_data and localization files extracted from installed ETS2 on 2026-10-08",
-  "cargo_id_count": 413,
   "passenger_transport": {
     "id": "passageiros",
     "title": "Passageiros / Transporte rodoviário",
@@ -5269,7 +5264,7 @@
     "type": "passenger_transport",
     "brand_policy": "manufacturer",
     "telemetry_cargo_ids_verified": false,
-    "note": "O DLC Coaches transporta passageiros. Estes são tipos oficiais de serviço, não códigos internos confirmados de carga. As entradas de passageiros não integram total_entries nem cargo_id_count de mercadorias.",
+    "note": "O DLC Coaches transporta passageiros. Estes sao tipos oficiais de servico, nao codigos internos confirmados de carga. As entradas de passageiros nao integram total_entries nem cargo_id_count de mercadorias.",
     "services": [
       {
         "id": "coach_quick_job",
@@ -5296,5 +5291,10 @@
         "telemetry_status": "pending"
       }
     ]
-  }
+  },
+  "removed_entries_excluded": 1,
+  "name_locale": "pt_br",
+  "name_game_version": "1.61.1.1",
+  "name_source": "cargo_data and localization files extracted from installed ETS2 on 2026-10-08",
+  "cargo_id_count": 413
 }
