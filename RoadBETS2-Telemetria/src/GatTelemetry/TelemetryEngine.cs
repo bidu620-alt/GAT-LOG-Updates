@@ -17,6 +17,9 @@ internal sealed class TelemetryEngine : IDisposable
 		Timeout = TimeSpan.FromMilliseconds(1400.0)
 	};
 
+	private readonly SaveGameReader _saveReader = new SaveGameReader();
+    private Task<JObject> _saveReadTask;
+    private JObject _saveLatest;
 	private DateTime _lastStartAttempt = DateTime.MinValue;
 	private readonly System.Threading.SemaphoreSlim _profileGate = new System.Threading.SemaphoreSlim(1, 1);
 	private DateTime _profileCheckedAt = DateTime.MinValue;
@@ -26,13 +29,23 @@ internal sealed class TelemetryEngine : IDisposable
  private static readonly RoadLimitState RoadLimit = new RoadLimitState();
  private static readonly Stopwatch RoadClock = Stopwatch.StartNew();
 
-	public async Task<JObject> ReadAsync()
+	public async Task<JObject> ReadAsync(bool includeSave = false)
 	{
 		try
 		{
 			JObject jObject = JObject.Parse(await _http.GetStringAsync("http://127.0.0.1:31377/api/ets2/telemetry").ConfigureAwait(continueOnCapturedContext: false));
 			Normalize(jObject);
 			await StampActiveProfileAsync(jObject).ConfigureAwait(false);
+            if (includeSave) {
+                if (_saveReadTask != null && _saveReadTask.IsCompleted) {
+                    try { _saveLatest = _saveReadTask.GetAwaiter().GetResult(); } catch { _saveLatest = null; }
+                    _saveReadTask = null;
+                }
+                string active = (string)jObject["gat_profile_id"] ?? "";
+                if (_saveLatest != null && !string.Equals((string)_saveLatest["profile_id"],active,StringComparison.OrdinalIgnoreCase)) _saveLatest=null;
+                if (_saveReadTask == null) _saveReadTask = _saveReader.ReadAsync((JObject)jObject.DeepClone());
+                jObject["gat_save_evidence"] = _saveLatest?.DeepClone() ?? new JObject { ["schema"]=1,["source"]="ets2_save_readonly",["status"]="unavailable",["reason"]="save_read_in_background" };
+            }
 			return jObject;
 		}
 		catch

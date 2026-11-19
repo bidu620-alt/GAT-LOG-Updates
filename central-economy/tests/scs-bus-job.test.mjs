@@ -61,7 +61,25 @@ test('only explicit fresh bus delivery data can be mapped to a receipt',()=>{
  assert.equal(t.gameplay.jobDelivered,true);
  const noReceipt=normalizeSCSJob({...sample,gat_scs_event:'bus_job.delivered',bus_job:{...sample.bus_job,active:false}});
  assert.equal(noReceipt.gameplay.jobDelivered,false);
- assert.equal(noReceipt.gameplay.jobDeliveredDetails,undefined);
+ assert.deepEqual(noReceipt.gameplay.jobDeliveredDetails,{});
+});
+
+test('stale freight completion cannot finish a passenger trip',()=>{
+ const n=normalizeSCSJob({...sample,gameplay:{onJob:true,jobFinished:true,jobDelivered:true,jobCancelled:true,jobDeliveredDetails:{distanceKm:500}}});
+ assert.equal(n.gameplay.jobDelivered,false);
+ assert.equal(n.gameplay.jobFinished,false);
+ assert.equal(n.gameplay.jobCancelled,false);
+ assert.deepEqual(n.gameplay.jobDeliveredDetails,{});
+ assert.equal(n.gat_transport_evidence.vehicle.model,'9700 DD');
+ assert.equal(n.gat_transport_evidence.classification,'passenger_official');
+ assert.equal(n.gat_transport_evidence.service_id,null);
+});
+
+test('empty, negative or nonfinite bus receipts never confirm a delivery',()=>{
+ for(const distanceKm of [undefined,0,-1,'NaN',Infinity]){
+  const n=normalizeSCSJob({...sample,gat_scs_event:'bus_job.delivered',gameplay:{busJobDeliveredDetails:{distanceKm,revenue:100}}});
+  assert.equal(n.gameplay.jobDelivered,false);
+ }
 });
 test('unknown kinds and ordinary freight remain untouched',()=>{
  for(const t of [

@@ -360,7 +360,9 @@ internal sealed partial class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.39";
+	private const string CurrentVersion = "1.0.68.40";
+    private readonly System.Threading.SemaphoreSlim _centralPacketGate = new System.Threading.SemaphoreSlim(1, 1);
+    private string _lastTerminalPacketKey = "";
 
 	private const string VersionUrl = "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/client_dotnet_version.json";
 
@@ -1115,7 +1117,7 @@ internal sealed partial class MainForm : Form
 		Controls.Add(btnUpdate);
 		lblVersion = new System.Windows.Forms.Label
 		{
-			Text = "Cliente 1.0.68.39",
+			Text = "Cliente 1.0.68.40",
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(105, 118, 136),
 			Anchor = (AnchorStyles.Bottom | AnchorStyles.Right),
@@ -1652,14 +1654,41 @@ internal sealed partial class MainForm : Form
 			if (jObject != null)
 			{
 				DashboardOdometerTrip before = _tripJournal.ReadDashboardOdometerTrip();
+                string beforeProfile = _tripJournal.ReadActiveProfileId();
 				_tripJournal.Observe(jObject);
 				DashboardOdometerTrip current = _tripJournal.ReadDashboardOdometerTrip();
+                await PreserveObservedTerminalAsync(jObject, before?.TripId, beforeProfile);
 				_dashboardDistance.Observe(current ?? before,
 					RoadLifeOverlayNumber(jObject, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"),
 					RoadLifeOverlayBoolean(jObject, "game.connected", "gameConnected", "connected"));
 			}
 		}
 	}
+
+    private async Task PreserveObservedTerminalAsync(JObject observed, string tripId, string profileId)
+    {
+        if (!AccountReady || string.IsNullOrWhiteSpace(tripId) ||
+            !(!string.IsNullOrWhiteSpace(profileId) && string.Equals(profileId,(string)observed["gat_profile_id"],StringComparison.OrdinalIgnoreCase)) ||
+            !(BoolAny(observed,"gameplay.jobDelivered")||BoolAny(observed,"gameplay.jobCancelled"))) return;
+        string key=tripId+"|"+BoolAny(observed,"gameplay.jobDelivered")+"|"+observed.SelectToken("gameplay.jobDeliveredDetails")?.ToString(Newtonsoft.Json.Formatting.None);
+        await _centralPacketGate.WaitAsync();
+        try {
+            if (key==_lastTerminalPacketKey) return;
+            string token=ClientStore.GetPlainToken(ClientStore.FindCredential("https://api.bidulog.com.br",_accountUser));
+            if(string.IsNullOrWhiteSpace(token))return;
+            var packet=(JObject)observed.DeepClone();
+            packet["gat_trip_id"]=tripId;
+            packet["gat_account_user"]=_accountUser;
+            packet["gat_client_version"]=CurrentVersion;
+            var map=DetectMapFromGameLog();packet["gat_map"]=map.Key;
+            var integrity=ModIntegrityScanner.Check();
+            packet["gat_integrity_status"]=integrity.Status??"unknown";
+            packet["gat_integrity_reason"]=integrity.Reason??"";
+            SealCentralTelemetry(packet,token);
+            QueueCentralTelemetry(packet);
+            _lastTerminalPacketKey=key;
+        } finally { _centralPacketGate.Release(); }
+    }
 
 	private async Task FlushTripReceiptsAsync()
 	{
@@ -1847,6 +1876,7 @@ internal sealed partial class MainForm : Form
 	{
 		if (tele != null)
 		{
+			if (tele["gat_journal_chain"] == null) PassengerTelemetry.Stamp(tele);
 			if (tele["gat_collected_at"] == null)
 			{
 				tele["gat_collected_at"] = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);
@@ -2104,17 +2134,23 @@ internal sealed partial class MainForm : Form
 	}
 
 	private async Task SendCentralTelemetryAsync()
+    {
+        if (!await _centralPacketGate.WaitAsync(0)) return;
+        try { await SendCentralTelemetryCoreAsync(); } finally { _centralPacketGate.Release(); }
+    }
+
+	private async Task SendCentralTelemetryCoreAsync()
 	{
 		if (!AccountReady)
 		{
 			return;
 		}
-		await FlushTripReceiptsAsync();
+		// Send observed telemetry before asking the server to acknowledge its receipt.
 		if ((DateTime.UtcNow - _lastAccountTelemetry).TotalMilliseconds < 1200.0)
 		{
 			return;
 		}
-		JObject tele = await _telemetry.ReadAsync();
+		JObject tele = await _telemetry.ReadAsync(includeSave: true);
 		_lastAccountTelemetry = DateTime.UtcNow;
 		tele = StabilizeJobTelemetry(tele);
 		if (tele == null)
@@ -2139,7 +2175,7 @@ internal sealed partial class MainForm : Form
 		tele["gat_map_package"] = gatMapDetection.PackageName;
 		tele["gat_map_source"] = gatMapDetection.Source;
 		StampCentralTelemetry(tele);
-		lblTruck.Text = "TruckSim GPS: CONECTADO";
+		lblTruck.Text = "TruckSim GPS: CONECTADO | Save: " + ((string)tele.SelectToken("gat_save_evidence.status") == "snapshot_recent" ? "atualizado" : (string)tele.SelectToken("gat_save_evidence.status") == "snapshot_stale" ? "antigo" : "indisponível");
 		UpdateTelemetryDisplay(TelemetryEngine.BuildDisplay(tele));
 		RoadLifeOverlayPush(tele);
 		string centralDriver = _accountUser;
@@ -2185,7 +2221,11 @@ internal sealed partial class MainForm : Form
 		ApiResponse apiResponse2 = await _api.SendTelemetryAsync("https://api.bidulog.com.br", centralDriver, _deviceId, centralClientToken, tele);
 		if (apiResponse2.StatusCode == 200 && apiResponse2.Json != null && ApiClient.Bool(apiResponse2.Json["ok"]))
 		{
-			if (apiResponse2.Json["mission_event"] is JObject jObject)
+			await FlushTripReceiptsAsync();
+            if (apiResponse2.Json["save_capture"] is JObject saveCapture) {
+                try { File.WriteAllText(System.IO.Path.Combine(ClientStore.DataDir,"save-reader-central-last.json"),saveCapture.ToString()); } catch {}
+            }
+            if (apiResponse2.Json["mission_event"] is JObject jObject)
 			{
 				string a = ApiClient.Str(jObject["type"]);
 				if (string.Equals(a, "mission_in_progress", StringComparison.OrdinalIgnoreCase))
@@ -2347,6 +2387,15 @@ internal sealed partial class MainForm : Form
 		if (tele == null)
 		{
 			return null;
+		}
+		PassengerTelemetry.Stamp(tele);
+		if ((string)tele["gat_scs_job_kind"] == "bus_job")
+		{
+			// Passenger configurations carry no freight weight. Do not let the
+			// freight latch mask them or attach a previous truck trip's ID.
+			_latchedJob = null;
+			_latchedJobKey = string.Empty;
+			return tele;
 		}
 		string value = TextAny(tele, "cargo_name", "job.cargoName", "job.cargo");
 		string text = TextAny(tele, "cargo_id", "job.cargoId", "Job.CargoId");
@@ -3314,7 +3363,7 @@ internal sealed partial class MainForm : Form
 		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA BIDULOG");
 		_hubServerCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
 		Controls.Clear();
-		Text = "BIDULOG TELEMETRIA 1.0.68.39";
+		Text = "BIDULOG TELEMETRIA 1.0.68.40";
 		MinimumSize = new System.Drawing.Size(740, 500);
 		AutoScaleMode = AutoScaleMode.Dpi;
 		System.Drawing.Rectangle workingArea = Screen.FromControl(this).WorkingArea;
@@ -3348,7 +3397,7 @@ internal sealed partial class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "BIDULOG ETS2  •  Cliente 1.0.68.39  •  conexão que move distâncias",
+			Text = "BIDULOG ETS2  •  Cliente 1.0.68.40  •  conexão que move distâncias",
 			Padding = new Padding(20, 0, 0, 0),
 			TextAlign = ContentAlignment.MiddleLeft,
 			ForeColor = System.Drawing.Color.FromArgb(104, 128, 155),
@@ -5562,7 +5611,7 @@ internal sealed partial class MainForm : Form
 		if (!_hub045Applied)
 		{
 			_hub045Applied = true;
-			Text = "BIDULOG TELEMETRIA 1.0.68.39";
+			Text = "BIDULOG TELEMETRIA 1.0.68.40";
 			ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
 			BuildHome045();
 			_hubStatusTimer041.Tick += async delegate

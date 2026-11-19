@@ -4,12 +4,13 @@ import {readFileSync,writeFileSync,copyFileSync,existsSync,mkdtempSync,rmSync,mk
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 const root=new URL('../',import.meta.url);
 const installer=new URL('./install-scs-bus-job-central.mjs',import.meta.url);
 const current=readFileSync(new URL('../central-economy/worker.js',import.meta.url),'utf8');
 const compatSource=new URL('../central-economy/scs-job-compat.js',import.meta.url);
 const installerSrc=readFileSync(installer,'utf8');
-const editsLine=installerSrc.match(/const edits=(\[.*?\]);\nlet patched=/s);
+const editsLine=installerSrc.match(/const edits=(\[.*?\]);\r?\nlet patched=/s);
 assert.ok(editsLine,'cannot extract installer patch data');
 const edits=JSON.parse(editsLine[1]);
 function fixture(){
@@ -21,7 +22,7 @@ function fixture(){
  return {root,central,source};
 }
 function run(central,source){
- return spawnSync(process.execPath,[installer.pathname,central,source],{encoding:'utf8'});
+ return spawnSync(process.execPath,[fileURLToPath(installer),central,source],{encoding:'utf8'});
 }
 test('installer safely patches older compatible Central, makes backup, and is idempotent',()=>{
  const f=fixture();

@@ -71,6 +71,8 @@ internal sealed class TripJournal
 		_state = Load();
 	}
 
+	public string ReadActiveProfileId() { lock (_sync) { return _state.ActiveTrip?.ProfileId ?? ""; } }
+
 	public DashboardOdometerTrip ReadDashboardOdometerTrip()
 	{
 		lock (_sync)

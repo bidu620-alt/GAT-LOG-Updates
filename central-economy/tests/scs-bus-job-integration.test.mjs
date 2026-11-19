@@ -59,6 +59,10 @@ test('authenticated Central: start, track and complete bus_job once without frei
   const raw=JSON.parse(r[0].raw_json);
   assert.equal(raw.mission.job_kind,'bus_job');
   assert.equal(raw.audit.job_kind,'bus_job');
+  assert.equal(raw.mission.start_vehicle_evidence.model,'9700');
+  assert.equal(raw.audit.vehicle_evidence.make,'Volvo');
+  assert.equal(raw.audit.transport_evidence.classification,'passenger_official');
+  assert.equal(raw.audit.transport_evidence.configuration.plannedDistanceKm,210);
   const duplicate=await send(bus('delivered',12200,{distanceKm:200,revenue:10000,earnedXp:300}));
   assert.notEqual(duplicate.mission_event?.type,'delivery_completed',JSON.stringify(duplicate));
   assert.equal(db.sql.prepare('SELECT COUNT(*) AS n FROM deliveries WHERE user=?').get(user).n,1);

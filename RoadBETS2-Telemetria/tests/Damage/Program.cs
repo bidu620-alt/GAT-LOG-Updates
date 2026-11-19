@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json.Linq;
 using GatTelemetry;
-namespace GatTelemetry { internal static class ClientStore { public static void Log(string value) {} } }
+namespace GatTelemetry { internal static class ClientStore { public static string DataDir => System.IO.Path.GetTempPath(); public static void Log(string value) {} } }
 class DamageCheck
 {
     static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }

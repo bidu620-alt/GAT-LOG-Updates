@@ -15,7 +15,11 @@
   <PropertyGroup>
     <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="../save-reader/reader.mts" Link="SaveReader/reader.mts" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../save-reader/vendor/*.ts" Link="SaveReader/vendor/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../save-reader/LICENSE-*.txt" Link="SaveReader/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Net.Http" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

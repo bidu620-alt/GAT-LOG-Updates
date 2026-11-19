@@ -12,6 +12,20 @@ const knownKind=x=>{
  return s==='bus_job'||s==='job'||s==='car_job'?s:'';
 };
 
+// Keep manufacturer entitlement separate from the kind of transport. Names of
+// models alone are never evidence that passengers were carried.
+export function passengerEvidence(raw){
+ const r=obj(raw),truck=obj(r.truck),kind=scsJobKind(r);
+ return {
+  schema:1,job_kind:kind,
+  vehicle:{make:first(truck.make,truck.manufacturer,truck.brand),model:first(truck.model,truck.modelName,truck.model_name),id:first(truck.id,truck.unitId,truck.vehicleId)},
+  classification:kind==='bus_job'?'passenger_official':'unconfirmed',
+  service_id:null, // Quick/Contract/Tourist IDs require real provider evidence.
+  configuration:kind==='bus_job'?obj(r.bus_job??r.job):{},
+  sdk_event:first(r.gat_scs_event,r.bus_job_event,obj(r.gameplay).busJobEvent)
+ };
+}
+
 export function scsJobKind(raw){
  const t=obj(raw);
  const job=obj(t.job);
@@ -53,10 +67,11 @@ export function normalizeSCSJob(raw){
  const destinationId=first(field(job,'destinationCityId','destination_city_id'),field(b,'destinationCityId','destination_city_id'));
  const planned=distance(job,'plannedDistanceKm','planned_distance_km')??distance(b,'plannedDistanceKm','planned_distance_km');
  const delivery=obj(field(gameplay,'busJobDeliveredDetails','bus_job_delivered_details')??field(raw,'bus_job_delivered_details')??field(b,'deliveredDetails','delivery_details'));
- const receipt=Object.keys(delivery).length?{
+ const receiptDistance=distance(delivery,'distanceKm','distance_km');
+ const receipt=Object.keys(delivery).length&&receiptDistance!==undefined&&receiptDistance>0?{
   revenue:field(delivery,'revenue','income')??0,
   earnedXp:field(delivery,'earnedXp','earned_xp')??0,
-  distanceKm:field(delivery,'distanceKm','distance_km')??0,
+  distanceKm:receiptDistance,
   deliveryTime:field(delivery,'deliveryTime','delivery_time')??0
  }:null;
  const event=first(raw.gat_scs_event,raw.bus_job_event,gameplay.busJobEvent).toLowerCase();
@@ -69,6 +84,7 @@ export function normalizeSCSJob(raw){
   ...raw,
   gat_scs_job_kind:'bus_job',
   gat_job_kind:'bus_job',
+  gat_transport_evidence:passengerEvidence(raw),
   on_job:isInJob,
   // There is no freight cargo id or weight for passenger transport.
   cargo_name:isInJob?'Passageiros':'',
@@ -95,7 +111,9 @@ export function normalizeSCSJob(raw){
   gameplay:{
    ...gameplay,
    onJob:isInJob,
-   ...(receipt?{jobDeliveredDetails:receipt}:{})
+   // Legacy freight flags/receipts can linger after changing game mode.
+   jobDelivered:false,jobFinished:false,jobCancelled:false,
+   jobDeliveredDetails:receipt||{},
   },
   ...(normalizedEvent?{gat_job_event:normalizedEvent}:{})
  };
