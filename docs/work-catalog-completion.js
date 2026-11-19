@@ -35,13 +35,14 @@
     const rows=[...(Array.isArray(p?.cargo_history)?p.cargo_history:[]),...(Array.isArray(p?.deliveries)?p.deliveries:[])];
     return rows.map(x=>({...x,name:norm(x?.cargo_name_raw||x?.cargo||x?.cargo_name||x?.name),cargo_id:GatCargoIdentity.idOf(x),weightT:(Number(x?.weight_kg)||0)/1000})).filter(x=>x.name||x.cargo_id);
   }
-  function signature(){return history().map(x=>x.cargo_id+'@'+x.name+'@'+x.weightT.toFixed(2)).sort().join('|')}
+  function signature(){return (currentProfile()?'ready:':'loading:')+history().map(x=>x.cargo_id+'@'+x.name+'@'+x.weightT.toFixed(2)).sort().join('|')}
 
   function ensureStyle(){
     if(document.getElementById('gatCargoCompletionStyle'))return;
     const s=document.createElement('style');
     s.id='gatCargoCompletionStyle';
     s.textContent=`
+ .catalog-collection-progress{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 16px;margin:12px 0 4px;border:1px solid rgba(49,184,103,.45);border-radius:12px;background:rgba(24,109,59,.12);color:#d9f5e3}.catalog-collection-progress span{font-size:12px;font-weight:800}.catalog-collection-progress strong{color:#75efb6;font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
 .cargo-reg-lite{display:none!important}
 .full-cargo-card{overflow:hidden!important;border:1px solid rgba(57,134,181,.58)!important;background:linear-gradient(180deg,#0a1722 0%,#07111a 100%)!important;box-shadow:0 15px 32px rgba(0,0,0,.20)!important;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease!important}
 .full-cargo-card:hover{transform:translateY(-2px)!important;border-color:rgba(82,174,230,.78)!important;box-shadow:0 18px 38px rgba(0,0,0,.27)!important}
@@ -190,23 +191,39 @@
     if(count&&totalEntries){count.textContent=count.textContent.replace(/\d+ cargas no catálogo/,totalEntries+' cargas no catálogo');if(!root.querySelector('.full-cargo-more')&&/encontradas/.test(count.textContent))count.textContent=count.textContent.replace(/^\d+ encontradas/,root.querySelectorAll('.full-cargo-card').length+' encontradas')}
   }
 
-  function completedCards(){
-    const items=[...document.querySelectorAll('#workCatalogGrid .full-cargo-card')].map(cardItem),done=new Set();
-    const all=GatCargoIdentity.getCatalog();
-    history().forEach(row=>{
+  // Count the entire official catalog, not just the cards currently rendered.
+  function completedCatalogIds(all,rows){
+    const done=new Set(),seen=new Set();
+    for(const row of rows){
+      const key=row.cargo_id?'id:'+row.cargo_id:'name:'+row.name;
+      if(seen.has(key))continue;
+      seen.add(key);
       const found=GatCargoIdentity.match(all,row);
-      if(found.length===1){const visible=items.find(item=>item.id===found[0].id);if(visible)done.add(visible.card);return}
-      // IDs are authoritative; without an ID, ambiguous names stay unresolved.
-    });
+      if(found.length===1)done.add(found[0].id);
+    }
     return done;
+  }
+
+  function updateCollectionCounter(all,done){
+    const official=all.filter(item=>!item.passenger&&item.category!=='passageiros');
+    const total=official.length,ready=!!currentProfile()&&total>0;
+    const count=ready?official.reduce((n,item)=>n+(done.has(item.id)?1:0),0):null;
+    const label=(ready?String(count):'—')+'/'+(total||'—');
+    for(const id of ['driverMonthly','progressMonthlyBig','catalogCollectionCount']){
+      const el=document.getElementById(id);
+      if(el&&el.textContent!==label)el.textContent=label;
+    }
+    const description=document.getElementById('driverMonthlyText');
+    const detail=ready?'Cargas oficiais distintas concluídas':'Atualizando coleção…';
+    if(description&&description.textContent!==detail)description.textContent=detail;
   }
 
   function apply(){
     if(applying)return;applying=true;
     try{
-      ensureStyle();expandVariants();const done=completedCards();
+      ensureStyle();expandVariants();const all=GatCargoIdentity.getCatalog();const done=completedCatalogIds(all,history());updateCollectionCounter(all,done);
       document.querySelectorAll('#workCatalogGrid .full-cargo-card').forEach(card=>{
-        cleanMeta(card);const completed=done.has(card);card.classList.toggle('catalog-completed',completed);applyThumb(card);
+        cleanMeta(card);const completed=done.has(card.dataset.cargoKey);card.classList.toggle('catalog-completed',completed);applyThumb(card);
         const state=card.querySelector('.cargo-state');const current=card.classList.contains('current');const desired=current?'CARGA ATUAL':(completed?'✓ CONCLUÍDA':'OFICIAL');if(state&&state.textContent!==desired)state.textContent=desired;
       });
     }finally{applying=false}
@@ -231,6 +248,8 @@
   function start(){
     ensureStyle();const root=document.getElementById('workCatalogGrid');if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:false});
     lastSig=signature();apply();loadVariants();loadIcons();
+    window.addEventListener('gat-driver-profile-updated',apply);
+    window.addEventListener('gat-account-change',()=>setTimeout(apply,0));
     setInterval(()=>{const sig=signature();if(sig!==lastSig){lastSig=sig;apply();return}document.querySelectorAll('.cargo-reg-lite').forEach(el=>el.remove());if(iconsReady)document.querySelectorAll('#workCatalogGrid .full-cargo-card:not(.has-cargo-thumb)').forEach(applyThumb)},900);
   }
 
