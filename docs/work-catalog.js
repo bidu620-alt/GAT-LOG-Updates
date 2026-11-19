@@ -58,7 +58,7 @@
     const he=head?.querySelector('.eyebrow');if(he)he.textContent='CARGAS OFICIAIS ETS2';
     const h2=head?.querySelector('h2');if(h2)h2.textContent='Todas as cargas do jogo em português';
     const p=head?.querySelector('p');if(p)p.textContent='Lista única com '+total+' cargas oficiais exibidas em português. A busca aceita português e também o nome oficial original, sem alterar a Telemetria ou a Central.';
-    const rule=head?.querySelector('.catalog-rule');if(rule)rule.innerHTML='<b>COLEÇÃO</b><span>DE CARGAS</span><b>SEM MÍN.</b><span>KM REAIS</span>';
+    const rule=head?.querySelector('.catalog-rule');if(rule&&!rule.querySelector('#catalogCollectionCount'))rule.innerHTML='<b>COLEÇÃO</b><span id="catalogCollectionCount" aria-label="Cargas da coleção concluídas" aria-live="polite">—/380</span><b>SEM MÍN.</b><span>KM REAIS</span>';
     const progressTitle=document.querySelector('.monthly-progress-card h2');if(progressTitle)progressTitle.textContent='Coleção de cargas';
     const progressLead=document.querySelector('.monthly-progress-card .lead');if(progressLead)progressLead.textContent='Cada tipo de carga concluído entra uma vez na coleção. Repetir uma carga continua valendo no histórico, km, XP e Pontos BiduLog, mas não aumenta a coleção novamente.';
   }
