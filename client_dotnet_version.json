@@ -1,11 +1,13 @@
 {
   "app": "BiduLog Telemetria",
   "channel": "stable",
-  "version": "1.0.68.39",
-  "display_version": "1.0.68.39",
-  "notas": "Inclui TruckSimGPS 1.4.4 recompilado com danos reais de motor, cambio, cabine, chassi e rodas; mantem danos da carga e reboque. Preserva conta, configuracoes, diario e fila de viagens. Feche o ETS2 e o TruckSimGPS antes de atualizar.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.39.exe",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.39.exe",
-  "sha256": "3180255ea74e373bdb0ad597c839eb8c006f4dddd79fce28bed1d2b56f23a2bb",
-  "package_type": "full"
+  "version": "1.0.68.40",
+  "display_version": "1.0.68.40",
+  "notas": "Leitura automatica do save do perfil ativo como complemento a telemetria. Inclui SaveReader e dependencias, preservacao do pacote de conclusao e recuperacao segura do diario. Mantem regras, garagem, conta, dados e fila. Feche o ETS2 e os aplicativos antes de atualizar.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.40.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.40.exe",
+  "sha256": "34cdae49ddfaae8365cb8954f6a1eef5447f3a867aeabd6b047f1a21088ddad3",
+  "package_type": "full",
+  "update_zip_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDULOG_TELEMETRIA_ATUALIZACAO_1.0.68.40.zip",
+  "update_zip_sha256": "afb2445d335560a64329de0df02420f088195ec527f0d62776099bd832c95cd1"
 }
