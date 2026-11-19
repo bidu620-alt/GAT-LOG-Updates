@@ -33,8 +33,8 @@
 
     const rule=document.querySelector('.work-catalog-section .catalog-rule');
     if(rule){
-      const wanted='<b>COLEÇÃO</b><span>DE CARGAS</span><b>SEM MÍN.</b><span>KM REAIS</span>';
-      if(rule.innerHTML!==wanted) rule.innerHTML=wanted;
+      const wanted='<b>COLEÇÃO</b><span id="catalogCollectionCount" aria-label="Cargas da coleção concluídas" aria-live="polite">—/380</span><b>SEM MÍN.</b><span>KM REAIS</span>';
+      if(!rule.querySelector('#catalogCollectionCount')) rule.innerHTML=wanted;
     }
 
     const progressTitle=document.querySelector('.monthly-progress-card h2');
