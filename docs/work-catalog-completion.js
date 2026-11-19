@@ -42,7 +42,7 @@
     const s=document.createElement('style');
     s.id='gatCargoCompletionStyle';
     s.textContent=`
- .catalog-collection-progress{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 16px;margin:12px 0 4px;border:1px solid rgba(49,184,103,.45);border-radius:12px;background:rgba(24,109,59,.12);color:#d9f5e3}.catalog-collection-progress span{font-size:12px;font-weight:800}.catalog-collection-progress strong{color:#75efb6;font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.catalog-rule #catalogCollectionCount{color:#75efb6;font-size:16px;letter-spacing:0;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cargo-reg-lite{display:none!important}
 .full-cargo-card{overflow:hidden!important;border:1px solid rgba(57,134,181,.58)!important;background:linear-gradient(180deg,#0a1722 0%,#07111a 100%)!important;box-shadow:0 15px 32px rgba(0,0,0,.20)!important;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease!important}
 .full-cargo-card:hover{transform:translateY(-2px)!important;border-color:rgba(82,174,230,.78)!important;box-shadow:0 18px 38px rgba(0,0,0,.27)!important}
