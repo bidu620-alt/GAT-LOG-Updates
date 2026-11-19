@@ -9,6 +9,12 @@
     const topbar = document.querySelector('.topbar');
     const nav = topbar?.querySelector('nav');
     if (!nav) return;
+    // The monthly pass is accessed from the Events hub, not a separate top-level item.
+    const path = location.pathname.replace(/\/+$/, '') + '/';
+    if (!(path === passUrl.pathname || path.startsWith(passUrl.pathname))) {
+      nav.querySelectorAll('[data-gat-passe-link], .gat-passe-link').forEach(link => link.remove());
+      return;
+    }
 
     if (!document.getElementById('gat-passe-nav-style')) {
       const style = document.createElement('style');
