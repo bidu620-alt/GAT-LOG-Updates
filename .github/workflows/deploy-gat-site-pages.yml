@@ -10,12 +10,15 @@ on:
       - '.github/workflows/deploy-gat-site-pages.yml'
       - 'scripts/update-streamer-status.mjs'
       - 'scripts/test-streamer-status.mjs'
+      - 'scripts/deploy-pages-rest.cjs'
+      - 'scripts/test-pages-deploy.cjs'
   schedule:
     - cron: '7,17,27,37,47,57 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -28,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.safe_deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,6 +64,9 @@ jobs:
           YOUTUBE_DATA_API_KEY: ${{ secrets.YOUTUBE_DATA_API_KEY }}
         run: node scripts/update-streamer-status.mjs
 
+      - name: Validate Pages deployment fallback
+        run: node scripts/test-pages-deploy.cjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
@@ -74,3 +80,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Deploy Pages through REST when artifact lookup fails
+        id: safe_deployment
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await require('./scripts/deploy-pages-rest.cjs')({github, context, core});
