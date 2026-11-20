@@ -11,6 +11,7 @@
    const s=session(),url=API+'/api/eventos/islandia/'+(s?.token?'state':'config');
    const response=await fetch(url,s?.token?{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({token:s.token}),cache:'no-store',signal:AbortSignal.timeout(15000)}:{cache:'no-store',signal:AbortSignal.timeout(15000)});
    if(!response.ok)throw Error(response.status===401?'Sua sessão expirou. Entre novamente pelo perfil.':'Evento aguardando ativação na Central.');
+   const catalogResponse=await fetch(API+'/api/economy/catalog',{cache:'no-store',signal:AbortSignal.timeout(5000)});if(catalogResponse.ok){const catalog=await catalogResponse.json(),product=catalog.catalog?.find(p=>p.id==='event_iceland_2026');el('eventPrice').textContent=product?(product.gold_units/100).toLocaleString('pt-BR')+' Gold'+(product.cash_centavos?' ou '+(product.cash_centavos/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):''):'Consulte a disponibilidade na loja.'}
    const d=await response.json();if(!d.ok||!d.event)throw Error('Evento aguardando ativação na Central.');
    const active=d.event.active===true,owned=d.owned===true;
    el('buy').hidden=false;el('buy').textContent=owned?'EVENTO ADQUIRIDO — VER PERFIL →':'COMPRAR EVENTO →';el('buy').href=owned?'../../motorista.html':'../../economia.html?comprar=event_iceland_2026#loja';

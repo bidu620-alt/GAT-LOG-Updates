@@ -52,7 +52,7 @@
   const token=session()?.token;if(!token)throw Error('Entre novamente na sua conta.');
   const response=await fetch(API+'/api/profile-customization/'+action,{method:'POST',cache:'no-store',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({...body,token}),signal:AbortSignal.timeout(20000)});
   const data=await response.json().catch(()=>({}));
-  if(!response.ok||!data.ok){const errors={theme_not_unlocked:'Conclua o passe desse tema para desbloqueá-lo.',customization_not_owned:'Adquira a personalização para usar capa, fundo e mensagem.',bio_too_long:'A mensagem deve ter no máximo 600 caracteres.',invalid_session:'Sua sessão expirou. Entre novamente.',cover_too_large:'A imagem ficou grande demais. Escolha outra foto.',invalid_cover:'A foto não foi aceita. Use JPG, PNG ou WebP.',invalid_cover_settings:'Confira a posição e o escurecimento.'};throw Error(errors[data.error]||'Personalização indisponível agora. Tente novamente mais tarde.')}
+  if(!response.ok||!data.ok){const errors={insufficient_balance:'Saldo de Gold insuficiente.',price_changed:'A taxa foi atualizada. Feche e abra novamente para confirmar o novo valor.',profile_changed:'Seu perfil mudou em outra janela. Feche e abra novamente.',operation_id_reused:'Feche e abra o editor para iniciar outra alteração.',theme_not_unlocked:'Conclua o passe desse tema para desbloqueá-lo.',customization_not_owned:'Adquira a personalização para usar capa, fundo e mensagem.',bio_too_long:'A mensagem deve ter no máximo 600 caracteres.',invalid_session:'Sua sessão expirou. Entre novamente.',cover_too_large:'A imagem ficou grande demais. Escolha outra foto.',invalid_cover:'A foto não foi aceita. Use JPG, PNG ou WebP.',invalid_cover_settings:'Confira a posição e o escurecimento.'};throw Error(errors[data.error]||'Personalização indisponível agora. Tente novamente mais tarde.')}
   return data;
  }
  const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
@@ -82,7 +82,7 @@
  async function save(){
   if(saving||!mine()||clean(editorUser)!==clean(session()?.user))return;
   saving=true;const submit=dialog.querySelector('.pc-save');submit.disabled=true;message('Salvando personalização…');
-  try{const user=editorUser,result=await post('save',draft);if(clean(user)!==clean(session()?.user))return;
+  try{const fee=state.owned&&!state.first_edit_included?state.edit_fee_units:0;const changed=JSON.stringify({...draft,updated_at:undefined})!==JSON.stringify({...state.customization,updated_at:undefined});if(changed&&fee&&!confirm('Confirmar alteração por '+(fee/100).toLocaleString('pt-BR')+' Gold?'))return;const user=editorUser;draft.op_id=draft.op_id||crypto.randomUUID();const result=await post('save',{...draft,revision:state.revision,confirmed_fee_units:fee});if(clean(user)!==clean(session()?.user))return;
    if(window.GATCurrentDriverProfile?.user===user){window.GATCurrentDriverProfile.profile_customization=result.customization;window.dispatchEvent(new CustomEvent('gat-driver-profile-updated',{detail:{profile:window.GATCurrentDriverProfile,source:'customization'}}))}
    saving=false;close();
   }catch(error){message(error.message)}finally{saving=false;if(submit.isConnected)submit.disabled=false}
@@ -96,7 +96,7 @@
    const layout=node('div','pc-layout'),controls=node('div','pc-controls'),previewArea=node('div','pc-preview-area');
    controls.append(node('h3','','Tema do perfil'),node('p','pc-note','Padrão gratuito e temas conquistados nos passes.'),node('div','pc-themes'));
    controls.append(node('h3','','Foto de capa'));
-   if(!state.owned){const offer=node('div','pc-offer');offer.append(node('strong','','R$ 10,00 ou 20.000 Gold'),node('p','','Compra única: capa, fundo da página e mensagem. Sem cobrança por troca.'));const link=node('a','pc-button','LIBERAR PERSONALIZAÇÃO');link.href='economia.html#loja';offer.append(link);controls.append(offer)}
+   if(!state.owned){const offer=node('div','pc-offer');offer.append(node('strong','',(state.product.gold_units/100).toLocaleString('pt-BR')+' Gold'),node('p','','Liberação permanente com primeira edição incluída. Alterações posteriores por '+(state.edit_fee_units/100).toLocaleString('pt-BR')+' Gold.'));const link=node('a','pc-button','LIBERAR PERSONALIZAÇÃO');link.href='economia.html#loja';offer.append(link);controls.append(offer)}
    const file=node('input');file.type='file';file.accept='image/jpeg,image/png,image/webp';file.disabled=!state.owned;file.setAttribute('aria-label','Enviar foto de capa');
    file.addEventListener('change',async()=>{if(!file.files?.[0])return;const user=editorUser;try{message('Preparando foto…');const data=await prepare(file.files[0]);if(!dialog||editorUser!==user)return;draft.cover=data;preview();message('Foto pronta. Confira a prévia e salve.')}catch(e){message(e.message)}finally{file.value=''}});
    const remove=button('Remover foto',()=>{draft.cover='';preview();message('Foto removida da prévia. Salve para confirmar.');});remove.disabled=!state.owned&&!draft.cover;
@@ -113,7 +113,7 @@
     controls.append(bio,counter,node('p','pc-note','Visível para quem visitar seu perfil. Até 600 caracteres, incluindo espaços e emojis.'));
    }else controls.append(node('p','pc-note','As opções de fundo e mensagem estarão disponíveis após a atualização da Central.'));
    previewArea.append(node('h3','','Prévia do seu perfil'),node('div','pc-preview'),node('p','pc-note','Sua escolha será vista por quem visitar seu perfil.'));
-   layout.append(controls,previewArea);const actions=node('div','pc-actions');actions.append(button('Cancelar',close),button('Salvar personalização',save,'pc-button pc-save'));dialog.append(layout,actions);themes();preview();message('');
+   layout.append(controls,previewArea);const actions=node('div','pc-actions');actions.append(button('Cancelar',close),button('Salvar personalização',save,'pc-button pc-save'));dialog.append(layout,node('p','pc-note',state.owned?'Taxa por alteração confirmada: '+(state.first_edit_included?'primeira edição incluída':(state.edit_fee_units/100).toLocaleString('pt-BR')+' Gold')+'. Saldo: '+state.gold_balance.toLocaleString('pt-BR')+' Gold. Cancelar ou salvar sem mudanças não cobra.':''),actions);themes();preview();message('');
   }catch(error){message(error.message)}
  }
  window.addEventListener('gat-driver-profile-updated',event=>update(event.detail?.profile));window.addEventListener('gat-account-change',()=>{saving=false;close();current=null;document.getElementById('gat-customize-profile')?.remove();document.getElementById('gat-customize-from-edit')?.remove();document.querySelector('.driver-hero .gat-profile-cover')?.remove();document.getElementById('gat-driver-bio')?.remove();document.body.querySelector(':scope > .gat-page-background')?.remove();document.body.classList.remove('gat-has-profile-background')});

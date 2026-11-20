@@ -16,7 +16,7 @@ for(const service of passengerServices){
 }
 const cards=items.map(item=>({dataset:{cargoKey:item.id,cargoIds:JSON.stringify(item.cargoIds),cargoAliases:JSON.stringify(item.aliases)},getAttribute(k){return k==='title'?'Nome oficial SCS: '+item.name:''},querySelector(q){return q==='.cargo-body h3'?{textContent:item.namePt}:null},item}));
 ctx.document.querySelectorAll=()=>cards;
-expose('work-catalog-completion.js','globalThis.auditDone=completedCards;globalThis.auditSignature=signature;');
+expose('work-catalog-completion.js','globalThis.auditDone=()=>{const ids=completedCatalogIds(GatCargoIdentity.getCatalog(),history());return new Set([...document.querySelectorAll()].filter(card=>ids.has(card.dataset.cargoKey)))};globalThis.auditSignature=signature;');
 for(const row of registry.cargos){
   const item=ctx.GatCargoIdentity.unique(items,{cargo_id:row.id,cargo:'different language'});
   assert.ok(item,'Missing ID '+row.id);assert.equal(item.namePt,row.name_pt,'Wrong game translation '+row.id);
