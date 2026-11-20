@@ -38,7 +38,7 @@ test('published window is immutable; start included, 23:50 excluded; presale ena
 });
 test('cargo lists are explicit and disjoint, never display-name fuzzy matching',()=>{
  const ids=Object.values(PASS_CARGO_IDS).flat();assert.equal(ids.length,new Set(ids).size);
- assert.equal(ids.includes('carbn_pwdr_c'),false);assert.equal(PASS_CARGO_IDS.cegonheiro.includes('carrots'),false);
+ assert.equal(PASS_CARGO_IDS.conteineres.includes('carbn_pwdr_c'),true);assert.equal(ids.includes('unknown_c'),false);assert.equal(PASS_CARGO_IDS.cegonheiro.includes('carrots'),false);
  assert.equal(PASS_CARGO_IDS.maquinario.includes('wood_chipper'),true);
 });
 test('presale Gold purchase charges exactly 2000 once, grants entitlement, no XP/reward',async()=>clock(PRESALE,()=>{
@@ -122,3 +122,4 @@ test('MP entitlement failure rolls back and retried webhook succeeds',async()=>c
 test('pass-state route uses authenticated user only; other month rejected',()=>{
  const db=fixture();own(db);assert.equal(economyAction(db,alice,'pass-state',{month:'2026-11',user:'bob'}).owned,true);assert.equal(economyAction(db,bob,'pass-state',{month:'2026-11',user:'alice'}).owned,false);assert.throws(()=>economyAction(db,alice,'pass-state',{month:'2026-12'}),/pass_not_found/);db.sql.close();
 });
+
