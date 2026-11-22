@@ -1,3 +1,11 @@
+# BiduLog Telemetria 1.0.68.41
+
+Atualização oficial do dashboard aprovada a partir do teste V4. Inclui logo transparente, limite da via em placa, cruzeiro, bordas reforçadas e redução proporcional. Mantém a base .40 de telemetria, SaveReader, fila, diário e antifraude. Abertura sem tomar foco, fluxo visual único, pausa visual ao redimensionar e indicação explícita de perda do GPS.
+
+O workflow release-telemetry-41 compila, testa o dashboard instalado e a atualização, verifica preservação dos arquivos existentes e passa o Defender antes de publicar o instalador, ZIP e manifesto estável. Não modifica a Central nem seu banco.
+
+## Histórico
+
 # RoadBETS2 Telemetria — teste 1.0.68.21
 
 Nome exibido atualizado, logo com transparencia no aplicativo e Dashboard2 com redimensionamento original e nome em texto na coluna esquerda. Voz e cores usam tolerancia de 1 km/h; velocidade branca ate o limite + 1, vermelha acima.

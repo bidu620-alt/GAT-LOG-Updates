@@ -360,7 +360,7 @@ internal sealed partial class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.40";
+	private const string CurrentVersion = "1.0.68.41";
     private readonly System.Threading.SemaphoreSlim _centralPacketGate = new System.Threading.SemaphoreSlim(1, 1);
     private string _lastTerminalPacketKey = "";
 
@@ -755,7 +755,7 @@ internal sealed partial class MainForm : Form
 
 	public MainForm()
 	{
-		Text = "BIDULOG TELEMETRIA BETA";
+		Text = "BIDULOG TELEMETRIA 1.0.68.41";
 		StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new System.Drawing.Size(900, 700);
 		Size = new System.Drawing.Size(940, 740);
@@ -885,7 +885,7 @@ internal sealed partial class MainForm : Form
 		Controls.Add(value);
 		System.Windows.Forms.Label value2 = new System.Windows.Forms.Label
 		{
-			Text = "GAT TELEMETRIA BETA",
+			Text = "GAT TELEMETRIA",
 			Font = new Font("Segoe UI Semibold", 19f, System.Drawing.FontStyle.Bold),
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.White,
@@ -1117,7 +1117,7 @@ internal sealed partial class MainForm : Form
 		Controls.Add(btnUpdate);
 		lblVersion = new System.Windows.Forms.Label
 		{
-			Text = "Cliente 1.0.68.40",
+			Text = "Cliente 1.0.68.41",
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(105, 118, 136),
 			Anchor = (AnchorStyles.Bottom | AnchorStyles.Right),
@@ -3298,7 +3298,7 @@ internal sealed partial class MainForm : Form
 		}
 		else
 		{
-			if (System.Windows.Forms.MessageBox.Show("Instalar atualizacao do BIDULOG TELEMETRIA BETA?\r\n\r\n" + (_availableUpdate.Notes ?? string.Empty), "Atualizacao BIDULOG TELEMETRIA BETA", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) != DialogResult.Yes)
+			if (System.Windows.Forms.MessageBox.Show("Instalar atualizacao do BIDULOG TELEMETRIA?\r\n\r\n" + (_availableUpdate.Notes ?? string.Empty), "Atualizacao BIDULOG TELEMETRIA", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) != DialogResult.Yes)
 			{
 				return;
 			}
@@ -3363,7 +3363,7 @@ internal sealed partial class MainForm : Form
 		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA BIDULOG");
 		_hubServerCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
 		Controls.Clear();
-		Text = "BIDULOG TELEMETRIA 1.0.68.40";
+		Text = "BIDULOG TELEMETRIA 1.0.68.41";
 		MinimumSize = new System.Drawing.Size(740, 500);
 		AutoScaleMode = AutoScaleMode.Dpi;
 		System.Drawing.Rectangle workingArea = Screen.FromControl(this).WorkingArea;
@@ -3397,7 +3397,7 @@ internal sealed partial class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "BIDULOG ETS2  •  Cliente 1.0.68.40  •  conexão que move distâncias",
+			Text = "BIDULOG ETS2  •  Cliente 1.0.68.41  •  conexão que move distâncias",
 			Padding = new Padding(20, 0, 0, 0),
 			TextAlign = ContentAlignment.MiddleLeft,
 			ForeColor = System.Drawing.Color.FromArgb(104, 128, 155),
@@ -4766,7 +4766,7 @@ internal sealed partial class MainForm : Form
 			return;
 		}
 		_hub042Applied = true;
-		Text = "BIDULOG TELEMETRIA BETA 1.0.44";
+		Text = "BIDULOG TELEMETRIA 1.0.44";
 		RebuildHome042();
 		ImproveDash042();
 		WireMediaRouting042();
@@ -5250,7 +5250,7 @@ internal sealed partial class MainForm : Form
 			return;
 		}
 		_hub044Applied = true;
-		Text = "BIDULOG TELEMETRIA BETA 1.0.50";
+		Text = "BIDULOG TELEMETRIA 1.0.50";
 		MinimumSize = new System.Drawing.Size(1100, 720);
 		if (Width < 1240 || Height < 820)
 		{
@@ -5611,7 +5611,7 @@ internal sealed partial class MainForm : Form
 		if (!_hub045Applied)
 		{
 			_hub045Applied = true;
-			Text = "BIDULOG TELEMETRIA 1.0.68.40";
+			Text = "BIDULOG TELEMETRIA 1.0.68.41";
 			ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
 			BuildHome045();
 			_hubStatusTimer041.Tick += async delegate
@@ -6457,7 +6457,7 @@ internal sealed partial class MainForm : Form
 		{
 			if (RoadLifeOverlayRunning())
 			{
-				_roadLifeOverlay.Activate();
+				// Reopening an overlay must not take focus from ETS2.
 				return;
 			}
 			string text = RoadLifeOverlayXaml();
@@ -6483,7 +6483,7 @@ internal sealed partial class MainForm : Form
 			{
 				frameworkElement.MouseLeftButtonDown += (object sender, MouseButtonEventArgs e) =>
 				{
-					if (!_roadLifeClickThrough && e.LeftButton == MouseButtonState.Pressed)
+					if (!_roadLifeClickThrough && e.LeftButton == MouseButtonState.Pressed && !NeonIsResizeControl(e.OriginalSource as DependencyObject))
 					{
 						try
 						{
@@ -6496,7 +6496,7 @@ internal sealed partial class MainForm : Form
 				};
 			}
 			LoadRoadLifeImage("StructureImage", System.IO.Path.Combine(RoadLifeOverlayRoot(), "Assets", "dashboard-structure-green.png"));
-			LoadRoadLifeImage("RoadLifeLogo", System.IO.Path.Combine(RoadLifeOverlayRoot(), "Assets", "roadbets2-logo.png"));
+			LoadRoadLifeImage("RoadLifeLogo", System.IO.Path.Combine(RoadLifeOverlayRoot(), "Assets", "bidulog-logo.png"));
 			RoadLifeThemeWire();
 			_roadLifeOverlay.SourceInitialized += delegate
 			{
@@ -6550,37 +6550,30 @@ internal sealed partial class MainForm : Form
 				_roadLifeClickThrough = false;
 				_roadLifeOverlay = null;
 			};
-			_roadLifeClock = new DispatcherTimer();
-			_roadLifeClock.Interval = TimeSpan.FromMilliseconds(100.0);
-			_roadLifeClock.Tick += async delegate
-			{
-				SetRoadLifeText("DateText", DateTime.Now.ToString("dd/MM/yy"));
-				SetRoadLifeText("TimeText", DateTime.Now.ToString("HH:mm:ss"));
-				if (_roadLifeFastPollBusy)
-				{
-					return;
-				}
-				_roadLifeFastPollBusy = true;
-				try
-				{
-					JObject jObject = await _telemetry.ReadAsync();
-					if (jObject != null && RoadLifeOverlayRunning())
-					{
-						RoadLifeOverlayPush(jObject);
-					}
-				}
-				catch
-				{
-				}
-				finally
-				{
-					_roadLifeFastPollBusy = false;
-				}
-			};
-			_roadLifeClock.Start();
-			_roadLifeOverlay.Show();
-			SetRoadLifeText("DateText", DateTime.Now.ToString("dd/MM/yy"));
-			SetRoadLifeText("TimeText", DateTime.Now.ToString("HH:mm:ss"));
+            // A single, low-priority visual feed; account packets only seed opening.
+            Window dashboardWindow=_roadLifeOverlay;
+            bool dashboardPollBusy=false;
+            var dashboardClock=new DispatcherTimer(System.Windows.Threading.DispatcherPriority.Background);
+            _roadLifeClock=dashboardClock;
+            dashboardClock.Interval=TimeSpan.FromMilliseconds(100.0);
+            dashboardClock.Tick+=async delegate {
+                if(!ReferenceEquals(dashboardWindow,_roadLifeOverlay)||!dashboardWindow.IsVisible)return;
+                SetRoadLifeText("DateText",DateTime.Now.ToString("dd/MM/yy"));
+                SetRoadLifeText("TimeText",DateTime.Now.ToString("HH:mm:ss"));
+                if(dashboardPollBusy||_neonInteractiveSizing)return;
+                dashboardPollBusy=true;
+                try {
+                    var observed=await _telemetry.ReadAsync();
+                    if(dashboardWindow.IsVisible)ApplyNeonLiveFrame(dashboardWindow,observed);
+                }catch(Exception ex){ClientStore.Log("Dashboard visual feed: "+ex.GetType().Name);}
+                finally{dashboardPollBusy=false;}
+            };
+            _neonInteractiveSizing=false;
+            PrepareNeonOpeningFrame();
+            dashboardWindow.ContentRendered+=delegate {
+                if(ReferenceEquals(dashboardWindow,_roadLifeOverlay)&&dashboardWindow.IsVisible)dashboardClock.Start();
+            };
+            dashboardWindow.Show();
 			ClientStore.Log("BiduLog Dashboard2 aberto como overlay interno do GAT Telemetria.");
 		}
 		catch (Exception ex)
@@ -6606,6 +6599,12 @@ internal sealed partial class MainForm : Form
 
 	private IntPtr RoadLifeWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
 	{
+		// Neon V4: pause visual updates while the user moves or sizes the window.
+        if(msg==0x0231)_neonInteractiveSizing=true;
+        if(msg==0x0232)_neonInteractiveSizing=false;
+        // Neon V3 sizing: constrain the native resize rectangle before layout.
+        if (HandleNeonSizing(msg,wParam,lParam)){handled=true;return new IntPtr(1);}
+        // End Neon V3 sizing.
 		if (msg == 786)
 		{
 			switch (wParam.ToInt32())
@@ -6642,36 +6641,9 @@ internal sealed partial class MainForm : Form
 	}
 
 	private void RoadLifeOverlayPush(JObject tele)
-	{
-		if (tele == null || !RoadLifeOverlayRunning())
-		{
-			return;
-		}
-		try
-		{
-			JObject payload = RoadLifeOverlayBuildPayload(tele);
-			Window roadLifeOverlay = _roadLifeOverlay;
-			if (roadLifeOverlay == null)
-			{
-				return;
-			}
-			if (!roadLifeOverlay.Dispatcher.CheckAccess())
-			{
-				roadLifeOverlay.Dispatcher.BeginInvoke((Action)(() =>
-				{
-					ApplyRoadLifePayload(payload);
-				}));
-			}
-			else
-			{
-				ApplyRoadLifePayload(payload);
-			}
-		}
-		catch (Exception ex)
-		{
-			ClientStore.Log("BiduLog Dashboard2 atualizar: " + ex.Message);
-		}
-	}
+    {
+        RememberNeonOpeningFrame(tele);
+    }
 
 	private void ApplyRoadLifePayload(JObject d)
 	{
@@ -6703,7 +6675,7 @@ internal sealed partial class MainForm : Form
 			SetRoadLifeText("FuelPct", RoadLifeInt(num) + "%");
 			if (_roadLifeOverlay.FindName("FuelBar") is Border border)
 			{
-				border.Width = 125.0 * num / 100.0;
+				border.Width = 112.0 * num / 100.0;
 			}
 			SetRoadLifeText("TempText", RoadLifeInt(RoadLifeDouble(jObject3["temperature_c"])) + "°C");
 			SetRoadLifeText("SpeedText", RoadLifeInt(RoadLifeDouble(jObject3["speed_kmh"])));
@@ -6718,6 +6690,7 @@ internal sealed partial class MainForm : Form
 			SetRoadLifeText("TruckDamageText", RoadLifeDec(RoadLifeDouble(jObject4["truck_pct"]), 1) + "%");
 			SetRoadLifeText("TrailerDamageText", RoadLifeDec(RoadLifeDouble(jObject4["trailer_pct"]), 1) + "%");
 			SetRoadLifeText("CargoDamageText", RoadLifeDec(RoadLifeDouble(jObject4["cargo_pct"]), 1) + "%");
+            ApplyNeonDashboard(d);
 		}
 	}
 
@@ -6725,7 +6698,8 @@ internal sealed partial class MainForm : Form
 	{
 		if (_roadLifeOverlay != null && _roadLifeOverlay.FindName(name) is TextBlock textBlock)
 		{
-			textBlock.Text = value ?? string.Empty;
+			string next=value??string.Empty;
+            if(textBlock.Text!=next)textBlock.Text=next;
 		}
 	}
 
@@ -6744,11 +6718,11 @@ internal sealed partial class MainForm : Form
 		SolidColorBrush solidColorBrush = new SolidColorBrush(color);
 		if (_roadLifeOverlay.FindName("SpeedText") is TextBlock textBlock)
 		{
-			textBlock.Foreground = solidColorBrush;
+			if(!(textBlock.Foreground is SolidColorBrush old)||old.Color!=color)textBlock.Foreground=solidColorBrush;
 		}
 		if (_roadLifeOverlay.FindName("SpeedRing") is Ellipse ellipse)
 		{
-			ellipse.Stroke = solidColorBrush;
+			if(!(ellipse.Stroke is SolidColorBrush old)||old.Color!=color)ellipse.Stroke=solidColorBrush;
 		}
 	}
 
@@ -6762,11 +6736,15 @@ internal sealed partial class MainForm : Form
 		{
 			if (_roadLifeOverlay.FindName(controlName) is System.Windows.Controls.Image image)
 			{
+                // Static overlay assets are decoded once, not on every telemetry tick.
+                if(image.Source is BitmapImage cached&&cached.UriSource!=null&&cached.UriSource.IsFile&&string.Equals(cached.UriSource.LocalPath,System.IO.Path.GetFullPath(path),StringComparison.OrdinalIgnoreCase))return;
 				BitmapImage bitmapImage = new BitmapImage();
 				bitmapImage.BeginInit();
 				bitmapImage.UriSource = new Uri(path, UriKind.Absolute);
 				bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.DecodePixelWidth=controlName=="RoadLifeLogo"?480:controlName=="CargoPreview"?560:0;
 				bitmapImage.EndInit();
+                if(bitmapImage.CanFreeze)bitmapImage.Freeze();
 				image.Source = bitmapImage;
 			}
 		}
@@ -6939,7 +6917,7 @@ internal sealed partial class MainForm : Form
 		{
 			num9 *= 3.6;
 		}
-		bool flag = RoadLifeOverlayBoolean(tele, "truck.cruiseControl", "truck.cruiseControlOn", "cruiseControl", "cruise") || (!double.IsNaN(num9) && num9 > 0.1);
+		bool flag = RoadLifeOverlayBoolean(tele, "truck.cruiseControl", "truck.cruiseControlOn", "cruiseControl", "cruise");
 		string text5 = RoadLifeOverlayText(tele, "truck.model", "Truck.Model", "truck.name", "Truck.Name", "truckModel", "truck_model");
 		string text6 = RoadLifeOverlayText(tele, "truck.make", "Truck.Make", "truck.brand", "Truck.Brand", "truckMake");
 		if (string.IsNullOrWhiteSpace(text5))
@@ -6993,6 +6971,17 @@ internal sealed partial class MainForm : Form
 		}
 		jObject2["driver"] = text7;
 		jObject["eta"] = RoadLifeOverlayEta(tele);
+        // Display-only metadata. Never alter or feed the signed telemetry packet.
+        jObject["display"] = new JObject {
+            ["engine_rpm"] = RoadLifeOverlayNumber(tele, "truck.engineRpm", "engineRpm"),
+            ["engine_rpm_max"] = RoadLifeOverlayNumber(tele, "truck.engineRpmMax", "engineRpmMax"),
+            ["fuel_range_km"] = RoadLifeOverlayNumber(tele, "truck.fuelRange", "fuelRange"),
+            ["connected"] = RoadLifeOverlayBoolean(tele, "game.connected"),
+            ["on_job"] = RoadLifeOverlayBoolean(tele, "on_job", "gameplay.onJob", "job.active", "bus_job.active"),
+            ["trailer_connected"] = RoadLifeOverlayBoolean(tele, "trailers[0].attached", "trailers[0].connected", "trailer.attached"),
+            ["trailer_model"] = RoadLifeOverlayText(tele, "trailers[0].name", "trailers[0].model", "trailer.model"),
+            ["job_kind"] = RoadLifeOverlayText(tele, "gat_scs_job_kind")
+        };
 		jObject["damage"] = new JObject
 		{
 			["truck_pct"] = RoadLifeOverlayTruckDamage(tele),
@@ -7761,4 +7750,5 @@ internal sealed partial class MainForm : Form
 		}
 	}
 }
+
 
