@@ -61,3 +61,4 @@ export function monthlyPassState(db,s,month=MONTHLY_PASS.id,at=Date.now()){
  const goals=GOALS.map(g=>({...g,current:Math.min(g.target,values[g.id]),completed:values[g.id]>=g.target}));
  return {ok:true,pass,owned:!!entitlement,acquired_at:entitlement?.acquired_at||null,rewards_defined:false,progress:{goals,completed_goals:goals.filter(g=>g.completed).length,total_goals:10,total_km:Math.round(totalKm*100)/100,total_deliveries:totalDeliveries,computed_at:new Date(at).toISOString()}};
 }
+

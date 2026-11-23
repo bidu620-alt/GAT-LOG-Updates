@@ -59,4 +59,3 @@ export function adminWorkspace(db,actor,resource,b={}){
  }
  fail(404,'not_found');
 }
-

@@ -18,9 +18,9 @@ class Program {
   var form=FormatterServices.GetUninitializedObject(type);
   Window w;using(var stream=File.OpenRead(Path.Combine(root,"RoadLifeDash","RoadLifeDash.xaml")))w=(Window)System.Windows.Markup.XamlReader.Load(stream);
   type.GetField("_roadLifeOverlay",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(form,w);
-  var version=(string)type.GetField("CurrentVersion",BindingFlags.NonPublic|BindingFlags.Static).GetRawConstantValue();Check(version=="1.0.68.41","versao oficial 1.0.68.41");
-  var newer=type.GetMethod("IsNewer",BindingFlags.NonPublic|BindingFlags.Static);Check((bool)newer.Invoke(null,new object[]{version,"1.0.68.40"})&&!(bool)newer.Invoke(null,new object[]{version,version}),"botao atualizar reconhece 41 acima da 40 sem repetir versao");
-  var manifest=JObject.Parse("{'version':'1.0.68.41','setup_url':'https://example.test/setup41.exe','sha256':'fixture'}").ToObject(app.GetType("GatTelemetry.RemoteVersion",true));Check((string)manifest.GetType().GetProperty("EffectiveUrl").GetValue(manifest,null)=="https://example.test/setup41.exe","manifesto compativel com o atualizador existente");
+  var version=(string)type.GetField("CurrentVersion",BindingFlags.NonPublic|BindingFlags.Static).GetRawConstantValue();Check(version=="1.0.68.42","versao oficial 1.0.68.42");
+  var newer=type.GetMethod("IsNewer",BindingFlags.NonPublic|BindingFlags.Static);Check((bool)newer.Invoke(null,new object[]{version,"1.0.68.41"})&&!(bool)newer.Invoke(null,new object[]{version,version}),"botao atualizar reconhece 42 acima da 41 sem repetir versao");
+  var manifest=JObject.Parse("{'version':'1.0.68.42','setup_url':'https://example.test/setup41.exe','sha256':'fixture'}").ToObject(app.GetType("GatTelemetry.RemoteVersion",true));Check((string)manifest.GetType().GetProperty("EffectiveUrl").GetValue(manifest,null)=="https://example.test/setup41.exe","manifesto compativel com o atualizador existente");
   type.GetMethod("LoadRoadLifeImage",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(form,new object[]{"RoadLifeLogo",Path.Combine(root,"RoadLifeDash","Assets","bidulog-logo.png")});
   var method=type.GetMethod("ApplyRoadLifePayload",BindingFlags.NonPublic|BindingFlags.Instance);
   Check(w.FindName("ThemeGreen")!=null&&w.FindName("ThemeBlue")!=null&&w.FindName("ThemeYellow")!=null&&w.FindName("ThemeRed")!=null,"seletores de tema preservados");

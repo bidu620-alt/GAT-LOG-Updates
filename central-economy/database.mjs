@@ -1,4 +1,5 @@
 import {DatabaseSync,backup} from 'node:sqlite';
+import {BACKUP_FOLDER} from './daily-backup.mjs';
 import {existsSync,mkdirSync,readFileSync,renameSync,rmSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';
 
@@ -25,10 +26,13 @@ export class LocalDatabase {
 }
 
 const required=['accounts','profiles','sessions','client_tokens','work_catalog','deliveries','work_completed','routes_completed','mission_completions'];
-export function validateDatabase(sql){
-  const integrity=sql.prepare('PRAGMA integrity_check').all();
-  if(integrity.some(x=>x.integrity_check!=='ok'))throw Error('Banco com erro de integridade.');
-  if(sql.prepare('PRAGMA foreign_key_check').all().length)throw Error('Banco com referencias incompletas.');
+export function validateDatabase(sql,{deep=true}={}){
+  // Full checks belong to explicit maintenance/backup validation, never the boot path.
+  if(deep){
+    const integrity=sql.prepare('PRAGMA quick_check(1)').all();
+    if(integrity.some(x=>x.quick_check!=='ok'))throw Error('Banco com erro de integridade.');
+    if(sql.prepare('PRAGMA foreign_key_check').all().length)throw Error('Banco com referencias incompletas.');
+  }
   for(const table of required)if(!sql.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(table))throw Error('Exportacao incompleta: '+table);
   const users=sql.prepare('SELECT COUNT(*) n FROM accounts').get().n;
   const owner=sql.prepare("SELECT 1 FROM accounts WHERE role='owner' AND disabled=0 AND length(password_hash)>0 AND length(password_salt)>0").get();
@@ -85,11 +89,16 @@ export async function importDatabase(sourcePath,dataDir,schemaPath,indexPath){
 }
 
 export async function saveBackup(db,dataDir){
-  const folder=join(dataDir,'backups');mkdirSync(folder,{recursive:true});
-  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
-  const target=join(folder,'central-'+stamp+'.sqlite');
-  await backup(db.sql,target);
-  const files=readdirSync(folder).filter(x=>/^central-.*\.sqlite$/.test(x)).sort();
-  for(const old of files.slice(0,-14))rmSync(join(folder,old));
-  return target;
+  const folder=BACKUP_FOLDER;mkdirSync(folder,{recursive:true});
+  const target=join(folder,'central-diario.sqlite');
+  const temporary=target+'.'+process.pid+'-'+Date.now()+'.partial';
+  try{
+    await backup(db.sql,temporary);
+    const check=new DatabaseSync(temporary,{readOnly:true});
+    try{if(check.prepare('PRAGMA quick_check').get().quick_check!=='ok')throw new Error('Backup não passou na verificação SQLite');}finally{check.close();}
+    // Replace in the same directory only after the new backup passes validation.
+    // Never remove the previous backup before this atomic rename succeeds.
+    renameSync(temporary,target);
+    return target;
+  }finally{rmSync(temporary,{force:true});}
 }

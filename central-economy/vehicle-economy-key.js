@@ -38,6 +38,8 @@ export function vehicleEconomyKey(raw){
  const identity=norm([make,t.model,t.modelName,t.model_name,t.id,t.unitId,t.unit_id,t.vehicleId].filter(Boolean).join(' '));
  const maker=truckBrandKey(make);
  if(/^(daf|iveco|man|mercedes|renault|scania|volvo)$/.test(maker))return maker;
+ const chassis=truckBrandKey(t.chassisMake||t.chassisManufacturer||'');
+ if(/^(marcopolo|busscar|comil|neobus|caio|irizar)$/.test(make))return /^(volvo|scania|mercedes|daf|man|iveco|renault)$/.test(chassis)?chassis:make;
  const bus=/^(bus|coach|onibus|autocarro)$/.test(type)
   ||/\b(bus|coach|onibus|autocarro|marcopolo|busscar|comil|neobus|caio|irizar|paradiso|viaggio|torino|urbanuss)\b/.test(identity)
   ||/\b(vissta\s*buss|apache\s*vip|g[78])\b/.test(identity)

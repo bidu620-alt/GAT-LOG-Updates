@@ -1,3 +1,4 @@
+function passengerEventRow(row,event){let raw={};try{raw=typeof row?.raw_json==='string'?JSON.parse(row.raw_json):row?.raw_json||{}}catch{}const tagged=row?.event_eligible===false||row?.event_eligible===0||raw.audit?.event_eligible===false;return !tagged||event?.transport_types?.includes('passengers');}
 (()=>{
   const GREEK_LATIN={α:'a',β:'b',γ:'g',δ:'d',ε:'e',ζ:'z',η:'i',θ:'th',ι:'i',κ:'k',λ:'l',μ:'m',ν:'n',ξ:'x',ο:'o',π:'p',ρ:'r',σ:'s',ς:'s',τ:'t',υ:'y',φ:'f',χ:'ch',ψ:'ps',ω:'o'};
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[α-ως]/g,c=>GREEK_LATIN[c]||c).replace(/[^a-z0-9]+/g,' ').trim();
@@ -632,12 +633,12 @@
     const rows=Array.isArray(profile?.event_history)?profile.event_history:(Array.isArray(profile?.deliveries)?profile.deliveries:(Array.isArray(profile?.cargo_history)?profile.cargo_history:[]));
     const matched=new Map();
     const steps=[];
-    const ordered=[...rows].filter(row=>{const t=rowTime(row);return Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
+    const ordered=[...rows].filter(row=>{const t=rowTime(row);return passengerEventRow(row,event)&&Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
     if(event.repetitions){
       const cargoCounts=new Map((event.cargos||[]).map(c=>[c.official,0]));
       const seen=new Set();let completedAt=null;
       const history=Array.isArray(profile?.event_history)?profile.event_history:(Array.isArray(profile?.event_deliveries)?profile.event_deliveries:ordered);
-      const valid=[...history].filter(row=>{const t=rowTime(row);return Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
+      const valid=[...history].filter(row=>{const t=rowTime(row);return passengerEventRow(row,event)&&Number.isFinite(t)&&t>=start&&t<end}).sort((a,b)=>rowTime(a)-rowTime(b));
       for(const row of valid){
         if(!completedDelivery(row))continue;
         const raw=rawOf(row),id=row.id??row.delivery_id??raw.delivery_id;

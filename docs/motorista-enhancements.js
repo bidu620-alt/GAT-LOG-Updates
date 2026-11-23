@@ -175,7 +175,11 @@
   function enhancedRenderDeliveries(history){
     const count=document.getElementById('deliveriesCount'),rows=document.getElementById('deliveryRows');
     if(!rows)return;
-    const list=Array.isArray(history)?history:[];
+    const all=Array.isArray(history)?history:[];
+    let filter=document.getElementById('transportHistoryFilter');
+    if(!filter){filter=document.createElement('select');filter.id='transportHistoryFilter';filter.setAttribute('aria-label','Tipo de transporte no histórico');for(const [value,label] of [['all','Todos os transportes'],['cargo','🚛 Transporte de cargas'],['passengers','🚌 Transporte de passageiros']]){const option=document.createElement('option');option.value=value;option.textContent=label;filter.appendChild(option);}count?.parentElement?.appendChild(filter);filter.addEventListener('change',()=>enhancedRenderDeliveries(window.GATTransportHistory||[]));}
+    window.GATTransportHistory=all;
+    const list=all.filter(x=>filter.value==='all'||(window.GATTransportType?.(x)||'cargo')===filter.value);
     if(count)count.textContent=list.length+' REGISTRADAS';
     rows.textContent='';
     if(!list.length){rows.innerHTML='<div class="delivery-empty">Nenhuma carga BiduLog concluída ainda.</div>';return;}
@@ -201,7 +205,7 @@
       const vehicleSource=trailerDamage>truckDamage?'REBOQUE':truckDamage>trailerDamage?'CAMINHÃO':'CAMINHÃO / REBOQUE';
       const route=(x?.source||'?')+' → '+(x?.destination||'?');
       const row=document.createElement('div');row.className='delivery-row gat-delivery-row';
-      row.innerHTML=`<span><b>${esc(route)}</b></span><span>${esc(x?.cargo||'Carga')}</span><span>${typeof kg==='function'?kg(x?.weight_kg):'—'}</span><span>${fmtKm(distance)}</span><span>#${esc(x?.sequence||'—')}</span><span class="done">CONCLUÍDA<b class="gat-delivery-xp">${fmt(finalXp)} XP</b></span>`;
+      row.innerHTML=`<span><b>${esc(route)}</b></span><span>${(window.GATTransportType?.(x)==='passengers'?'🚌 ':'🚛 ')+esc(x?.cargo||'Carga')}</span><span>${typeof kg==='function'?kg(x?.weight_kg):'—'}</span><span>${fmtKm(distance)}</span><span>#${esc(x?.sequence||'—')}</span><span class="done">CONCLUÍDA<b class="gat-delivery-xp">${fmt(finalXp)} XP</b></span>`;
       const detail=document.createElement('div');detail.className='gat-xp-breakdown';
       let chips=`<span class="gat-xp-chip final"><span>XP DA VIAGEM</span><b>${fmt(finalXp)}</b></span>`;
       if(rankEligible){

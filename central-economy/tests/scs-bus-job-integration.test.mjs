@@ -38,34 +38,21 @@ function setup(){
  };
  return {db,user,send,bus};
 }
-test('authenticated Central: start, track and complete bus_job once without freight weight',async()=>{
+test('unmanaged SDK bus packets cannot bypass signed passenger capture and brand validation',async()=>{
  const {db,user,send,bus}=setup();
  try{
   const a=await send(bus('active',12000));
-  assert.equal(a.mission_event?.type,'mission_in_progress',JSON.stringify(a));
-  const started=JSON.parse(db.sql.prepare('SELECT current_mission_json FROM profiles WHERE user=?').get(user).current_mission_json);
-  assert.equal(started.job_kind,'bus_job');
-  assert.equal(started.category,'Transporte de passageiros');
-  assert.equal(started.weight_kg,0);
-  assert.equal(started.cargo,'Passageiros');
+  assert.equal(a.passenger_trip.reason,'passenger_session_required',JSON.stringify(a));
+  assert.equal(db.sql.prepare('SELECT current_mission_json FROM profiles WHERE user=?').get(user).current_mission_json,null);
   const b=await send(bus('active',12010));
-  assert.equal(b.mission_event?.type,'mission_in_progress',JSON.stringify(b));
+  assert.equal(b.passenger_trip.reason,'passenger_session_required',JSON.stringify(b));
   const c=await send(bus('delivered',12200,{distanceKm:200,revenue:10000,earnedXp:300}));
-  assert.equal(c.mission_event?.type,'delivery_completed',JSON.stringify(c));
+  assert.equal(c.passenger_trip.reason,'passenger_session_required',JSON.stringify(c));
   const r=db.sql.prepare('SELECT cargo,weight_kg,raw_json FROM deliveries WHERE user=?').all(user);
-  assert.equal(r.length,1);
-  assert.equal(r[0].cargo,'Passageiros');
-  assert.equal(r[0].weight_kg,0);
-  const raw=JSON.parse(r[0].raw_json);
-  assert.equal(raw.mission.job_kind,'bus_job');
-  assert.equal(raw.audit.job_kind,'bus_job');
-  assert.equal(raw.mission.start_vehicle_evidence.model,'9700');
-  assert.equal(raw.audit.vehicle_evidence.make,'Volvo');
-  assert.equal(raw.audit.transport_evidence.classification,'passenger_official');
-  assert.equal(raw.audit.transport_evidence.configuration.plannedDistanceKm,210);
+  assert.equal(r.length,0);
   const duplicate=await send(bus('delivered',12200,{distanceKm:200,revenue:10000,earnedXp:300}));
   assert.notEqual(duplicate.mission_event?.type,'delivery_completed',JSON.stringify(duplicate));
-  assert.equal(db.sql.prepare('SELECT COUNT(*) AS n FROM deliveries WHERE user=?').get(user).n,1);
+  assert.equal(db.sql.prepare('SELECT COUNT(*) AS n FROM deliveries WHERE user=?').get(user).n,0);
  } finally {db.close()}
 });
 test('bus_job delivered flag without a receipt never generates an invented delivery',async()=>{

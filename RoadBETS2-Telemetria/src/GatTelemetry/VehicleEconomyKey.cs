@@ -10,6 +10,7 @@ internal static class VehicleEconomyKey
         string brand=Normalize(make),identity=Normalize(make+" "+model+" "+id);
         string maker=TruckBrandResolver.Resolve(make);
         if(Regex.IsMatch(maker,"^(daf|iveco|man|mercedes|renault|scania|volvo)$"))return maker;
+        if(Regex.IsMatch(brand,"^(marcopolo|busscar|comil|neobus|caio|irizar)$"))return brand;
         bool bus=Regex.IsMatch(Normalize(type),"^(bus|coach|onibus|autocarro)$")
           ||Regex.IsMatch(identity,@"\b(bus|coach|onibus|autocarro|marcopolo|busscar|comil|neobus|caio|irizar|paradiso|viaggio|torino|urbanuss)\b")
           ||Regex.IsMatch(identity,@"\b(vissta\s*buss|apache\s*vip|g[78])\b")

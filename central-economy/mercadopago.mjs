@@ -33,6 +33,7 @@ export function readConfig(){
 }
 function ready(c){return c.enabled===true&&c.mode==='production'&&typeof c.accessToken==='string'&&c.accessToken.length>20&&typeof c.webhookSecret==='string'&&c.webhookSecret.length>=16&&/^\d+$/.test(String(c.collectorId||''));}
 function schema(db){
+ db.sql.exec(`CREATE TABLE IF NOT EXISTS eco_mp_pix_orders(order_id TEXT PRIMARY KEY);`);
  ensureEconomy(db);db.sql.exec(`CREATE TABLE IF NOT EXISTS eco_mp_checkouts(order_id TEXT PRIMARY KEY REFERENCES eco_orders(id),op_id TEXT NOT NULL,user TEXT NOT NULL,preference_id TEXT UNIQUE,checkout_url TEXT,collector_id TEXT NOT NULL,live_mode INTEGER NOT NULL,created_at TEXT NOT NULL,UNIQUE(user,op_id));
  CREATE TABLE IF NOT EXISTS eco_mp_payments(payment_id TEXT PRIMARY KEY,order_id TEXT NOT NULL REFERENCES eco_orders(id),status TEXT NOT NULL,amount_centavos INTEGER NOT NULL,updated_at TEXT NOT NULL,reason TEXT);
  CREATE INDEX IF NOT EXISTS eco_mp_payments_order ON eco_mp_payments(order_id);`);
@@ -60,11 +61,11 @@ export function createMpIntegration(db,{exclusive,getConfig=readConfig,fetchImpl
  async function preference(id,user,c){
   if(inflight.has(id))return inflight.get(id);
   const task=(async()=>{
-   const snap=await locked(()=>{const o=payable(db,id,user),ch=db.sql.prepare('SELECT * FROM eco_mp_checkouts WHERE order_id=?').get(id);assertMonthlyPassPurchase(mpProduct(db,o.product_id,true));if(!ch||ch.collector_id!==String(c.collectorId))error(409,'checkout_account_changed');return {o,ch};});
+   const snap=await locked(()=>{const o=payable(db,id,user),ch=db.sql.prepare('SELECT * FROM eco_mp_checkouts WHERE order_id=?').get(id);assertMonthlyPassPurchase(mpProduct(db,o.product_id,true));if(!ch||ch.collector_id!==String(c.collectorId))error(409,'checkout_account_changed');return {o,ch,pix:!!db.sql.prepare('SELECT 1 FROM eco_mp_pix_orders WHERE order_id=?').get(id)};});
    if(snap.ch.preference_id&&checkoutUrl(snap.ch.checkout_url))return {ok:true,order_id:id,checkout_url:snap.ch.checkout_url};
    const returnPage=snap.o.product_id===MONTHLY_PASS.product_id?'/passe/2026-11/':'/economia.html';
    const returnHash=snap.o.product_id===MONTHLY_PASS.product_id?'':'#carteira';
-   const pref=await api('/checkout/preferences',c,{method:'POST',key:id,body:{items:[{id:snap.o.product_id,title:snap.o.title,currency_id:'BRL',quantity:1,unit_price:snap.o.amount_centavos/100}],external_reference:id,metadata:{bidulog_order_id:id},back_urls:{success:SITE+returnPage+'?mp=success'+returnHash,pending:SITE+returnPage+'?mp=pending'+returnHash,failure:SITE+returnPage+'?mp=failure'+returnHash},auto_return:'approved',notification_url:WEBHOOK}});
+   const pref=await api('/checkout/preferences',c,{method:'POST',key:id,body:{items:[{id:snap.o.product_id,title:snap.o.title,currency_id:'BRL',quantity:1,unit_price:snap.o.amount_centavos/100}],external_reference:id,metadata:{bidulog_order_id:id},back_urls:{success:SITE+returnPage+'?mp=success'+returnHash,pending:SITE+returnPage+'?mp=pending'+returnHash,failure:SITE+returnPage+'?mp=failure'+returnHash},auto_return:'approved',notification_url:WEBHOOK,...(snap.pix?{payment_methods:{excluded_payment_types:[{id:'credit_card'},{id:'debit_card'},{id:'ticket'},{id:'atm'}]}}:{})}});
    const url=checkoutUrl(pref.init_point);if(!pref.id||!url||String(pref.collector_id)!==String(c.collectorId))error(503,'mp_invalid_response');
    await locked(()=>{payable(db,id,user);db.sql.prepare('UPDATE eco_mp_checkouts SET preference_id=?,checkout_url=? WHERE order_id=?').run(String(pref.id),url,id);});
    return {ok:true,order_id:id,checkout_url:url};
@@ -72,6 +73,7 @@ export function createMpIntegration(db,{exclusive,getConfig=readConfig,fetchImpl
  }
  async function payment(id,c){
   const p=await api('/v1/payments/'+id,c);
+  
   if(String(p.id)!==id||p.live_mode!==true||String(p.collector_id)!==String(c.collectorId)||p.currency_id!=='BRL')error(422,'payment_mismatch');
   const oid=p.external_reference;if(!uuid(oid))error(422,'payment_mismatch');
   const ch=await locked(()=>db.sql.prepare('SELECT * FROM eco_mp_checkouts WHERE order_id=?').get(oid));
@@ -83,6 +85,7 @@ export function createMpIntegration(db,{exclusive,getConfig=readConfig,fetchImpl
   }
   return locked(()=>transaction(db,()=>{
    const o=db.sql.prepare('SELECT * FROM eco_orders WHERE id=?').get(oid);const amount=cents(p.transaction_amount);
+   
    if(!o||o.currency!=='mercadopago'||o.user!==ch.user||amount!==o.amount_centavos)error(422,'payment_mismatch');
    const previous=db.sql.prepare('SELECT * FROM eco_mp_payments WHERE payment_id=?').get(id);if(previous&&previous.order_id!==oid)error(422,'payment_mismatch');
    if(o.status==='fulfilled'&&o.payment_id==='mp:'+id&&p.status==='approved')return {ok:true,duplicate:true};
@@ -93,7 +96,7 @@ export function createMpIntegration(db,{exclusive,getConfig=readConfig,fetchImpl
    const passReason=monthlyPassPaymentReason(pr,p.date_approved);if(passReason){write(passReason);review(db,o,id,passReason);audit(db,o,'mp_payment_review',{payment_id:id,reason:passReason});return {ok:true,review:true};}
    if(mpAlreadyOwned(db,o.user,pr)){write('product_already_owned');review(db,o,id,'product_already_owned');audit(db,o,'mp_payment_review',{payment_id:id,reason:'product_already_owned'});return {ok:true,review:true};}
    db.sql.prepare('UPDATE eco_orders SET payment_id=?,confirmed_by=?,updated_at=? WHERE id=?').run('mp:'+id,'mercadopago',new Date().toISOString(),oid);
-   mpFulfil(db,o,pr);write(null);audit(db,o,'mp_payment_approved',{payment_id:id,amount_centavos:amount});return {ok:true,fulfilled:true};
+   mpFulfil(db,o,pr);write(null);audit(db,o,'mp_payment_approved',{payment_id:id,amount_centavos:amount,payment_method:p.payment_method_id||null});return {ok:true,fulfilled:true};
   }));
  }
  return async function handle(req){
@@ -124,10 +127,11 @@ export function createMpIntegration(db,{exclusive,getConfig=readConfig,fetchImpl
    const id=await locked(()=>transaction(db,()=>{
     const publicOn=db.sql.prepare("SELECT value FROM eco_config WHERE key='public_enabled'").get()?.value;if(publicOn!=='1'&&!['owner','admin'].includes(s.role))error(403,'economy_not_released');
     const prior=db.sql.prepare('SELECT c.*,o.product_id FROM eco_mp_checkouts c JOIN eco_orders o ON o.id=c.order_id WHERE c.user=? AND c.op_id=?').get(s.user,b.op_id);if(prior){if(prior.product_id!==b.product_id)error(409,'operation_id_reused');return prior.order_id;}
-    const pr=mpProduct(db,b.product_id);assertMonthlyPassPurchase(pr);if(mpAlreadyOwned(db,s.user,pr))error(409,'product_already_owned');if(!Number.isSafeInteger(pr.cash_centavos)||pr.cash_centavos<=0)error(400,'payment_method_unavailable');
-    const pending=db.sql.prepare("SELECT o.id FROM eco_orders o JOIN eco_mp_checkouts c ON c.order_id=o.id WHERE o.user=? AND o.product_id=? AND o.status='pending_payment' AND c.collector_id=?").get(s.user,pr.id,String(c.collectorId));if(pending)return pending.id;
+    const pr=mpProduct(db,b.product_id);assertMonthlyPassPurchase(pr);if(mpAlreadyOwned(db,s.user,pr))error(409,'product_already_owned');if(pr.kind==='personalization')error(400,'payment_method_unavailable');if(!Number.isSafeInteger(pr.cash_centavos)||pr.cash_centavos<=0)error(400,'payment_method_unavailable');
+    if(b.quoted_cash_centavos!==undefined&&b.quoted_cash_centavos!==pr.cash_centavos)error(409,'price_changed');
+    const pending=db.sql.prepare("SELECT o.id FROM eco_orders o JOIN eco_mp_checkouts c ON c.order_id=o.id WHERE o.user=? AND o.product_id=? AND o.status='pending_payment' AND c.collector_id=?").get(s.user,pr.id,String(c.collectorId));if(pending){const pix=!!db.sql.prepare('SELECT 1 FROM eco_mp_pix_orders WHERE order_id=?').get(pending.id);if(pix===(b.payment_method==='pix'))return pending.id;}
     const oid=randomUUID(),now=new Date().toISOString();db.sql.prepare('INSERT INTO eco_orders(id,user,product_id,title,status,amount_centavos,currency,price_units,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)').run(oid,s.user,pr.id,pr.title,'pending_payment',pr.cash_centavos,'mercadopago',0,now,now);
-    db.sql.prepare('INSERT INTO eco_mp_checkouts(order_id,op_id,user,collector_id,live_mode,created_at) VALUES(?,?,?,?,?,?)').run(oid,b.op_id,s.user,String(c.collectorId),1,now);audit(db,{id:oid,user:s.user},'mp_checkout_created',{product_id:pr.id,amount_centavos:pr.cash_centavos});return oid;
+    db.sql.prepare('INSERT INTO eco_mp_checkouts(order_id,op_id,user,collector_id,live_mode,created_at) VALUES(?,?,?,?,?,?)').run(oid,b.op_id,s.user,String(c.collectorId),1,now);if(b.payment_method==='pix')db.sql.prepare('INSERT INTO eco_mp_pix_orders VALUES(?)').run(oid);audit(db,{id:oid,user:s.user},'mp_checkout_created',{product_id:pr.id,amount_centavos:pr.cash_centavos});return oid;
    }));return json(await preference(id,s.user,c));
   }catch(e){return json({ok:false,error:e.status?e.message:'mp_internal_error'},e.status||500);}
  };

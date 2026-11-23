@@ -360,7 +360,7 @@ internal sealed partial class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.41";
+	private const string CurrentVersion = "1.0.68.42";
     private readonly System.Threading.SemaphoreSlim _centralPacketGate = new System.Threading.SemaphoreSlim(1, 1);
     private string _lastTerminalPacketKey = "";
 
@@ -755,7 +755,7 @@ internal sealed partial class MainForm : Form
 
 	public MainForm()
 	{
-		Text = "BIDULOG TELEMETRIA 1.0.68.41";
+		Text = "BIDULOG TELEMETRIA 1.0.68.42";
 		StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new System.Drawing.Size(900, 700);
 		Size = new System.Drawing.Size(940, 740);
@@ -1117,7 +1117,7 @@ internal sealed partial class MainForm : Form
 		Controls.Add(btnUpdate);
 		lblVersion = new System.Windows.Forms.Label
 		{
-			Text = "Cliente 1.0.68.41",
+			Text = "Cliente 1.0.68.42",
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(105, 118, 136),
 			Anchor = (AnchorStyles.Bottom | AnchorStyles.Right),
@@ -1651,13 +1651,15 @@ internal sealed partial class MainForm : Form
 			JObject jObject = await _telemetry.ReadAsync();
 			_lastTripCapture = DateTime.UtcNow;
 			ObserveEconomyTruck(jObject);
+            ObservePassengerVehicle(jObject);
 			if (jObject != null)
 			{
 				DashboardOdometerTrip before = _tripJournal.ReadDashboardOdometerTrip();
                 string beforeProfile = _tripJournal.ReadActiveProfileId();
-				_tripJournal.Observe(jObject);
+				bool passengerManaged=_passengerJourney?.Matches(jObject,_accountUser)==true || ((string)VehicleClassification.Read(jObject)["vehicle_type"]=="bus" && PassengerService.Read(jObject,DateTime.UtcNow)!=null);
+                if(!passengerManaged)_tripJournal.Observe(jObject);
 				DashboardOdometerTrip current = _tripJournal.ReadDashboardOdometerTrip();
-                await PreserveObservedTerminalAsync(jObject, before?.TripId, beforeProfile);
+                if(!passengerManaged)await PreserveObservedTerminalAsync(jObject, before?.TripId, beforeProfile);
 				_dashboardDistance.Observe(current ?? before,
 					RoadLifeOverlayNumber(jObject, "truck.odometer", "truck.odometerKm", "truck.odometer_km", "odometer", "odometer_km"),
 					RoadLifeOverlayBoolean(jObject, "game.connected", "gameConnected", "connected"));
@@ -1876,7 +1878,7 @@ internal sealed partial class MainForm : Form
 	{
 		if (tele != null)
 		{
-			if (tele["gat_journal_chain"] == null) PassengerTelemetry.Stamp(tele);
+			if (tele["gat_journal_chain"] == null) { PassengerTelemetry.Stamp(tele); try { StampPassengerJourney(tele); } catch (Exception ex) { ClientStore.Log("Passenger capture: "+ex.Message); } }
 			if (tele["gat_collected_at"] == null)
 			{
 				tele["gat_collected_at"] = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);
@@ -2122,6 +2124,7 @@ internal sealed partial class MainForm : Form
 			{
 				break;
 			}
+            AcknowledgePassengers(apiResponse.Json);
 			sent++;
 		}
 		if (sent > 0)
@@ -2221,6 +2224,7 @@ internal sealed partial class MainForm : Form
 		ApiResponse apiResponse2 = await _api.SendTelemetryAsync("https://api.bidulog.com.br", centralDriver, _deviceId, centralClientToken, tele);
 		if (apiResponse2.StatusCode == 200 && apiResponse2.Json != null && ApiClient.Bool(apiResponse2.Json["ok"]))
 		{
+            AcknowledgePassengers(apiResponse2.Json);
 			await FlushTripReceiptsAsync();
             if (apiResponse2.Json["save_capture"] is JObject saveCapture) {
                 try { File.WriteAllText(System.IO.Path.Combine(ClientStore.DataDir,"save-reader-central-last.json"),saveCapture.ToString()); } catch {}
@@ -2389,6 +2393,7 @@ internal sealed partial class MainForm : Form
 			return null;
 		}
 		PassengerTelemetry.Stamp(tele);
+        if (PassengerStore()?.Matches(tele,_accountUser)==true) { _latchedJob=null; _latchedJobKey=string.Empty; return tele; }
 		if ((string)tele["gat_scs_job_kind"] == "bus_job")
 		{
 			// Passenger configurations carry no freight weight. Do not let the
@@ -3363,7 +3368,7 @@ internal sealed partial class MainForm : Form
 		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA BIDULOG");
 		_hubServerCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
 		Controls.Clear();
-		Text = "BIDULOG TELEMETRIA 1.0.68.41";
+		Text = "BIDULOG TELEMETRIA 1.0.68.42";
 		MinimumSize = new System.Drawing.Size(740, 500);
 		AutoScaleMode = AutoScaleMode.Dpi;
 		System.Drawing.Rectangle workingArea = Screen.FromControl(this).WorkingArea;
@@ -3397,7 +3402,7 @@ internal sealed partial class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "BIDULOG ETS2  •  Cliente 1.0.68.41  •  conexão que move distâncias",
+			Text = "BIDULOG ETS2  •  Cliente 1.0.68.42  •  conexão que move distâncias",
 			Padding = new Padding(20, 0, 0, 0),
 			TextAlign = ContentAlignment.MiddleLeft,
 			ForeColor = System.Drawing.Color.FromArgb(104, 128, 155),
@@ -5611,7 +5616,7 @@ internal sealed partial class MainForm : Form
 		if (!_hub045Applied)
 		{
 			_hub045Applied = true;
-			Text = "BIDULOG TELEMETRIA 1.0.68.41";
+			Text = "BIDULOG TELEMETRIA 1.0.68.42";
 			ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
 			BuildHome045();
 			_hubStatusTimer041.Tick += async delegate
@@ -5727,6 +5732,7 @@ internal sealed partial class MainForm : Form
 			Padding = new Padding(4, 0, 4, 0)
 		};
 		glassCard2.Controls.Add(_homeTrip045);
+        glassCard2.Controls.Add(CreatePassengerButton());
 		tableLayoutPanel2.Controls.Add(glassCard2, 1, 0);
 		GlassCard044 glassCard3 = new GlassCard044
 		{
@@ -6886,6 +6892,7 @@ internal sealed partial class MainForm : Form
 
 	private JObject RoadLifeOverlayBuildPayload(JObject tele)
 	{
+        tele=PassengerDashboardView(tele);
 		string text = RoadLifeOverlayText(tele, "cargo_name", "job.cargoName", "job.cargo", "Job.CargoName");
 		string text2 = RoadLifeOverlayText(tele, "cargo_id", "cargoId", "cargoID", "cargo_token", "cargoToken", "job.cargoId", "job.cargoID", "job.cargo_id", "job.cargoToken", "Job.CargoId", "Job.CargoID", "Job.CargoToken");
 		string text3 = RoadLifeOverlayText(tele, "source_city", "job.sourceCity", "Job.SourceCity");
@@ -6893,7 +6900,7 @@ internal sealed partial class MainForm : Form
 		double num = RoadLifeOverlayNumber(tele, "mass_kg", "cargoMass", "cargo_mass", "job.cargoMass", "Job.CargoMass");
 		double num2 = RoadLifeOverlayNumber(tele, "remaining_km", "remainingKm", "navigation.estimatedDistance", "Navigation.EstimatedDistance");
 		double num3 = RoadLifeOverlayNumber(tele, "planned_distance_km", "plannedDistanceKm", "job.plannedDistanceKm", "Job.PlannedDistanceKm");
-		double v = _dashboardDistance.DistanceKm;
+		double v = tele.Value<double?>("passenger_distance_km") ?? _dashboardDistance.DistanceKm;
 		double num4 = RoadLifeOverlayNumber(tele, "truck.fuel", "Truck.Fuel", "fuel", "fuelAmount", "fuelLiters");
 		double num5 = RoadLifeOverlayNumber(tele, "truck.fuelCapacity", "Truck.FuelCapacity", "fuelCapacity", "fuel_capacity");
 		double num6 = ((!double.IsNaN(num4) && !double.IsNaN(num5) && num5 > 0.0) ? (num4 / num5 * 100.0) : RoadLifeOverlayNumber(tele, "truck.fuelPercent", "fuelPercent", "fuel_percent"));
