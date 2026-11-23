@@ -3130,8 +3130,10 @@ internal sealed partial class MainForm : Form
 
 	private void UpdateTelemetryDisplay(TelemetryDisplay d)
 	{
-		lblCargo.Text = "Carga: " + d.Cargo;
-		lblRoute.Text = "Rota: " + d.Route;
+		var passenger=_passengerJourney?.Current;
+        bool passengerActive=passenger!=null&&_passengerLastRaw!=null&&_passengerJourney.Matches(_passengerLastRaw,_accountUser)&&(DateTime.UtcNow-_passengerLastAt).TotalSeconds<10;
+        lblCargo.Text = passengerActive?"Transporte: Passageiros (ônibus)":"Carga: " + d.Cargo;
+		lblRoute.Text = passengerActive?"Rota: "+(string)passenger["origin"]+" → "+(string)passenger["destination"]:"Rota: " + d.Route;
 		lblDistance.Text = "Restante: " + d.Distance;
 		lblSpeed.Text = "Velocidade: " + d.Speed;
 		lblWeight.Text = "Peso: " + d.Weight;

@@ -34,7 +34,7 @@ internal sealed class PassengerJourney {
   if(!string.Equals((string)state["user"],user,StringComparison.OrdinalIgnoreCase)||!string.Equals((string)state["profile_id"],(string)raw["gat_profile_id"],StringComparison.OrdinalIgnoreCase)||(string)state["vehicle"]!=(string)raw.SelectToken("truck.id")||(string)state["plate"]!=(string)raw.SelectToken("truck.licensePlate")){Message="Viagem preservada: volte à mesma conta, perfil e ônibus.";return;}
   raw["gat_passenger_session"]=state.DeepClone();raw["gat_trip_id"]=(string)state["id"];raw["job_latch_key"]=(string)state["id"];raw["gat_job_event_key"]=(string)state["id"];
  }}
- internal void Acknowledge(JObject response){lock(sync){var status=response?["passenger_trip"] as JObject;if(state==null||status==null||(string)status["id"]!=(string)state["id"])return;Message=(string)status["reason"]??("Passageiros: "+(string)status["state"]+" • "+((double?)status["distance_km"]??0).ToString("0.0")+" km validados");
+ internal void Acknowledge(JObject response){lock(sync){var status=response?["passenger_trip"] as JObject;if(state==null||status==null||(string)status["id"]!=(string)state["id"])return;string label=(string)status["state"]=="active"?"em andamento":(string)status["state"]=="completed"?"concluída":(string)status["state"]=="cancelled"?"cancelada":"aguardando validação";Message=(string)status["reason"]??("Passageiros: "+label+" • "+((double?)status["distance_km"]??0).ToString("0.0")+" km validados");
   if((string)status["state"]=="completed"||(string)status["state"]=="cancelled"){state["archived"]=true;state["blocked_service"]=(string)state["source"]!="manual";Save();}else if((string)status["state"]=="active"){state["last_server_distance_km"]=status["distance_km"];Save();}
  }}
 }
