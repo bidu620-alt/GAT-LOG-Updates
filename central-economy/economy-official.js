@@ -59,6 +59,7 @@ function op(db,s,b,action,fn){
 }
 function existsUser(db,value){const user=clean(value);if(!/^[a-z0-9._-]{3,32}$/.test(user))fail(400,'invalid_recipient');const a=sql(db).prepare('SELECT user,disabled FROM accounts WHERE user=?').get(user);if(!a||a.disabled)fail(404,'recipient_not_found');return user}
 function catalog(db){return [EMOJI_PACK,monthlyPassProduct(),
+ {id:'admin-temporario',kind:'seal',title:'ADMIN',description:'Pacote temporário ADMIN. Não concede permissões administrativas.',cash_centavos:10000,gold_units:0,bcoin_units:0},
  ...Object.entries(BRANDS).map(([key,title])=>({id:'brand:'+key,kind:'brand',brand_key:key,title:'Chave '+title,description:key==='onibus'?'Habilita ônibus identificados pela telemetria, incluindo Marcopolo G7/G8. Não instala mods nem altera o veículo no jogo.':'Libera todos os modelos '+title+' para ganhar Gold em entregas válidas. Não altera o caminhão dentro do ETS2.',cash_centavos:1000,gold_units:2000000,bcoin_units:0})),
  ...sql(db).prepare('SELECT * FROM eco_products WHERE active=1 ORDER BY title').all().filter(p=>p.id!==monthlyPassProduct().id).map(p=>({...p,cash_centavos:0}))
  ]}
