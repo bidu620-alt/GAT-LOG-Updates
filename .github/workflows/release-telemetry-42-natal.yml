@@ -2,6 +2,9 @@ name: Release BiduLog Telemetria 1.0.68.42
 # Brand tests are isolated from the existing road-limit test project.
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths: ['RoadBETS2-Telemetria/**', '.github/workflows/release-telemetry-42-natal.yml']
   push:
     branches: [main, dash-natal-106842-candidate]
     paths: ['.github/workflows/release-telemetry-42-natal.yml']

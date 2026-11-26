@@ -4283,7 +4283,7 @@ internal sealed partial class MainForm : Form
 			Top = 145,
 			Width = 760,
 			Height = 62,
-			Text = "BiduLog Dash mostra os dados recebidos pelo BiduLog Telemetria.\r\nA sobreposição de vídeo abre em uma janela flutuante.",
+			Text = "BiduLog Dash mantém o painel original. Dash Natal abre um painel separado.\r\nNa Dash Natal, clique com o botão direito para selecionar sua foto ou ajustar o tamanho.",
 			ForeColor = System.Drawing.Color.FromArgb(176, 205, 188),
 			Font = new Font("Segoe UI", 10.5f)
 		};

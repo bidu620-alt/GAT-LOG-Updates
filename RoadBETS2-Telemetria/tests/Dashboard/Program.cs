@@ -18,9 +18,9 @@ class Program {
   var form=FormatterServices.GetUninitializedObject(type);
   Window w;using(var stream=File.OpenRead(Path.Combine(root,"RoadLifeDash","RoadLifeDash.xaml")))w=(Window)System.Windows.Markup.XamlReader.Load(stream);
   type.GetField("_roadLifeOverlay",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(form,w);
-  var version=(string)type.GetField("CurrentVersion",BindingFlags.NonPublic|BindingFlags.Static).GetRawConstantValue();Check(version=="1.0.68.41","versao oficial 1.0.68.41");
-  var newer=type.GetMethod("IsNewer",BindingFlags.NonPublic|BindingFlags.Static);Check((bool)newer.Invoke(null,new object[]{version,"1.0.68.40"})&&!(bool)newer.Invoke(null,new object[]{version,version}),"botao atualizar reconhece 41 acima da 40 sem repetir versao");
-  var manifest=JObject.Parse("{'version':'1.0.68.41','setup_url':'https://example.test/setup41.exe','sha256':'fixture'}").ToObject(app.GetType("GatTelemetry.RemoteVersion",true));Check((string)manifest.GetType().GetProperty("EffectiveUrl").GetValue(manifest,null)=="https://example.test/setup41.exe","manifesto compativel com o atualizador existente");
+  var version=(string)type.GetField("CurrentVersion",BindingFlags.NonPublic|BindingFlags.Static).GetRawConstantValue();Check(version=="1.0.68.42","versao candidata 1.0.68.42");
+  var newer=type.GetMethod("IsNewer",BindingFlags.NonPublic|BindingFlags.Static);Check((bool)newer.Invoke(null,new object[]{version,"1.0.68.41"})&&!(bool)newer.Invoke(null,new object[]{version,version}),"botao atualizar reconhece 42 acima da 41 sem repetir versao");
+  var manifest=JObject.Parse("{'version':'1.0.68.42','setup_url':'https://example.test/setup41.exe','sha256':'fixture'}").ToObject(app.GetType("GatTelemetry.RemoteVersion",true));Check((string)manifest.GetType().GetProperty("EffectiveUrl").GetValue(manifest,null)=="https://example.test/setup41.exe","manifesto compativel com o atualizador existente");
   type.GetMethod("LoadRoadLifeImage",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(form,new object[]{"RoadLifeLogo",Path.Combine(root,"RoadLifeDash","Assets","bidulog-logo.png")});
   var method=type.GetMethod("ApplyRoadLifePayload",BindingFlags.NonPublic|BindingFlags.Instance);
   Check(w.FindName("ThemeGreen")!=null&&w.FindName("ThemeBlue")!=null&&w.FindName("ThemeYellow")!=null&&w.FindName("ThemeRed")!=null,"seletores de tema preservados");
@@ -80,6 +80,33 @@ class Program {
   type.GetField("_neonInteractiveSizing",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(form,true);Check(!(bool)livePush.Invoke(form,new object[]{w,rawA})&&Text(w,"SpeedText")=="12","renderizacao pausada enquanto redimensiona");
   type.GetField("_neonInteractiveSizing",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(form,false);Check((bool)livePush.Invoke(form,new object[]{w,rawA}),"renderizacao retoma apos redimensionar");
   Check((bool)livePush.Invoke(form,new object[]{w,null})&&Text(w,"SpeedText")=="—"&&Text(w,"TripStatusText")=="GPS DESCONECTADO","perda de GPS nao deixa velocidade antiga congelada");
+  // The original dashboard assertions above are retained; test the new overlay independently.
+  var natalType=app.GetType("GatTelemetry.ChristmasDashboard",true);
+  string photoOwner="qa-driver-one";
+  Func<System.Threading.Tasks.Task<JObject>> feed=()=>System.Threading.Tasks.Task.FromResult((JObject)null);
+  Func<string> identity=()=>photoOwner;
+  using(var natal=(System.Windows.Forms.Form)Activator.CreateInstance(natalType,BindingFlags.Instance|BindingFlags.NonPublic,null,new object[]{feed,identity},null)){
+    Check(natal.FormBorderStyle==System.Windows.Forms.FormBorderStyle.None&&natal.TopMost,"Dash Natal independente sem moldura do Windows");
+    var photoPath=natalType.GetMethod("PhotoPath",BindingFlags.Instance|BindingFlags.NonPublic);
+    var a=(string)photoPath.Invoke(natal,null);photoOwner="qa-driver-two";var b=(string)photoPath.Invoke(natal,null);
+    Check(a!=b&&Path.GetFileName(a).StartsWith("dash-natal-"),"foto local separada por motorista");
+    var field=natalType.GetField("data",BindingFlags.Instance|BindingFlags.NonPublic);
+    var paint=natalType.GetMethod("OnPaint",BindingFlags.Instance|BindingFlags.NonPublic);
+    var fixture=JObject.Parse(File.ReadAllText(args[2]));
+    field.SetValue(natal,fixture);
+    foreach(int width in new[]{1200,720}){
+      natal.Size=new System.Drawing.Size(width,width/3);
+      Check(natal.Region!=null&&!natal.Region.IsVisible(0,0)&&natal.Region.IsVisible(width/2,width/6),"fundo recortado nas bordas "+width);
+      using(var bmp=new System.Drawing.Bitmap(width,width/3))using(var g=System.Drawing.Graphics.FromImage(bmp))using(var pe=new System.Windows.Forms.PaintEventArgs(g,new System.Drawing.Rectangle(0,0,width,width/3))){
+        paint.Invoke(natal,new object[]{pe});bmp.Save(Path.Combine(outDir,"dash-natal-"+width+".png"),System.Drawing.Imaging.ImageFormat.Png);
+      }
+    }
+    field.SetValue(natal,null);
+    using(var bmp=new System.Drawing.Bitmap(720,240))using(var g=System.Drawing.Graphics.FromImage(bmp))using(var pe=new System.Windows.Forms.PaintEventArgs(g,new System.Drawing.Rectangle(0,0,720,240))){
+      paint.Invoke(natal,new object[]{pe});bmp.Save(Path.Combine(outDir,"dash-natal-offline.png"),System.Drawing.Imaging.ImageFormat.Png);
+    }
+    Check(true,"Dash Natal renderiza com dados reais de teste e sem GPS");
+  }
   w.Close();Console.WriteLine("ALL OVERLAY TESTS PASSED");return 0;
  }catch(Exception e){Console.Error.WriteLine(e);return 1;}}
 }
