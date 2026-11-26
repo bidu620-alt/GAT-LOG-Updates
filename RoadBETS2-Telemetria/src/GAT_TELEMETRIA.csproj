@@ -36,6 +36,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DashNatal/Base.png" LogicalName="BiduLog.DashNatal.Base.png" />
+  </ItemGroup>
 </Project>
 
 

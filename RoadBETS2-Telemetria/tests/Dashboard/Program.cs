@@ -82,6 +82,13 @@ class Program {
   Check((bool)livePush.Invoke(form,new object[]{w,null})&&Text(w,"SpeedText")=="—"&&Text(w,"TripStatusText")=="GPS DESCONECTADO","perda de GPS nao deixa velocidade antiga congelada");
   // The original dashboard assertions above are retained; test the new overlay independently.
   var natalType=app.GetType("GatTelemetry.ChristmasDashboard",true);
+  using(var art=app.GetManifestResourceStream("BiduLog.DashNatal.Base.png")){
+    Check(art!=null,"arte aprovada integrada ao executavel");
+    using(var sha=System.Security.Cryptography.SHA256.Create()){
+      string digest=BitConverter.ToString(sha.ComputeHash(art)).Replace("-","").ToLowerInvariant();
+      Check(digest=="731864696e60deac0093e26811375403b69586fb3996008160904882adae038c","PNG identico ao da previa aprovada");
+    }
+  }
   string photoOwner="qa-driver-one";
   Func<System.Threading.Tasks.Task<JObject>> feed=()=>System.Threading.Tasks.Task.FromResult((JObject)null);
   Func<string> identity=()=>photoOwner;
