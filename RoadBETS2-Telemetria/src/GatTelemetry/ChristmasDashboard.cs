@@ -18,8 +18,11 @@ internal sealed class ChristmasDashboard : Form
     private readonly Timer clock = new Timer { Interval = 250 };
     private readonly ContextMenuStrip menu = new ContextMenuStrip();
     private JObject data;
-    private bool busy, closing, dragging;
-    private Point drag;
+    private bool busy, closing, dragging, resizing;
+    private Point drag, resizeStart;
+    private int resizeStartWidth;
+    private const int DefaultWidth=600, MinPanelWidth=360;
+    private string SizePath => Path.Combine(ClientStore.DataDir,"dash-natal-width.txt");
     private Image portrait;
     private Bitmap landscape;
     private byte[] alpha;
@@ -30,8 +33,8 @@ internal sealed class ChristmasDashboard : Form
     internal ChristmasDashboard(Func<Task<JObject>> feed,Func<string> identity)
     {
         read=feed;driver=identity;Text="BiduLog Dash Natal";FormBorderStyle=FormBorderStyle.None;
-        DoubleBuffered=true;BackColor=Color.FromArgb(5,18,30);TopMost=true;ShowInTaskbar=true;StartPosition=FormStartPosition.Manual;
-        int width=Math.Min(1200,Screen.PrimaryScreen.WorkingArea.Width-32);Size=new Size(width,width/3);Location=new Point(16,40);
+        AutoScaleMode=AutoScaleMode.None;DoubleBuffered=true;BackColor=Color.FromArgb(5,18,30);TopMost=true;ShowInTaskbar=true;StartPosition=FormStartPosition.Manual;
+        Location=new Point(16,40);ApplyWidth(LoadWidth(),false);
         using(var stream=typeof(ChristmasDashboard).Assembly.GetManifestResourceStream("BiduLog.DashNatal.Base.png")){
             if(stream==null)throw new InvalidOperationException("Arte da Dash Natal não encontrada.");
             using(var im=Image.FromStream(stream))landscape=new Bitmap(im);
@@ -41,13 +44,49 @@ internal sealed class ChristmasDashboard : Form
         for(int y=0;y<400;y++)for(int x=0;x<1200;x++)alpha[y*1200+x]=landscape.GetPixel(x,y).A;
         menu.Items.Add("Selecionar foto do motorista...",null,(s,e)=>ChoosePhoto());
         menu.Items.Add("Remover foto",null,(s,e)=>{try{File.Delete(PhotoPath());photoKey=null;LoadPhoto();}catch(Exception ex){MessageBox.Show(this,ex.Message);}});
-        foreach(int size in new[]{720,900,1080,1200,1440}){int v=size;menu.Items.Add("Tamanho "+v+" px",null,(s,e)=>{int n=Math.Min(v,Screen.FromControl(this).WorkingArea.Width-16);Size=new Size(n,n/3);});}
+        menu.Items.Add("Diminuir tamanho (-)",null,(s,e)=>ApplyWidth(ClientSize.Width-60));
+        menu.Items.Add("Aumentar tamanho (+)",null,(s,e)=>ApplyWidth(ClientSize.Width+60));
+        var sizes=new ToolStripMenuItem("Tamanho proporcional");
+        foreach(int size in new[]{360,420,480,540,600,720,900,1080,1200,1440}){int v=size;sizes.DropDownItems.Add(v+" x "+(v/3)+" px",null,(s,e)=>ApplyWidth(v));}
+        menu.Items.Add(sizes);
+        menu.Items.Add("Restaurar tamanho (600 x 200)",null,(s,e)=>ApplyWidth(DefaultWidth));
         menu.Items.Add("Sempre no topo",null,(s,e)=>TopMost=!TopMost);menu.Items.Add("Fechar Dash Natal",null,(s,e)=>Close());ContextMenuStrip=menu;
         clock.Tick+=async(s,e)=>await RefreshData();Shown+=(s,e)=>{LoadPhoto();clock.Start();};
         FormClosed+=(s,e)=>{closing=true;clock.Stop();clock.Dispose();portrait?.Dispose();landscape?.Dispose();menu.Dispose();};
         Resize+=(s,e)=>Shape();Shape();
     }
     protected override bool ShowWithoutActivation=>true;
+    private int LoadWidth()
+    {
+        try{if(int.TryParse(File.ReadAllText(SizePath),out int n)&&n>0)return n;}catch{}
+        return DefaultWidth;
+    }
+    private void SaveWidth()
+    {
+        try{ClientStore.Ensure();File.WriteAllText(SizePath,ClientSize.Width.ToString(CultureInfo.InvariantCulture));}catch{}
+    }
+    // Keep a precise 3:1 aspect ratio in physical pixels, including on small screens.
+    private static Size ProportionalSize(int requested,int availableWidth,int availableHeight)
+    {
+        int upper=Math.Max(3,Math.Min(availableWidth,availableHeight*3));
+        upper-=upper%3;
+        int lower=Math.Min(MinPanelWidth,upper);
+        int width=Math.Max(lower,Math.Min(upper,requested));
+        width-=width%3;
+        return new Size(width,width/3);
+    }
+    private void ApplyWidth(int requested,bool persist=true)
+    {
+        var area=Screen.FromControl(this).WorkingArea;
+        var next=ProportionalSize(requested,Math.Max(3,area.Width-16),Math.Max(1,area.Height-16));
+        if(ClientSize!=next)ClientSize=next;
+        if(persist)SaveWidth();
+    }
+    private bool IsResizeGrip(Point p)
+    {
+        // The lower-right border is the grip; the image retains its original silhouette.
+        return p.X>=ClientSize.Width*0.92 && p.Y>=ClientSize.Height*0.78;
+    }
     private void Shape()
     {
         if(alpha==null||ClientSize.Width<1||ClientSize.Height<1)return;
@@ -155,10 +194,44 @@ internal sealed class ChristmasDashboard : Form
         Value(g,online?N(speed):"—",595,256,138,77,sc,true);
         Value(g,!online?"—":Flag(data,"truck.cruise")?N(Num(data,"truck.cruise_speed_kmh"))+" km/h":"OFF",615,334,108,22,Color.FromArgb(81,250,53),true);
         if(!online)Value(g,"GPS DESCONECTADO",595,284,150,11,Color.LightSalmon,true);
+        // Small, unobtrusive diagonal grip on the lower-right trim.
+        using(var pen=new Pen(Color.FromArgb(215,255,222,155),1.8f)){
+            g.DrawLine(pen,1141,365,1151,355);g.DrawLine(pen,1147,367,1154,360);g.DrawLine(pen,1153,368,1157,364);
+        }
     }
-    protected override void OnMouseDown(MouseEventArgs e){base.OnMouseDown(e);if(e.Button==MouseButtons.Left){drag=e.Location;dragging=true;Capture=true;}}
-    protected override void OnMouseMove(MouseEventArgs e){base.OnMouseMove(e);if(dragging&&e.Button==MouseButtons.Left)Location=new Point(Left+e.X-drag.X,Top+e.Y-drag.Y);}
-    protected override void OnMouseUp(MouseEventArgs e){base.OnMouseUp(e);dragging=false;Capture=false;}
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        base.OnMouseDown(e);
+        if(e.Button!=MouseButtons.Left)return;
+        if(IsResizeGrip(e.Location)){resizing=true;resizeStart=Cursor.Position;resizeStartWidth=ClientSize.Width;}
+        else{drag=e.Location;dragging=true;}
+        Capture=true;
+    }
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+        if(resizing&&e.Button==MouseButtons.Left){
+            var pos=Cursor.Position;int dx=pos.X-resizeStart.X,dy=pos.Y-resizeStart.Y;
+            ApplyWidth(resizeStartWidth+(Math.Abs(dx)>=Math.Abs(dy*3)?dx:dy*3),false);
+        }else if(dragging&&e.Button==MouseButtons.Left)Location=new Point(Left+e.X-drag.X,Top+e.Y-drag.Y);
+        else Cursor=IsResizeGrip(e.Location)?Cursors.SizeNWSE:Cursors.Default;
+    }
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        base.OnMouseUp(e);
+        if(resizing)SaveWidth();
+        resizing=false;dragging=false;Capture=false;
+    }
+    protected override void OnMouseCaptureChanged(EventArgs e)
+    {
+        base.OnMouseCaptureChanged(e);
+        if(!Capture){if(resizing)SaveWidth();resizing=false;dragging=false;}
+    }
+    protected override void OnMouseWheel(MouseEventArgs e)
+    {
+        base.OnMouseWheel(e);
+        if((ModifierKeys&Keys.Control)==Keys.Control && e.Delta!=0)ApplyWidth(ClientSize.Width+(e.Delta>0?60:-60));
+    }
     protected override void OnMouseDoubleClick(MouseEventArgs e){base.OnMouseDoubleClick(e);float x=e.X*W/ClientSize.Width,y=e.Y*H/ClientSize.Height;if(x>=45&&x<=174&&y>=112&&y<=249)ChoosePhoto();}
     protected override void OnMouseClick(MouseEventArgs e){base.OnMouseClick(e);float x=e.X*W/ClientSize.Width,y=e.Y*H/ClientSize.Height;if(e.Button==MouseButtons.Left&&x>=130&&x<=170&&y>=205&&y<=248)ChoosePhoto();}
 }

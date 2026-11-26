@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.IO;
 using System.Reflection;
@@ -94,6 +95,21 @@ class Program {
   Func<string> identity=()=>photoOwner;
   using(var natal=(System.Windows.Forms.Form)Activator.CreateInstance(natalType,BindingFlags.Instance|BindingFlags.NonPublic,null,new object[]{feed,identity},null)){
     Check(natal.FormBorderStyle==System.Windows.Forms.FormBorderStyle.None&&natal.TopMost,"Dash Natal independente sem moldura do Windows");
+    var proportional=natalType.GetMethod("ProportionalSize",BindingFlags.Static|BindingFlags.NonPublic);
+    foreach(int requested in new[]{200,360,420,480,601,720,1200,1800}){
+      var size=(System.Drawing.Size)proportional.Invoke(null,new object[]{requested,1440,500});
+      Check(size.Width==size.Height*3&&size.Width>=360&&size.Width<=1440,"Dash Natal proporcao 3:1 "+requested);
+    }
+    var constrained=(System.Drawing.Size)proportional.Invoke(null,new object[]{1200,500,100});
+    Check(constrained.Width==300&&constrained.Height==100,"Dash Natal respeita tela pequena");
+    var apply=natalType.GetMethod("ApplyWidth",BindingFlags.Instance|BindingFlags.NonPublic);
+    foreach(int requested in new[]{360,420,480,600,720}){
+      apply.Invoke(natal,new object[]{requested,false});
+      Check(natal.ClientSize.Width==requested&&natal.ClientSize.Height==requested/3,"Dash Natal ajuste compacto "+requested);
+    }
+    var grip=natalType.GetMethod("IsResizeGrip",BindingFlags.Instance|BindingFlags.NonPublic);
+    Check((bool)grip.Invoke(natal,new object[]{new System.Drawing.Point(690,215)})&&!(bool)grip.Invoke(natal,new object[]{new System.Drawing.Point(250,110)}),"Dash Natal alca inferior direita independente de arrastar janela");
+    Check(natal.ContextMenuStrip.Items.Cast<System.Windows.Forms.ToolStripItem>().Any(x=>x.Text=="Tamanho proporcional"),"Dash Natal menu de escala disponivel");
     var photoPath=natalType.GetMethod("PhotoPath",BindingFlags.Instance|BindingFlags.NonPublic);
     var a=(string)photoPath.Invoke(natal,null);photoOwner="qa-driver-two";var b=(string)photoPath.Invoke(natal,null);
     Check(a!=b&&Path.GetFileName(a).StartsWith("dash-natal-"),"foto local separada por motorista");
@@ -101,7 +117,7 @@ class Program {
     var paint=natalType.GetMethod("OnPaint",BindingFlags.Instance|BindingFlags.NonPublic);
     var fixture=JObject.Parse(File.ReadAllText(args[2]));
     field.SetValue(natal,fixture);
-    foreach(int width in new[]{1200,720}){
+    foreach(int width in new[]{1200,720,600,480,360}){
       natal.Size=new System.Drawing.Size(width,width/3);
       Check(natal.Region!=null&&!natal.Region.IsVisible(0,0)&&natal.Region.IsVisible(width/2,width/6),"fundo recortado nas bordas "+width);
       using(var bmp=new System.Drawing.Bitmap(width,width/3))using(var g=System.Drawing.Graphics.FromImage(bmp))using(var pe=new System.Windows.Forms.PaintEventArgs(g,new System.Drawing.Rectangle(0,0,width,width/3))){
@@ -109,6 +125,7 @@ class Program {
       }
     }
     field.SetValue(natal,null);
+    natal.ClientSize=new System.Drawing.Size(720,240);
     using(var bmp=new System.Drawing.Bitmap(720,240))using(var g=System.Drawing.Graphics.FromImage(bmp))using(var pe=new System.Windows.Forms.PaintEventArgs(g,new System.Drawing.Rectangle(0,0,720,240))){
       paint.Invoke(natal,new object[]{pe});bmp.Save(Path.Combine(outDir,"dash-natal-offline.png"),System.Drawing.Imaging.ImageFormat.Png);
     }
