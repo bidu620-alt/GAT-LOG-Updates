@@ -7,9 +7,9 @@ using System.Security.Permissions;
 
 [assembly: AssemblyCompany("BiduLog Telemetria")]
 [assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyFileVersion("1.0.68.41")]
-[assembly: AssemblyInformationalVersion("1.0.68.41+dashboard-estavel")]
+[assembly: AssemblyFileVersion("1.0.68.42")]
+[assembly: AssemblyInformationalVersion("1.0.68.42+dash-natal")]
 [assembly: AssemblyProduct("BiduLog Telemetria")]
 [assembly: AssemblyTitle("BiduLog Telemetria")]
-[assembly: AssemblyVersion("1.0.68.41")]
+[assembly: AssemblyVersion("1.0.68.42")]
 
