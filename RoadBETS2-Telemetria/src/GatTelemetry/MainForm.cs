@@ -360,7 +360,7 @@ internal sealed partial class MainForm : Form
 		internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 	}
 
-	private const string CurrentVersion = "1.0.68.41";
+	private const string CurrentVersion = "1.0.68.42";
     private readonly System.Threading.SemaphoreSlim _centralPacketGate = new System.Threading.SemaphoreSlim(1, 1);
     private string _lastTerminalPacketKey = "";
 
@@ -559,6 +559,7 @@ internal sealed partial class MainForm : Form
 	private bool _hubApplied041;
 
 	private TruckOverlay041 _truckOverlay041;
+	private ChristmasDashboard _christmasDashboard;
 
 	private VideoOverlay041 _videoOverlay041;
 
@@ -755,7 +756,7 @@ internal sealed partial class MainForm : Form
 
 	public MainForm()
 	{
-		Text = "BIDULOG TELEMETRIA 1.0.68.41";
+		Text = "BIDULOG TELEMETRIA 1.0.68.42";
 		StartPosition = FormStartPosition.CenterScreen;
 		MinimumSize = new System.Drawing.Size(900, 700);
 		Size = new System.Drawing.Size(940, 740);
@@ -1117,7 +1118,7 @@ internal sealed partial class MainForm : Form
 		Controls.Add(btnUpdate);
 		lblVersion = new System.Windows.Forms.Label
 		{
-			Text = "Cliente 1.0.68.41",
+			Text = "Cliente 1.0.68.42",
 			AutoSize = true,
 			ForeColor = System.Drawing.Color.FromArgb(105, 118, 136),
 			Anchor = (AnchorStyles.Bottom | AnchorStyles.Right),
@@ -3363,7 +3364,7 @@ internal sealed partial class MainForm : Form
 		_hubAccountCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => x.Caption == "CONTA BIDULOG");
 		_hubServerCard041 = source.OfType<ModernCard>().FirstOrDefault((ModernCard x) => (x.Caption ?? "").StartsWith("COMBOIO / SERVIDOR"));
 		Controls.Clear();
-		Text = "BIDULOG TELEMETRIA 1.0.68.41";
+		Text = "BIDULOG TELEMETRIA 1.0.68.42";
 		MinimumSize = new System.Drawing.Size(740, 500);
 		AutoScaleMode = AutoScaleMode.Dpi;
 		System.Drawing.Rectangle workingArea = Screen.FromControl(this).WorkingArea;
@@ -3397,7 +3398,7 @@ internal sealed partial class MainForm : Form
 		tableLayoutPanel.Controls.Add(new System.Windows.Forms.Label
 		{
 			Dock = DockStyle.Fill,
-			Text = "BIDULOG ETS2  •  Cliente 1.0.68.41  •  conexão que move distâncias",
+			Text = "BIDULOG ETS2  •  Cliente 1.0.68.42  •  conexão que move distâncias",
 			Padding = new Padding(20, 0, 0, 0),
 			TextAlign = ContentAlignment.MiddleLeft,
 			ForeColor = System.Drawing.Color.FromArgb(104, 128, 155),
@@ -3458,6 +3459,7 @@ internal sealed partial class MainForm : Form
 			}
 			try
 			{
+				_christmasDashboard?.Close();
 				_truckOverlay041?.Close();
 				_videoOverlay041?.Close();
 				_dashOverlay060?.Close();
@@ -4252,7 +4254,7 @@ internal sealed partial class MainForm : Form
 			Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
 			BackColor = System.Drawing.Color.FromArgb(5, 24, 17)
 		};
-		System.Windows.Forms.Button button = HubButton041("BIDULOG DASH", 190);
+		System.Windows.Forms.Button button = HubButton041("BIDULOG DASH", 160);
 		button.Left = 10;
 		button.Top = 9;
 		button.Height = 40;
@@ -4261,8 +4263,12 @@ internal sealed partial class MainForm : Form
 			ToggleRoadLifeOverlay();
 		};
 		panel2.Controls.Add(button);
+		var natal = HubButton041("DASH NATAL", 130);
+		natal.SetBounds(180, 9, 130, 40);
+		natal.Click += delegate { OpenChristmasDashboard(); };
+		panel2.Controls.Add(natal);
 		System.Windows.Forms.Button button2 = HubButton041("SOBREPOR VÍDEO", 175);
-		button2.Left = 212;
+		button2.Left = 320;
 		button2.Top = 9;
 		button2.Height = 40;
 		button2.Click += delegate
@@ -4277,7 +4283,7 @@ internal sealed partial class MainForm : Form
 			Top = 145,
 			Width = 760,
 			Height = 62,
-			Text = "BiduLog Dash mostra os dados recebidos pelo BiduLog Telemetria.\r\nA sobreposição de vídeo abre em uma janela flutuante.",
+			Text = "BiduLog Dash mantém o painel original. Dash Natal abre um painel separado.\r\nNa Dash Natal, clique com o botão direito para selecionar sua foto ou ajustar o tamanho.",
 			ForeColor = System.Drawing.Color.FromArgb(176, 205, 188),
 			Font = new Font("Segoe UI", 10.5f)
 		};
@@ -4664,6 +4670,14 @@ internal sealed partial class MainForm : Form
 		{
 			System.Windows.Forms.MessageBox.Show("Não foi possível abrir o BIDULOG DASH completo.\r\n" + ex.Message, "BIDULOG DASH", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 		}
+	}
+
+	private void OpenChristmasDashboard()
+	{
+		if (_christmasDashboard != null && !_christmasDashboard.IsDisposed) { _christmasDashboard.Close(); return; }
+		_christmasDashboard = new ChristmasDashboard(async () => { var observed = await _telemetry.ReadAsync(); return observed == null ? null : RoadLifeOverlayBuildPayload(observed); }, () => string.IsNullOrWhiteSpace(_driver) ? _accountUser : _driver);
+		_christmasDashboard.FormClosed += delegate { _christmasDashboard = null; };
+		_christmasDashboard.Show();
 	}
 
 	private void OpenTruckOverlay041()
@@ -5611,7 +5625,7 @@ internal sealed partial class MainForm : Form
 		if (!_hub045Applied)
 		{
 			_hub045Applied = true;
-			Text = "BIDULOG TELEMETRIA 1.0.68.41";
+			Text = "BIDULOG TELEMETRIA 1.0.68.42";
 			ReplaceTextRecursive044(this, "1.0.44", "1.0.45");
 			BuildHome045();
 			_hubStatusTimer041.Tick += async delegate
