@@ -1,13 +1,13 @@
 {
   "app": "BiduLog Telemetria",
   "channel": "stable",
-  "version": "1.0.68.41",
-  "display_version": "1.0.68.41",
-  "notas": "Novo dashboard BiduLog com logo, limite da via destacado, cruzeiro, bordas reforcadas e tamanho proporcional. Melhorias de estabilidade: abertura sem roubar foco, fluxo visual unico, imagens em cache e indicacao de perda do GPS. Mantem a base .40, SaveReader, diario, antifraude, conta e fila. Feche o ETS2 e o aplicativo antes de atualizar.",
-  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.41.exe",
-  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.41.exe",
-  "sha256": "f3a1f4af612af80d5c86195f113e066639ced508f0a1e6d4b7ce27933d55dbad",
+  "version": "1.0.68.42",
+  "display_version": "1.0.68.42",
+  "notas": "Dash Natal independente, foto local do motorista e painel de viagem sem danos. Mantem o BiduLog Dash original. Feche o ETS2 e o aplicativo antes de atualizar.",
+  "setup_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.42.exe",
+  "download_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDUTRUCK_TELEMETRIA_COMPLETO_1.0.68.42.exe",
+  "sha256": "c69a34a3d656286f2b19ef865f495cc497dfcefaad64a6827401b17e0fca5475",
   "package_type": "full",
-  "update_zip_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDULOG_TELEMETRIA_ATUALIZACAO_1.0.68.41.zip",
-  "update_zip_sha256": "700b8fddf288138ef0100913c372c2437bdcc50771b3e9b07803c98a8a2ed162"
+  "update_zip_url": "https://raw.githubusercontent.com/bidu620-alt/GAT-LOG-Updates/main/releases/BIDULOG_TELEMETRIA_ATUALIZACAO_1.0.68.42.zip",
+  "update_zip_sha256": "ea2cfe7c5f234ff2ede6b42810fad3272dc98e98554b2c83510158302eb922a2"
 }
