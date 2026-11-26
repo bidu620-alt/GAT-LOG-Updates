@@ -20,9 +20,11 @@ internal sealed class ChristmasDashboard : Form
     private JObject data;
     private bool busy, closing, dragging, resizing;
     private Point drag, resizeStart;
-    private int resizeStartWidth;
-    private const int DefaultWidth=600, MinPanelWidth=360;
-    private string SizePath => Path.Combine(ClientStore.DataDir,"dash-natal-width.txt");
+    private Rectangle resizeStartBounds;
+    private int resizeEdge;
+    private const int EdgeLeft=1, EdgeRight=2, EdgeTop=4, EdgeBottom=8;
+    private const int DefaultWidth=600, DefaultHeight=200, MinPanelWidth=180, MinPanelHeight=60;
+    private string SizePath => Path.Combine(ClientStore.DataDir,"dash-natal-size.txt");
     private Image portrait;
     private Bitmap landscape;
     private byte[] alpha;
@@ -34,7 +36,7 @@ internal sealed class ChristmasDashboard : Form
     {
         read=feed;driver=identity;Text="BiduLog Dash Natal";FormBorderStyle=FormBorderStyle.None;
         AutoScaleMode=AutoScaleMode.None;DoubleBuffered=true;BackColor=Color.FromArgb(5,18,30);TopMost=true;ShowInTaskbar=true;StartPosition=FormStartPosition.Manual;
-        Location=new Point(16,40);ApplyWidth(LoadWidth(),false);
+        Location=new Point(16,40);ApplySize(LoadSize(),false);
         using(var stream=typeof(ChristmasDashboard).Assembly.GetManifestResourceStream("BiduLog.DashNatal.Base.png")){
             if(stream==null)throw new InvalidOperationException("Arte da Dash Natal não encontrada.");
             using(var im=Image.FromStream(stream))landscape=new Bitmap(im);
@@ -44,48 +46,74 @@ internal sealed class ChristmasDashboard : Form
         for(int y=0;y<400;y++)for(int x=0;x<1200;x++)alpha[y*1200+x]=landscape.GetPixel(x,y).A;
         menu.Items.Add("Selecionar foto do motorista...",null,(s,e)=>ChoosePhoto());
         menu.Items.Add("Remover foto",null,(s,e)=>{try{File.Delete(PhotoPath());photoKey=null;LoadPhoto();}catch(Exception ex){MessageBox.Show(this,ex.Message);}});
-        menu.Items.Add("Diminuir tamanho (-)",null,(s,e)=>ApplyWidth(ClientSize.Width-60));
-        menu.Items.Add("Aumentar tamanho (+)",null,(s,e)=>ApplyWidth(ClientSize.Width+60));
-        var sizes=new ToolStripMenuItem("Tamanho proporcional");
-        foreach(int size in new[]{360,420,480,540,600,720,900,1080,1200,1440}){int v=size;sizes.DropDownItems.Add(v+" x "+(v/3)+" px",null,(s,e)=>ApplyWidth(v));}
-        menu.Items.Add(sizes);
-        menu.Items.Add("Restaurar tamanho (600 x 200)",null,(s,e)=>ApplyWidth(DefaultWidth));
+        menu.Items.Add("Restaurar tamanho original",null,(s,e)=>ApplySize(new Size(DefaultWidth,DefaultHeight)));
         menu.Items.Add("Sempre no topo",null,(s,e)=>TopMost=!TopMost);menu.Items.Add("Fechar Dash Natal",null,(s,e)=>Close());ContextMenuStrip=menu;
         clock.Tick+=async(s,e)=>await RefreshData();Shown+=(s,e)=>{LoadPhoto();clock.Start();};
         FormClosed+=(s,e)=>{closing=true;clock.Stop();clock.Dispose();portrait?.Dispose();landscape?.Dispose();menu.Dispose();};
         Resize+=(s,e)=>Shape();Shape();
     }
     protected override bool ShowWithoutActivation=>true;
-    private int LoadWidth()
+    private Size LoadSize()
     {
-        try{if(int.TryParse(File.ReadAllText(SizePath),out int n)&&n>0)return n;}catch{}
-        return DefaultWidth;
+        try{
+            var parts=File.ReadAllText(SizePath).Trim().Split(',');
+            if(parts.Length==2&&int.TryParse(parts[0],out int w)&&int.TryParse(parts[1],out int h)&&w>0&&h>0)return new Size(w,h);
+        }catch{}
+        try{
+            string legacy=Path.Combine(ClientStore.DataDir,"dash-natal-width.txt");
+            if(int.TryParse(File.ReadAllText(legacy),out int w)&&w>0)return new Size(w,Math.Max(1,w/3));
+        }catch{}
+        return new Size(DefaultWidth,DefaultHeight);
     }
-    private void SaveWidth()
+    private void SaveSize()
     {
-        try{ClientStore.Ensure();File.WriteAllText(SizePath,ClientSize.Width.ToString(CultureInfo.InvariantCulture));}catch{}
+        try{ClientStore.Ensure();File.WriteAllText(SizePath,ClientSize.Width.ToString(CultureInfo.InvariantCulture)+","+ClientSize.Height.ToString(CultureInfo.InvariantCulture));}catch{}
     }
-    // Keep a precise 3:1 aspect ratio in physical pixels, including on small screens.
-    private static Size ProportionalSize(int requested,int availableWidth,int availableHeight)
+    private static Size FreeSize(Size requested,int availableWidth,int availableHeight)
     {
-        int upper=Math.Max(3,Math.Min(availableWidth,availableHeight*3));
-        upper-=upper%3;
-        int lower=Math.Min(MinPanelWidth,upper);
-        int width=Math.Max(lower,Math.Min(upper,requested));
-        width-=width%3;
-        return new Size(width,width/3);
+        int maxW=Math.Max(1,availableWidth),maxH=Math.Max(1,availableHeight);
+        return new Size(Math.Max(Math.Min(MinPanelWidth,maxW),Math.Min(maxW,requested.Width)),
+                        Math.Max(Math.Min(MinPanelHeight,maxH),Math.Min(maxH,requested.Height)));
     }
-    private void ApplyWidth(int requested,bool persist=true)
+    private void ApplySize(Size requested,bool persist=true)
     {
         var area=Screen.FromControl(this).WorkingArea;
-        var next=ProportionalSize(requested,Math.Max(3,area.Width-16),Math.Max(1,area.Height-16));
+        var next=FreeSize(requested,area.Width,area.Height);
         if(ClientSize!=next)ClientSize=next;
-        if(persist)SaveWidth();
+        if(persist)SaveSize();
     }
-    private bool IsResizeGrip(Point p)
+    // Corners and sides are independent: no fixed ratio or size steps.
+    private int ResizeEdge(Point p)
     {
-        // The lower-right border is the grip; the image retains its original silhouette.
-        return p.X>=ClientSize.Width*0.92 && p.Y>=ClientSize.Height*0.78;
+        float x=p.X/(float)Math.Max(1,ClientSize.Width), y=p.Y/(float)Math.Max(1,ClientSize.Height);
+        if(x<=.09f&&y<=.29f)return EdgeLeft|EdgeTop;
+        if(x>=.91f&&y<=.29f)return EdgeRight|EdgeTop;
+        if(x<=.09f&&y>=.74f)return EdgeLeft|EdgeBottom;
+        if(x>=.91f&&y>=.74f)return EdgeRight|EdgeBottom;
+        if(x<=.035f)return EdgeLeft;
+        if(x>=.965f)return EdgeRight;
+        if(y<=.18f)return EdgeTop;
+        if(y>=.90f)return EdgeBottom;
+        return 0;
+    }
+    private static Rectangle ResizeBounds(Rectangle start,int edge,int dx,int dy,int maxW,int maxH)
+    {
+        int w=start.Width,h=start.Height;
+        if((edge&EdgeLeft)!=0)w-=dx;else if((edge&EdgeRight)!=0)w+=dx;
+        if((edge&EdgeTop)!=0)h-=dy;else if((edge&EdgeBottom)!=0)h+=dy;
+        var size=FreeSize(new Size(w,h),maxW,maxH);
+        // Dragging a top/left edge anchors the opposite edge.
+        int x=(edge&EdgeLeft)!=0?start.Right-size.Width:start.Left;
+        int y=(edge&EdgeTop)!=0?start.Bottom-size.Height:start.Top;
+        return new Rectangle(x,y,size.Width,size.Height);
+    }
+    private static Cursor EdgeCursor(int edge)
+    {
+        if(edge==(EdgeLeft|EdgeTop)||edge==(EdgeRight|EdgeBottom))return Cursors.SizeNWSE;
+        if(edge==(EdgeRight|EdgeTop)||edge==(EdgeLeft|EdgeBottom))return Cursors.SizeNESW;
+        if((edge&(EdgeLeft|EdgeRight))!=0)return Cursors.SizeWE;
+        if((edge&(EdgeTop|EdgeBottom))!=0)return Cursors.SizeNS;
+        return Cursors.Default;
     }
     private void Shape()
     {
@@ -203,7 +231,8 @@ internal sealed class ChristmasDashboard : Form
     {
         base.OnMouseDown(e);
         if(e.Button!=MouseButtons.Left)return;
-        if(IsResizeGrip(e.Location)){resizing=true;resizeStart=Cursor.Position;resizeStartWidth=ClientSize.Width;}
+        resizeEdge=ResizeEdge(e.Location);
+        if(resizeEdge!=0){resizing=true;resizeStart=Cursor.Position;resizeStartBounds=Bounds;Cursor=EdgeCursor(resizeEdge);}
         else{drag=e.Location;dragging=true;}
         Capture=true;
     }
@@ -211,26 +240,23 @@ internal sealed class ChristmasDashboard : Form
     {
         base.OnMouseMove(e);
         if(resizing&&e.Button==MouseButtons.Left){
-            var pos=Cursor.Position;int dx=pos.X-resizeStart.X,dy=pos.Y-resizeStart.Y;
-            ApplyWidth(resizeStartWidth+(Math.Abs(dx)>=Math.Abs(dy*3)?dx:dy*3),false);
+            var pos=Cursor.Position;
+            var area=Screen.FromPoint(resizeStart).WorkingArea;
+            var next=ResizeBounds(resizeStartBounds,resizeEdge,pos.X-resizeStart.X,pos.Y-resizeStart.Y,area.Width,area.Height);
+            if(Bounds!=next)Bounds=next;
         }else if(dragging&&e.Button==MouseButtons.Left)Location=new Point(Left+e.X-drag.X,Top+e.Y-drag.Y);
-        else Cursor=IsResizeGrip(e.Location)?Cursors.SizeNWSE:Cursors.Default;
+        else Cursor=EdgeCursor(ResizeEdge(e.Location));
     }
     protected override void OnMouseUp(MouseEventArgs e)
     {
         base.OnMouseUp(e);
-        if(resizing)SaveWidth();
-        resizing=false;dragging=false;Capture=false;
+        if(resizing)SaveSize();
+        resizing=false;dragging=false;resizeEdge=0;Capture=false;
     }
     protected override void OnMouseCaptureChanged(EventArgs e)
     {
         base.OnMouseCaptureChanged(e);
-        if(!Capture){if(resizing)SaveWidth();resizing=false;dragging=false;}
-    }
-    protected override void OnMouseWheel(MouseEventArgs e)
-    {
-        base.OnMouseWheel(e);
-        if((ModifierKeys&Keys.Control)==Keys.Control && e.Delta!=0)ApplyWidth(ClientSize.Width+(e.Delta>0?60:-60));
+        if(!Capture){if(resizing)SaveSize();resizing=false;dragging=false;resizeEdge=0;}
     }
     protected override void OnMouseDoubleClick(MouseEventArgs e){base.OnMouseDoubleClick(e);float x=e.X*W/ClientSize.Width,y=e.Y*H/ClientSize.Height;if(x>=45&&x<=174&&y>=112&&y<=249)ChoosePhoto();}
     protected override void OnMouseClick(MouseEventArgs e){base.OnMouseClick(e);float x=e.X*W/ClientSize.Width,y=e.Y*H/ClientSize.Height;if(e.Button==MouseButtons.Left&&x>=130&&x<=170&&y>=205&&y<=248)ChoosePhoto();}

@@ -34,7 +34,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'SaveReader tests failed' }
           node --test central-economy/tests/scs-bus-job.test.mjs central-economy/tests/scs-bus-job-integration.test.mjs central-economy/tests/save-evidence.test.mjs central-economy/tests/journal-recovery.test.mjs
           if ($LASTEXITCODE -ne 0) { throw 'Central tests failed' }
-      # Rebuild candidate: compact proportional sizing and resize grip.
+      # Rebuild candidate: unrestricted independent width and height, edge and corner dragging.
       - name: Verify approved PNG skin
         shell: pwsh
         run: |
