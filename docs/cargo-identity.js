@@ -6,9 +6,12 @@
     if(row?.raw_json&&typeof row.raw_json==='object')return row.raw_json;
     try{return JSON.parse(row?.raw_json||'{}')}catch(_){return {}}
   }
+  // Official cargo-icon definitions identify hvac with the SDK token aircond.
+  const SDK_TOKEN_IDS={aircond:'hvac'};
   function idOf(row){
     const raw=rawOf(row),t=row?.telemetry||row||{};
-    return id(row?.cargo_id||row?.cargoId||t?.cargo_id||t?.cargoId||t?.job?.cargoId||t?.job?.cargo?.id||t?.game?.job?.cargoId||raw?.cargo_identity?.cargo_id_raw||raw?.mission?.cargo_id||raw?.cargo_id||raw?.job?.cargoId||'');
+    const value=id(row?.cargo_id||row?.cargoId||t?.cargo_id||t?.cargoId||t?.job?.cargoId||t?.job?.cargo?.id||t?.game?.job?.cargoId||raw?.cargo_identity?.cargo_id_raw||raw?.mission?.cargo_id||raw?.cargo_id||raw?.job?.cargoId||'');
+    return SDK_TOKEN_IDS[value]||value;
   }
   function names(item){return [item?.namePt,item?.name,...(item?.aliases||[])].map(norm).filter(Boolean)}
   function match(items,row){
