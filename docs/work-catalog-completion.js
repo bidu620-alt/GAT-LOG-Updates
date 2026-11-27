@@ -32,7 +32,7 @@
   function currentProfile(){try{return typeof profile!=='undefined'?profile:null}catch(_){return null}}
   function history(){
     const p=currentProfile();
-    const rows=[...(Array.isArray(p?.cargo_history)?p.cargo_history:[]),...(Array.isArray(p?.deliveries)?p.deliveries:[])];
+    const rows=[...(Array.isArray(p?.event_history)?p.event_history:[]),...(Array.isArray(p?.cargo_history)?p.cargo_history:[]),...(Array.isArray(p?.deliveries)?p.deliveries:[])];
     return rows.map(x=>({...x,name:norm(x?.cargo_name_raw||x?.cargo||x?.cargo_name||x?.name),cargo_id:GatCargoIdentity.idOf(x),weightT:(Number(x?.weight_kg)||0)/1000})).filter(x=>x.name||x.cargo_id);
   }
   function signature(){return (currentProfile()?'ready:':'loading:')+history().map(x=>x.cargo_id+'@'+x.name+'@'+x.weightT.toFixed(2)).sort().join('|')}
@@ -173,6 +173,9 @@
     if(!variants.size)return;
     const root=document.getElementById('workCatalogGrid');if(!root)return;
     [...root.querySelectorAll('.full-cargo-card:not([data-variant-expanded])')].forEach(card=>{
+      // The official catalog already contains each DLC variant with its own stable ID.
+      // Preserve that ID and cargo_ids so completion matches the correct card.
+      if(GatCargoIdentity.getCatalog().some(item=>item.id===card.dataset.cargoKey)){card.dataset.variantExpanded='catalog';return}
       const name=officialName(card),group=variants.get(norm(name));
       if(!group||group.length<2){card.dataset.variantExpanded='single';return}
       group.forEach(v=>{
