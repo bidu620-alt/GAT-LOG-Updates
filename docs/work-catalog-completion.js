@@ -1,7 +1,5 @@
 (()=>{
   const CATALOG_URL='ets2-official-cargos.json?v=game-ids-20261008';
-  // Administrative completion confirmed by the owner; no delivery or wallet mutation.
-  const MANUAL_COMPLETIONS=[{user:'gensey',name:'Air Conditioners',dlc:'High Power Cargo Pack',completed_on:'2026-11-26',reason:'Conclusão confirmada pelo proprietário em 27/11/2026.'}];
   const ICON_DATA_URL='assets/cargo/cargo-icon-defs.json?v=1';
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   let lastSig='',variants=new Map(),totalEntries=0,applying=false;
@@ -161,6 +159,13 @@
     return bestScore>=120?best:null;
   }
   function applyThumb(card){
+    // Extracted from the installed official High Power archive, not a fuzzy name match.
+    if(cardItem(card).cargoIds.includes('aircond')){
+      let el=card.querySelector('.cargo-thumb');
+      if(!el){el=document.createElement('span');el.className='cargo-thumb';card.querySelector('.cargo-visual')?.appendChild(el)}
+      if(el){el.style.backgroundImage="url('assets/cargo/aircond-verified.png?v=20261128')";el.style.backgroundSize='contain';el.style.backgroundPosition='center';el.dataset.icon='aircond';card.dataset.cargoIcon='aircond';card.classList.add('has-cargo-thumb')}
+      return;
+    }
     if(!iconsReady)return;
     const d=resolveDefinition(card);if(!d)return;
     const p=iconPos[d.icon]||iconPos.fallback;if(!p||!sheetReady.has(p.s))return;const sh=sheets[p.s];if(!sh)return;
@@ -204,12 +209,6 @@
       if(seen.has(key))continue;
       seen.add(key);
       const found=GatCargoIdentity.match(all,row);
-      if(found.length===1)done.add(found[0].id);
-    }
-    const user=norm(currentProfile()?.user||'');
-    for(const approval of MANUAL_COMPLETIONS){
-      if(user!==approval.user)continue;
-      const found=all.filter(item=>item.name===approval.name&&item.dlc===approval.dlc);
       if(found.length===1)done.add(found[0].id);
     }
     return done;
